@@ -9408,6 +9408,70 @@
                 "title": "TokenResponse",
                 "type": "object"
             },
+            "TopArtistsPlaylistParams": {
+                "additionalProperties": false,
+                "properties": {
+                    "callId": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Callid"
+                    },
+                    "scoreName": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Scorename"
+                    },
+                    "searchGroupName": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Searchgroupname"
+                    }
+                },
+                "title": "TopArtistsPlaylistParams",
+                "type": "object"
+            },
+            "TopArtistsPlaylistResponse": {
+                "additionalProperties": false,
+                "properties": {
+                    "params": {
+                        "$ref": "#/components/schemas/TopArtistsPlaylistParams"
+                    },
+                    "playlistArtists": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "title": "Playlistartists",
+                        "type": "array"
+                    }
+                },
+                "required": [
+                    "playlistArtists",
+                    "params"
+                ],
+                "title": "TopArtistsPlaylistResponse",
+                "type": "object"
+            },
             "UbbleError": {
                 "enum": [
                     1201,
@@ -13139,6 +13203,50 @@
                     }
                 },
                 "summary": "similar_offers <GET>",
+                "tags": []
+            }
+        },
+        "/native/v1/recommendation/top_artists_playlist/{search_group_name}": {
+            "get": {
+                "description": "",
+                "operationId": "get__native_v1_recommendation_top_artists_playlist_{search_group_name}",
+                "parameters": [
+                    {
+                        "description": "",
+                        "in": "path",
+                        "name": "search_group_name",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TopArtistsPlaylistResponse"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        },
+                        "description": "Unprocessable Content"
+                    }
+                },
+                "summary": "top_artists_playlist <GET>",
                 "tags": []
             }
         },

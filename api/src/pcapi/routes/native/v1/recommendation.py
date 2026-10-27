@@ -54,3 +54,22 @@ def playlist(
             playlist_recommended_offers=[], params=serializers.RecommendationApiParams()
         )
     return serializers.PlaylistResponse.parse_raw(raw_response, content_type="application/json")
+
+
+@blueprint.native_route("/recommendation/top_artists_playlist/<search_group_name>", methods=["GET"])
+@spectree_serialize(api=blueprint.api, response_model=serializers.TopArtistsPlaylistResponse)
+def top_artists_playlist(search_group_name: str) -> serializers.TopArtistsPlaylistResponse:
+    try:
+        raw_response = recommendation_api.get_top_artists_playlist(search_group_name)
+    except recommendation_api.RecommendationApiValidationException:
+        raise ApiErrors({"code": "RECOMMENDATION_API_VALIDATION"}, status_code=400)
+    except recommendation_api.RecommendationApiTimeoutException:
+        raise ApiErrors({"code": "RECOMMENDATION_API_TIMEOUT"}, status_code=504)
+    except recommendation_api.RecommendationApiException:
+        raise ApiErrors({"code": "RECOMMENDATION_API_ERROR"}, status_code=502)
+    if not raw_response:
+        return serializers.TopArtistsPlaylistResponse(
+            playlist_artists=[], params=serializers.TopArtistsPlaylistParams()
+        )
+
+    return serializers.TopArtistsPlaylistResponse.parse_raw(raw_response, content_type="application/json")
