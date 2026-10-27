@@ -1,4 +1,3 @@
-import sqlalchemy as sa
 from flask_login import current_user
 from sqlalchemy.orm import joinedload
 
@@ -47,40 +46,6 @@ def offer_chronicles(offer_id: int) -> serializers.OfferChronicles:
 
     return serializers.OfferChronicles(
         chronicles=[serializers.OfferChronicle.build(chronicle) for chronicle in chronicles]
-    )
-
-
-# TODO: Will be deleted in PR #24783 after native code deletion
-@blueprint.native_route("/offer/<int:offer_id>/advices", methods=["GET"])
-@spectree_serialize(
-    on_success_status=200, on_error_statuses=[404], api=blueprint.api, response_model=serializers.OfferProAdvices
-)
-def get_offer_pro_advices(offer_id: int, query: serializers.OfferProAdviceQuery) -> serializers.OfferProAdvices:
-    product_id = db.session.scalar(sa.select(Offer.productId).where(Offer.id == offer_id))
-
-    limit = query.results_per_page
-    offset = (query.page - 1) * limit
-
-    results = repository.get_pro_advices(
-        offer_id=offer_id,
-        product_id=product_id,
-        latitude=query.latitude,
-        longitude=query.longitude,
-        offset=offset,
-        limit=limit,
-    )
-
-    if product_id and len(results) >= limit:
-        nb_results = repository.get_product_pro_advices_count(product_id)
-    else:
-        nb_results = offset + len(results) if product_id else len(results)
-
-    return serializers.OfferProAdvices(
-        pro_advices=[
-            serializers.OfferProAdvice.build(pro_advice, distance, query.max_content_length)
-            for pro_advice, distance in results
-        ],
-        nb_results=nb_results,
     )
 
 
