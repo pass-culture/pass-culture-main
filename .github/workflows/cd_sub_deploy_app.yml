@@ -124,7 +124,6 @@ jobs:
           DATABASE_SSL: --no-database-ssl # --database-ssl or --no-database-ssl
           DATABASE_SSL_MODE: "" # verify-ca, verify-full or "" (empty string)
         run: |
-          # shellcheck disable=SC2086
           passdirector pcapi deploy --environment "${PCAPI_ENVIRONMENT_SHORT_NAME}" \
             --app-version "${PCAPI_VERSION}" \
             --database-ssl-mode "${DATABASE_SSL_MODE}" \
