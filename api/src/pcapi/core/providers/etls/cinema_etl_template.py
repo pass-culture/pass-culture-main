@@ -211,7 +211,6 @@ class CinemaETLProcessTemplate[APIClient: cinema_client.CinemaAPIClient | EMSSch
 
         # fill generic information
         destination_oa = offerers_api.get_or_create_offer_location(
-            offerer_id=self.venue_provider.venue.managingOffererId,
             venue_id=self.venue_provider.venue.id,
             address_id=self.venue_provider.venue.offererAddress.addressId,
             label=None,

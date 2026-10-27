@@ -360,7 +360,6 @@ def _get_location_from_public_model(
 
         case provider_api_collective_offers_serialize.CollectiveOfferLocationAddressVenueModel():
             offerer_address = offerers_api.get_or_create_offer_location(
-                offerer_id=venue.managingOffererId,
                 venue_id=venue.id,
                 address_id=venue.offererAddress.addressId,
                 label=None,
@@ -380,7 +379,6 @@ def _get_location_from_public_model(
                 )
             else:
                 offerer_address = offerers_api.get_or_create_offer_location(
-                    offerer_id=venue.managingOffererId,
                     venue_id=venue.id,
                     address_id=address.id,
                     label=location_body.addressLabel,
@@ -1120,7 +1118,6 @@ def create_new_location_if_offer_uses_origin_venue_location(
     source_venue = collective_offer.venue
     if collective_offer.offererAddress:
         destination_oa = offerers_api.get_or_create_offer_location(
-            offerer_id=source_venue.managingOffererId,
             venue_id=destination_venue.id,
             address_id=source_venue.offererAddress.addressId,
             label=source_venue.publicName,
@@ -1380,7 +1377,6 @@ def move_collective_offer(collective_offer_id: int, destination_venue_id: int) -
     collective_offer.venue = destination_venue
     if collective_offer.offererAddress:
         collective_offer.offererAddress = offerers_api.get_or_create_offer_location(
-            offerer_id=destination_venue.managingOffererId,
             address_id=collective_offer.offererAddress.addressId,
             venue_id=destination_venue_id,
             label=collective_offer.offererAddress.label,
@@ -1490,7 +1486,6 @@ def move_collective_offer_template(collective_offer_template_id: int, destinatio
     collective_offer_template.venue = destination_venue
     if collective_offer_template.offererAddress:
         collective_offer_template.offererAddress = offerers_api.get_or_create_offer_location(
-            offerer_id=destination_venue.managingOffererId,
             address_id=collective_offer_template.offererAddress.addressId,
             venue_id=destination_venue_id,
             label=collective_offer_template.offererAddress.label,
