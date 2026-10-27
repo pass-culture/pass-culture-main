@@ -1529,13 +1529,13 @@ class DisabilityBonusCreditEligibilityTest:
 
         assert disability_bonification_status == bonus_schemas.DisabilityBonificationStatus.NOT_ELIGIBLE
 
-    def test_started_automatic_fraud_check_ignored(self):
+    @pytest.mark.parametrize(
+        "status", [subscription_models.FraudCheckStatus.STARTED, subscription_models.FraudCheckStatus.KO]
+    )
+    def test_automatic_fraud_check_ignored(self, status):
         user = users_factories.BeneficiaryFactory()
-        subscription_factories.AAHBonusCreditFraudCheckFactory(
-            user=user, status=subscription_models.FraudCheckStatus.STARTED, reason=f"{bonus_constants.AUTOMATIC_ORIGIN}"
-        )
         subscription_factories.AEEHBonusCreditFraudCheckFactory(
-            user=user, status=subscription_models.FraudCheckStatus.STARTED, reason=f"{bonus_constants.AUTOMATIC_ORIGIN}"
+            user=user, status=status, reason=f"{bonus_constants.AUTOMATIC_ORIGIN}"
         )
 
         disability_bonification_status = bonus_api.get_user_disability_bonification_status(user)
