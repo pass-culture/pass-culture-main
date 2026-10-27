@@ -18,6 +18,7 @@ PRO_FEATURES = (
     FeatureToggle.WIP_ENABLE_CULTURAL_OUTREACH,
     FeatureToggle.WIP_ENABLE_FINANCE_SETTLEMENTS,
     FeatureToggle.WIP_HOME_STATS_V2,
+    FeatureToggle.WIP_NFD,
 )
 
 
