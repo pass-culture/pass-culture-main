@@ -716,7 +716,7 @@ def get_user_disability_bonification_status(user: users_models.User) -> bonus_sc
         return bonus_schemas.DisabilityBonificationStatus.NOT_ELIGIBLE
 
     aeeh_bonus_credit_fraud_checks = bonus_fraud_api.get_bonus_credit_fraud_checks(
-        user, subscription_models.FraudCheckType.AEEH_BONUS_CREDIT
+        user, subscription_models.FraudCheckType.AEEH_BONUS_CREDIT, excluded_origin=bonus_constants.AUTOMATIC_ORIGIN
     )
     if not aeeh_bonus_credit_fraud_checks:
         return bonus_schemas.DisabilityBonificationStatus.ELIGIBLE
@@ -727,10 +727,7 @@ def get_user_disability_bonification_status(user: users_models.User) -> bonus_sc
         subscription_models.FraudCheckStatus.STARTED,
         subscription_models.FraudCheckStatus.PENDING,
     )
-    is_automatic_fraud_check = aeeh_bonus_fraud_check.reason is not None and aeeh_bonus_fraud_check.reason.startswith(
-        bonus_constants.AUTOMATIC_ORIGIN
-    )
-    if is_pending_fraud_check and not is_automatic_fraud_check:
+    if is_pending_fraud_check:
         return bonus_schemas.DisabilityBonificationStatus.STARTED
 
     has_never_completely_tried = aeeh_fraud_check_status in (
@@ -738,7 +735,7 @@ def get_user_disability_bonification_status(user: users_models.User) -> bonus_sc
         subscription_models.FraudCheckStatus.CANCELED,
         subscription_models.FraudCheckStatus.ERROR,
     )
-    if has_never_completely_tried or (is_pending_fraud_check and is_automatic_fraud_check):
+    if has_never_completely_tried:
         return bonus_schemas.DisabilityBonificationStatus.ELIGIBLE
 
     if aeeh_fraud_check_status == subscription_models.FraudCheckStatus.KO:

@@ -14,7 +14,9 @@ from pcapi.utils import date as date_utils
 
 
 def get_bonus_credit_fraud_checks(
-    user: users_models.User, fraud_check_type: subscription_models.FraudCheckType | None = None
+    user: users_models.User,
+    fraud_check_type: subscription_models.FraudCheckType | None = None,
+    excluded_origin: str | None = None,
 ) -> list[subscription_models.BeneficiaryFraudCheck]:
     if fraud_check_type:
         allowed_fraud_check_types = [fraud_check_type]
@@ -26,11 +28,19 @@ def get_bonus_credit_fraud_checks(
         ]
 
     # `user.beneficiaryFraudChecks` are ordered by creation date
-    return [
+    bonus_fraud_checks = [
         fraud_check
         for fraud_check in user.beneficiaryFraudChecks
         if fraud_check.type in allowed_fraud_check_types
         and fraud_check.status != subscription_models.FraudCheckStatus.MOCK_CONFIG
+    ]
+    if excluded_origin is None:
+        return bonus_fraud_checks
+
+    return [
+        fraud_check
+        for fraud_check in bonus_fraud_checks
+        if not (fraud_check.reason and fraud_check.reason.startswith(excluded_origin))
     ]
 
 
