@@ -4,10 +4,10 @@ function test_backend {
   local pytest_args="${*:-tests}"
   docker stop pc-postgres-pytest
   docker rm -v pc-postgres-pytest
-  docker compose -f "$ROOT_PATH/docker-compose-backend.yml" up -d postgres-test
+  docker compose -f "$ROOT_PATH/docker-compose-backend.yml" up -d postgres
   docker compose -f "$ROOT_PATH/docker-compose-backend.yml" build flask --build-arg="network_mode=${DOCKER_NETWORK_MODE:-default}" --build-arg="uid=$UID"
 
-  until docker compose -f "$ROOT_PATH/docker-compose-backend.yml" logs postgres-test 2>/dev/null | grep -q "PostgreSQL init process complete; ready for start up."; do
+  until docker compose -f "$ROOT_PATH/docker-compose-backend.yml" logs postgres 2>/dev/null | grep -q "PostgreSQL init process complete; ready for start up."; do
     echo "waiting for test-database"
     sleep 0.5
   done
@@ -23,10 +23,10 @@ function test_backoffice {
   local pytest_args="${*:-tests}"
   docker stop pc-postgres-pytest
   docker rm -v pc-postgres-pytest
-  docker compose -f "$ROOT_PATH/docker-compose-backend.yml" up -d postgres-test
+  docker compose -f "$ROOT_PATH/docker-compose-backend.yml" up -d postgres
   docker compose -f "$ROOT_PATH/docker-compose-backend.yml" build backoffice --build-arg="network_mode=${DOCKER_NETWORK_MODE:-default}" --build-arg="uid=$UID"
 
-  until docker compose -f "$ROOT_PATH/docker-compose-backend.yml" logs postgres-test 2>/dev/null | grep -q "PostgreSQL init process complete; ready for start up."; do
+  until docker compose -f "$ROOT_PATH/docker-compose-backend.yml" logs postgres 2>/dev/null | grep -q "PostgreSQL init process complete; ready for start up."; do
     echo "waiting for test-database"
     sleep 0.5
   done
