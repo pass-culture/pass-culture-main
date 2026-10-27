@@ -314,7 +314,6 @@ def extract_offerer_address_from_location(
             )
         else:
             offerer_address = offerers_api.get_or_create_offer_location(
-                offerer_id=venue.managingOffererId,
                 venue_id=venue.id,
                 address_id=address.id,
                 label=location.address_label,

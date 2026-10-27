@@ -107,7 +107,6 @@ class VenueFactory(BaseFactory[models.Venue]):
         "pcapi.core.offerers.factories.VenueLocationFactory",
         factory_related_name="venue",
         address=factory.SubFactory("pcapi.core.geography.factories.AddressFactory"),
-        offerer=factory.SelfAttribute("..managingOfferer"),
     )
 
     @factory.post_generation
@@ -190,7 +189,6 @@ class CaledonianVenueFactory(VenueFactory):
         "pcapi.core.offerers.factories.VenueLocationFactory",
         factory_related_name="venue",
         address=factory.SubFactory("pcapi.core.geography.factories.CaledonianAddressFactory"),
-        offerer=factory.SelfAttribute("..managingOfferer"),
     )
 
 
@@ -466,18 +464,9 @@ class OffererAddressFactory(BaseFactory[models.OffererAddress]):
     def _create(
         cls, model_class: type[models.OffererAddress], *args: typing.Any, **kwargs: typing.Any
     ) -> models.OffererAddress:
-        offerer = kwargs.get("offerer")
         venue = kwargs.get("venue")
-        if not venue and not offerer:
+        if not venue:
             kwargs["venue"] = VenueFactory.create()
-            kwargs["offerer"] = kwargs["venue"].managingOfferer
-        elif offerer and not venue:
-            kwargs["venue"] = VenueFactory.create(managingOfferer=offerer)
-        elif venue and offerer:
-            if offerer != venue.managingOfferer:
-                raise ValueError("venue must be consistent with offerer")
-        elif venue and not offerer:
-            kwargs["offerer"] = kwargs["venue"].managingOfferer
         return super()._create(model_class, *args, **kwargs)
 
 

@@ -128,7 +128,6 @@ def build_new_offer_from_product(
 ) -> models.Offer:
     if offerer_address_id is None:
         offerer_address_id = offerers_api.get_or_create_offer_location(
-            offerer_id=venue.managingOffererId,
             venue_id=venue.id,
             address_id=venue.offererAddress.addressId,
             label=None,
@@ -240,7 +239,6 @@ def create_offer(
 
         fields = {k: v for k, v in fields.items() if k not in keys_to_remove}
     offerer_address = offerer_address or offerers_api.get_or_create_offer_location(
-        offerer_id=venue.managingOffererId,
         venue_id=venue.id,
         address_id=venue.offererAddress.addressId,
         label=None,
@@ -304,13 +302,12 @@ def get_or_create_offerer_address_from_address_body(
     ):
         # Use the same address as the venue, but offer must not be linked to a VENUE_LOCATION
         return offerers_api.get_or_create_offer_location(
-            offerer_id=venue.managingOffererId,
             venue_id=venue.id,
             address_id=venue.offererAddress.addressId,
             label=None,
         )
 
-    return offerers_api.get_offer_location_from_address(venue.managingOffererId, address_body, venue_id=venue.id)
+    return offerers_api.get_offer_location_from_address(address_body, venue_id=venue.id)
 
 
 def update_offer(
@@ -1989,7 +1986,6 @@ def move_event_offer(
     with transaction():
         if move_offer_address:
             offer.offererAddress = offerers_api.get_or_create_offer_location(
-                offerer_id=destination_venue.managingOffererId,
                 venue_id=destination_venue.id,
                 address_id=destination_venue.offererAddress.addressId,
                 label=None,
@@ -1997,7 +1993,6 @@ def move_event_offer(
         else:
             if offer.offererAddress:
                 destination_oa = offerers_api.get_or_create_offer_location(
-                    offerer_id=offer.venue.managingOffererId,
                     venue_id=destination_venue.id,
                     address_id=offer.offererAddress.addressId,
                     label=offer.offererAddress.label,
