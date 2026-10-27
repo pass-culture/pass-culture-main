@@ -128,7 +128,7 @@ jobs:
           passdirector pcapi deploy --environment "${PCAPI_ENVIRONMENT_SHORT_NAME}" \
             --app-version "${PCAPI_VERSION}" \
             --database-ssl-mode "${DATABASE_SSL_MODE}" \
-            ${DATABASE_SSL}
+            "${DATABASE_SSL}"
 
   deploy-api-doc-on-firebase:
     name: "Deploy api doc on firebase"
