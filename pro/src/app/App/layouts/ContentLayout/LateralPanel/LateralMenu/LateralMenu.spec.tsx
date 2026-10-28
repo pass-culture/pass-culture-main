@@ -49,6 +49,55 @@ describe('LateralMenu', () => {
     ).toBeInTheDocument()
   })
 
+  it('should show the NFD individual offer link when the feature is enabled', async () => {
+    const { router } = renderSideNavLinks({ features: ['WIP_NFD'] })
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Créer une offre' })
+    )
+
+    const nfdLink = screen.getByRole('link', {
+      name: 'Pour le gd public - NFD',
+    })
+    expect(nfdLink).toHaveAttribute(
+      'href',
+      '/offre/individuelle/v2/creation/nature-format-domaine'
+    )
+
+    await userEvent.click(nfdLink)
+
+    expect(router.state.location.pathname).toBe(
+      '/offre/individuelle/v2/creation/nature-format-domaine'
+    )
+    expect(
+      screen.queryByRole('link', { name: 'Pour le gd public - NFD' })
+    ).not.toBeInTheDocument()
+  })
+
+  it('should toggle the create offer dropdown when clicking the button', async () => {
+    renderSideNavLinks()
+
+    const createOfferButton = screen.getByRole('button', {
+      name: 'Créer une offre',
+    })
+
+    expect(createOfferButton).toHaveAttribute('aria-expanded', 'false')
+
+    await userEvent.click(createOfferButton)
+
+    expect(createOfferButton).toHaveAttribute('aria-expanded', 'true')
+    expect(
+      screen.getByRole('link', { name: 'Pour le grand public' })
+    ).toBeInTheDocument()
+
+    await userEvent.click(createOfferButton)
+
+    expect(createOfferButton).toHaveAttribute('aria-expanded', 'false')
+    expect(
+      screen.queryByRole('link', { name: 'Pour le grand public' })
+    ).not.toBeInTheDocument()
+  })
+
   describe.each(['Pour le grand public', 'Pour les groupes scolaires'])(
     'should close create offer dropdown when clicking %s link',
     (menuItemName) => {

@@ -14,6 +14,7 @@ import { partnerRouteGroup } from './routes/partnerRouteGroup'
 import { venuePageRouteSubgroup } from './routes/venuePageRouteSubgroup'
 import { venueSettingsRouteSubgroup } from './routes/venueSettingsRouteSubgroup'
 import { routesEcoDesign } from './subroutesEcoDesignMap'
+import { routesIndividualOfferV2 } from './subroutesIndividualOfferV2'
 import {
   routesIndividualOfferWizard,
   routesOnboardingIndividualOfferWizard,
@@ -420,6 +421,16 @@ export const routes: CustomRouteTree = [
       title: 'Offre étape par étape',
     },
     children: routesIndividualOfferWizard,
+  },
+  {
+    lazy: () => import('@/pages/IndividualOfferV2/IndividualOfferV2'),
+    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+    path: '/offre/individuelle/v2',
+    handle: {
+      title: 'Offre étape par étape',
+    },
+    children: routesIndividualOfferV2,
+    featureName: 'WIP_NFD',
   },
   {
     lazy: () => import('@/pages/IndividualOfferWizard/IndividualOfferWizard'),

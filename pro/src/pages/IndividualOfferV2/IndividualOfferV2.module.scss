@@ -1,0 +1,37 @@
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_size.scss" as size;
+
+
+$min-width: rem.torem(640px);
+$max-width-percentage: 100%;
+
+.title {
+  @include fonts.title1;
+
+  margin-bottom: var(--size-spacing-4xl);
+}
+
+.content-wrapper {
+  margin: 0 auto;
+}
+
+.content {
+  margin: 0 auto;
+}
+
+.stepper-wrapper {
+  margin-bottom: var(--size-spacing-4xl);
+}
+
+
+@media (min-width: size.$laptop) {
+  .content-wrapper {
+    padding: 0 var(--size-spacing-2xl);
+    max-width: clamp($min-width, $max-width-percentage, size.$desktop);
+  }
+  
+  .content {
+    max-width: $min-width;
+  }
+}
