@@ -1,3 +1,4 @@
+@use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_size.scss" as size;
 
 .media-row {
@@ -14,4 +15,42 @@
 
 .media-divider {
   margin: 0;
+}
+
+.image {
+  display: flex;
+  flex-direction: column;
+
+  @media screen and (min-width: size.$tablet) {
+    flex-direction: row;
+  }
+}
+
+.image-preview {
+  width: rem.torem(176px);
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  border: rem.torem(1px) solid var(--color-border-subtle);
+  border-radius: var(--size-border-radius-s);
+  box-shadow: var(--shadow-overlay);
+}
+
+.image-placeholder {
+  padding: 0 rem.torem(8px);
+  height: rem.torem(264px);
+  width: rem.torem(176px);
+}
+
+.image-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: var(--size-spacing-l);
+  margin-top: var(--size-spacing-2xl);
+
+  @media screen and (min-width: size.$tablet) {
+    margin-top: 0;
+    margin-left: var(--size-spacing-2xl);
+  }
 }

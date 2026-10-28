@@ -51,6 +51,12 @@ export type UploadZoneBaseProps = {
   accept?: Accept
   /** Maximum size of a file, in bytes */
   maxSize?: number
+  /**
+   * Help text displayed in the zone. Defaults to the accepted formats and the maximum size
+   * built from `accept` and `maxSize`. Use `getConditionsText` to add a condition to the default text,
+   * or an empty string to hide it.
+   */
+  conditionsText?: string
   /** Maximum number of files */
   maxFiles?: number
   /**
@@ -126,6 +132,7 @@ export const UploadZone = ({
   icon = strokeShareIcon,
   accept,
   maxSize,
+  conditionsText = getConditionsText(accept, maxSize),
   maxFiles,
   filesCount,
   disabled = false,
@@ -207,7 +214,6 @@ export const UploadZone = ({
     Boolean
   )
   const hasError = errors.length > 0
-  const conditionsText = getConditionsText(accept, maxSize)
 
   const describedByIds = [
     description ? descriptionId : '',
@@ -243,7 +249,13 @@ export const UploadZone = ({
           [styles['zone-error']]: hasError,
         })}
       >
-        <SvgIcon src={icon} alt="" className={styles['zone-icon']} />
+        <SvgIcon
+          src={icon}
+          alt=""
+          width="58"
+          viewBox="0 0 58 58"
+          className={styles['zone-icon']}
+        />
         <div className={styles['zone-texts']}>
           <p
             id={instructionId}
