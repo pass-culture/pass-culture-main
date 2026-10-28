@@ -955,19 +955,19 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
         return cls.state == VenueState.CLOSED
 
     @hybrid_property
-    def is_opened(self) -> bool:
+    def is_open(self) -> bool:
         # TODO(jbaudet - 10/2026): remove once venue.state has a full
         # non-null enum. Otherwise not closed SQLA filter will not be
-        # equal to opened (state == VenueState.CLOSED does not
+        # equal to open (state == VenueState.CLOSED does not
         # have the same behaviour as state is None).
         return self.state is None
 
-    @is_opened.inplace.expression
+    @is_open.inplace.expression
     @classmethod
-    def _is_opened_expression(cls) -> sa.ColumnElement[bool]:
+    def _is_open_expression(cls) -> sa.ColumnElement[bool]:
         # TODO(jbaudet - 10/2026): remove once venue.state has a full
         # non-null enum. Otherwise not closed SQLA filter will not be
-        # equal to opened (state == VenueState.CLOSED does not
+        # equal to open (state == VenueState.CLOSED does not
         # have the same behaviour as state is None).
         return cls.state == None  # noqa: E711
 
