@@ -749,9 +749,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         }
 
         offerer_address = (
-            db.session.query(offerers_models.OffererAddress)
-            .filter_by(addressId=address.id, offererId=venue.managingOffererId)
-            .one()
+            db.session.query(offerers_models.OffererAddress).filter_by(addressId=address.id, venueId=venue.id).one()
         )
 
         db.session.refresh(collective_offer)

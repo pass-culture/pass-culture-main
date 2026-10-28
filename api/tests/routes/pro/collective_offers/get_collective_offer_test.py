@@ -200,7 +200,7 @@ class Returns200Test:
 
     def test_location_address(self, client):
         venue = offerers_factories.VenueFactory()
-        oa = offerers_factories.OfferLocationFactory(offerer=venue.managingOfferer, venue=venue)
+        oa = offerers_factories.OfferLocationFactory(venue=venue)
         offer = factories.CollectiveOfferFactory(
             locationType=models.CollectiveLocationType.ADDRESS,
             locationComment=None,

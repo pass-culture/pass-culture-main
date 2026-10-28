@@ -203,7 +203,6 @@ def _load(
     with atomic():
         for offerer_address_data in transform_result["offerers_addresses_to_create"]:
             offerer_address = offerers_api.get_or_create_offer_location(
-                offerer_id=venue.managingOffererId,
                 venue_id=venue.id,
                 address_id=offerer_address_data.id,
                 label=offerer_address_data.label,

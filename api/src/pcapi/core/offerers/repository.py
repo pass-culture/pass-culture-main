@@ -1038,6 +1038,7 @@ OFFER_MODEL_BY_OPTION: typing.Final[
 }
 
 
+# TODO bulle grosse refacto de fonction
 def get_offerer_addresses(
     offerer_id: int, with_offers_option: schemas.GetOffererAddressesWithOffersOption | None
 ) -> sa_orm.Query:

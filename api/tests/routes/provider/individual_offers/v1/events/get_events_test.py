@@ -169,10 +169,13 @@ class GetEventsTest(PublicAPIVenueEndpointHelper):
         assert returned_ids == [offer.id for offer in offers]
 
     def test_should_return_offers_linked_to_address_id(self):
+        # TODO bulle check
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-        offerer_address_1 = offerers_factories.OfferLocationFactory(offerer=venue_provider.venue.managingOfferer)
-        offerer_address_2 = offerers_factories.OfferLocationFactory(offerer=venue_provider.venue.managingOfferer)
-        offerer_address_3 = offerers_factories.OfferLocationFactory(address=offerer_address_1.address)
+        offerer_address_1 = offerers_factories.OfferLocationFactory(venue=venue_provider.venue)
+        offerer_address_2 = offerers_factories.OfferLocationFactory(venue=venue_provider.venue)
+        offerer_address_3 = offerers_factories.OfferLocationFactory(
+            venue=venue_provider.venue, address=offerer_address_1.address
+        )
         offer1 = offers_factories.EventOfferFactory(venue=venue_provider.venue, offererAddress=offerer_address_1)
         offers_factories.EventOfferFactory(venue=venue_provider.venue, offererAddress=offerer_address_2)
         offers_factories.EventOfferFactory(offererAddress=offerer_address_3)

@@ -277,6 +277,7 @@ def get_venue_offers_stats_v2(venue_id: int) -> offerers_serialize.GetVenueOffer
     return offerers_serialize.GetVenueOffersStatsV2ResponseModel.model_validate(stats)
 
 
+# TODO bulle grosse refacto de fonction
 @pro_blueprint.route("/offerers/<int:offerer_id>/offerer_addresses", methods=["GET"])
 @atomic()
 @login_required
