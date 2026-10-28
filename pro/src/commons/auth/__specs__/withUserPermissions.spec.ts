@@ -21,7 +21,9 @@ vi.mock('react-router', async () => {
 })
 
 vi.mock('@/app/AppRouter/utils/getUserDefaultPath', () => ({
-  getUserDefaultPath: vi.fn(() => '/mocked-default-path'),
+  getUserDefaultPath: vi.fn(
+    (search: string = '') => `/mocked-default-path${search}`
+  ),
 }))
 
 const setupStore = (options: {
@@ -51,10 +53,15 @@ const setupStore = (options: {
   vi.spyOn(storeModule, 'rootStore', 'get').mockReturnValue(store)
 }
 
-const createMockLoaderArgs = (url: string): LoaderFunctionArgs =>
+const createMockLoaderArgs = (
+  url: string,
+  pattern = '/some-page',
+  params: Record<string, string> = {}
+): LoaderFunctionArgs =>
   ({
     request: new Request(url),
-    params: {},
+    pattern,
+    params,
   }) as LoaderFunctionArgs
 
 describe('withUserPermissions', () => {
@@ -101,7 +108,26 @@ describe('withUserPermissions', () => {
       const guardedLoader = withUserPermissions(permissionCheck)
 
       expect(() => guardedLoader(args)).toThrow()
-      expect(reactRouter.redirect).toHaveBeenCalledWith('/mocked-default-path')
+      expect(reactRouter.redirect).toHaveBeenCalledWith(
+        '/mocked-default-path?redirectTo=/some-page'
+      )
+    })
+
+    it('should include the requested route with its params in the redirect', () => {
+      setupStore({ hasUser: false })
+      const permissionCheck = (_: UserPermissions) => false
+      const args = createMockLoaderArgs(
+        'http://localhost/offres/123',
+        '/offres/:offerId',
+        { offerId: '123' }
+      )
+
+      const guardedLoader = withUserPermissions(permissionCheck)
+
+      expect(() => guardedLoader(args)).toThrow()
+      expect(reactRouter.redirect).toHaveBeenCalledWith(
+        '/mocked-default-path?redirectTo=/offres/123'
+      )
     })
   })
 })

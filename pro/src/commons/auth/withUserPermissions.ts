@@ -1,4 +1,4 @@
-import { type LoaderFunctionArgs, redirect } from 'react-router'
+import { generatePath, type LoaderFunctionArgs, redirect } from 'react-router'
 
 import { getUserDefaultPath } from '../../app/AppRouter/utils/getUserDefaultPath'
 import { rootStore } from '../store/store'
@@ -12,7 +12,9 @@ export const withUserPermissions = (
   return (args: LoaderFunctionArgs) => {
     const userPermissions = getCurrentUserPermissions(rootStore.getState().user)
     if (!requireUserPermissions(userPermissions)) {
-      throw redirect(getUserDefaultPath())
+      const redirectTo = generatePath(args.pattern, args.params)
+      const searchParams = redirectTo === '/' ? '' : `?redirectTo=${redirectTo}`
+      throw redirect(getUserDefaultPath(searchParams))
     }
 
     return loader?.(args) ?? null
