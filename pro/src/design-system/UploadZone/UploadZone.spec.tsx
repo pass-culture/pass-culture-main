@@ -62,6 +62,24 @@ describe('UploadZone', () => {
     )
   })
 
+  it('should display custom conditions instead of the default ones', () => {
+    renderUploadZone({ conditionsText: 'Résolution maximale : 80 mégapixels.' })
+
+    expect(screen.getByLabelText('Justificatifs')).toHaveAccessibleDescription(
+      'Résolution maximale : 80 mégapixels.'
+    )
+    expect(screen.queryByText(/Formats acceptés/)).not.toBeInTheDocument()
+  })
+
+  it('should hide the conditions when they are empty', () => {
+    renderUploadZone({ conditionsText: '' })
+
+    expect(screen.getByLabelText('Justificatifs')).not.toHaveAttribute(
+      'aria-describedby'
+    )
+    expect(screen.queryByText(/Formats acceptés/)).not.toBeInTheDocument()
+  })
+
   it('should be named by its instruction when there is no label', () => {
     renderUploadZone({ label: undefined })
 

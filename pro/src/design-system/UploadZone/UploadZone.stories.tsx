@@ -76,6 +76,13 @@ export const WithError: Story = {
   },
 }
 
+export const CustomConditions: Story = {
+  args: {
+    conditionsText:
+      'Formats acceptés : PNG, JPEG, PDF. Poids maximum : 5 Mo. Résolution maximale : 80 mégapixels.',
+  },
+}
+
 export const CustomIcon: Story = {
   args: {
     icon: fullDownloadIcon,
