@@ -12,9 +12,9 @@ from pcapi.core.geography import factories as geography_factories
 from pcapi.core.geography.constants import TIME_ZONE_COUNTRY_CODE
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offers import constants as offers_constants
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
-from pcapi.core.offers.constants import DEFAULT_PRICE_LABEL
 from pcapi.models import db
 from pcapi.utils import date as date_utils
 from pcapi.utils import siren as siren_utils
@@ -74,9 +74,51 @@ def _create_cinema_offer(
         offer=offer,
     )
     db.session.add(offer_metadata)
-    price_category = offers_factories.PriceCategoryFactory(offer=offer, label=DEFAULT_PRICE_LABEL, price=price)
+    price_category = offers_factories.PriceCategoryFactory(
+        offer=offer, label=offers_constants.DEFAULT_PRICE_LABEL, price=price
+    )
     # Create screenings for the next 18 days separated by holes of 4 days
     future_day_delta = (0, 1, 2, 3, 7, 8, 9, 10, 14, 15, 16, 17)
+    features = {
+        9: (
+            offers_constants.LanguageFeatures.VF,
+            offers_constants.VideoFeatures.DOLBY_VISION_3D,
+            offers_constants.VideoFeatures.LASER,
+            offers_constants.SpecialEventFeatures.CINE_DEBAT,
+            offers_constants.AudioAccessbilityFeatures.SUBTITLE_CCAP,
+            offers_constants.MentalAccessbilityFeatures.RELAX,
+            offers_constants.MotorAccessbilityFeatures.PMR,
+            offers_constants.VisualAccessbilityFeatures.VISION,
+        ),
+        15: (
+            offers_constants.LanguageFeatures.VO,
+            offers_constants.VideoFeatures.IMAX,
+            offers_constants.VideoFeatures.SPHERA,
+            offers_constants.AudioFeatures.ATMOS,
+            offers_constants.SpecialEventFeatures.ATELIER,
+            offers_constants.AudioAccessbilityFeatures.STSME,
+            offers_constants.MotorAccessbilityFeatures.PMR,
+            offers_constants.VisualAccessbilityFeatures.VAST,
+        ),
+        18: (
+            offers_constants.LanguageFeatures.VF,
+            offers_constants.VideoFeatures.THREE_D,
+            offers_constants.SpecialEventFeatures.CINE_DEBAT,
+            offers_constants.AudioAccessbilityFeatures.BOUCLE_MAG,
+            offers_constants.MentalAccessbilityFeatures.COGNITIF,
+            offers_constants.MotorAccessbilityFeatures.MOBILITE,
+            offers_constants.VisualAccessbilityFeatures.AD_GRETA,
+        ),
+        14: (
+            offers_constants.LanguageFeatures.VO,
+            offers_constants.VideoFeatures.FOUR_K,
+        ),
+        19: (
+            offers_constants.LanguageFeatures.VF,
+            offers_constants.AudioAccessbilityFeatures.AUDIO_HI,
+            offers_constants.SpecialEventFeatures.SEANCE_UNIQUE,
+        ),
+    }
 
     for daydelta in future_day_delta:
         day = datetime.datetime.now(pytz.timezone(timezone)).replace(
@@ -91,7 +133,7 @@ def _create_cinema_offer(
                 beginningDatetime=beginning_datetime,
                 bookingLimitDatetime=beginning_datetime - datetime.timedelta(minutes=30),
                 quantity=None,
-                features=["VF"],
+                features=features[hour] if (daydelta % 3) else ["VF"],
                 priceCategory=price_category,
             )
             db.session.add(stock)
