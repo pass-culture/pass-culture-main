@@ -757,7 +757,6 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         address = geography_factories.AddressFactory()
         offerer_address = offerers_factories.OfferLocationFactory(
             address=address,
-            offerer=venue_provider.venue.managingOfferer,
             venue=venue_provider.venue,
             label="My beautiful address no one knows about",
         )

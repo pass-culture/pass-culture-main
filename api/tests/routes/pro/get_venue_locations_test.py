@@ -18,7 +18,6 @@ class Return200Test:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         offerer_address_1 = offerers_factories.OfferLocationFactory(
-            offerer=offerer,
             label="1ere adresse",
             address__street="1 boulevard Poissonnière",
             address__postalCode="75002",
@@ -27,7 +26,6 @@ class Return200Test:
         )
         offers_factories.OfferFactory(venue=offerer_address_1.venue, offererAddress=offerer_address_1)
         offerer_address_2 = offerers_factories.OfferLocationFactory(
-            offerer=offerer,
             venue=venue,
             label="2eme adresse",
             address__street="20 Avenue de Ségur",
@@ -37,7 +35,6 @@ class Return200Test:
         )
         offers_factories.OfferFactory(venue=offerer_address_2.venue, offererAddress=offerer_address_2)
         offerer_address_3 = offerers_factories.OfferLocationFactory(
-            offerer=offerer,
             venue=venue,
             label="3eme adresse",
             address__street="3 rue des moutons",

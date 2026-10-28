@@ -19,4 +19,4 @@ def upgrade() -> None:
 
 def downgrade() -> None:
 
-    op.add_column("offerer_address", sa.Column("offererId", sa.BIGINT(), autoincrement=False, nullable=False))
+    op.add_column("offerer_address", sa.Column("offererId", sa.BIGINT(), autoincrement=False, nullable=True))
