@@ -187,11 +187,11 @@ class GetOffererAddressesTest:
         offerer = offerers_factories.OffererFactory()
         venue_with_two_offers = offerers_factories.VenueFactory(managingOfferer=offerer)
         # Shouldn't appear in the results
-        offerers_factories.OfferLocationFactory(offerer=offerer)
+        offerers_factories.OfferLocationFactory(venue=venue_with_two_offers)
         # Should appear in the results
-        offerer_address_with_one_offer = offerers_factories.OfferLocationFactory(offerer=offerer)
+        offerer_address_with_one_offer = offerers_factories.OfferLocationFactory(venue=venue_with_two_offers)
         # Ensure that we don't return an OffererAddress for every associated offer
-        offerer_address_with_two_offers = offerers_factories.OfferLocationFactory(offerer=offerer)
+        offerer_address_with_two_offers = offerers_factories.OfferLocationFactory(venue=venue_with_two_offers)
 
         offer_factory(venue__managingOfferer=offerer, offererAddress=offerer_address_with_one_offer)
         offer_factory(venue=venue_with_two_offers, offererAddress=offerer_address_with_two_offers)
@@ -206,8 +206,8 @@ class GetOffererAddressesTest:
     def test_get_offerer_addresses_offer_types(self):
         offerer = offerers_factories.OffererFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        oa = offerers_factories.OfferLocationFactory(offerer=offerer)
-        other_oa = offerers_factories.OfferLocationFactory(offerer=offerer)
+        oa = offerers_factories.OfferLocationFactory(venue=venue)
+        other_oa = offerers_factories.OfferLocationFactory(venue=venue)
 
         offers_factories.OfferFactory(venue=venue, offererAddress=oa)
         educational_factories.CollectiveOfferOnOtherAddressLocationFactory(venue=venue, offererAddress=other_oa)
@@ -222,7 +222,7 @@ class GetOffererAddressesTest:
     def test_get_offerer_addresses_do_not_return_venue_locations(self):
         offerer = offerers_factories.OffererFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        offer_oa = offerers_factories.OfferLocationFactory(offerer=offerer, venue=venue)
+        offer_oa = offerers_factories.OfferLocationFactory(venue=venue)
 
         query = repository.get_offerer_addresses(offerer_id=offerer.id, with_offers_option=None)
         results = query.all()

@@ -307,7 +307,7 @@ class OffererDepartmentCodesTest:
         factories.VenueFactory(managingOfferer=offerer, offererAddress__address__departmentCode="11")
         deleted_venue = factories.VenueFactory(managingOfferer=offerer, offererAddress__address__departmentCode="44")
         deleted_venue.isSoftDeleted = True
-        factories.OfferLocationFactory(offerer=offerer, venue=venue, address__departmentCode="55")
+        factories.OfferLocationFactory(venue=venue, address__departmentCode="55")
         db.session.flush()
 
         offerer = (
@@ -331,7 +331,7 @@ class OffererCitiesTest:
         factories.VenueFactory(managingOfferer=offerer, offererAddress__address__city="Lyon")
         deleted_venue = factories.VenueFactory(managingOfferer=offerer, offererAddress__address__city="Nice")
         deleted_venue.isSoftDeleted = True
-        factories.OfferLocationFactory(offerer=offerer, venue=venue, address__city="Lille")
+        factories.OfferLocationFactory(venue=venue, address__city="Lille")
         db.session.flush()
 
         offerer = (
@@ -531,7 +531,6 @@ class OffererAddressTest:
 
         with pytest.raises(IntegrityError):
             factories.OfferLocationFactory(
-                offerer=offerer_address.offerer,
                 venue=offerer_address.venue,
                 address=offerer_address.address,
                 label=offerer_address.label,
@@ -542,7 +541,6 @@ class OffererAddressTest:
 
         with pytest.raises(IntegrityError):
             factories.VenueLocationFactory(
-                offerer=offerer_address.offerer,
                 address=offerer_address.address,
                 label=None,
                 venue=offerer_address.venue,
@@ -553,7 +551,6 @@ class OffererAddressTest:
 
         with pytest.raises(IntegrityError):
             factories.VenueLocationFactory(
-                offerer=offerer_address.offerer,
                 address=offerer_address.address,
                 label=offerer_address.label,
                 venue=offerer_address.venue,
@@ -563,7 +560,6 @@ class OffererAddressTest:
         offerer_address = factories.VenueFactory(offererAddress__label="label").offererAddress
 
         factories.OffererAddressFactory(
-            offerer=offerer_address.offerer,
             address=offerer_address.address,
             label=offerer_address.label,
             type=models.LocationType.OFFER_LOCATION,
@@ -571,7 +567,6 @@ class OffererAddressTest:
         )
 
         factories.VenueFactory(
-            managingOfferer=offerer_address.offerer,
             offererAddress__address=offerer_address.address,
             offererAddress__label=offerer_address.label,
         )
@@ -581,7 +576,6 @@ class OffererAddressTest:
 
         with pytest.raises(IntegrityError):
             factories.VenueLocationFactory(
-                offerer=offerer_address.offerer,
                 venue=offerer_address.venue,
                 address=offerer_address.address,
             )
@@ -666,7 +660,7 @@ class VenueOffererAddressTest:
         venue = factories.VenueFactory()
         offerer_address = venue.offererAddress
         factories.VenueFactory(managingOfferer=venue.managingOfferer)
-        factories.OfferLocationFactory(offerer=venue.managingOfferer, venue=venue)
+        factories.OfferLocationFactory(venue=venue)
 
         loaded_venue = (
             db.session.query(models.Venue)

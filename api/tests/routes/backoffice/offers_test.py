@@ -854,7 +854,7 @@ class ListOffersTest(GetEndpointHelper):
 
     def test_list_offers_by_address(self, authenticated_client, offers):
         for offer in offers[:3]:
-            offer.offererAddress = offerers_factories.OfferLocationFactory(offerer=offer.venue.managingOfferer)
+            offer.offererAddress = offerers_factories.OfferLocationFactory(venue=offer.venue)
             db.session.add(offer)
         db.session.flush()
 
@@ -1504,7 +1504,7 @@ class ListOffersTest(GetEndpointHelper):
             subcategoryId=subcategories.FESTIVAL_CINE.id,
             venue=venue,
             offererAddress=offerers_factories.OfferLocationFactory(
-                offerer=venue.managingOfferer,
+                venue=venue,
                 address__postalCode=postal_code,
                 address__departmentCode=get_department_code_from_city_code(postal_code),
             ),
@@ -3426,9 +3426,7 @@ class EditOfferVenueTest(PostEndpointHelper):
         self, mocked_async_index_offer_ids, authenticated_client, venues_in_same_offerer
     ):
         source_venue, destination_venue, _, _ = venues_in_same_offerer
-        offerer_address = offerers_factories.OfferLocationFactory(
-            offerer=source_venue.managingOfferer, venue=source_venue
-        )
+        offerer_address = offerers_factories.OfferLocationFactory(venue=source_venue)
         offer = offers_factories.EventOfferFactory(venue=source_venue, offererAddress=offerer_address)
 
         response = self.post_to_endpoint(
@@ -4751,7 +4749,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
                 postalCode="97200", departmentCode="972", timezone="America/Martinique"
             )
         )
-        venue = offerers_factories.VenueFactory(managingOfferer=offerer_address.offerer)
+        venue = offerers_factories.VenueFactory()
         offer = offers_factories.OfferFactory(
             venue=venue, subcategoryId=subcategories.CONCERT.id, offererAddress=offerer_address
         )
@@ -5017,9 +5015,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
             banId="75107_4803_00001_v",
         )
         offerer_adress = offerers_factories.OfferLocationFactory(label="Champ de Mars", address=address)
-        offer = offers_factories.OfferFactory(
-            offererAddressId=offerer_adress.id, venue__managingOfferer=offerer_adress.offerer
-        )
+        offer = offers_factories.OfferFactory(offererAddressId=offerer_adress.id)
 
         url = url_for(self.endpoint, offer_id=offer.id)
         with assert_num_queries(self.expected_num_queries):

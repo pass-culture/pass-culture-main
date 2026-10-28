@@ -66,7 +66,6 @@ class GetProductTest(PublicAPIVenueEndpointHelper):
         offer_location = offerers_factories.OfferLocationFactory(
             label=venue.publicName,
             addressId=venue.offererAddress.addressId,
-            offererId=venue.offererAddress.offererId,
             venueId=venue.offererAddress.venueId,
         )
         offer = offers_factories.ThingOfferFactory(

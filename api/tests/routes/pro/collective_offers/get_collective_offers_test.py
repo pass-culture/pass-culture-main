@@ -97,9 +97,7 @@ class Returns200Test:
     def test_one_collective_offer_location_other_address(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
-        oa = offerers_factories.OfferLocationFactory(
-            offerer=venue.managingOfferer, venue=venue, address=geography_factories.AddressFactory()
-        )
+        oa = offerers_factories.OfferLocationFactory(venue=venue, address=geography_factories.AddressFactory())
         offer = factories.CollectiveOfferFactory(
             venue=venue,
             offererAddress=oa,

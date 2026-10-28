@@ -102,7 +102,6 @@ class ExtractOffererAddressFromLocationTest:
         )
 
         get_or_create_offer_location.assert_called_once_with(
-            offerer_id=venue.managingOffererId,
             venue_id=venue.id,
             address_id=address.id,
             label="Salle Jean Vilar",
@@ -127,7 +126,6 @@ class ExtractOffererAddressFromLocationTest:
         )
 
         get_or_create_offer_location.assert_called_once_with(
-            offerer_id=venue.managingOffererId,
             venue_id=venue.id,
             address_id=venue.offererAddress.addressId,
             label="Salle Jean Vilar",
@@ -173,7 +171,6 @@ class ExtractOffererAddressFromLocationTest:
 
         get_or_create_offerer_address_from_address_body.assert_not_called()
         get_or_create_offer_location.assert_called_once_with(
-            offerer_id=venue.managingOffererId,
             venue_id=venue.id,
             address_id=venue.offererAddress.addressId,
             label=None,

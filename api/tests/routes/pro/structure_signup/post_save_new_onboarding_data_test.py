@@ -83,8 +83,6 @@ class Returns200Test:
         assert address.departmentCode == "75"
         assert address.isManualEdition is False
 
-        assert created_venue.offererAddress.offererId == created_venue.managingOffererId
-
     @patch("pcapi.connectors.api_adresse.TestingBackend.get_single_address_result")
     def test_with_empty_cultural_domains(self, mocked_get_address, client):
         user = users_factories.UserFactory(email="pro@example.com")
@@ -152,8 +150,6 @@ class Returns200Test:
         assert address.departmentCode == "75"
         assert address.postalCode == "75001"
         assert address.isManualEdition is False
-
-        assert created_venue.offererAddress.offererId == created_venue.managingOffererId
 
     @patch(
         "pcapi.connectors.api_adresse.TestingBackend.get_municipality_centroid",

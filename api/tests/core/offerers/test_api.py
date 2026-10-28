@@ -229,7 +229,6 @@ class CreateVenueTest:
 
         offerer_address = db.session.query(offerers_models.OffererAddress).one()
         assert offerer_address.label is None
-        assert offerer_address.offerer == user_offerer.offerer
         assert offerer_address.type == offerers_models.LocationType.VENUE_LOCATION
         assert offerer_address.venue == venue
         assert offerer_address.address.banId == "75113_1834_00007"
@@ -4025,8 +4024,7 @@ class OffererAddressTest:
         offerer = offerers_factories.OffererFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         address = geography_factories.AddressFactory()
-        oa = offerers_factories.OfferLocationFactory(offerer=offerer, venue=venue, address=address, label="label")
-        assert oa.offerer == offerer
+        oa = offerers_factories.OfferLocationFactory(venue=venue, address=address, label="label")
         assert oa.id
         assert oa.label == "label"
         assert oa.venue == venue
@@ -4046,7 +4044,6 @@ class GetOrCreateOfferLocationTest:
 
     def create_offer_location(self, venue, **overrides):
         defaults = {
-            "offerer": venue.managingOfferer,
             "venue": venue,
             "address": venue.offererAddress.address,
             "label": self.LABEL,
@@ -4058,7 +4055,6 @@ class GetOrCreateOfferLocationTest:
         offer_location = self.create_offer_location(venue)
 
         offerer_address = offerers_api.get_or_create_offer_location(
-            offerer_id=venue.managingOffererId,
             venue_id=venue.id,
             address_id=offer_location.addressId,
             label=self.LABEL,
@@ -4071,7 +4067,6 @@ class GetOrCreateOfferLocationTest:
         offer_location = self.create_offer_location(venue, label=None)
 
         offerer_address = offerers_api.get_or_create_offer_location(
-            offerer_id=venue.managingOffererId,
             venue_id=venue.id,
             address_id=offer_location.addressId,
             label=None,
@@ -4084,7 +4079,6 @@ class GetOrCreateOfferLocationTest:
         assert venue.offererAddress.label is None
 
         offerer_address = offerers_api.get_or_create_offer_location(
-            offerer_id=venue.managingOffererId,
             venue_id=venue.id,
             address_id=venue.offererAddress.addressId,
             label=None,
@@ -4098,7 +4092,6 @@ class GetOrCreateOfferLocationTest:
         venue = offerers_factories.VenueFactory()
         offer_location = self.create_offer_location(venue)
         kwargs = {
-            "offerer_id": venue.managingOffererId,
             "venue_id": venue.id,
             "address_id": offer_location.addressId,
             "label": self.LABEL,
@@ -4126,11 +4119,10 @@ class GetOrCreateOfferLocationTest:
         address = geography_factories.AddressFactory()
 
         offerer_address = offerers_api.get_or_create_offer_location(
-            offerer_id=venue.managingOffererId, venue_id=venue.id, address_id=address.id, label=self.LABEL
+            venue_id=venue.id, address_id=address.id, label=self.LABEL
         )
 
         assert offerer_address.id
-        assert offerer_address.offererId == venue.managingOffererId
         assert offerer_address.venueId == venue.id
         assert offerer_address.addressId == address.id
         assert offerer_address.label == self.LABEL
@@ -4221,7 +4213,7 @@ class GetOfferLocationFromAddressTest:
         address_body = self.build_address_body()
         create_offerer_address_from_address_api.return_value = geography_factories.AddressFactory()
 
-        offerers_api.get_offer_location_from_address(venue.managingOffererId, address_body, venue_id=venue.id)
+        offerers_api.get_offer_location_from_address(address_body, venue_id=venue.id)
 
         create_offerer_address_from_address_api.assert_called_once_with(address_body)
 
@@ -4234,12 +4226,9 @@ class GetOfferLocationFromAddressTest:
         address = geography_factories.AddressFactory()
         create_offerer_address_from_address_api.return_value = address
 
-        offerer_address = offerers_api.get_offer_location_from_address(
-            venue.managingOffererId, self.build_address_body(), venue_id=venue.id
-        )
+        offerer_address = offerers_api.get_offer_location_from_address(self.build_address_body(), venue_id=venue.id)
 
         get_or_create_offer_location.assert_called_once_with(
-            offerer_id=venue.managingOffererId,
             venue_id=venue.id,
             address_id=address.id,
             label="Salle Jean Vilar",
@@ -4251,15 +4240,9 @@ class GetOfferLocationFromAddressTest:
         venue = offerers_factories.VenueFactory()
         address_body = self.build_address_body(label="")
 
-        offerers_api.get_offer_location_from_address(venue.managingOffererId, address_body, venue_id=venue.id)
+        offerers_api.get_offer_location_from_address(address_body, venue_id=venue.id)
 
         assert get_or_create_offer_location.call_args.kwargs["label"] is None
-
-    def test_should_refuse_a_missing_offerer(self):
-        venue = offerers_factories.VenueFactory()
-
-        with pytest.raises(AssertionError):
-            offerers_api.get_offer_location_from_address(0, self.build_address_body(), venue_id=venue.id)
 
 
 class SendReminderEmailToIndividualOfferersTest:
@@ -4308,10 +4291,8 @@ class CleanUnusedOffererAddressTest:
     def test_clean_unused_offerer_address(self, caplog):
         venue = offerers_factories.VenueFactory()
         oa1 = venue.offererAddress
-        oa2, oa3, oa4, _ = offerers_factories.OfferLocationFactory.create_batch(
-            4, offerer=venue.managingOfferer, venue=venue
-        )
-        unused_oa = offerers_factories.OfferLocationFactory(offerer=venue.managingOfferer, venue=venue)
+        oa2, oa3, oa4, _ = offerers_factories.OfferLocationFactory.create_batch(4, venue=venue)
+        unused_oa = offerers_factories.OfferLocationFactory(venue=venue)
         offers_factories.OfferFactory(venue=venue, offererAddress=oa2)
         educational_factories.CollectiveOfferFactory(
             venue=venue, locationType=educational_models.CollectiveLocationType.ADDRESS, offererAddress=oa3
