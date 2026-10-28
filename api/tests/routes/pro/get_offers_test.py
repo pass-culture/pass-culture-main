@@ -149,7 +149,7 @@ class Returns200Test:
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
         venue = offerers_factories.VenueFactory(managingOfferer=offerer, offererAddress__address__departmentCode="75")
-        oa = offerers_factories.OfferLocationFactory(offerer=offerer, venue=venue, address__departmentCode=dp)
+        oa = offerers_factories.OfferLocationFactory(venue=venue, address__departmentCode=dp)
 
         offer = offers_factories.ThingOfferFactory(
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id, venue=venue, offererAddress=oa
@@ -171,7 +171,7 @@ class Returns200Test:
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
         venue = offerers_factories.VenueFactory(managingOfferer=offerer, offererAddress__address__departmentCode="75")
-        oa = offerers_factories.OfferLocationFactory(offerer=offerer, venue=venue, address__departmentCode=dp)
+        oa = offerers_factories.OfferLocationFactory(venue=venue, address__departmentCode=dp)
 
         offer = offers_factories.ThingOfferFactory(
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id, venue=venue, offererAddress=oa
@@ -245,7 +245,6 @@ class Returns200Test:
 
         offerer_address1 = offerers_factories.OfferLocationFactory(
             label="Accor Arena",
-            offerer=offerer,
             venue=venue,
             address__street="8 Boulevard de Bercy",
             address__banId="75112_0877_00008",
@@ -318,7 +317,6 @@ class Returns200Test:
         venue = offerers_factories.VenueFactory(
             managingOfferer=offerer,
             offererAddress__label="Accor Arena",
-            offererAddress__offerer=offerer,
             offererAddress__address__street="8 Boulevard de Bercy",
             offererAddress__address__banId="75112_0877_00008",
         )
@@ -473,7 +471,6 @@ class Returns200Test:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         offerer_address1 = offerers_factories.OfferLocationFactory(
             label="Accor Arena",
-            offerer=offerer,
             venue=venue,
             address__street="8 Boulevard de Bercy",
             address__banId="75112_0877_00008",
@@ -496,7 +493,6 @@ class Returns200Test:
 
         offerer_address2 = offerers_factories.OfferLocationFactory(
             label="La Cigale",
-            offerer=offerer,
             venue=venue,
             address__street="120 Boulevard Marguerite de Rochechouart",
             address__banId="75118_8288_00120",
@@ -584,7 +580,6 @@ class Returns200Test:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         offerer_address1 = offerers_factories.OfferLocationFactory(
             label="Accor Arena",
-            offerer=offerer,
             venue=venue,
             address__street="8 Boulevard de Bercy",
             address__banId="75112_0877_00008",

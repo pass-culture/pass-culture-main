@@ -465,8 +465,10 @@ class FindByVenueTest:
         pro_user = users_factories.ProFactory()
         user_offerer = offerers_factories.UserOffererFactory(user=pro_user)
         offerer = user_offerer.offerer
+        # TODO bulle check if venue necessary
+        # venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
-        offerer_address_1 = offerers_factories.OfferLocationFactory(offerer=offerer)
+        offerer_address_1 = offerers_factories.OfferLocationFactory()
 
         booking_1 = bookings_factories.BookingFactory(
             stock__offer__venue__managingOfferer=offerer, stock__offer__offererAddress=offerer_address_1
