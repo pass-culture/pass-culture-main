@@ -1,17 +1,22 @@
-import { describe, expect, it } from 'vitest'
-
 import type { VenueListItemResponseModel } from '@/apiClient/v1'
 import { getInitialPartnerVenueId } from '@/commons/store/user/utils/getInitialPartnerVenueId'
 import { makeVenueListItemResponseModel } from '@/commons/utils/factories/venueFactories'
 import { LOCAL_STORAGE_KEY } from '@/commons/utils/localStorageManager'
+import { sendSentryCustomError } from '@/commons/utils/sendSentryCustomError'
+
+vi.mock('@/commons/utils/sendSentryCustomError', () => ({
+  sendSentryCustomError: vi.fn(),
+}))
 
 describe('getInitialPartnerVenueId', () => {
   beforeEach(() => {
     window.history.pushState({}, '', '/')
+    localStorage.removeItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID)
   })
-  describe('Priority 1 : URL param (backoffice)', () => {
-    it('should return venue id from URL param', () => {
-      window.history.pushState({}, '', '/?venue=10')
+
+  describe('Priority 1: URL params', () => {
+    it('should return venue ID from the id-structure URL param', () => {
+      window.history.pushState({}, '', '/?id-structure=10')
 
       const venues = [
         makeVenueListItemResponseModel({
@@ -27,6 +32,51 @@ describe('getInitialPartnerVenueId', () => {
       const result = getInitialPartnerVenueId(venues)
 
       expect(result).toBe(10)
+      expect(sendSentryCustomError).not.toHaveBeenCalled()
+    })
+
+    it('should prioritize id-structure over the deprecated venue URL param', () => {
+      window.history.pushState({}, '', '/?id-structure=10&venue=20')
+
+      const venues = [
+        makeVenueListItemResponseModel({
+          id: 10,
+          managingOfferer: { id: 1, isClosed: false },
+        }),
+        makeVenueListItemResponseModel({
+          id: 20,
+          managingOfferer: { id: 2, isClosed: false },
+        }),
+      ]
+
+      const result = getInitialPartnerVenueId(venues)
+
+      expect(result).toBe(10)
+      expect(sendSentryCustomError).not.toHaveBeenCalled()
+    })
+
+    it('should still return venue ID from the deprecated venue URL param and report its usage', () => {
+      window.history.pushState({}, '', '/?venue=10')
+      const venues = [
+        makeVenueListItemResponseModel({
+          id: 10,
+          managingOfferer: { id: 1, isClosed: false },
+        }),
+        makeVenueListItemResponseModel({
+          id: 20,
+          managingOfferer: { id: 2, isClosed: false },
+        }),
+      ]
+
+      const result = getInitialPartnerVenueId(venues)
+
+      expect(result).toBe(10)
+      expect(sendSentryCustomError).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message:
+            "'venue' query param is deprecated and should not be used anymore.",
+        })
+      )
     })
   })
   describe('Priority 2: first venue of a newly associated offerer', () => {
