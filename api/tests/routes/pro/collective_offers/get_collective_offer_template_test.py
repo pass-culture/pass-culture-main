@@ -77,7 +77,7 @@ class Returns200Test:
         venue = offerers_factories.VenueFactory()
         # Venue has its location, the offer has another one but they should appear as venue location
         oa = offerers_factories.OfferLocationFactory(
-            offerer=venue.managingOfferer, venue=venue, address=venue.offererAddress.address, label=venue.publicName
+            venue=venue, address=venue.offererAddress.address, label=venue.publicName
         )
 
         offer = educational_factories.CollectiveOfferTemplateFactory(
@@ -129,9 +129,7 @@ class Returns200Test:
 
     def test_location_address(self, client):
         venue = offerers_factories.VenueFactory()
-        oa = offerers_factories.OfferLocationFactory(
-            offerer=venue.managingOfferer, venue=venue, address=geography_factories.AddressFactory()
-        )
+        oa = offerers_factories.OfferLocationFactory(venue=venue, address=geography_factories.AddressFactory())
         offer = educational_factories.CollectiveOfferTemplateFactory(
             locationType=educational_models.CollectiveLocationType.ADDRESS,
             locationComment=None,
@@ -159,7 +157,7 @@ class Returns200Test:
     def test_location_same_address_different_label(self, client):
         venue = offerers_factories.VenueFactory()
         oa = offerers_factories.OfferLocationFactory(
-            offerer=venue.managingOfferer, venue=venue, address=venue.offererAddress.address, label="Different label"
+            venue=venue, address=venue.offererAddress.address, label="Different label"
         )
         offer = educational_factories.CollectiveOfferTemplateFactory(
             locationType=educational_models.CollectiveLocationType.ADDRESS,

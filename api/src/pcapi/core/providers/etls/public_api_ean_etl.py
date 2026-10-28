@@ -52,7 +52,6 @@ def _extract(request_payload: offers_schemas.CreateOrUpdateEANOffersRequest) -> 
     with atomic():
         if request_payload.address_id:
             offerer_address = offerers_api.get_or_create_offer_location(
-                offerer_id=venue.managingOffererId,
                 venue_id=venue.id,
                 address_id=request_payload.address_id,
                 label=request_payload.address_label,
