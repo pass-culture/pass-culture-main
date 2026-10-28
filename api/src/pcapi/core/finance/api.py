@@ -247,6 +247,8 @@ def cancel_latest_event(
             ),
             models.FinanceEvent.status.in_(models.CANCELLABLE_FINANCE_EVENT_STATUSES),
         )
+        .populate_existing()
+        .with_for_update()
         .one_or_none()
     )
     if not event:
@@ -447,6 +449,8 @@ def price_event(event: models.FinanceEvent) -> models.Pricing | None:
                     .joinedload(offerers_models.Venue.pricing_point_links, innerjoin=True)
                     .joinedload(offerers_models.VenuePricingPointLink.venue, innerjoin=True),
                 )
+                .populate_existing()
+                .with_for_update()
                 .one()
             )
         elif event.collectiveBookingId:
@@ -463,6 +467,8 @@ def price_event(event: models.FinanceEvent) -> models.Pricing | None:
                     .joinedload(offerers_models.Venue.pricing_point_links, innerjoin=True)
                     .joinedload(offerers_models.VenuePricingPointLink.venue, innerjoin=True),
                 )
+                .populate_existing()
+                .with_for_update()
                 .one()
             )
         elif event.bookingFinanceIncidentId:
@@ -472,6 +478,8 @@ def price_event(event: models.FinanceEvent) -> models.Pricing | None:
                 .options(
                     sa_orm.joinedload(models.FinanceEvent.bookingFinanceIncident, innerjoin=True),
                 )
+                .populate_existing()
+                .with_for_update()
                 .one()
             )
         else:
