@@ -1,5 +1,6 @@
 import { Form, useFormContext } from 'react-hook-form'
 
+import type { LoginUserBodyModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
@@ -11,7 +12,6 @@ import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullKeyIcon from '@/icons/full-key.svg'
 import iconFullNext from '@/icons/full-next.svg'
 
-import type { SigninFormValues } from './SignIn'
 import styles from './Signin.module.scss'
 
 type SigninFormProps = {
@@ -20,7 +20,7 @@ type SigninFormProps = {
 
 export const SigninForm = ({ onSubmit }: SigninFormProps): JSX.Element => {
   const { logEvent } = useAnalytics()
-  const { formState, register, watch } = useFormContext<SigninFormValues>()
+  const { formState, register, watch } = useFormContext<LoginUserBodyModel>()
   const { errors } = formState
 
   return (
@@ -31,13 +31,12 @@ export const SigninForm = ({ onSubmit }: SigninFormProps): JSX.Element => {
         <div className={styles['text-input']}>
           <div className={styles['text-input']}>
             <TextInput
-              autoComplete="username"
               label="Adresse email"
               required
               type="email"
-              error={errors.email?.message}
+              error={errors.identifier?.message}
               description="Format : email@exemple.com"
-              {...register('email')}
+              {...register('identifier')}
               requiredIndicator="explicit"
             />
           </div>
