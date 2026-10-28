@@ -1,6 +1,9 @@
+import json
+
 from flask_login import current_user
 
 import pcapi.connectors.recommendation as recommendation_api
+from pcapi.core.artist.repository import get_artists_by_ids
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.native import blueprint
 from pcapi.routes.native.security import authenticated_and_active_user_required
@@ -51,7 +54,6 @@ def offer_page_playlists(
     if not raw_response:
         return serializers.OfferPagePlaylistResponse(offer_id=str(offer_id), playlists=[], from_cache=False)
 
-    print(raw_response)
     return serializers.OfferPagePlaylistResponse.parse_raw(raw_response, content_type="application/json")
 
 
@@ -92,9 +94,19 @@ def top_artists_playlist(search_group_name: str) -> serializers.TopArtistsPlayli
         raise ApiErrors({"code": "RECOMMENDATION_API_TIMEOUT"}, status_code=504)
     except recommendation_api.RecommendationApiException:
         raise ApiErrors({"code": "RECOMMENDATION_API_ERROR"}, status_code=502)
-    if not raw_response:
-        return serializers.TopArtistsPlaylistResponse(
-            playlist_artists=[], params=serializers.TopArtistsPlaylistParams()
-        )
 
-    return serializers.TopArtistsPlaylistResponse.parse_raw(raw_response, content_type="application/json")
+    if not raw_response:
+        return serializers.TopArtistsPlaylistResponse(artists=[])
+
+    ds_response = json.loads(raw_response)
+    artist_ids = ds_response.get("playlist_artists", [])
+
+    artists = {artist.id: artist for artist in get_artists_by_ids(artist_ids)}
+
+    return serializers.TopArtistsPlaylistResponse(
+        artists=[
+            serializers.ArtistItem(id=artist.id, name=artist.name, image=artist.thumbUrl)
+            for artist_id in artist_ids
+            if (artist := artists.get(artist_id))  # ensures the artist order returned by recommendation API
+        ]
+    )

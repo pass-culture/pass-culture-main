@@ -423,6 +423,37 @@
                 "title": "AddressCoordinates",
                 "type": "object"
             },
+            "ArtistItem": {
+                "additionalProperties": false,
+                "properties": {
+                    "id": {
+                        "title": "Id",
+                        "type": "string"
+                    },
+                    "image": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Image"
+                    },
+                    "name": {
+                        "title": "Name",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "name"
+                ],
+                "title": "ArtistItem",
+                "type": "object"
+            },
             "ArtistResponse": {
                 "additionalProperties": false,
                 "properties": {
@@ -9543,66 +9574,19 @@
                 "title": "TokenResponse",
                 "type": "object"
             },
-            "TopArtistsPlaylistParams": {
-                "additionalProperties": false,
-                "properties": {
-                    "callId": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "default": null,
-                        "title": "Callid"
-                    },
-                    "scoreName": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "default": null,
-                        "title": "Scorename"
-                    },
-                    "searchGroupName": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "default": null,
-                        "title": "Searchgroupname"
-                    }
-                },
-                "title": "TopArtistsPlaylistParams",
-                "type": "object"
-            },
             "TopArtistsPlaylistResponse": {
                 "additionalProperties": false,
                 "properties": {
-                    "params": {
-                        "$ref": "#/components/schemas/TopArtistsPlaylistParams"
-                    },
-                    "playlistArtists": {
+                    "artists": {
                         "items": {
-                            "type": "string"
+                            "$ref": "#/components/schemas/ArtistItem"
                         },
-                        "title": "Playlistartists",
+                        "title": "Artists",
                         "type": "array"
                     }
                 },
                 "required": [
-                    "playlistArtists",
-                    "params"
+                    "artists"
                 ],
                 "title": "TopArtistsPlaylistResponse",
                 "type": "object"
