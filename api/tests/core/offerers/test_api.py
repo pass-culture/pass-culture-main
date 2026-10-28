@@ -4653,6 +4653,24 @@ class CloseVenueTest:
         mock_send_venue_closure_request_email.assert_called_once()
         mock_send_venue_closed_email_to_author.assert_called_once()
 
+    @patch("pcapi.core.mails.transactional.send_venue_closed_email_to_author")
+    def test_pricing_point_venue_with_only_closed_linked_venues(self, mock_send_venue_closed_email_to_author):
+        venue = offerers_factories.VenuePricingPointLinkFactory(venue__state=None).venue
+        offerers_factories.VenueFactory(
+            managingOfferer=venue.managingOfferer, pricing_point=venue, state=offerers_models.VenueState.CLOSED
+        )
+        author = users_factories.BaseUserFactory()
+
+        assert venue.is_pricing_point
+
+        with atomic():
+            offerers_api.close_venue(venue, author)
+
+        db.session.refresh(venue)
+        assert venue.is_pricing_point
+        assert not venue.criteria
+        mock_send_venue_closed_email_to_author.assert_called_once()
+
     @pytest.mark.features(WIP_CLOSE_VENUE=True)
     @patch("pcapi.core.search.async_index_venue_ids")
     def test_close_venue_reindexes_venue(self, reindex_venue):

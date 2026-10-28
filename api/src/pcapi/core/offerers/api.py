@@ -7,6 +7,7 @@ import secrets
 import time
 import typing
 from collections import defaultdict
+from datetime import UTC
 from datetime import date
 from datetime import datetime
 from datetime import timedelta
@@ -3663,6 +3664,22 @@ def get_user_pending_and_validated_offerers(
     return PendingAndValidatedOfferers(validated=validated, pending=pending)
 
 
+def _is_a_pricing_point_to_an_opened_venue(venue: models.Venue) -> bool:
+    now = datetime.now(UTC).replace(tzinfo=None)
+    return db.session.query(
+        db.session.query(models.VenuePricingPointLink)
+        .join(models.VenuePricingPointLink.venue)
+        .filter(
+            models.VenuePricingPointLink.pricingPointId == venue.id,
+            models.VenuePricingPointLink.venueId != venue.id,
+            models.Venue.managingOffererId == venue.managingOffererId,
+            models.VenuePricingPointLink.timespan.contains(now),
+            models.Venue.is_opened,
+        )
+        .exists()
+    ).scalar()
+
+
 def close_venue(venue: models.Venue, author: users_models.User, comment: str | None = None) -> None:
     logger.info("close_venue called on venue %s by user %s", venue.id, author.id)
     closure_request_tag = criteria_api.get_closure_request_tag()
@@ -3685,7 +3702,7 @@ def close_venue(venue: models.Venue, author: users_models.User, comment: str | N
     delete_venue_pivots_and_providers(venue.id, author.id)
     db.session.flush()
 
-    if venue.is_pricing_point:
+    if _is_a_pricing_point_to_an_opened_venue(venue):
         criteria_api.link_criterion_to_venue(criterion=closure_request_tag, venue=venue)
         on_commit(partial(transactional_mails.send_venue_closure_request_email, venue.id))
     else:
