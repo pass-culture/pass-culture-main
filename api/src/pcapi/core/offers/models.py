@@ -435,6 +435,22 @@ class Stock(PcObject, Model, SoftDeletableMixin):
             "quantity",
             "dnBookedQuantity",
         ),
+        # Offers with a bookable stock
+        sa.Index(
+            "ix_stock_offerId_beginningDatetime_available",
+            "offerId",
+            "beginningDatetime",
+            postgresql_where=sa.text(
+                '"isSoftDeleted" IS NOT TRUE AND (quantity IS NULL OR quantity > "dnBookedQuantity")'
+            ),
+        ),
+        # Offers whose booking limit has passed
+        sa.Index(
+            "ix_stock_offerId_bookingLimitDatetime_notnull",
+            "offerId",
+            "bookingLimitDatetime",
+            postgresql_where=sa.text('"isSoftDeleted" IS NOT TRUE AND "bookingLimitDatetime" IS NOT NULL'),
+        ),
     )
 
     @property
@@ -928,6 +944,27 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
             "venueId",
             "validation",
             "publicationDatetime",
+        ),
+        # Published offers of a venue (replaces the index above)
+        sa.Index(
+            "ix_offer_venueId_validation_publicationDatetime_id",
+            "venueId",
+            "validation",
+            "publicationDatetime",
+            "id",
+        ),
+        # Offers sorted by name
+        sa.Index(
+            "ix_offer_venueId_name_id",
+            "venueId",
+            sa.text("lower(immutable_unaccent(name))"),
+            sa.text("id DESC"),
+        ),
+        # Offers not synchronized with a provider
+        sa.Index(
+            "ix_offer_venueId_lastProviderId_null",
+            "venueId",
+            postgresql_where=sa.text('"lastProviderId" IS NULL'),
         ),
     )
 
