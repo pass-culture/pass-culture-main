@@ -337,7 +337,7 @@ describe('initializeUser', () => {
     expect(state.user.selectedPartnerVenue).toBeNull()
   })
 
-  it('should get the venue id from URL params for backoffice switcher', async () => {
+  it('should get the venue id from URL param "id-structure"', async () => {
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
       offerersNames: [getOffererNameFactory({ id: 100 })],
     })
@@ -368,7 +368,7 @@ describe('initializeUser', () => {
       isOnboarded: true,
     })
 
-    window.history.pushState({}, '', '/?venue=201')
+    window.history.pushState({}, '', '/?id-structure=201')
 
     const store = configureTestStore()
 
