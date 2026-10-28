@@ -926,9 +926,31 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
             .exists()
         ).scalar()
 
-    @property
+    @hybrid_property
     def is_closed(self) -> bool:
         return self.state == VenueState.CLOSED
+
+    @is_closed.inplace.expression
+    @classmethod
+    def _is_closed_expression(cls) -> sa.ColumnElement[bool]:
+        return cls.state == VenueState.CLOSED
+
+    @hybrid_property
+    def is_opened(self) -> bool:
+        # TODO(jbaudet - 10/2026): remove once venue.state has a full
+        # non-null enum. Otherwise not closed SQLA filter will not be
+        # equal to opened (state == VenueState.CLOSED does not
+        # have the same behaviour as state is None).
+        return self.state is None
+
+    @is_opened.inplace.expression
+    @classmethod
+    def _is_opened_expression(cls) -> sa.ColumnElement[bool]:
+        # TODO(jbaudet - 10/2026): remove once venue.state has a full
+        # non-null enum. Otherwise not closed SQLA filter will not be
+        # equal to opened (state == VenueState.CLOSED does not
+        # have the same behaviour as state is None).
+        return cls.state == None  # noqa: E711
 
 
 class GooglePlacesInfo(PcObject, Model):
