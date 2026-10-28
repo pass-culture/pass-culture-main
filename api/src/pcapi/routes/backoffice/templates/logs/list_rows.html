@@ -1,5 +1,5 @@
 {% from "components/dynamic/spinner.html" import build_loading_spinner %}
-{% from "components/links.html" import build_public_user_name_to_details_link %}
+{% from "components/links.html" import build_any_user_name_to_details_link %}
 {% for log in logs %}
   <tr id="insert-id-{{ log.insert_id }}">
     <td>{{ log.insert_id }}</td>
@@ -7,17 +7,18 @@
     <td>{{ log.timestamp | format_timestamp }}</td>
     <td>
       {% if log.user_id in users %}
-        {# TODO: check user type and redirect to the right page with _redirect_to_user_page #}
-        {{ build_public_user_name_to_details_link(users[log.user_id]) }}
+        {{ build_any_user_name_to_details_link(users[log.user_id]) }}
       {% else %}
         {{ log.user_id | empty_string_if_null }}
       {% endif %}
     </td>
     <td>
       {% if log.impersonator_id in users %}
-        <a href="{{ url_for('backoffice.bo_users.get_bo_user', user_id=log.impersonator_id) }}"
-           class="link-primary"
-           target="{{ target }}">{{ users[log.impersonator_id].full_name }} ({{ users[log.impersonator_id].id }})</a>
+        {% if log.user_id in users %}
+          {{ build_any_user_name_to_details_link(users[log.impersonator_id]) }}
+        {% else %}
+          {{ log.user_id | empty_string_if_null }}
+        {% endif %}
       {% else %}
         {{ log.impersonator_id | empty_string_if_null }}
       {% endif %}
