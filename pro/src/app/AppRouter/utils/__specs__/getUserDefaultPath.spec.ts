@@ -57,14 +57,16 @@ describe('getUserDefaultPath', () => {
     expect(getUserDefaultPath()).toBe('/inscription/structure/recherche')
   })
 
-  it('should return /hub when user has venues but no venue selected', () => {
+  it('should return /hub with the requested path when no venue is selected', () => {
     setupStore({
       hasUser: true,
       hasVenue: true,
       hasVenueSelected: false,
     })
 
-    expect(getUserDefaultPath()).toBe('/hub')
+    const search = '?redirectTo=%2Foffres%2F123'
+
+    expect(getUserDefaultPath(search)).toBe(`/hub${search}`)
   })
 
   it('should return /rattachement-en-cours when user has selected + no venue associated', () => {

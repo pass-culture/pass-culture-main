@@ -1,8 +1,9 @@
 import { type ChangeEvent, useRef, useState } from 'react'
-import { useNavigate } from 'react-router'
+import { useNavigate, useSearchParams } from 'react-router'
 
 import { type VenueListItemResponseModel, VenueState } from '@/apiClient/v1'
 import { FullLayout } from '@/app/App/layouts/FullLayout/FullLayout'
+import { getInternalRedirectUrl } from '@/app/AppRouter/utils/getInternalRedirectUrl'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { setSelectedPartnerVenueById } from '@/commons/store/user/dispatchers/setSelectedPartnerVenueById'
@@ -27,6 +28,7 @@ export const Hub = () => {
   const dispatch = useAppDispatch()
   const venues = useAppSelector(ensureVenues)
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
 
   const [filteredVenues, setFilteredVenues] = useState(venues)
   const [isLoading, setIsLoading] = useState(false)
@@ -75,7 +77,8 @@ export const Hub = () => {
         return
       }
 
-      await navigate('/accueil')
+      const nextUrl = getInternalRedirectUrl(searchParams.get('redirectTo'))
+      await navigate(nextUrl)
     } catch {
       setIsLoading(false)
     }

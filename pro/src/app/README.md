@@ -18,7 +18,7 @@
 flowchart TB
     PATH(["/a-path"])
     PATH --> INDEX_FILE["src/index.tsx"]
-    INDEX_FILE --> ROOT_COMPONENT["&lt;Root />"]
+    INDEX_FILE --> ROOT_COMPONENT["&lt;Root /&gt;"]
     ROOT_COMPONENT --> APP_ROUTER_COMPONENT["&lt;AppRouter /&gt;"]
 
     APP_ROUTER_COMPONENT --> ROUTER_PROVIDER
@@ -62,11 +62,11 @@ Les permissions sont calculées à partir du state Redux par la fonction `getCur
 | Flag                               | Description métier                                                                                         |
 | ---------------------------------- | ---------------------------------------------------------------------------------------------------------- |
 | `isAuthenticated`                  | Est-il authentifié ?                                                                                       |
-| `hasSelectedParnerVenue`           | A-t-il une structure séléctionnée (espace partenaire) ?                                                    |
+| `hasSelectedPartnerVenue`           | A-t-il une structure séléctionnée (espace partenaire) ?                                                    |
 | `isSelectedPartnerVenueAssociated` | La structure sélectionnée est-elle rattachée à ce compte (= le rattachement a-t-il été validé) ?           |
 | `hasSelectedAdminOfferer`          | A-t-il un entité séléctionnée (espace d'administration) ?                                                  |
 | `isSelectedAdminOffererAssociated` | L'entité sélectionnée est-elle rattachée à ce compte (= le rattachement a-t-il été validé) ?               |
-| `isOnboarded`                      | Une offre a-t-elle déjà été créée sur une des structures de l'entité parenet à la structure sélectionnée ? |
+| `isOnboarded`                      | Une offre a-t-elle déjà été créée sur une des structures de l'entité parente à la structure sélectionnée ? |
 
 ### Page par défaut et autorisation d'accès aux espaces
 

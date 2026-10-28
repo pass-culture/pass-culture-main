@@ -1,5 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import type { RouteObject } from 'react-router'
 import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
@@ -32,8 +33,12 @@ vi.mock('@/apiClient/api', () => ({
 const renderHub: RenderComponentFunction<
   void,
   void,
-  { venues: VenueListItemResponseModel[] | null }
-> = ({ venues }) => {
+  {
+    venues: VenueListItemResponseModel[] | null
+    initialRouterEntry?: string
+    routes?: RouteObject[]
+  }
+> = ({ venues, initialRouterEntry, routes }) => {
   return renderWithProviders(<Hub />, {
     storeOverrides: {
       user: {
@@ -47,7 +52,8 @@ const renderHub: RenderComponentFunction<
         selectedAdminOfferer: getOffererNameFactory({ id: 100 }),
       },
     },
-    initialRouterEntries: ['/hub'],
+    initialRouterEntries: [initialRouterEntry ?? '/hub'],
+    routes,
   })
 }
 
@@ -98,6 +104,28 @@ describe('Hub', () => {
       },
     }),
   ]
+
+  const mockVenueSelection = () => {
+    vi.spyOn(api, 'getVenue').mockResolvedValue(
+      makeGetVenueResponseModel({
+        id: 102,
+        publicName: 'Café des Arts',
+        managingOfferer: {
+          id: 100,
+          allowedOnAdage: true,
+          isValidated: true,
+          isClosed: false,
+          name: 'Test Offerer',
+          siren: '123456789',
+        },
+      })
+    )
+    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+      ...defaultGetOffererResponseModel,
+      id: 100,
+      isOnboarded: true,
+    })
+  }
 
   it('should render', async () => {
     const { container } = renderHub({ venues: venuesBase })
@@ -181,25 +209,7 @@ describe('Hub', () => {
   })
 
   it('should call setSelectedPartnerVenueById when clicking on any venue', async () => {
-    vi.spyOn(api, 'getVenue').mockResolvedValue(
-      makeGetVenueResponseModel({
-        id: 102,
-        publicName: 'Café des Arts',
-        managingOfferer: {
-          id: 100,
-          allowedOnAdage: true,
-          isValidated: true,
-          isClosed: false,
-          name: 'Test Offerer',
-          siren: '123456789',
-        },
-      })
-    )
-    vi.spyOn(api, 'getOfferer').mockResolvedValue({
-      ...defaultGetOffererResponseModel,
-      id: 100,
-      isOnboarded: true,
-    })
+    mockVenueSelection()
 
     renderHub({ venues: venuesBase })
 
@@ -208,6 +218,19 @@ describe('Hub', () => {
     await waitFor(() => {
       expect(api.getVenue).toHaveBeenCalledWith({ path: { venue_id: 102 } })
     })
+  })
+
+  it('should redirect to the requested internal path after venue selection', async () => {
+    mockVenueSelection()
+    const { router } = renderHub({
+      venues: venuesBase,
+      initialRouterEntry: '/hub?redirectTo=%2Foffres%3Fstatus%3Dactive',
+    })
+
+    await userEvent.click(screen.getByRole('button', { name: /Café des Arts/ }))
+
+    expect(router.state.location.pathname).toBe('/offres')
+    expect(router.state.location.search).toBe('?status=active')
   })
 
   it('should show spinner after venue selection', async () => {
