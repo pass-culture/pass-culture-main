@@ -21,7 +21,9 @@ logger = logging.getLogger(__name__)
 
 
 @blueprint.native_route("/bookings/<int:booking_id>", version="v2", methods=["GET"])
-@spectree_serialize(on_success_status=200, api=blueprint.api, response_model=BookingResponse, on_error_statuses=[404])
+@spectree_serialize(
+    on_success_status=200, api=blueprint.api, response_model=BookingResponse, on_error_statuses=[404], deprecated=True
+)
 @authenticated_and_active_user_required
 @atomic()
 def get_booking(booking_id: int) -> BookingResponse:
