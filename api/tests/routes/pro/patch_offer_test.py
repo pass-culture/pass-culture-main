@@ -639,7 +639,7 @@ class Returns200Test:
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
         oa = None
         if offer_has_oa:
-            oa = offerers_factories.OfferLocationFactory(offerer=user_offerer.offerer, venue=venue, label=label)
+            oa = offerers_factories.OfferLocationFactory(venue=venue, label=label)
         offer = offers_factories.OfferFactory(
             subcategoryId=subcategories.ABO_MEDIATHEQUE.id,
             venue=venue,
@@ -649,7 +649,6 @@ class Returns200Test:
         )
         if address_update_exist:
             existant_oa = offerers_factories.OfferLocationFactory(
-                offerer=user_offerer.offerer,
                 venue=venue,
                 label=label,
                 address__street="1 rue de la paix",

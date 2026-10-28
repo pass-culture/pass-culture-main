@@ -115,7 +115,7 @@ class CollectiveOffersPublicGetOfferTest(PublicAPIVenueEndpointHelper):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
         venue = offerers_factories.VenueFactory()
-        offerer_address = offerers_factories.OfferLocationFactory(offerer=venue.managingOfferer)
+        offerer_address = offerers_factories.OfferLocationFactory(venue=venue)
 
         offer = factories.CollectiveOfferOnOtherAddressLocationFactory(
             provider=venue_provider.provider,

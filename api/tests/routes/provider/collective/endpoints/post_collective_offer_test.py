@@ -341,9 +341,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
 
         offer = db.session.query(models.CollectiveOffer).filter_by(id=response.json["id"]).one()
         offerer_address = (
-            db.session.query(offerers_models.OffererAddress)
-            .filter_by(addressId=address.id, offererId=venue.managingOffererId)
-            .one()
+            db.session.query(offerers_models.OffererAddress).filter_by(addressId=address.id, venueId=venue.id).one()
         )
 
         assert offer.offererAddressId == offerer_address.id

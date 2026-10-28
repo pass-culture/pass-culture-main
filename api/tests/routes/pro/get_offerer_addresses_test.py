@@ -26,7 +26,6 @@ class Return200Test:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         offerer_address_1 = offerers_factories.OfferLocationFactory(
-            offerer=offerer,
             label="1ere adresse",
             address__street="1 boulevard Poissonnière",
             address__postalCode="75002",
@@ -34,7 +33,6 @@ class Return200Test:
             venue=venue,
         )
         offerer_address_2 = offerers_factories.OfferLocationFactory(
-            offerer=offerer,
             venue=venue,
             label="2eme adresse",
             address__street="20 Avenue de Ségur",
@@ -43,7 +41,6 @@ class Return200Test:
             address__banId="75107_7560_00001",
         )
         offerer_address_3 = offerers_factories.OfferLocationFactory(
-            offerer=offerer,
             venue=venue,
             label="3eme adresse",
             address__street="3 rue des moutons",
@@ -118,11 +115,8 @@ class Return200Test:
             publicName="Venue public name",
             offererAddress__address=address,
         )
-        offer_location = offerers_factories.OfferLocationFactory(
-            label="1ere adresse", offerer=offerer, venue=venue, address=address
-        )
+        offer_location = offerers_factories.OfferLocationFactory(label="1ere adresse", venue=venue, address=address)
         offerers_factories.OfferLocationFactory(
-            offerer=offerer,
             venue=venue,
             label="2eme adresse",
             address__street="20 Avenue de Ségur",
@@ -168,7 +162,6 @@ class Return200Test:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         offerer_address_1 = offerers_factories.OfferLocationFactory(
-            offerer=offerer,
             venue=venue,
             label="1ere adresse",
             address__street="1 boulevard Poissonnière",
@@ -176,7 +169,6 @@ class Return200Test:
             address__city="Paris",
         )
         offerer_address_2 = offerers_factories.OfferLocationFactory(
-            offerer=offerer,
             venue=venue,
             label="2eme adresse",
             address__street="20 Avenue de Ségur",
@@ -185,7 +177,6 @@ class Return200Test:
             address__banId="75107_7560_00001",
         )
         offerer_address_3 = offerers_factories.OfferLocationFactory(
-            offerer=offerer,
             venue=venue,
             label="3eme adresse",
             address__street="1 rue de la Paix",
