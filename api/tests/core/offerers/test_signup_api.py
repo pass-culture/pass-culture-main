@@ -2,6 +2,7 @@ import pytest
 
 from pcapi import settings
 from pcapi.core.offerers.models import Activity
+from pcapi.core.offerers.models import StructureSimulationInfo
 from pcapi.core.offerers.models import TargetAudience
 from pcapi.core.offerers.structure_signup_api import BOOKSTORE_MESSAGE
 from pcapi.core.offerers.structure_signup_api import COLLECTIVE_MESSAGE
@@ -336,10 +337,12 @@ class SignupSimulationTest:
 class BuildSignupLinkTest:
     def test_build(self):
         link = build_signup_link(
-            siret="44285836100029",
-            is_open_to_public=True,
-            targets=[TargetAudience.INDIVIDUAL],
-            activity=Activity.LIBRARY,
+            structure_simulation_info=StructureSimulationInfo(
+                siret="44285836100029",
+                is_open_to_public=True,
+                targets=[TargetAudience.INDIVIDUAL],
+                activity=Activity.LIBRARY,
+            )
         )
 
         assert (
@@ -349,10 +352,12 @@ class BuildSignupLinkTest:
 
     def test_build_multiple_targets(self):
         link = build_signup_link(
-            siret="44285836100029",
-            is_open_to_public=False,
-            targets=[TargetAudience.INDIVIDUAL, TargetAudience.COLLECTIVE],
-            activity=Activity.OTHER,
+            structure_simulation_info=StructureSimulationInfo(
+                siret="44285836100029",
+                is_open_to_public=False,
+                targets=[TargetAudience.INDIVIDUAL, TargetAudience.COLLECTIVE],
+                activity=Activity.OTHER,
+            )
         )
 
         assert (
