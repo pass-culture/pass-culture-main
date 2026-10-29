@@ -51,6 +51,7 @@ class Returns200Test:
         assert created_offerer.name == "MINISTERE DE LA CULTURE"
         assert not created_offerer.isValidated
         created_venue = db.session.query(offerers_models.Venue).one()
+        assert created_venue.validationStatus == offerers_models.VenueValidationStatus.PENDING
         assert created_venue.bookingEmail == "pro@example.com"
         assert created_venue.audioDisabilityCompliant is None
         assert created_venue.mentalDisabilityCompliant is None
@@ -122,6 +123,7 @@ class Returns200Test:
         assert created_offerer.name == "MINISTERE DE LA CULTURE"
         assert not created_offerer.isValidated
         created_venue = db.session.query(offerers_models.Venue).one()
+        assert created_venue.validationStatus == offerers_models.VenueValidationStatus.PENDING
         assert created_venue.bookingEmail == "pro@example.com"
         assert created_venue.audioDisabilityCompliant is None
         assert created_venue.mentalDisabilityCompliant is None
@@ -182,6 +184,7 @@ class Returns200Test:
         created_offerer = db.session.query(offerers_models.Offerer).one()
         assert not created_offerer.isValidated
         created_venue = db.session.query(offerers_models.Venue).one()
+        assert created_venue.validationStatus == offerers_models.VenueValidationStatus.PENDING
         assert created_venue.bookingEmail == "pro@example.com"
         assert created_venue.audioDisabilityCompliant is None
         assert created_venue.mentalDisabilityCompliant is None

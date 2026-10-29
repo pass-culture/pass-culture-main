@@ -222,6 +222,7 @@ class CreateVenueTest:
 
         venue = db.session.query(offerers_models.Venue).one()
         assert venue.managingOfferer == user_offerer.offerer
+        assert venue.validationStatus == offerers_models.VenueValidationStatus.PENDING
         assert venue.name == "La Venue"
         assert venue.publicName == "La Venue"  # empty/non public name copies name
         assert venue.bookingEmail == "venue@example.com"
@@ -316,6 +317,17 @@ class CreateVenueTest:
         venue = db.session.query(offerers_models.Venue).one()
         assert venue.activity == offerers_models.Activity.ART_GALLERY
         assert {domain.name for domain in venue.collectiveDomains} == {"Architecture", "Bande dessinée"}
+
+    def test_venue_approved(self):
+        user_offerer = offerers_factories.UserOffererFactory()
+        data = venue_serialize.PostVenueBodyModel(**self.base_data(user_offerer.offerer))
+
+        offerers_api.create_venue(
+            data, user_offerer.user, validation_status=offerers_models.VenueValidationStatus.APPROVED
+        )
+
+        venue = db.session.query(offerers_models.Venue).one()
+        assert venue.validationStatus == offerers_models.VenueValidationStatus.APPROVED
 
 
 class DeleteVenueTest:

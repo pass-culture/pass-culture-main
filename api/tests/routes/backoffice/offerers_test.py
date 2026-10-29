@@ -2866,6 +2866,9 @@ class ValidateOffererTest(ActivateOffererHelper):
     def test_validate_offerer(self, legit_user, authenticated_client, review_all_offers, confidence_level):
         user_offerer = offerers_factories.UserNotValidatedOffererFactory()
         offerer = user_offerer.offerer
+        venues = offerers_factories.VenueFactory.create_batch(
+            2, managingOfferer=offerer, validationStatus=offerers_models.VenueValidationStatus.PENDING
+        )
 
         response = self.post_to_endpoint(
             authenticated_client,
@@ -2880,6 +2883,8 @@ class ValidateOffererTest(ActivateOffererHelper):
         assert offerer.isActive
         assert user_offerer.user.has_pro_role
         assert not user_offerer.user.has_non_attached_pro_role
+        assert venues[0].validationStatus == offerers_models.VenueValidationStatus.APPROVED
+        assert venues[1].validationStatus == offerers_models.VenueValidationStatus.APPROVED
 
         action = db.session.query(history_models.ActionHistory).one()
         assert action.actionType == history_constants.ActionType.OFFERER_VALIDATED
@@ -3021,6 +3026,9 @@ class RejectOffererTest(DeactivateOffererHelper):
         user = users_factories.NonAttachedProFactory()
         offerer = offerers_factories.NewOffererFactory()
         user_offerer = offerers_factories.UserOffererFactory(user=user, offerer=offerer)
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=offerer, validationStatus=offerers_models.VenueValidationStatus.PENDING
+        )
         form = {"rejection_reason": "ELIGIBILITY"}
 
         response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id, form=form)
@@ -3030,12 +3038,14 @@ class RejectOffererTest(DeactivateOffererHelper):
         db.session.refresh(user)
         db.session.refresh(offerer)
         db.session.refresh(user_offerer)
+        db.session.refresh(venue)
         assert not offerer.isValidated
         assert not offerer.isActive
         assert offerer.isRejected
         assert not user.has_pro_role
         assert user.has_non_attached_pro_role
         assert user_offerer.validationStatus == ValidationStatus.REJECTED
+        assert venue.validationStatus == offerers_models.VenueValidationStatus.REJECTED
 
         action = (
             db.session.query(history_models.ActionHistory)
@@ -3165,6 +3175,7 @@ class SetOffererPendingTest(DeactivateOffererHelper):
     def test_set_offerer_pending(self, legit_user, authenticated_client, offerer_tags):
         non_homologation_tag = offerers_factories.OffererTagFactory(name="Tag conservé")
         offerer = offerers_factories.NewOffererFactory(tags=[non_homologation_tag, offerer_tags[0], offerer_tags[1]])
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer, validationStatus=None)
 
         response = self.post_to_endpoint(
             authenticated_client,
@@ -3179,8 +3190,11 @@ class SetOffererPendingTest(DeactivateOffererHelper):
         assert offerer.isActive
         assert offerer.validationStatus == ValidationStatus.PENDING
         assert set(offerer.tags) == {non_homologation_tag, offerer_tags[0], offerer_tags[2]}
-        action = db.session.query(history_models.ActionHistory).one()
 
+        db.session.refresh(venue)
+        assert venue.validationStatus == offerers_models.VenueValidationStatus.PENDING
+
+        action = db.session.query(history_models.ActionHistory).one()
         assert action.actionType == history_constants.ActionType.OFFERER_PENDING
         assert action.actionDate is not None
         assert action.authorUserId == legit_user.id
@@ -4062,6 +4076,12 @@ class BatchOffererValidateTest(PostEndpointHelper):
     )
     def test_batch_set_offerer_validate(self, legit_user, authenticated_client, review_all_offers, confidence_level):
         _offerers = offerers_factories.NewOffererFactory.create_batch(3)
+        venues = [
+            offerers_factories.VenueFactory(
+                managingOfferer=offerer, validationStatus=offerers_models.VenueValidationStatus.PENDING
+            )
+            for offerer in _offerers
+        ]
         parameter_ids = ",".join(str(offerer.id) for offerer in _offerers)
 
         response = self.post_to_endpoint(
@@ -4099,6 +4119,9 @@ class BatchOffererValidateTest(PostEndpointHelper):
             # ensure that the row is rendered
             cells = html_parser.extract_plain_row(response.data, id=f"offerer-row-{offerer.id}")
             assert cells[2] == str(offerer.id)
+
+        for venue in venues:
+            assert venue.validationStatus == offerers_models.VenueValidationStatus.APPROVED
 
 
 class GetBatchOffererPendingFormTest(GetEndpointHelper):
@@ -4189,6 +4212,7 @@ class BatchOffererRejectTest(PostEndpointHelper):
     )
     def test_batch_set_offerer_reject(self, legit_user, authenticated_client, rejection_reason):
         _offerers = offerers_factories.NewOffererFactory.create_batch(3)
+        venues = [offerers_factories.VenueFactory(managingOfferer=offerer) for offerer in _offerers]
         parameter_ids = ",".join(str(offerer.id) for offerer in _offerers)
         comment = "test comment"
 
@@ -4220,6 +4244,9 @@ class BatchOffererRejectTest(PostEndpointHelper):
             # ensure that the row is rendered
             cells = html_parser.extract_plain_row(response.data, id=f"offerer-row-{offerer.id}")
             assert cells[2] == str(offerer.id)
+
+        for venue in venues:
+            assert venue.validationStatus == offerers_models.VenueValidationStatus.REJECTED
 
 
 class BatchOffererAttachmentValidateTest(PostEndpointHelper):
@@ -5516,6 +5543,7 @@ class CreateVenueTest(PostEndpointHelper):
         new_venue: offerers_models.Venue = (
             db.session.query(offerers_models.Venue).filter_by(publicName=form_data["public_name"]).one()
         )
+        assert new_venue.validationStatus == offerers_models.VenueValidationStatus.APPROVED
         assert new_venue.name == "Offerer Name"
         assert new_venue.publicName == form_data["public_name"]
         assert new_venue.activity == offerers_models.Activity.BOOKSTORE

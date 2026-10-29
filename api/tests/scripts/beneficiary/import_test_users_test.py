@@ -103,6 +103,7 @@ class ReadFileTest:
 
         venue = db.session.query(offerers_models.Venue).filter_by(name="Structure Pierre Pro").one()
         assert venue.siret == "11122233700011"
+        assert venue.validationStatus == offerers_models.VenueValidationStatus.APPROVED
         assert venue.offererAddress
         assert venue.offererAddress.address.postalCode == "75001"
         assert venue.offererAddress.address.city == "PARIS"

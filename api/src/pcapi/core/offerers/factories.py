@@ -74,6 +74,7 @@ class VenueFactory(BaseFactory[models.Venue]):
     class Meta:
         model = models.Venue
 
+    validationStatus = models.VenueValidationStatus.APPROVED
     activity = factory.Maybe(
         "isOpenToPublic",
         yes_declaration=factory.Iterator(models.ActivityOpenToPublic),
