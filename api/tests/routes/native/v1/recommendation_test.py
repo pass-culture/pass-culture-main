@@ -3,6 +3,8 @@ import urllib.parse
 
 import pytest
 
+import pcapi.core.artist.factories as artist_factories
+import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.core import testing
 from pcapi.utils import requests
@@ -376,3 +378,127 @@ class PlaylistTest:
 
         assert response.json["fromCache"] is True
         assert response.json["params"]["uniqueCallId"] == "450ab635-e477-407f-bc97-63b892e21810"
+
+
+def _link_artist_to_bookable_offer(artist):
+    product = offers_factories.ProductFactory()
+    artist_factories.ArtistProductLinkFactory(artist_id=artist.id, product_id=product.id)
+    offer = offers_factories.ThingOfferFactory(product=product)
+    offers_factories.StockFactory(offer=offer)
+
+
+class TopArtistsPlaylistTest:
+    @pytest.mark.settings(
+        RECOMMENDATION_BACKEND="pcapi.connectors.recommendation.HttpBackend",
+        RECOMMENDATION_API_URL="https://example.com/recommendation/",
+    )
+    def test_returns_artists_in_recommendation_api_order(self, requests_mock, client):
+        first = artist_factories.ArtistFactory(name="First artist")
+        second = artist_factories.ArtistFactory(name="Second artist")
+        _link_artist_to_bookable_offer(first)
+        _link_artist_to_bookable_offer(second)
+        requests_mock.get(
+            "https://example.com/recommendation/playlist_top_artists/MUSIQUE",
+            json={
+                "playlist_artists": [second.id, first.id],
+                "params": {"search_group_name": "MUSIQUE", "score_name": "score", "call_id": "test-call-id"},
+            },
+        )
+
+        # Fetch eligible artists
+        with testing.assert_num_queries(1):
+            response = client.get("/native/v1/recommendation/top_artists_playlist/musique")
+            assert response.status_code == 200
+
+        assert response.json == {
+            "artists": [
+                {"id": second.id, "name": second.name, "image": second.thumbUrl},
+                {"id": first.id, "name": first.name, "image": first.thumbUrl},
+            ]
+        }
+
+    @pytest.mark.settings(
+        RECOMMENDATION_BACKEND="pcapi.connectors.recommendation.HttpBackend",
+        RECOMMENDATION_API_URL="https://example.com/recommendation/",
+    )
+    def test_skips_ineligible_artists(self, requests_mock, client):
+        blacklisted = artist_factories.ArtistFactory(is_blacklisted=True)
+        _link_artist_to_bookable_offer(blacklisted)
+        without_offer = artist_factories.ArtistFactory()
+        eligible = artist_factories.ArtistFactory()
+        _link_artist_to_bookable_offer(eligible)
+        unknown_id = "00000000-0000-0000-0000-000000000001"
+        requests_mock.get(
+            "https://example.com/recommendation/playlist_top_artists/MUSIQUE",
+            json={"playlist_artists": [blacklisted.id, without_offer.id, unknown_id, eligible.id]},
+        )
+
+        # Fetch eligible artists
+        with testing.assert_num_queries(1):
+            response = client.get("/native/v1/recommendation/top_artists_playlist/musique")
+            assert response.status_code == 200
+
+        assert [artist["id"] for artist in response.json["artists"]] == [eligible.id]
+
+    @pytest.mark.settings(
+        RECOMMENDATION_BACKEND="pcapi.connectors.recommendation.HttpBackend",
+        RECOMMENDATION_API_URL="https://example.com/recommendation/",
+    )
+    def test_empty_playlist(self, requests_mock, client):
+        requests_mock.get(
+            "https://example.com/recommendation/playlist_top_artists/MUSIQUE",
+            json={"playlist_artists": []},
+        )
+
+        response = client.get("/native/v1/recommendation/top_artists_playlist/musique")
+
+        assert response.status_code == 200
+        assert response.json == {"artists": []}
+
+    @pytest.mark.settings(
+        RECOMMENDATION_BACKEND="pcapi.connectors.recommendation.HttpBackend",
+        RECOMMENDATION_API_URL="https://example.com/recommendation/",
+    )
+    def test_empty_response_body(self, requests_mock, client):
+        requests_mock.get("https://example.com/recommendation/playlist_top_artists/MUSIQUE", content=b"")
+
+        with testing.assert_num_queries(0):
+            response = client.get("/native/v1/recommendation/top_artists_playlist/musique")
+            assert response.status_code == 200
+
+        assert response.json == {"artists": []}
+
+    def test_invalid_search_group_name(self, client):
+        with testing.assert_num_queries(0):
+            response = client.get("/native/v1/recommendation/top_artists_playlist/unknown")
+            assert response.status_code == 400
+
+        assert response.json == {"code": "RECOMMENDATION_API_VALIDATION"}
+
+    @pytest.mark.settings(
+        RECOMMENDATION_BACKEND="pcapi.connectors.recommendation.HttpBackend",
+        RECOMMENDATION_API_URL="https://example.com/recommendation/",
+    )
+    def test_timeout_error(self, requests_mock, client):
+        requests_mock.get(
+            "https://example.com/recommendation/playlist_top_artists/MUSIQUE",
+            exc=requests.exceptions.ConnectTimeout("a timeout error"),
+        )
+        with testing.assert_num_queries(0):
+            response = client.get("/native/v1/recommendation/top_artists_playlist/musique")
+            assert response.status_code == 504
+        assert response.json == {"code": "RECOMMENDATION_API_TIMEOUT"}
+
+    @pytest.mark.settings(
+        RECOMMENDATION_BACKEND="pcapi.connectors.recommendation.HttpBackend",
+        RECOMMENDATION_API_URL="https://example.com/recommendation/",
+    )
+    def test_generic_error(self, requests_mock, client):
+        requests_mock.get(
+            "https://example.com/recommendation/playlist_top_artists/MUSIQUE",
+            exc=requests.exceptions.TooManyRedirects("a redirect error"),
+        )
+        with testing.assert_num_queries(0):
+            response = client.get("/native/v1/recommendation/top_artists_playlist/musique")
+            assert response.status_code == 502
+        assert response.json == {"code": "RECOMMENDATION_API_ERROR"}
