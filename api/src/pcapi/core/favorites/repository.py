@@ -163,7 +163,7 @@ def get_favorite_artists_for(
     user: users_models.User,
     favorite_id: int | None = None,
     artist_id: str | None = None,
-) -> list[Artist]:
+) -> list[FavoriteArtist]:
     query = sa.select(models.FavoriteArtist).where(models.FavoriteArtist.userId == user.id)
 
     if favorite_id:
@@ -174,7 +174,7 @@ def get_favorite_artists_for(
 
     results = db.session.scalars(query).all()
 
-    return [row.artist for row in results]
+    return list(results)
 
 
 ## CREATE function

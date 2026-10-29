@@ -82,7 +82,8 @@ class FavoriteArtistTest:
         favs_from_db = repository.get_favorite_artists_for(user)
 
         assert len(favs_from_db) == 1
-        assert favs_from_db[0].id == favorite.artist.id
+        assert favs_from_db[0].id == favorite.id
+        assert favs_from_db[0].artist.id == favorite.artist.id
 
     def test_insert_favorite_artist(self):
         user = UserFactory()
@@ -93,7 +94,7 @@ class FavoriteArtistTest:
         favs_from_db = repository.get_favorite_artists_for(user)
 
         assert len(favs_from_db) == 1
-        assert favs_from_db[0].id == artist.id
+        assert favs_from_db[0].artist.id == artist.id
 
     def test_delete_favorite_artist(self):
         user = UserFactory()
