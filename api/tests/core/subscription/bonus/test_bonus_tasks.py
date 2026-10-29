@@ -294,6 +294,6 @@ class RecoverStartedBonusCreditApplicationsTest:
             status=subscription_models.FraudCheckStatus.STARTED
         )
 
-        tasks.recover_started_bonus_credit_applications(page_size=11)
+        tasks.recover_started_bonus_credit_applications(page_size=3)
 
         mocked_apply_for_qf_task.assert_not_called()

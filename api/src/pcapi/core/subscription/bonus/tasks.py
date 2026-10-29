@@ -233,11 +233,11 @@ def recover_started_bonus_credit_applications(
 
     handled_fraud_checks: list[subscription_models.BeneficiaryFraudCheck] = []
     disability_fraud_check_user_ids: set[int] = set()
-    expected_api_particulier_calls = 0
+    expected_api_particulier_calls = 0.0
     for fraud_check in started_bonus_credit_fraud_checks:
         match fraud_check.type:
             case subscription_models.FraudCheckType.QF_BONUS_CREDIT:
-                expected_api_particulier_calls += 12
+                expected_api_particulier_calls += bonus_constants.EXPECTED_QUOTIENT_FAMILIAL_CALLS
 
                 if expected_api_particulier_calls > page_size:
                     return handled_fraud_checks
