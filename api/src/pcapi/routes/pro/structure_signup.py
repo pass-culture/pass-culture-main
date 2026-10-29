@@ -144,19 +144,24 @@ def simulate_signup(
     except offerers_exceptions.InactiveSirenException:
         raise ApiErrors(errors={"global": ["Ce SIRET n'est pas actif."]})
 
-    result = structure_signup_api.get_signup_documents_and_messages(
+    activity = offerers_models.Activity[body.activity.name]
+    eligibility_documents = structure_signup_api.get_signup_documents(
         ape_code=data.ape_code,
         legal_category_code=data.legal_category_code,
         is_open_to_public=body.is_open_to_public,
+        activity=activity,
+    )
+    messages = structure_signup_api.get_signup_messages(
+        ape_code=data.ape_code,
         targets=body.targets,
-        activity=offerers_models.Activity[body.activity.name],
+        activity=activity,
     )
 
     return sirene_serialize.SignupSimulationResponseModel(
-        eligibility_documents=result.documents,
+        eligibility_documents=eligibility_documents,
         messages=[
             sirene_serialize.SignupSimulationMessageModel(level=message.level, type=message.type)
-            for message in result.messages
+            for message in messages
         ],
     )
 
@@ -185,13 +190,12 @@ def send_signup_simulation_summary(body: sirene_serialize.SignupSimulationSummar
     if settings.IS_DEV or settings.IS_TESTING:
         logger.info("Link for signup simulation summary: %s", signup_link)
 
-    eligibility_documents = structure_signup_api.get_signup_documents_and_messages(
+    eligibility_documents = structure_signup_api.get_signup_documents(
         ape_code=data.ape_code,
         legal_category_code=data.legal_category_code,
         is_open_to_public=body.is_open_to_public,
-        targets=body.targets,
         activity=activity,
-    ).documents
+    )
 
     send_signup_simulation_summary_email(
         email=body.email, signup_link=signup_link, eligibility_documents=eligibility_documents
