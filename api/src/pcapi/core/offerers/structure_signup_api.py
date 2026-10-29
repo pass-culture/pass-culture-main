@@ -165,29 +165,19 @@ def get_signup_documents_and_messages(
     return SignupSimulationResult(documents=eligibility_documents, messages=messages)
 
 
-def build_signup_structure_params(
-    siret: str,
-    is_open_to_public: bool,
-    targets: list[offerers_models.TargetAudience],
-    activity: offerers_models.Activity,
-) -> str:
+def build_signup_structure_params(structure_simulation_info: offerers_models.StructureSimulationInfo) -> str:
     # use an OrderedDict to get a deterministic output
     params = OrderedDict(
         {
-            "siret": siret,
-            "isOpenToPublic": "true" if is_open_to_public else "false",
-            "targets": [target.name for target in targets],
-            "activity": activity.name,
+            "siret": structure_simulation_info.siret,
+            "isOpenToPublic": "true" if structure_simulation_info.is_open_to_public else "false",
+            "targets": [target.name for target in structure_simulation_info.targets],
+            "activity": structure_simulation_info.activity.name,
         }
     )
     return urlencode(params, doseq=True)
 
 
-def build_signup_link(
-    siret: str,
-    is_open_to_public: bool,
-    targets: list[offerers_models.TargetAudience],
-    activity: offerers_models.Activity,
-) -> str:
-    encoded_params = build_signup_structure_params(siret, is_open_to_public, targets, activity)
+def build_signup_link(structure_simulation_info: offerers_models.StructureSimulationInfo) -> str:
+    encoded_params = build_signup_structure_params(structure_simulation_info)
     return f"{settings.PRO_URL}/inscription/compte/creation?{encoded_params}"
