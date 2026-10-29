@@ -2977,8 +2977,15 @@ def synchronize_accessibility_with_acceslibre(
                 or venue.accessibilityProvider.lastUpdateAtProvider.astimezone(pytz.utc)
                 < last_update.astimezone(pytz.utc)
             ):
-                logger.info("New data at acceslibre on %s", last_update)
-                updates_to_apply.append((venue, last_update, accessibility_data, slug, url))
+                if accessibility_data:
+                    logger.info("New data at acceslibre on %s", last_update)
+                    updates_to_apply.append((venue, last_update, accessibility_data, slug, url))
+
+                # In case a venue is synchronized but has no data, we want to be informed
+                else:
+                    logger.warning(
+                        "Venue %s is synchronized with Acceslibre with slug %s but has no data", venue.id, slug
+                    )
 
             # if last_update is None, the slug has been removed from acceslibre, we try a new match
             # and save accessibility data to DB
@@ -3016,14 +3023,6 @@ def synchronize_accessibility_with_acceslibre(
                 else:
                     logger.info("No match found, deleting link with acceslibre")
                     providers_to_delete.append((venue.id, venue.accessibilityProvider, slug))
-
-            # In case a venue is synchronized but has no data, we want to be informed
-            if venue.accessibilityProvider and not venue.accessibilityProvider.externalAccessibilityData:
-                logger.error(
-                    "Venue %s is synchronized with Acceslibre at %s but has no data",
-                    venue.id,
-                    venue.accessibilityProvider.externalAccessibilityData,
-                )
 
         if apply:
             try:
