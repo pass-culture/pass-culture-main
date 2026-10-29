@@ -332,7 +332,7 @@ importers:
     devDependencies:
       '@axe-core/playwright':
         specifier: 4.12.1
-        version: 4.12.1(playwright-core@1.64.0)
+        version: 4.12.1(playwright-core@1.64.1)
       '@biomejs/biome':
         specifier: 2.5.15
         version: 2.5.15
@@ -340,8 +340,8 @@ importers:
         specifier: 0.99.0
         version: 0.99.0(magicast@0.5.4)(typescript@6.0.3)
       '@playwright/test':
-        specifier: 1.64.0
-        version: 1.64.0
+        specifier: 1.64.1
+        version: 1.64.1
       '@storybook/addon-a11y':
         specifier: 10.6.2
         version: 10.6.2(storybook@10.6.2(@types/react@19.3.0)(prettier@3.9.9)(react@19.3.0))
@@ -1756,8 +1756,8 @@ packages:
   '@pass-culture/design-system@0.13.0':
     resolution: {integrity: sha512-5YGTcVwRWX2A0sy4N7BvDLro7pp0KbvHKS2TXGNAcPSQYP/OYL/931p6mVVjY8Rxh+9X+djliSqwAZiCS+tj2w==}
 
-  '@playwright/test@1.64.0':
-    resolution: {integrity: sha512-oTN9FNYuN6bqQMwiho6jJKLCG2/QOYCixGXuCjRmzOq23eODeukuY2XiAVoVpAECbuezMt1MHQjAiQxK8F+Y+g==}
+  '@playwright/test@1.64.1':
+    resolution: {integrity: sha512-IaYGml/nSOiZWROfPtuIL7neuu9qDOZ3TNvNljUIrhDMxiGTgPjzj/g9p9RxpS2tSepPDRY+UwAaEeiKtUvIAg==}
     engines: {node: '>=20'}
     hasBin: true
 
@@ -3747,13 +3747,13 @@ packages:
   pkg-types@2.3.2:
     resolution: {integrity: sha512-v0sVXzj7oPGysr543YYZLYbcJNJsKikSsp/fFzoxQ12ewY3ZZr7oCPC8y7OlmxfYB3QPvriXmuPD8KZggE1vqg==}
 
-  playwright-core@1.64.0:
-    resolution: {integrity: sha512-T9r+MZkTECl2+oUcZ26YgZzTrYidTsIhYYkJix+6iDOymOb1FB2RLLSOxRGnZGv5DStt+aduIVbt+E8WygXYpg==}
+  playwright-core@1.64.1:
+    resolution: {integrity: sha512-BC4s8y6SEVA6Q1rSxZTto8hI1KUI3xXlHGZgvGqP4IqPdI/a6FX9H29IDNz7vKo9l21b6LfYosScPL6M3xxyDQ==}
     engines: {node: '>=20'}
     hasBin: true
 
-  playwright@1.64.0:
-    resolution: {integrity: sha512-kVzTnYFYEyQ9RGzBjNCd2+yEqWmVbxl3AHPynv3qQ6JTjv4a+kwRcnqQwIpuP3NnrnIrE/Q6wWAIAvMfIE2/Yg==}
+  playwright@1.64.1:
+    resolution: {integrity: sha512-HCrVhHr5QQuwYoswEUGTb7gGp522yflbv/ST8nF4sFWGuLjQCt17Q/EubpGGSNKYn1tsTCPZxqHhHCfVURu7UA==}
     engines: {node: '>=20'}
     hasBin: true
 
@@ -4845,10 +4845,10 @@ snapshots:
       is-potential-custom-element-name: 1.0.1
       lru-cache: 11.5.2
 
-  '@axe-core/playwright@4.12.1(playwright-core@1.64.0)':
+  '@axe-core/playwright@4.12.1(playwright-core@1.64.1)':
     dependencies:
       axe-core: 4.12.1
-      playwright-core: 1.64.0
+      playwright-core: 1.64.1
 
   '@babel/code-frame@7.29.7':
     dependencies:
@@ -5712,9 +5712,9 @@ snapshots:
 
   '@pass-culture/design-system@0.13.0': {}
 
-  '@playwright/test@1.64.0':
+  '@playwright/test@1.64.1':
     dependencies:
-      playwright: 1.64.0
+      playwright: 1.64.1
 
   '@radix-ui/primitive@1.1.7': {}
 
@@ -7670,11 +7670,11 @@ snapshots:
       exsolve: 1.1.1
       pathe: 2.0.3
 
-  playwright-core@1.64.0: {}
+  playwright-core@1.64.1: {}
 
-  playwright@1.64.0:
+  playwright@1.64.1:
     dependencies:
-      playwright-core: 1.64.0
+      playwright-core: 1.64.1
 
   postcss-media-query-parser@0.2.3: {}
 
