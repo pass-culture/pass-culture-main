@@ -54,7 +54,6 @@ import strokeWarningIcon from '@/icons/stroke-warning.svg'
 import { useIndividualOfferImageUpload } from '@/pages/IndividualOffer/commons/useIndividualOfferImageUpload'
 import { getAfterSubmitPath } from '@/pages/IndividualOffer/commons/utils/getAfterSubmitPath'
 import { ActionBar } from '@/pages/IndividualOffer/components/ActionBar/ActionBar'
-import { Divider } from '@/ui-kit/Divider/Divider'
 
 import { ProductBanner } from '../../components/ProductBanner/ProductBanner'
 import { buildInitialValues } from '../commons/buildInitialValues'
@@ -349,123 +348,121 @@ export const IndividualOfferMediaScreen = ({
           <FormLayout>
             {isOfferProductBasedButNotSynchronized(offer) && <ProductBanner />}
             <FormLayout.Section title="Illustrez votre offre">
-              <FormLayout.Row inline className={styles['media-row']}>
-                {hasImage ? (
-                  <div className={styles['image']}>
-                    <SafeImage
-                      alt={alternativeText || 'Prévisualisation de l’image'}
-                      testId="image-preview"
-                      className={styles['image-preview']}
-                      src={imageUrl}
-                      placeholder={
-                        <ImagePlaceholder
-                          className={styles['image-placeholder']}
-                        />
-                      }
-                      credit={draftCredit}
+              <FormLayout.Row className={styles['media-rows']}>
+                <FormLayout.Row className={styles['media-cell']}>
+                  {hasImage ? (
+                    <div className={styles['image']}>
+                      <SafeImage
+                        alt={alternativeText || 'Prévisualisation de l’image'}
+                        testId="image-preview"
+                        className={styles['image-preview']}
+                        src={imageUrl}
+                        placeholder={
+                          <ImagePlaceholder
+                            className={styles['image-placeholder']}
+                          />
+                        }
+                        credit={draftCredit}
+                      />
+                      {!isImageReadOnly && (
+                        <div className={styles['image-actions']}>
+                          <Button
+                            ref={editButtonRef}
+                            onClick={() => setIsModalImageOpen(true)}
+                            variant={ButtonVariant.SECONDARY}
+                            color={ButtonColor.NEUTRAL}
+                            size={ButtonSize.SMALL}
+                            aria-label="Modifier l’image"
+                            icon={fullEditIcon}
+                            label="Modifier"
+                            id={editButtonId}
+                          />
+                          <Button
+                            onClick={onImageDeleteHandler}
+                            variant={ButtonVariant.SECONDARY}
+                            color={ButtonColor.NEUTRAL}
+                            size={ButtonSize.SMALL}
+                            icon={fullTrashIcon}
+                            label="Supprimer"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <UploadZone
+                      key={uploadZoneKey}
+                      ref={uploadZoneRef}
+                      id={uploadZoneId}
+                      label="Ajoutez une image"
+                      labelVariant="title3"
+                      icon={strokePictureIcon}
+                      accept={ALLOWED_IMAGE_TYPES_TO_EXTENSIONS}
+                      maxSize={MAX_FILE_SIZE}
+                      conditionsText={IMAGE_CONDITIONS_TEXT}
+                      maxFiles={1}
+                      disabled={isImageReadOnly}
+                      error={imageError}
+                      onFilesAdded={([file]) => void handleImageAdded(file)}
                     />
-                    {!isImageReadOnly && (
-                      <div className={styles['image-actions']}>
-                        <Button
-                          ref={editButtonRef}
-                          onClick={() => setIsModalImageOpen(true)}
-                          variant={ButtonVariant.SECONDARY}
-                          color={ButtonColor.NEUTRAL}
-                          size={ButtonSize.SMALL}
-                          aria-label="Modifier l’image"
-                          icon={fullEditIcon}
-                          label="Modifier"
-                          id={editButtonId}
-                        />
-                        <Button
-                          onClick={onImageDeleteHandler}
-                          variant={ButtonVariant.SECONDARY}
-                          color={ButtonColor.NEUTRAL}
-                          size={ButtonSize.SMALL}
-                          icon={fullTrashIcon}
-                          label="Supprimer"
-                        />
+                  )}
+                  <ModalImageUpsertOrEdit
+                    mode={UploaderModeEnum.OFFER}
+                    onImageUpload={onImageUploadHandler}
+                    onImageDelete={onImageDeleteHandler}
+                    initialValues={{
+                      ...initialValues,
+                      draftImage,
+                      credit: draftCredit,
+                      alternativeText: draftAlternativeText,
+                    }}
+                    refToFocusOnClose={hasImage ? editButtonRef : uploadZoneRef}
+                    onOpenChange={(open) => {
+                      if (!open) {
+                        setUploadZoneKey((prev) => prev + 1)
+                      }
+                      setIsModalImageOpen(open)
+                    }}
+                    open={isModalImageOpen}
+                  />
+                  <SimpleModal
+                    title="Votre offre ne sera plus à la une"
+                    iconPath={strokeWarningIcon}
+                    isOpen={isDeleteImageOpen}
+                    onClose={() => setIsDeleteImageOpen(false)}
+                    actionButtons={[
+                      <Button
+                        onClick={() => setIsDeleteImageOpen(false)}
+                        variant={ButtonVariant.SECONDARY}
+                        color={ButtonColor.NEUTRAL}
+                        label="Annuler"
+                        key="cancel"
+                      />,
+                      <Button
+                        onClick={onImageDeleteHandler}
+                        color={ButtonColor.DANGER}
+                        label="Supprimer l'image"
+                        key="confirm"
+                      />,
+                    ]}
+                  >
+                    <p>
+                      Sans image d'illustration, cette offre ne pourra plus être
+                      mise à la une de votre catalogue.
+                    </p>
+                    <p>Souhaitez-vous réellement supprimer cette image ?</p>
+                  </SimpleModal>
+                </FormLayout.Row>
+                <FormLayout.Row className={styles['media-cell']}>
+                  <div className={styles['media-wrapper']}>
+                    <h3 className={styles['media-title']}>Ajoutez une vidéo</h3>
+                    <VideoUploader uploadTipsId={tipsVideoUploaderId} />
+                    {!videoData?.videoThumbnailUrl && (
+                      <div id={tipsVideoUploaderId}>
+                        <VideoUploaderTips />
                       </div>
                     )}
                   </div>
-                ) : (
-                  <UploadZone
-                    key={uploadZoneKey}
-                    ref={uploadZoneRef}
-                    id={uploadZoneId}
-                    label="Ajoutez une image"
-                    labelVariant="title3"
-                    icon={strokePictureIcon}
-                    accept={ALLOWED_IMAGE_TYPES_TO_EXTENSIONS}
-                    maxSize={MAX_FILE_SIZE}
-                    conditionsText={IMAGE_CONDITIONS_TEXT}
-                    maxFiles={1}
-                    disabled={isImageReadOnly}
-                    error={imageError}
-                    onFilesAdded={([file]) => void handleImageAdded(file)}
-                  />
-                )}
-                <ModalImageUpsertOrEdit
-                  mode={UploaderModeEnum.OFFER}
-                  onImageUpload={onImageUploadHandler}
-                  onImageDelete={onImageDeleteHandler}
-                  initialValues={{
-                    ...initialValues,
-                    draftImage,
-                    credit: draftCredit,
-                    alternativeText: draftAlternativeText,
-                  }}
-                  refToFocusOnClose={hasImage ? editButtonRef : uploadZoneRef}
-                  onOpenChange={(open) => {
-                    if (!open) {
-                      setUploadZoneKey((prev) => prev + 1)
-                    }
-                    setIsModalImageOpen(open)
-                  }}
-                  open={isModalImageOpen}
-                />
-                <SimpleModal
-                  title="Votre offre ne sera plus à la une"
-                  iconPath={strokeWarningIcon}
-                  isOpen={isDeleteImageOpen}
-                  onClose={() => setIsDeleteImageOpen(false)}
-                  actionButtons={[
-                    <Button
-                      onClick={() => setIsDeleteImageOpen(false)}
-                      variant={ButtonVariant.SECONDARY}
-                      color={ButtonColor.NEUTRAL}
-                      label="Annuler"
-                      key="cancel"
-                    />,
-                    <Button
-                      onClick={onImageDeleteHandler}
-                      color={ButtonColor.DANGER}
-                      label="Supprimer l'image"
-                      key="confirm"
-                    />,
-                  ]}
-                >
-                  <p>
-                    Sans image d'illustration, cette offre ne pourra plus être
-                    mise à la une de votre catalogue.
-                  </p>
-                  <p>Souhaitez-vous réellement supprimer cette image ?</p>
-                </SimpleModal>
-                <Divider
-                  orientation="vertical"
-                  className={styles['media-divider']}
-                />
-                <FormLayout.SubSection
-                  title="Ajoutez une vidéo"
-                  className={styles['media-sub-section']}
-                >
-                  <VideoUploader uploadTipsId={tipsVideoUploaderId} />
-                  {!videoData?.videoThumbnailUrl && (
-                    <div id={tipsVideoUploaderId}>
-                      <VideoUploaderTips />
-                    </div>
-                  )}
-                </FormLayout.SubSection>
+                </FormLayout.Row>
               </FormLayout.Row>
             </FormLayout.Section>
           </FormLayout>
