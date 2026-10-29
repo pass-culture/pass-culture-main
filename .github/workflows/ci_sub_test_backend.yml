@@ -306,7 +306,7 @@ jobs:
         group: [1, 2, 3, 4]
     services:
       redis:
-        image: redis:7-alpine
+        image: mirror.gcr.io/valkey/valkey:9.0-alpine
         ports:
           - 6379:6379
         options: >-
