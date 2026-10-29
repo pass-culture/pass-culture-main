@@ -133,11 +133,6 @@ def ubble_archive_past_identifications_automation() -> None:
 @blueprint.cli.command("recover_started_bonus_credit_applications")
 @cron_decorators.log_cron
 def recover_started_bonus_credit_applications() -> None:
-    is_currently_rate_limited = rate_limit_utils.get_rate_limit_lock_ttl(api_particulier.RATE_LIMIT_LOCK_KEY)
-    if is_currently_rate_limited:
-        logger.warning("API Particulier rate limit reached, returning early to respect Retry-After")
-        return
-
     hour_in_paris = datetime.datetime.now(tz=date_utils.PARIS_TZ).hour
     is_night = hour_in_paris < 8 or 21 < hour_in_paris
     if is_night:
