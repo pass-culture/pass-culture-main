@@ -4,6 +4,7 @@ import logging
 import os
 import re
 import typing
+from dataclasses import dataclass
 from datetime import date
 from datetime import datetime
 
@@ -297,7 +298,8 @@ DisplayableActivity: enum.EnumType = enum.Enum(  # type: ignore[misc]
 )
 
 
-class StructureSimulationInfos(typing.TypedDict):
+@dataclass(kw_only=True, frozen=True, slots=True)
+class StructureSimulationInfo:
     siret: str
     is_open_to_public: bool
     targets: list[TargetAudience]

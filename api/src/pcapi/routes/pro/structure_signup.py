@@ -174,12 +174,13 @@ def send_signup_simulation_summary(body: sirene_serialize.SignupSimulationSummar
         raise ApiErrors(errors={"global": ["Ce SIRET n'est pas actif."]})
 
     activity = offerers_models.Activity[body.activity.name]
-    signup_link = structure_signup_api.build_signup_link(
+    structure_simulation_info = offerers_models.StructureSimulationInfo(
         siret=body.siret,
         is_open_to_public=body.is_open_to_public,
         targets=body.targets,
         activity=activity,
     )
+    signup_link = structure_signup_api.build_signup_link(structure_simulation_info)
 
     if settings.IS_DEV or settings.IS_TESTING:
         logger.info("Link for signup simulation summary: %s", signup_link)

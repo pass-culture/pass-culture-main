@@ -31,14 +31,14 @@ class SendProUserValidationEmailTest:
     def test_sends_email_to_pro_user_with_simulation_infos(self):
         user = users_factories.ProFactory()
         token = token_utils.Token.create(token_utils.TokenType.SIGNUP_EMAIL_CONFIRMATION, ttl=None, user_id=user.id)
-        structure_simulation_infos = {
-            "siret": "44285836100029",
-            "is_open_to_public": True,
-            "targets": [offerers_models.TargetAudience.INDIVIDUAL],
-            "activity": offerers_models.Activity.MUSEUM,
-        }
+        structure_simulation_info = offerers_models.StructureSimulationInfo(
+            siret="44285836100029",
+            is_open_to_public=True,
+            targets=[offerers_models.TargetAudience.INDIVIDUAL],
+            activity=offerers_models.Activity.MUSEUM,
+        )
 
-        send_signup_email_confirmation_to_pro(user, token.encoded_token, structure_simulation_infos)
+        send_signup_email_confirmation_to_pro(user, token.encoded_token, structure_simulation_info)
 
         assert len(mails_testing.outbox) == 1  # test number of emails sent
         assert mails_testing.outbox[0]["To"] == user.email
