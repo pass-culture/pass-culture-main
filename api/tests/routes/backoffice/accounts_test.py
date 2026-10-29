@@ -3064,7 +3064,7 @@ class QFBonusCreditRequestTest(PostEndpointHelper):
         assert qf_fraud_check.resultContent
         custodian = qf_fraud_check.resultContent["custodian"]
         assert custodian["birth_country_cog_code"] == "99101"
-        assert custodian["birth_city_cog_code"] is None
+        assert "birth_city_cog_code" not in custodian
 
     def test_city_is_missing(self, authenticated_client):
         user = users_factories.BeneficiaryFactory()

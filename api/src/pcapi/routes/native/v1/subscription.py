@@ -9,7 +9,6 @@ from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import exceptions
 from pcapi.core.subscription import fraud_check_api as fraud_api
-from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription import profile_options
 from pcapi.core.subscription import schemas as subscription_schemas
 from pcapi.core.subscription.bonus import api as bonus_api
@@ -186,36 +185,11 @@ def create_quotient_familial_bonus_credit_fraud_check(body: serializers.Quotient
         if delay is not None:
             on_commit(partial(bonus_statistics_api.record_first_bonus_attempt, delay))
 
-    disability_fraud_checks = bonus_fraud_api.accelerate_automatic_disability_bonus_fraud_checks(
-        current_user.beneficiaryFraudChecks, new_origin="/subscription/bonus/quotient_familial endpoint"
-    )
-
     if not FeatureToggle.ENABLE_BONUS_CREDIT.is_active():
         return
 
     payload = bonus_tasks.BonusTaskPayload(fraud_check_id=fraud_check.id).model_dump()
     on_commit(partial(bonus_tasks.apply_for_quotient_familial_bonus_task.delay, payload))
-
-    for i, fraud_check in enumerate(disability_fraud_checks):
-        # accessing AAH and AEEH of the same person at the same time crashes API Particulier
-        countdown = bonus_constants.DISABILITY_COUNTDOWN * i
-        if fraud_check.type == subscription_models.FraudCheckType.AAH_BONUS_CREDIT:
-            aah_payload = bonus_tasks.BonusTaskPayload(fraud_check_id=fraud_check.id).model_dump()
-            on_commit(
-                partial(
-                    bonus_tasks.apply_for_adult_disability_bonus_task.apply_async, (aah_payload,), countdown=countdown
-                )
-            )
-
-        if fraud_check.type == subscription_models.FraudCheckType.AEEH_BONUS_CREDIT:
-            aeeh_payload = bonus_tasks.BonusTaskPayload(fraud_check_id=fraud_check.id).model_dump()
-            on_commit(
-                partial(
-                    bonus_tasks.apply_for_disabled_child_education_bonus_task.apply_async,
-                    (aeeh_payload,),
-                    countdown=countdown,
-                )
-            )
 
 
 @blueprint.native_route("/subscription/bonus/disability", methods=["POST"])

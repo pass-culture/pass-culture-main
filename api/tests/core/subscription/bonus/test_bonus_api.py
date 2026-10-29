@@ -1486,6 +1486,19 @@ class QFBonusCreditEligibilityTest:
 
         assert qf_bonification_status == bonus_schemas.QFBonificationStatus.NOT_ELIGIBLE
 
+    @pytest.mark.parametrize(
+        "status", [subscription_models.FraudCheckStatus.STARTED, subscription_models.FraudCheckStatus.KO]
+    )
+    def test_automatic_fraud_check_ignored(self, status):
+        user = users_factories.BeneficiaryFactory()
+        subscription_factories.QFBonusCreditFraudCheckFactory(
+            user=user, status=status, reason=f"{bonus_constants.AUTOMATIC_ORIGIN}"
+        )
+
+        qf_bonification_status = bonus_api.get_user_qf_bonification_status(user)
+
+        assert qf_bonification_status == bonus_schemas.QFBonificationStatus.ELIGIBLE
+
 
 @pytest.mark.usefixtures("db_session")
 class DisabilityBonusCreditEligibilityTest:
