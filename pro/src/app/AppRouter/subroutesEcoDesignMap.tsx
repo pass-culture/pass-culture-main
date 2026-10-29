@@ -3,13 +3,13 @@
 
 import { noop } from '@/commons/utils/noop'
 
-import type { CustomRouteGroupChild } from './types'
+import type { CustomRouteGroup } from './types'
 
-export const routesEcoDesign: CustomRouteGroupChild[] = [
+export const routesEcoDesign: CustomRouteGroup['children'] = [
   {
     lazy: () => import('@/pages/EcoDesign/EcoDesignMenu'),
     loader: noop,
-    path: '',
+    index: true,
     handle: {
       title: 'Déclaration d\u2019écoconception de l\u2019espace partenaire',
     },
