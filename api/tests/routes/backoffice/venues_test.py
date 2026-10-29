@@ -20,6 +20,7 @@ from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.geography import models as geography_models
 from pcapi.core.geography import utils as geography_utils
+from pcapi.core.history import constants as history_constants
 from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import factories as offerers_factories
@@ -1578,7 +1579,7 @@ class UpdateVenueTest(PostEndpointHelper):
         assert venue.offererAddress == offerer_address
         assert len(venue.action_history) == 1
         action = venue.action_history[0]
-        assert action.actionType == history_models.ActionType.INFO_MODIFIED
+        assert action.actionType == history_constants.ActionType.INFO_MODIFIED
         assert action.venue == venue
         assert action.extraData["modified_info"] == {
             "offererAddress.address.banId": {"new_info": "50353_0080_00055", "old_info": None},
@@ -1745,7 +1746,7 @@ class UpdateVenueTest(PostEndpointHelper):
 
         assert set(venue.criteria) == {tag2, tag3}
         assert len(venue.action_history) == 1
-        assert venue.action_history[0].actionType == history_models.ActionType.INFO_MODIFIED
+        assert venue.action_history[0].actionType == history_constants.ActionType.INFO_MODIFIED
         assert venue.action_history[0].authorUser == legit_user
         assert venue.action_history[0].extraData == {
             "modified_info": {"criteria": {"old_info": ["Premier", "Deuxième"], "new_info": ["Deuxième", "Troisième"]}}
@@ -1779,7 +1780,7 @@ class UpdateVenueTest(PostEndpointHelper):
         assert venue.comment is None
         assert venue.current_pricing_point_id == venue.id
         assert len(venue.action_history) == 1
-        assert venue.action_history[0].actionType == history_models.ActionType.INFO_MODIFIED
+        assert venue.action_history[0].actionType == history_constants.ActionType.INFO_MODIFIED
         assert venue.action_history[0].authorUser == legit_user
         assert venue.action_history[0].extraData == {
             "modified_info": {
@@ -2237,7 +2238,7 @@ class UpdateForFraudTest(PostEndpointHelper):
         assert venue.confidenceLevel == offerers_models.OffererConfidenceLevel.WHITELIST
         assert len(venue.action_history) == 1
         action = venue.action_history[0]
-        assert action.actionType == history_models.ActionType.FRAUD_INFO_MODIFIED
+        assert action.actionType == history_constants.ActionType.FRAUD_INFO_MODIFIED
         assert action.authorUser == legit_user
         assert action.comment == "Test"
         assert action.extraData == {
@@ -2266,7 +2267,7 @@ class UpdateForFraudTest(PostEndpointHelper):
         assert venue.confidenceLevel == offerers_models.OffererConfidenceLevel.MANUAL_REVIEW
         assert len(venue.action_history) == 1
         action = venue.action_history[0]
-        assert action.actionType == history_models.ActionType.FRAUD_INFO_MODIFIED
+        assert action.actionType == history_constants.ActionType.FRAUD_INFO_MODIFIED
         assert action.authorUser == legit_user
         assert action.comment == "Test"
         assert action.extraData == {
@@ -2296,7 +2297,7 @@ class UpdateForFraudTest(PostEndpointHelper):
         assert db.session.query(offerers_models.OffererConfidenceRule).count() == 0
         assert len(venue.action_history) == 1
         action = venue.action_history[0]
-        assert action.actionType == history_models.ActionType.FRAUD_INFO_MODIFIED
+        assert action.actionType == history_constants.ActionType.FRAUD_INFO_MODIFIED
         assert action.authorUser == legit_user
         assert action.comment == "Test"
         assert action.extraData == {
@@ -2350,7 +2351,7 @@ class GetVenueHistoryTest(GetEndpointHelper):
         comment = "test comment"
         history_factories.ActionHistoryFactory(
             # displayed because legit_user has fraud permission
-            actionType=history_models.ActionType.FRAUD_INFO_MODIFIED,
+            actionType=history_constants.ActionType.FRAUD_INFO_MODIFIED,
             actionDate=date_utils.get_naive_utc_now() - timedelta(days=2),
             authorUser=pro_fraud_admin,
             venue=venue,
@@ -2365,14 +2366,14 @@ class GetVenueHistoryTest(GetEndpointHelper):
             },
         )
         history_factories.ActionHistoryFactory(
-            actionType=history_models.ActionType.COMMENT,
+            actionType=history_constants.ActionType.COMMENT,
             actionDate=date_utils.get_naive_utc_now() - timedelta(hours=3),
             authorUser=legit_user,
             venue=venue,
             comment=comment,
         )
         history_factories.ActionHistoryFactory(
-            actionType=history_models.ActionType.INFO_MODIFIED,
+            actionType=history_constants.ActionType.INFO_MODIFIED,
             actionDate=date_utils.get_naive_utc_now() - timedelta(hours=2),
             authorUser=legit_user,
             venue=venue,
@@ -2442,16 +2443,16 @@ class GetVenueHistoryTest(GetEndpointHelper):
 
         history_factories.ActionHistoryFactory(
             venueId=venue.id,
-            actionType=history_models.ActionType.VENUE_REGULARIZATION,
+            actionType=history_constants.ActionType.VENUE_REGULARIZATION,
             extraData={"destination_venue_id": destination_venue.id},
             comment=None,
         )
         history_factories.ActionHistoryFactory(
-            venueId=venue.id, actionType=history_models.ActionType.VENUE_SOFT_DELETED, comment=None
+            venueId=venue.id, actionType=history_constants.ActionType.VENUE_SOFT_DELETED, comment=None
         )
         history_factories.ActionHistoryFactory(
             venueId=destination_venue.id,
-            actionType=history_models.ActionType.VENUE_REGULARIZATION,
+            actionType=history_constants.ActionType.VENUE_REGULARIZATION,
             extraData={
                 "origin_venue_id": venue.id,
                 "modified_info": {"isPermanent": {"new_info": True}},
@@ -2503,8 +2504,8 @@ class GetVenueHistoryTest(GetEndpointHelper):
 
     def test_venue_history_without_fraud_permission(self, client, read_only_bo_user):
         venue = offerers_factories.VenueFactory()
-        history_factories.ActionHistoryFactory(actionType=history_models.ActionType.COMMENT, venue=venue)
-        history_factories.ActionHistoryFactory(actionType=history_models.ActionType.FRAUD_INFO_MODIFIED, venue=venue)
+        history_factories.ActionHistoryFactory(actionType=history_constants.ActionType.COMMENT, venue=venue)
+        history_factories.ActionHistoryFactory(actionType=history_constants.ActionType.FRAUD_INFO_MODIFIED, venue=venue)
 
         url = url_for(self.endpoint, venue_id=venue.id)
 
@@ -2554,7 +2555,7 @@ class CommentVenueTest(PostEndpointHelper):
         db.session.refresh(venue)
         assert len(venue.action_history) == 1
         action = venue.action_history[0]
-        assert action.actionType == history_models.ActionType.COMMENT
+        assert action.actionType == history_constants.ActionType.COMMENT
         assert action.actionDate is not None
         assert action.authorUserId == legit_user.id
         assert action.userId is None
@@ -2972,7 +2973,7 @@ class RemovePricingPointTest(PostEndpointHelper):
         assert venue_with_no_siret.pricing_point_links[0].timespan.upper <= date_utils.get_naive_utc_now()
 
         action = db.session.query(history_models.ActionHistory).one()
-        assert action.actionType == history_models.ActionType.INFO_MODIFIED
+        assert action.actionType == history_constants.ActionType.INFO_MODIFIED
         assert action.actionDate is not None
         assert action.authorUserId == legit_user.id
         assert action.userId is None
@@ -3177,7 +3178,7 @@ class RemoveSiretTest(PostEndpointHelper):
         assert venue.current_pricing_point == target_venue
 
         action = db.session.query(history_models.ActionHistory).filter_by(venueId=venue.id).one()
-        assert action.actionType == history_models.ActionType.INFO_MODIFIED
+        assert action.actionType == history_constants.ActionType.INFO_MODIFIED
         assert action.actionDate is not None
         assert action.authorUserId == legit_user.id
         assert action.offererId == venue.managingOffererId
@@ -3191,7 +3192,7 @@ class RemoveSiretTest(PostEndpointHelper):
         assert other_venue.current_pricing_point is None
 
         other_action = db.session.query(history_models.ActionHistory).filter_by(venueId=other_venue.id).one()
-        assert other_action.actionType == history_models.ActionType.INFO_MODIFIED
+        assert other_action.actionType == history_constants.ActionType.INFO_MODIFIED
         assert other_action.actionDate is not None
         assert other_action.authorUserId == legit_user.id
         assert other_action.offererId == venue.managingOffererId
@@ -3418,7 +3419,7 @@ class CloseVenueTest(PostEndpointHelper):
 
         venue_closed_action = (
             db.session.query(history_models.ActionHistory)
-            .filter_by(venueId=venue.id, actionType=history_models.ActionType.VENUE_CLOSED)
+            .filter_by(venueId=venue.id, actionType=history_constants.ActionType.VENUE_CLOSED)
             .one()
         )
         assert venue_closed_action.comment == comment
@@ -3501,7 +3502,7 @@ class ReopenVenueTest(PostEndpointHelper):
 
         venue_reopened_action = (
             db.session.query(history_models.ActionHistory)
-            .filter_by(venueId=venue.id, actionType=history_models.ActionType.VENUE_REOPENED)
+            .filter_by(venueId=venue.id, actionType=history_constants.ActionType.VENUE_REOPENED)
             .one()
         )
         assert venue_reopened_action.comment == comment
@@ -3550,7 +3551,7 @@ class PostToggleVenueProviderIsActiveTest(PostEndpointHelper):
         assert venue_provider.isActive is not is_active
 
         action = db.session.query(history_models.ActionHistory).one()
-        assert action.actionType == history_models.ActionType.LINK_VENUE_PROVIDER_UPDATED
+        assert action.actionType == history_constants.ActionType.LINK_VENUE_PROVIDER_UPDATED
         assert action.authorUserId == legit_user.id
         assert action.venueId == venue_provider.venue.id
         assert action.extraData["provider_id"] == venue_provider.provider.id
@@ -3640,7 +3641,7 @@ class PostDeleteVenueProviderTest(PostEndpointHelper):
             == 0
         )
         action = db.session.query(history_models.ActionHistory).one()
-        assert action.actionType == history_models.ActionType.LINK_VENUE_PROVIDER_DELETED
+        assert action.actionType == history_constants.ActionType.LINK_VENUE_PROVIDER_DELETED
         assert action.authorUserId == legit_user.id
         assert action.venueId == venue_id
         assert action.extraData["provider_id"] == provider_id
@@ -3792,7 +3793,7 @@ class SuspendReimbursementTest(PostEndpointHelper):
 
         assert venue.isReimbursementSuspended is True
         assert len(venue.action_history) == 1
-        assert venue.action_history[0].actionType == history_models.ActionType.VENUE_REIMBURSEMENT_SUSPENDED
+        assert venue.action_history[0].actionType == history_constants.ActionType.VENUE_REIMBURSEMENT_SUSPENDED
         assert venue.action_history[0].authorUser == legit_user
         assert venue.action_history[0].offererId == venue.managingOffererId
         assert venue.action_history[0].comment == "Test"
@@ -3818,7 +3819,7 @@ class UnsuspendReimbursementTest(PostEndpointHelper):
 
         assert venue.isReimbursementSuspended is False
         assert len(venue.action_history) == 1
-        assert venue.action_history[0].actionType == history_models.ActionType.VENUE_REIMBURSEMENT_SUSPENDED
+        assert venue.action_history[0].actionType == history_constants.ActionType.VENUE_REIMBURSEMENT_SUSPENDED
         assert venue.action_history[0].authorUser == legit_user
         assert venue.action_history[0].offererId == venue.managingOffererId
         assert venue.action_history[0].comment == "Test"

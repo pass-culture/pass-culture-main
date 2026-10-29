@@ -5,6 +5,7 @@ from unittest.mock import patch
 import pytest
 from flask import url_for
 
+from pcapi.core.history import constants as history_constants
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.permissions import models as perm_models
@@ -346,7 +347,7 @@ class CreatePivotTest(PostEndpointHelper):
         assert created.theaterId == form["theater_id"]
         assert created.internalId == form["internal_id"]
         action = db.session.query(history_models.ActionHistory).one()
-        assert action.actionType == history_models.ActionType.PIVOT_CREATED
+        assert action.actionType == history_constants.ActionType.PIVOT_CREATED
         assert action.authorUser == legit_user
         assert action.venueId == venue.id
         assert action.extraData["cinema_id"] == "ABCDEFGHIJKLMNOPQR=="
@@ -377,7 +378,7 @@ class CreatePivotTest(PostEndpointHelper):
         assert created.cinemaProviderPivot.idAtProvider == form["cinema_id"]
         assert created.cinemaUrl == form["cinema_url"]
         action = db.session.query(history_models.ActionHistory).one()
-        assert action.actionType == history_models.ActionType.PIVOT_CREATED
+        assert action.actionType == history_constants.ActionType.PIVOT_CREATED
         assert action.authorUser == legit_user
         assert action.venueId == venue_id
         assert action.extraData["cinema_id"] == "boost cinema 1"
@@ -404,7 +405,7 @@ class CreatePivotTest(PostEndpointHelper):
         assert created.cinemaUrl == form["cinema_url"]
         assert decrypt(created.password) == form["password"]
         action = db.session.query(history_models.ActionHistory).one()
-        assert action.actionType == history_models.ActionType.PIVOT_CREATED
+        assert action.actionType == history_constants.ActionType.PIVOT_CREATED
         assert action.authorUser == legit_user
         assert action.venueId == venue_id
         assert action.extraData["cinema_id"] == "idProvider1111"
@@ -427,7 +428,7 @@ class CreatePivotTest(PostEndpointHelper):
         assert created.accountId == form["account_id"]
         assert created.cinemaApiToken == form["api_token"]
         action = db.session.query(history_models.ActionHistory).one()
-        assert action.actionType == history_models.ActionType.PIVOT_CREATED
+        assert action.actionType == history_constants.ActionType.PIVOT_CREATED
         assert action.authorUser == legit_user
         assert action.venueId == venue_id
         assert action.extraData["cinema_id"] == "cineoffice cinema 1"
@@ -449,7 +450,7 @@ class CreatePivotTest(PostEndpointHelper):
         assert created.cinemaProviderPivot.idAtProvider == form["cinema_id"]
         assert created.lastVersion == 0
         action = db.session.query(history_models.ActionHistory).one()
-        assert action.actionType == history_models.ActionType.PIVOT_CREATED
+        assert action.actionType == history_constants.ActionType.PIVOT_CREATED
         assert action.authorUser == legit_user
         assert action.venueId == venue_id
         assert action.extraData["cinema_id"] == "idAtProvider1"
@@ -784,7 +785,7 @@ class DeleteProviderTest(PostEndpointHelper):
         action = db.session.query(history_models.ActionHistory).one()
         assert action.comment == "Pivot CGR"
         assert action.venueId == venue.id
-        assert action.actionType == history_models.ActionType.PIVOT_DELETED
+        assert action.actionType == history_constants.ActionType.PIVOT_DELETED
         assert action.authorUser == legit_user
 
     def test_delete_pivot_with_venue_provider(self, authenticated_client):

@@ -14,6 +14,7 @@ from pcapi import settings
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.external.batch import trigger_events
 from pcapi.core.finance import deposit_api
+from pcapi.core.history import constants as history_constants
 from pcapi.core.history import models as history_models
 from pcapi.core.subscription import machines as subscription_machines
 from pcapi.core.subscription import messages as subscription_messages
@@ -790,7 +791,7 @@ def move_subscription_fraud_checks(
         fraud_check.userId = to_user.id
 
     action_history = history_models.ActionHistory(
-        actionType=history_models.ActionType.COMMENT,
+        actionType=history_constants.ActionType.COMMENT,
         authorUserId=author_id,
         comment=f"Subscription moved from account {from_user.id} to account {to_user.id}",
         user=to_user,

@@ -5,6 +5,7 @@ import pytest
 
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
+import pcapi.core.history.constants as history_constants
 import pcapi.core.history.models as history_models
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.offerers.factories as offerers_factories
@@ -43,7 +44,7 @@ class OffererPatchBankAccountsTest:
 
         actions_occured.append(
             ActionOccurred(
-                type=history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_CREATED,
+                type=history_constants.ActionType.LINK_VENUE_BANK_ACCOUNT_CREATED,
                 authorUserId=pro_user.id,
                 venueId=venue.id,
                 offererId=offerer.id,
@@ -117,7 +118,7 @@ class OffererPatchBankAccountsTest:
         action_logged = (
             db.session.query(history_models.ActionHistory)
             .filter(
-                history_models.ActionHistory.actionType == history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_CREATED,
+                history_models.ActionHistory.actionType == history_constants.ActionType.LINK_VENUE_BANK_ACCOUNT_CREATED,
             )
             .one()
         )
@@ -243,21 +244,21 @@ class OffererPatchBankAccountsTest:
         actions_occured.extend(
             [
                 ActionOccurred(
-                    type=history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_DEPRECATED,
+                    type=history_constants.ActionType.LINK_VENUE_BANK_ACCOUNT_DEPRECATED,
                     authorUserId=pro_user.id,
                     venueId=first_venue.id,
                     offererId=offerer.id,
                     bankAccountId=bank_account.id,
                 ),
                 ActionOccurred(
-                    type=history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_DEPRECATED,
+                    type=history_constants.ActionType.LINK_VENUE_BANK_ACCOUNT_DEPRECATED,
                     authorUserId=pro_user.id,
                     venueId=second_venue.id,
                     offererId=offerer.id,
                     bankAccountId=bank_account.id,
                 ),
                 ActionOccurred(
-                    type=history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_DEPRECATED,
+                    type=history_constants.ActionType.LINK_VENUE_BANK_ACCOUNT_DEPRECATED,
                     authorUserId=pro_user.id,
                     venueId=third_venue.id,
                     offererId=offerer.id,
@@ -374,14 +375,14 @@ class OffererPatchBankAccountsTest:
         actions_occured.extend(
             [
                 ActionOccurred(
-                    type=history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_CREATED,
+                    type=history_constants.ActionType.LINK_VENUE_BANK_ACCOUNT_CREATED,
                     authorUserId=pro_user.id,
                     venueId=third_venue.id,
                     offererId=offerer.id,
                     bankAccountId=bank_account.id,
                 ),
                 ActionOccurred(
-                    type=history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_CREATED,
+                    type=history_constants.ActionType.LINK_VENUE_BANK_ACCOUNT_CREATED,
                     authorUserId=pro_user.id,
                     venueId=fourth_venue.id,
                     offererId=offerer.id,
@@ -486,14 +487,14 @@ class OffererPatchBankAccountsTest:
         actions_occured.extend(
             [
                 ActionOccurred(
-                    type=history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_CREATED,
+                    type=history_constants.ActionType.LINK_VENUE_BANK_ACCOUNT_CREATED,
                     authorUserId=pro_user.id,
                     venueId=third_venue.id,
                     offererId=offerer.id,
                     bankAccountId=bank_account.id,
                 ),
                 ActionOccurred(
-                    type=history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_CREATED,
+                    type=history_constants.ActionType.LINK_VENUE_BANK_ACCOUNT_CREATED,
                     authorUserId=pro_user.id,
                     venueId=fourth_venue.id,
                     offererId=offerer.id,
@@ -577,7 +578,7 @@ class OffererPatchBankAccountsTest:
 
         actions_occured.append(
             ActionOccurred(
-                type=history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_CREATED,
+                type=history_constants.ActionType.LINK_VENUE_BANK_ACCOUNT_CREATED,
                 authorUserId=pro_user.id,
                 venueId=venue.id,
                 offererId=offerer.id,

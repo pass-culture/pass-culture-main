@@ -8,6 +8,7 @@ import pcapi.core.users.factories as users_factories
 from pcapi.core.finance import factories
 from pcapi.core.finance import models
 from pcapi.core.finance import siret_api
+from pcapi.core.history import constants as history_constants
 from pcapi.core.history import models as history_models
 from pcapi.models import db
 
@@ -39,7 +40,7 @@ class DeleteSiretTest:
         actions = db.session.query(history_models.ActionHistory).all()
         assert len(actions) == 2
         for action in actions:
-            assert action.actionType == history_models.ActionType.INFO_MODIFIED
+            assert action.actionType == history_constants.ActionType.INFO_MODIFIED
             assert action.offererId == venue.managingOffererId
             assert action.venueId in (venue.id, dependent_venue.id)
             assert action.extraData["modified_info"]["pricingPointSiret"] == {"old_info": old_siret, "new_info": None}
@@ -79,14 +80,14 @@ class DeleteSiretTest:
 
         actions = db.session.query(history_models.ActionHistory).order_by(history_models.ActionHistory.id).all()
         assert len(actions) == 2
-        assert actions[0].actionType == history_models.ActionType.INFO_MODIFIED
+        assert actions[0].actionType == history_constants.ActionType.INFO_MODIFIED
         assert actions[0].offererId == venue.managingOffererId
         assert actions[0].venueId == venue.id
         assert actions[0].extraData["modified_info"]["pricingPointSiret"] == {
             "old_info": old_siret,
             "new_info": new_pricing_point.siret,
         }
-        assert actions[1].actionType == history_models.ActionType.INFO_MODIFIED
+        assert actions[1].actionType == history_constants.ActionType.INFO_MODIFIED
         assert actions[1].offererId == dependent_venue.managingOffererId
         assert actions[1].venueId == dependent_venue.id
         assert actions[1].extraData["modified_info"]["pricingPointSiret"] == {"old_info": old_siret, "new_info": None}

@@ -24,7 +24,7 @@ from pydantic import BaseModel
 from pcapi.app import app
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.history import api as history_api
-from pcapi.core.history import models as history_models
+from pcapi.core.history import constants as history_constants
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users import api as users_api
@@ -91,7 +91,7 @@ def create_pro(
         offerers_api.grant_user_offerer_access(offerer=offerer, user=pro_user)
         counters.created += 1
         history_api.add_action(
-            history_models.ActionType.USER_CREATED,
+            history_constants.ActionType.USER_CREATED,
             author=None,
             offerer=offerer,
             comment=f"Création des acteurs culturels calédoniens par script - {comment}",

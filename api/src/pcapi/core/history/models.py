@@ -1,4 +1,3 @@
-import enum
 import typing
 
 import sqlalchemy as sa
@@ -7,6 +6,7 @@ from sqlalchemy.dialects import postgresql
 from sqlalchemy.ext import mutable as sa_mutable
 
 from pcapi.core.chronicles import models as chronicles_models
+from pcapi.core.history import constants as history_constants
 from pcapi.core.users import models as users_models
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
@@ -18,88 +18,6 @@ if typing.TYPE_CHECKING:
     from pcapi.core.finance import models as finance_models
     from pcapi.core.offerers import models as offerers_models
     from pcapi.core.offers import models as offers_models
-
-
-class ActionType(enum.Enum):
-    # Single comment from admin, on any resource, without status change:
-    COMMENT = "COMMENT"
-    # Update:
-    INFO_MODIFIED = "INFO_MODIFIED"
-    # Validation process for offerers:
-    OFFERER_NEW = "OFFERER_NEW"
-    OFFERER_PENDING = "OFFERER_PENDING"
-    OFFERER_VALIDATED = "OFFERER_VALIDATED"
-    OFFERER_REJECTED = "OFFERER_REJECTED"
-    OFFERER_CLOSED = "OFFERER_CLOSED"
-    OFFERER_SUSPENDED = "OFFERER_SUSPENDED"
-    OFFERER_UNSUSPENDED = "OFFERER_UNSUSPENDED"
-    OFFERER_ATTESTATION_CHECKED = "OFFERER_ATTESTATION_CHECKED"
-    # Validation process for user-offerer relationships:
-    USER_OFFERER_NEW = "USER_OFFERER_NEW"
-    USER_OFFERER_PENDING = "USER_OFFERER_PENDING"
-    USER_OFFERER_VALIDATED = "USER_OFFERER_VALIDATED"
-    USER_OFFERER_REJECTED = "USER_OFFERER_REJECTED"
-    USER_OFFERER_DELETED = "USER_OFFERER_DELETED"
-    # User account status changes:
-    USER_CREATED = "USER_CREATED"
-    USER_SUSPENDED = "USER_SUSPENDED"
-    USER_UNSUSPENDED = "USER_UNSUSPENDED"
-    USER_PHONE_VALIDATED = "USER_PHONE_VALIDATED"
-    USER_EMAIL_VALIDATED = "USER_EMAIL_VALIDATED"
-    USER_ACCOUNT_UPDATE_INSTRUCTED = "USER_ACCOUNT_UPDATE_INSTRUCTED"
-    USER_EXTRACT_DATA = "USER_EXTRACT_DATA"
-    CONNECT_AS_USER = "CONNECT_AS_USER"
-    USER_PASSWORD_INVALIDATED = "USER_PASSWORD_INVALIDATED"
-    USER_DISCONNECTED = "USER_DISCONNECTED"
-    # Fraud and compliance actions:
-    BLACKLIST_DOMAIN_NAME = "BLACKLIST_DOMAIN_NAME"
-    REMOVE_BLACKLISTED_DOMAIN_NAME = "REMOVE_BLACKLISTED_DOMAIN_NAME"
-    FRAUD_INFO_MODIFIED = "FRAUD_INFO_MODIFIED"  # protected information
-
-    # Finance incident events
-    FINANCE_INCIDENT_CREATED = "FINANCE_INCIDENT_CREATED"
-    FINANCE_INCIDENT_CANCELLED = "FINANCE_INCIDENT_CANCELLED"
-    FINANCE_INCIDENT_VALIDATED = "FINANCE_INCIDENT_VALIDATED"
-    FINANCE_INCIDENT_USER_RECREDIT = "FINANCE_INCIDENT_USER_RECREDIT"
-    FINANCE_INCIDENT_WAIT_FOR_PAYMENT = "FINANCE_INCIDENT_WAIT_FOR_PAYMENT"
-    FINANCE_INCIDENT_GENERATE_DEBIT_NOTE = "FINANCE_INCIDENT_GENERATE_DEBIT_NOTE"
-    FINANCE_INCIDENT_CHOOSE_DEBIT_NOTE = "FINANCE_INCIDENT_CHOOSE_DEBIT_NOTE"
-
-    # Non payment notices
-    NON_PAYMENT_NOTICE_CREATED = "NON_PAYMENT_NOTICE_CREATED"
-
-    # Actions related to a venue:
-    VENUE_CREATED = "VENUE_CREATED"
-    LINK_VENUE_BANK_ACCOUNT_DEPRECATED = "LINK_VENUE_BANK_ACCOUNT_DEPRECATED"
-    LINK_VENUE_BANK_ACCOUNT_CREATED = "LINK_VENUE_BANK_ACCOUNT_CREATED"
-    LINK_VENUE_PROVIDER_UPDATED = "LINK_VENUE_PROVIDER_UPDATED"
-    LINK_VENUE_PROVIDER_DELETED = "LINK_VENUE_PROVIDER_DELETED"
-    SYNC_VENUE_TO_PROVIDER = "SYNC_VENUE_TO_PROVIDER"
-    VENUE_SOFT_DELETED = "VENUE_SOFT_DELETED"
-    VENUE_REIMBURSEMENT_SUSPENDED = "VENUE_REIMBURSEMENT_SUSPENDED"
-    VENUE_CLOSED = "VENUE_CLOSED"
-    VENUE_REOPENED = "VENUE_REOPENED"
-
-    # Permissions role changes:
-    ROLE_PERMISSIONS_CHANGED = "ROLE_PERMISSIONS_CHANGED"
-    # RGPD scripts
-    USER_ANONYMIZED = "USER_ANONYMIZED"
-    # Offer validation rule changes:
-    RULE_CREATED = "RULE_CREATED"
-    RULE_DELETED = "RULE_DELETED"
-    RULE_MODIFIED = "RULE_MODIFIED"
-    # Pivot changes
-    PIVOT_DELETED = "PIVOT_DELETED"
-    PIVOT_CREATED = "PIVOT_CREATED"
-    # Chronicles
-    CHRONICLE_PUBLISHED = "CHRONICLE_PUBLISHED"
-    CHRONICLE_UNPUBLISHED = "CHRONICLE_UNPUBLISHED"
-    # User profile refresh campaigns
-    USER_PROFILE_REFRESH_CAMPAIGN_CREATED = "USER_PROFILE_REFRESH_CAMPAIGN_CREATED"
-    USER_PROFILE_REFRESH_CAMPAIGN_UPDATED = "USER_PROFILE_REFRESH_CAMPAIGN_UPDATED"
-
-    # Legacy, used during regularization. Some venues have this Action Type in their history.
-    VENUE_REGULARIZATION = "VENUE_REGULARIZATION"
 
 
 class ActionHistory(PcObject, Model):
@@ -126,8 +44,8 @@ class ActionHistory(PcObject, Model):
 
     __tablename__ = "action_history"
 
-    actionType: sa_orm.Mapped[ActionType] = sa_orm.mapped_column(
-        db_utils.MagicEnum(ActionType, use_values=True), nullable=False
+    actionType: sa_orm.Mapped[history_constants.ActionType] = sa_orm.mapped_column(
+        db_utils.MagicEnum(history_constants.ActionType, use_values=True), nullable=False
     )
 
     # nullable because of old suspensions without date migrated here; but mandatory for new actions

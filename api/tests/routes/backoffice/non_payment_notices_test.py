@@ -6,6 +6,7 @@ import pytest
 from flask import url_for
 
 from pcapi.core.finance import factories as finance_factories
+from pcapi.core.history import constants as history_constants
 from pcapi.core.history import models as history_models
 from pcapi.core.mails import testing as mails_testing
 from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
@@ -347,7 +348,7 @@ class CreateNonPaymentNoticeTest(PostEndpointHelper):
         assert len(notice.batches) == 0
 
         action = db.session.query(history_models.ActionHistory).one()
-        assert action.actionType == history_models.ActionType.NON_PAYMENT_NOTICE_CREATED
+        assert action.actionType == history_constants.ActionType.NON_PAYMENT_NOTICE_CREATED
         assert action.actionDate is not None
         assert action.authorUserId == legit_user.id
         assert action.offererId == offerer.id
@@ -395,7 +396,7 @@ class CreateNonPaymentNoticeTest(PostEndpointHelper):
         assert len(notice.batches) == 0
 
         action = db.session.query(history_models.ActionHistory).one()
-        assert action.actionType == history_models.ActionType.NON_PAYMENT_NOTICE_CREATED
+        assert action.actionType == history_constants.ActionType.NON_PAYMENT_NOTICE_CREATED
         assert action.actionDate.date() == datetime.date.today()
         assert action.authorUserId == legit_user.id
         assert action.offererId == venue.managingOfferer.id
@@ -444,7 +445,7 @@ class CreateNonPaymentNoticeTest(PostEndpointHelper):
         assert len(notice.batches) == 0
 
         action = db.session.query(history_models.ActionHistory).one()
-        assert action.actionType == history_models.ActionType.NON_PAYMENT_NOTICE_CREATED
+        assert action.actionType == history_constants.ActionType.NON_PAYMENT_NOTICE_CREATED
         assert action.actionDate is not None
         assert action.authorUserId == legit_user.id
         assert action.offererId == offerer.id
@@ -614,7 +615,7 @@ class EditTest(PostEndpointHelper):
         assert notice.venue == venue
 
         action = db.session.query(history_models.ActionHistory).one()
-        assert action.actionType == history_models.ActionType.NON_PAYMENT_NOTICE_CREATED
+        assert action.actionType == history_constants.ActionType.NON_PAYMENT_NOTICE_CREATED
         assert action.actionDate.date() == datetime.date.today()
         assert action.authorUserId == legit_user.id
         assert action.offererId == venue.managingOfferer.id

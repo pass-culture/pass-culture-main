@@ -10,8 +10,8 @@ from pcapi import settings
 from pcapi.core import token as token_utils
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.finance import factories as finance_factories
+from pcapi.core.history import constants as history_constants
 from pcapi.core.history import factories as history_factories
-from pcapi.core.history import models as history_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
@@ -270,18 +270,18 @@ class SearchProUserTest:
         suspended_user = users_factories.ProFactory(firstName=common_name, isActive=False)
         now = date_utils.get_naive_utc_now()
         history_factories.ActionHistoryFactory(
-            actionType=history_models.ActionType.USER_SUSPENDED,
+            actionType=history_constants.ActionType.USER_SUSPENDED,
             actionDate=now - datetime.timedelta(days=4),
             user=suspended_user,
             extraData={"reason": users_constants.SuspensionReason.FRAUD_USURPATION_PRO},
         )
         history_factories.ActionHistoryFactory(
-            actionType=history_models.ActionType.USER_UNSUSPENDED,
+            actionType=history_constants.ActionType.USER_UNSUSPENDED,
             actionDate=now - datetime.timedelta(days=3),
             user=suspended_user,
         )
         history_factories.ActionHistoryFactory(
-            actionType=history_models.ActionType.USER_SUSPENDED,
+            actionType=history_constants.ActionType.USER_SUSPENDED,
             actionDate=now - datetime.timedelta(days=2),
             user=suspended_user,
             extraData={"reason": users_constants.SuspensionReason.FRAUD_USURPATION_PRO},

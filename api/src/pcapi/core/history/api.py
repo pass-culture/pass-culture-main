@@ -7,6 +7,7 @@ from sqlalchemy.ext.mutable import MutableDict
 from pcapi.core.chronicles import models as chronicles_models
 from pcapi.core.finance import models as finance_models
 from pcapi.core.geography import utils as geography_utils
+from pcapi.core.history import constants as history_constants
 from pcapi.core.history import models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
@@ -16,7 +17,7 @@ from pcapi.models import db
 
 
 def add_action(
-    action_type: models.ActionType,
+    action_type: history_constants.ActionType,
     *,
     author: users_models.User | None,
     user: users_models.User | None = None,
@@ -31,9 +32,9 @@ def add_action(
     **extra_data: typing.Any,
 ) -> models.ActionHistory:
     legit_actions = (
-        models.ActionType.BLACKLIST_DOMAIN_NAME,
-        models.ActionType.REMOVE_BLACKLISTED_DOMAIN_NAME,
-        models.ActionType.ROLE_PERMISSIONS_CHANGED,
+        history_constants.ActionType.BLACKLIST_DOMAIN_NAME,
+        history_constants.ActionType.REMOVE_BLACKLISTED_DOMAIN_NAME,
+        history_constants.ActionType.ROLE_PERMISSIONS_CHANGED,
     )
     if not any(
         (user, offerer, venue, finance_incident, bank_account, rule, chronicle, user_profile_refresh_campaign)
@@ -188,7 +189,7 @@ class ObjectUpdateSnapshot:
             return None
 
         return add_action(
-            models.ActionType.INFO_MODIFIED,
+            history_constants.ActionType.INFO_MODIFIED,
             author=self.author,
             **self.add_action_target,
             modified_info=self.to_dict(),

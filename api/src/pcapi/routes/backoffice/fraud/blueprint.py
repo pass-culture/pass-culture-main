@@ -13,6 +13,7 @@ from werkzeug.exceptions import NotFound
 
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.history import api as history_api
+from pcapi.core.history import constants as history_constants
 from pcapi.core.history import models as history_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import constants as users_constants
@@ -40,8 +41,8 @@ def render_domain_names_list(form: forms.BlacklistDomainNameForm | None = None) 
         form = forms.PrepareBlacklistDomainNameForm()
 
     fraud_actions = (
-        history_models.ActionType.BLACKLIST_DOMAIN_NAME,
-        history_models.ActionType.REMOVE_BLACKLISTED_DOMAIN_NAME,
+        history_constants.ActionType.BLACKLIST_DOMAIN_NAME,
+        history_constants.ActionType.REMOVE_BLACKLISTED_DOMAIN_NAME,
     )
     history = (
         db.session.query(history_models.ActionHistory)
@@ -167,7 +168,7 @@ def blacklist_domain_name() -> response_utils.BackofficeResponse:
     db.session.add(domain)
 
     history_api.add_action(
-        history_models.ActionType.BLACKLIST_DOMAIN_NAME,
+        history_constants.ActionType.BLACKLIST_DOMAIN_NAME,
         author=current_user,
         domain=form.domain.data,
         deactivated_users=sorted([(user.id, user.email) for user in users]),
@@ -210,7 +211,7 @@ def remove_blacklisted_domain_name(domain: str) -> response_utils.BackofficeResp
 
     query.delete(synchronize_session=False)
     history_api.add_action(
-        history_models.ActionType.REMOVE_BLACKLISTED_DOMAIN_NAME,
+        history_constants.ActionType.REMOVE_BLACKLISTED_DOMAIN_NAME,
         author=current_user,
         domain=row.domain,
     )

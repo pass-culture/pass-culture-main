@@ -9,8 +9,8 @@ from pcapi.core.categories import subcategories
 from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
+from pcapi.core.history import constants as history_constants
 from pcapi.core.history import factories as history_factories
-from pcapi.core.history import models as history_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
@@ -56,7 +56,7 @@ def _create_closed_offerer(
         name=name.upper(), tags=[siren_caduc_tag], allowedOnAdage=True
     )
     history_factories.ActionHistoryFactory.create(
-        actionType=history_models.ActionType.OFFERER_CLOSED,
+        actionType=history_constants.ActionType.OFFERER_CLOSED,
         actionDate=now - datetime.timedelta(days=2),
         authorUser=None,
         offerer=offerer,

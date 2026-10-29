@@ -15,7 +15,7 @@ from werkzeug.exceptions import NotFound
 
 from pcapi.core.external.zendesk_sell import api as zendesk_sell_api
 from pcapi.core.history import api as history_api
-from pcapi.core.history import models as history_models
+from pcapi.core.history import constants as history_constants
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
@@ -143,7 +143,7 @@ def create_provider() -> response_utils.BackofficeResponse:
 
         if is_offerer_new:
             history_api.add_action(
-                history_models.ActionType.OFFERER_VALIDATED,
+                history_constants.ActionType.OFFERER_VALIDATED,
                 author=current_user,
                 offerer=offerer,
                 comment="Création et validation automatique via création de partenaire",

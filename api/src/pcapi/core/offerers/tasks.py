@@ -7,7 +7,7 @@ from pcapi.celery_tasks.tasks import celery_async_task
 from pcapi.connectors.entreprise import api as entreprise_api
 from pcapi.connectors.entreprise import exceptions as entreprise_exceptions
 from pcapi.core.history import api as history_api
-from pcapi.core.history import models as history_models
+from pcapi.core.history import constants as history_constants
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import constants as offerers_constants
 from pcapi.core.offerers import models as offerers_models
@@ -60,7 +60,7 @@ def check_offerer_siren(payload: CheckOffererSirenRequest) -> None:
                     offererId=offerer.id, tagId=tag.id
                 ).delete(synchronize_session=False)
                 history_api.add_action(
-                    history_models.ActionType.INFO_MODIFIED,
+                    history_constants.ActionType.INFO_MODIFIED,
                     author=None,
                     offerer=offerer,
                     comment="L'entité juridique est détectée comme active via l'API Entreprise (données INSEE)",

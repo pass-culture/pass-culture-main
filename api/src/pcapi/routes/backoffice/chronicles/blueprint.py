@@ -17,6 +17,7 @@ from werkzeug.exceptions import NotFound
 from pcapi.core.chronicles import api as chronicles_api
 from pcapi.core.chronicles import models as chronicles_models
 from pcapi.core.history import api as history_api
+from pcapi.core.history import constants as history_constants
 from pcapi.core.history import models as history_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
@@ -279,7 +280,7 @@ def publish_chronicle(chronicle_id: int) -> response_utils.BackofficeResponse:
     db.session.add(chronicle)
     db.session.flush()
     history_api.add_action(
-        history_models.ActionType.CHRONICLE_PUBLISHED,
+        history_constants.ActionType.CHRONICLE_PUBLISHED,
         author=current_user,
         chronicle=chronicle,
     )
@@ -297,7 +298,7 @@ def unpublish_chronicle(chronicle_id: int) -> response_utils.BackofficeResponse:
     db.session.add(chronicle)
     db.session.flush()
     history_api.add_action(
-        history_models.ActionType.CHRONICLE_UNPUBLISHED,
+        history_constants.ActionType.CHRONICLE_UNPUBLISHED,
         author=current_user,
         chronicle=chronicle,
     )
@@ -533,7 +534,7 @@ def comment_chronicle(chronicle_id: int) -> response_utils.BackofficeResponse:
     chronicle = get_or_404(chronicles_models.Chronicle, chronicle_id)
 
     history_api.add_action(
-        history_models.ActionType.COMMENT, author=current_user, chronicle=chronicle, comment=form.comment.data
+        history_constants.ActionType.COMMENT, author=current_user, chronicle=chronicle, comment=form.comment.data
     )
     flash("Le commentaire a été enregistré", "success")
     return redirect(url_for("backoffice.chronicles.details", chronicle_id=chronicle_id, active_tab="history"), code=303)

@@ -3,6 +3,7 @@ import json
 import pytest
 from flask import current_app
 
+import pcapi.core.history.constants as history_constants
 import pcapi.core.history.models as history_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
@@ -233,7 +234,7 @@ def test_create_offerer_action_is_logged(client):
 
     assert response.status_code == 201
     action = db.session.query(history_models.ActionHistory).one()
-    assert action.actionType == history_models.ActionType.OFFERER_NEW
+    assert action.actionType == history_constants.ActionType.OFFERER_NEW
     assert action.authorUser == user
     assert action.user == user
     assert action.offererId == response.json["id"]

@@ -8,7 +8,7 @@ from sqlalchemy import orm as sa_orm
 from werkzeug.exceptions import NotFound
 
 from pcapi.core.history import api as history_api
-from pcapi.core.history import models as history_models
+from pcapi.core.history import constants as history_constants
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
@@ -39,7 +39,7 @@ def _deactivate_existing_campaigns(excluded_campaign_id: int) -> list[int]:
         campaign_to_deactivate.isActive = False
         db.session.add(campaign_to_deactivate)
         history_api.add_action(
-            history_models.ActionType.USER_PROFILE_REFRESH_CAMPAIGN_UPDATED,
+            history_constants.ActionType.USER_PROFILE_REFRESH_CAMPAIGN_UPDATED,
             author=current_user,
             user_profile_refresh_campaign=campaign_to_deactivate,
             comment=f"Désactivation suite à l'activation de la campagne #{excluded_campaign_id}",
@@ -86,7 +86,7 @@ def create_campaign() -> response_utils.BackofficeResponse:
     if new_campaign_is_active:
         _deactivate_existing_campaigns(campaign.id)
     history_api.add_action(
-        history_models.ActionType.USER_PROFILE_REFRESH_CAMPAIGN_CREATED,
+        history_constants.ActionType.USER_PROFILE_REFRESH_CAMPAIGN_CREATED,
         author=current_user,
         user_profile_refresh_campaign=campaign,
         modified_info={"isActive": {"new_info": new_campaign_is_active}},
@@ -145,7 +145,7 @@ def edit_campaign(campaign_id: int) -> response_utils.BackofficeResponse:
     deactivated_campaign_ids = []
     if modified_info:
         history_api.add_action(
-            history_models.ActionType.USER_PROFILE_REFRESH_CAMPAIGN_UPDATED,
+            history_constants.ActionType.USER_PROFILE_REFRESH_CAMPAIGN_UPDATED,
             author=current_user,
             user_profile_refresh_campaign=campaign,
             modified_info=modified_info,

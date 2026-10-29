@@ -19,7 +19,7 @@ from pcapi.connectors.dms import models as dms_models
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.finance import models as finance_models
 from pcapi.core.history import api as history_api
-from pcapi.core.history import models as history_models
+from pcapi.core.history import constants as history_constants
 from pcapi.core.mails.transactional.users.personal_data_updated import send_beneficiary_personal_data_updated
 from pcapi.core.mails.transactional.users.update_request_ask_for_correction import (
     send_beneficiary_update_request_ask_for_correction,
@@ -493,7 +493,7 @@ def accept(ds_application_id: int) -> response_utils.BackofficeResponse:
         flash(Markup("Une erreur s'est produite : {message}").format(message=str(exc)), "warning")
     else:
         history_api.add_action(
-            history_models.ActionType.USER_ACCOUNT_UPDATE_INSTRUCTED,
+            history_constants.ActionType.USER_ACCOUNT_UPDATE_INSTRUCTED,
             author=current_user,
             user=user,
             comment=form.motivation.data,

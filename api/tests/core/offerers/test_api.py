@@ -35,6 +35,7 @@ from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.geography import factories as geography_factories
 from pcapi.core.geography import models as geography_models
+from pcapi.core.history import constants as history_constants
 from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
 from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
@@ -244,7 +245,7 @@ class CreateVenueTest:
         assert venue.offererAddress == offerer_address
 
         action = db.session.query(history_models.ActionHistory).one()
-        assert action.actionType == history_models.ActionType.VENUE_CREATED
+        assert action.actionType == history_constants.ActionType.VENUE_CREATED
         assert action.authorUser == user_offerer.user
         assert action.user is None
         assert action.offerer is None
@@ -730,7 +731,7 @@ class CreateOffererTest:
 
         actions_list = db.session.query(history_models.ActionHistory).all()
         assert len(actions_list) == 1
-        assert actions_list[0].actionType == history_models.ActionType.OFFERER_NEW
+        assert actions_list[0].actionType == history_constants.ActionType.OFFERER_NEW
         assert actions_list[0].authorUser == user
         assert actions_list[0].user == user
         assert actions_list[0].offerer == created_offerer
@@ -764,7 +765,7 @@ class CreateOffererTest:
 
         actions_list = db.session.query(history_models.ActionHistory).all()
         assert len(actions_list) == 1
-        assert actions_list[0].actionType == history_models.ActionType.USER_OFFERER_NEW
+        assert actions_list[0].actionType == history_constants.ActionType.USER_OFFERER_NEW
         assert actions_list[0].authorUser == user
         assert actions_list[0].user == user
         assert actions_list[0].offerer == offerer
@@ -829,7 +830,7 @@ class CreateOffererTest:
 
         actions_list = db.session.query(history_models.ActionHistory).all()
         assert len(actions_list) == 1
-        assert actions_list[0].actionType == history_models.ActionType.OFFERER_NEW
+        assert actions_list[0].actionType == history_constants.ActionType.OFFERER_NEW
         assert actions_list[0].authorUser == user
         assert actions_list[0].user == user
         assert actions_list[0].offerer == created_offerer
@@ -867,7 +868,7 @@ class CreateOffererTest:
         )
         created_offerer = updated_user_offerer.offerer
         assert len(actions_list) == 1
-        assert actions_list[0].actionType == history_models.ActionType.OFFERER_NEW
+        assert actions_list[0].actionType == history_constants.ActionType.OFFERER_NEW
         assert actions_list[0].authorUser == user
         assert actions_list[0].user == user
         assert actions_list[0].offerer == created_offerer
@@ -906,7 +907,7 @@ class CreateOffererTest:
         )
         created_offerer = updated_user_offerer.offerer
         assert len(actions_list) == 1
-        assert actions_list[0].actionType == history_models.ActionType.OFFERER_NEW
+        assert actions_list[0].actionType == history_constants.ActionType.OFFERER_NEW
         assert actions_list[0].authorUser == user
         assert actions_list[0].user == user
         assert actions_list[0].offerer == created_offerer
@@ -940,7 +941,7 @@ class CreateOffererTest:
         )
         created_offerer = updated_user_offerer.offerer
         assert len(actions_list) == 1
-        assert actions_list[0].actionType == history_models.ActionType.USER_OFFERER_NEW
+        assert actions_list[0].actionType == history_constants.ActionType.USER_OFFERER_NEW
         assert actions_list[0].authorUser == user
         assert actions_list[0].user == user
         assert actions_list[0].offerer == created_offerer
@@ -974,11 +975,11 @@ class CreateOffererTest:
         )
         created_offerer = updated_user_offerer.offerer
         assert len(actions_list) == 2
-        assert actions_list[0].actionType == history_models.ActionType.USER_OFFERER_NEW
+        assert actions_list[0].actionType == history_constants.ActionType.USER_OFFERER_NEW
         assert actions_list[0].authorUser == user
         assert actions_list[0].user == user
         assert actions_list[0].offerer == created_offerer
-        assert actions_list[1].actionType == history_models.ActionType.USER_OFFERER_NEW
+        assert actions_list[1].actionType == history_constants.ActionType.USER_OFFERER_NEW
         assert actions_list[1].authorUser == user
         assert actions_list[1].user == user
         assert actions_list[1].offerer == created_offerer
@@ -1009,7 +1010,7 @@ class CreateOffererTest:
 
         actions_list = user.action_history
         assert len(actions_list) == 1
-        assert actions_list[0].actionType == history_models.ActionType.OFFERER_NEW
+        assert actions_list[0].actionType == history_constants.ActionType.OFFERER_NEW
         assert actions_list[0].authorUser == user
         assert actions_list[0].user == user
         assert actions_list[0].offerer == created_offerer
@@ -1042,7 +1043,7 @@ class CreateOffererTest:
         )
         created_offerer = updated_user_offerer.offerer
         assert len(actions_list) == 1
-        assert actions_list[0].actionType == history_models.ActionType.USER_OFFERER_NEW
+        assert actions_list[0].actionType == history_constants.ActionType.USER_OFFERER_NEW
         assert actions_list[0].authorUser == user
         assert actions_list[0].user == user
         assert actions_list[0].offerer == created_offerer
@@ -1116,7 +1117,7 @@ class UpdateOffererTest:
         offerers_api.update_offerer(offerer, author, name="Updated")
 
         action = db.session.query(history_models.ActionHistory).one()
-        assert action.actionType == history_models.ActionType.INFO_MODIFIED
+        assert action.actionType == history_constants.ActionType.INFO_MODIFIED
         assert action.actionDate is not None
         assert action.authorUserId == author.id
         assert action.userId is None
@@ -1558,7 +1559,7 @@ class RejectOffererAttachementTest:
 
         # Then
         action = db.session.query(history_models.ActionHistory).one()
-        assert action.actionType == history_models.ActionType.USER_OFFERER_REJECTED
+        assert action.actionType == history_constants.ActionType.USER_OFFERER_REJECTED
         assert action.actionDate is not None
         assert action.authorUserId == admin.id
         assert action.userId == user.id
@@ -1617,7 +1618,7 @@ class DeleteOffererAttachementTest:
 
         # Then
         action = db.session.query(history_models.ActionHistory).one()
-        assert action.actionType == history_models.ActionType.USER_OFFERER_DELETED
+        assert action.actionType == history_constants.ActionType.USER_OFFERER_DELETED
         assert action.actionDate is not None
         assert action.authorUserId == admin.id
         assert action.userId == user.id
@@ -1714,7 +1715,7 @@ class ValidateOffererTest:
 
         # Then
         action = db.session.query(history_models.ActionHistory).one()
-        assert action.actionType == history_models.ActionType.OFFERER_VALIDATED
+        assert action.actionType == history_constants.ActionType.OFFERER_VALIDATED
         assert action.actionDate is not None
         assert action.authorUserId == admin.id
         assert action.userId == user_offerer.user.id
@@ -1815,7 +1816,7 @@ class RejectOffererTest:
         # Then
         action = (
             db.session.query(history_models.ActionHistory)
-            .filter_by(actionType=history_models.ActionType.OFFERER_REJECTED)
+            .filter_by(actionType=history_constants.ActionType.OFFERER_REJECTED)
             .one()
         )
         assert action.actionDate is not None
@@ -1826,7 +1827,7 @@ class RejectOffererTest:
 
         action = (
             db.session.query(history_models.ActionHistory)
-            .filter_by(actionType=history_models.ActionType.USER_OFFERER_REJECTED, user=user)
+            .filter_by(actionType=history_constants.ActionType.USER_OFFERER_REJECTED, user=user)
             .one()
         )
         assert action.actionDate is not None
@@ -1908,7 +1909,7 @@ class CloseOffererTest:
         )
 
         action = db.session.query(history_models.ActionHistory).one()
-        assert action.actionType == history_models.ActionType.OFFERER_CLOSED
+        assert action.actionType == history_constants.ActionType.OFFERER_CLOSED
         assert action.actionDate is not None
         assert action.authorUserId == admin.id
         assert action.userId is None
@@ -2210,9 +2211,9 @@ class AutoDeleteAttachmentsOnClosedOfferersTest:
     @pytest.mark.parametrize(
         "validation_status_before,validation_status_after,action_type",
         [
-            (ValidationStatus.NEW, ValidationStatus.REJECTED, history_models.ActionType.USER_OFFERER_REJECTED),
-            (ValidationStatus.PENDING, ValidationStatus.REJECTED, history_models.ActionType.USER_OFFERER_REJECTED),
-            (ValidationStatus.VALIDATED, ValidationStatus.DELETED, history_models.ActionType.USER_OFFERER_DELETED),
+            (ValidationStatus.NEW, ValidationStatus.REJECTED, history_constants.ActionType.USER_OFFERER_REJECTED),
+            (ValidationStatus.PENDING, ValidationStatus.REJECTED, history_constants.ActionType.USER_OFFERER_REJECTED),
+            (ValidationStatus.VALIDATED, ValidationStatus.DELETED, history_constants.ActionType.USER_OFFERER_DELETED),
             (ValidationStatus.REJECTED, ValidationStatus.REJECTED, None),
             (ValidationStatus.DELETED, ValidationStatus.DELETED, None),
         ],
@@ -2222,7 +2223,7 @@ class AutoDeleteAttachmentsOnClosedOfferersTest:
         user_offerer = offerers_factories.UserOffererFactory(offerer=offerer, validationStatus=validation_status_before)
         history_factories.ActionHistoryFactory(
             actionDate=datetime.datetime(2025, 1, 21),
-            actionType=history_models.ActionType.OFFERER_CLOSED,
+            actionType=history_constants.ActionType.OFFERER_CLOSED,
             offerer=offerer,
         )
 
@@ -2246,7 +2247,7 @@ class AutoDeleteAttachmentsOnClosedOfferersTest:
         user_offerer = offerers_factories.UserOffererFactory(offerer=offerer)
         history_factories.ActionHistoryFactory(
             actionDate=date_utils.get_naive_utc_now() - datetime.timedelta(days=88),
-            actionType=history_models.ActionType.OFFERER_CLOSED,
+            actionType=history_constants.ActionType.OFFERER_CLOSED,
             offerer=offerer,
         )
 
@@ -2261,12 +2262,12 @@ class AutoDeleteAttachmentsOnClosedOfferersTest:
         user_offerer = offerers_factories.UserOffererFactory(offerer=offerer)
         history_factories.ActionHistoryFactory(
             actionDate=date_utils.get_naive_utc_now() - datetime.timedelta(days=95),
-            actionType=history_models.ActionType.OFFERER_CLOSED,
+            actionType=history_constants.ActionType.OFFERER_CLOSED,
             offerer=offerer,
         )
         history_factories.ActionHistoryFactory(
             actionDate=date_utils.get_naive_utc_now() - datetime.timedelta(days=85),
-            actionType=history_models.ActionType.OFFERER_VALIDATED,
+            actionType=history_constants.ActionType.OFFERER_VALIDATED,
             offerer=offerer,
         )
 
@@ -2284,17 +2285,17 @@ class AutoDeleteAttachmentsOnClosedOfferersTest:
         user_offerer = offerers_factories.UserOffererFactory(offerer=offerer)
         history_factories.ActionHistoryFactory(
             actionDate=date_utils.get_naive_utc_now() - datetime.timedelta(days=100),
-            actionType=history_models.ActionType.OFFERER_CLOSED,
+            actionType=history_constants.ActionType.OFFERER_CLOSED,
             offerer=offerer,
         )
         history_factories.ActionHistoryFactory(
             actionDate=date_utils.get_naive_utc_now() - datetime.timedelta(days=98),
-            actionType=history_models.ActionType.OFFERER_VALIDATED,
+            actionType=history_constants.ActionType.OFFERER_VALIDATED,
             offerer=offerer,
         )
         history_factories.ActionHistoryFactory(
             actionDate=date_utils.get_naive_utc_now() - datetime.timedelta(days=days),
-            actionType=history_models.ActionType.OFFERER_CLOSED,
+            actionType=history_constants.ActionType.OFFERER_CLOSED,
             offerer=offerer,
         )
 
@@ -2308,7 +2309,7 @@ class AutoDeleteAttachmentsOnClosedOfferersTest:
         pending_user_offerer = offerers_factories.NewUserOffererFactory(offerer=offerer)
         history_factories.ActionHistoryFactory(
             actionDate=date_utils.get_naive_utc_now() - datetime.timedelta(days=91),
-            actionType=history_models.ActionType.OFFERER_CLOSED,
+            actionType=history_constants.ActionType.OFFERER_CLOSED,
             offerer=offerer,
         )
 
@@ -2412,7 +2413,7 @@ class HandleclosedOffererTest:
 
         offerer_action = (
             db.session.query(history_models.ActionHistory)
-            .filter_by(actionType=history_models.ActionType.OFFERER_REJECTED)
+            .filter_by(actionType=history_constants.ActionType.OFFERER_REJECTED)
             .one()
         )
         assert offerer_action.actionDate is not None
@@ -2426,7 +2427,7 @@ class HandleclosedOffererTest:
 
         user_offerer_action = (
             db.session.query(history_models.ActionHistory)
-            .filter_by(actionType=history_models.ActionType.USER_OFFERER_REJECTED)
+            .filter_by(actionType=history_constants.ActionType.USER_OFFERER_REJECTED)
             .one()
         )
         assert user_offerer_action.actionDate is not None
@@ -2870,7 +2871,7 @@ class CreateFromOnboardingDataTest:
         assert db.session.query(history_models.ActionHistory).count() == 2
         offerer_action = (
             db.session.query(history_models.ActionHistory)
-            .filter(history_models.ActionHistory.actionType == history_models.ActionType.OFFERER_NEW)
+            .filter(history_models.ActionHistory.actionType == history_constants.ActionType.OFFERER_NEW)
             .one()
         )
         assert offerer_action.offerer == created_offerer
@@ -2879,7 +2880,7 @@ class CreateFromOnboardingDataTest:
         self.assert_common_action_history_extra_data(offerer_action)
         venue_action = (
             db.session.query(history_models.ActionHistory)
-            .filter(history_models.ActionHistory.actionType == history_models.ActionType.VENUE_CREATED)
+            .filter(history_models.ActionHistory.actionType == history_constants.ActionType.VENUE_CREATED)
             .one()
         )
         assert venue_action.venue == created_venue
@@ -2970,7 +2971,7 @@ class CreateFromOnboardingDataTest:
         assert db.session.query(history_models.ActionHistory).count() == 2
         offerer_action = (
             db.session.query(history_models.ActionHistory)
-            .filter(history_models.ActionHistory.actionType == history_models.ActionType.OFFERER_NEW)
+            .filter(history_models.ActionHistory.actionType == history_constants.ActionType.OFFERER_NEW)
             .one()
         )
         assert offerer_action.offerer == created_offerer
@@ -2979,7 +2980,7 @@ class CreateFromOnboardingDataTest:
         self.assert_common_action_history_extra_data(offerer_action)
         venue_action = (
             db.session.query(history_models.ActionHistory)
-            .filter(history_models.ActionHistory.actionType == history_models.ActionType.VENUE_CREATED)
+            .filter(history_models.ActionHistory.actionType == history_constants.ActionType.VENUE_CREATED)
             .one()
         )
         assert venue_action.venue == created_venue
@@ -3065,7 +3066,7 @@ class CreateFromOnboardingDataTest:
         assert db.session.query(history_models.ActionHistory).count() == 2
         offerer_action = (
             db.session.query(history_models.ActionHistory)
-            .filter(history_models.ActionHistory.actionType == history_models.ActionType.USER_OFFERER_NEW)
+            .filter(history_models.ActionHistory.actionType == history_constants.ActionType.USER_OFFERER_NEW)
             .one()
         )
         assert offerer_action.offerer == offerer
@@ -3074,7 +3075,7 @@ class CreateFromOnboardingDataTest:
         self.assert_common_action_history_extra_data(offerer_action)
         venue_action = (
             db.session.query(history_models.ActionHistory)
-            .filter(history_models.ActionHistory.actionType == history_models.ActionType.VENUE_CREATED)
+            .filter(history_models.ActionHistory.actionType == history_constants.ActionType.VENUE_CREATED)
             .one()
         )
         assert venue_action.venue == created_venue
@@ -3111,7 +3112,7 @@ class CreateFromOnboardingDataTest:
         assert db.session.query(history_models.ActionHistory).count() == 2
         offerer_action = (
             db.session.query(history_models.ActionHistory)
-            .filter(history_models.ActionHistory.actionType == history_models.ActionType.USER_OFFERER_NEW)
+            .filter(history_models.ActionHistory.actionType == history_constants.ActionType.USER_OFFERER_NEW)
             .one()
         )
         assert offerer_action.offerer == offerer
@@ -3120,7 +3121,7 @@ class CreateFromOnboardingDataTest:
         self.assert_common_action_history_extra_data(offerer_action)
         offerer_action = (
             db.session.query(history_models.ActionHistory)
-            .filter(history_models.ActionHistory.actionType == history_models.ActionType.VENUE_CREATED)
+            .filter(history_models.ActionHistory.actionType == history_constants.ActionType.VENUE_CREATED)
             .one()
         )
         assert offerer_action.venue == created_venue
@@ -3179,7 +3180,7 @@ class CreateFromOnboardingDataTest:
         assert db.session.query(history_models.ActionHistory).count() == 1
         offerer_action = (
             db.session.query(history_models.ActionHistory)
-            .filter(history_models.ActionHistory.actionType == history_models.ActionType.USER_OFFERER_NEW)
+            .filter(history_models.ActionHistory.actionType == history_constants.ActionType.USER_OFFERER_NEW)
             .one()
         )
         assert offerer_action.offerer == offerer
@@ -3222,18 +3223,18 @@ class CreateFromOnboardingDataTest:
         actions = db.session.query(history_models.ActionHistory).order_by(history_models.ActionHistory.id).all()
         assert len(actions) == 3
 
-        assert actions[0].actionType == history_models.ActionType.INFO_MODIFIED
+        assert actions[0].actionType == history_constants.ActionType.INFO_MODIFIED
         assert actions[0].offerer == offerer
         assert actions[0].authorUser == user
         assert set(actions[0].extraData["modified_info"].keys()) == {"name"}
 
-        assert actions[1].actionType == history_models.ActionType.OFFERER_NEW
+        assert actions[1].actionType == history_constants.ActionType.OFFERER_NEW
         assert actions[1].offerer == offerer
         assert actions[1].user == user
         assert actions[1].authorUser == user
         self.assert_common_action_history_extra_data(actions[1])
 
-        assert actions[2].actionType == history_models.ActionType.VENUE_CREATED
+        assert actions[2].actionType == history_constants.ActionType.VENUE_CREATED
         assert actions[2].venue == venue
         assert actions[2].authorUser == user
 
@@ -3265,18 +3266,18 @@ class CreateFromOnboardingDataTest:
         actions = db.session.query(history_models.ActionHistory).order_by(history_models.ActionHistory.id).all()
         assert len(actions) == 3
 
-        assert actions[0].actionType == history_models.ActionType.INFO_MODIFIED
+        assert actions[0].actionType == history_constants.ActionType.INFO_MODIFIED
         assert actions[0].offerer == offerer
         assert actions[0].authorUser == new_user
         assert set(actions[0].extraData["modified_info"].keys()) == {"name"}
 
-        assert actions[1].actionType == history_models.ActionType.OFFERER_NEW
+        assert actions[1].actionType == history_constants.ActionType.OFFERER_NEW
         assert actions[1].offerer == offerer
         assert actions[1].user == new_user
         assert actions[1].authorUser == new_user
         self.assert_common_action_history_extra_data(actions[1])
 
-        assert actions[2].actionType == history_models.ActionType.VENUE_CREATED
+        assert actions[2].actionType == history_constants.ActionType.VENUE_CREATED
         assert actions[2].venue == venue
         assert actions[2].authorUser == new_user
 
@@ -3449,7 +3450,7 @@ class InviteMembersTest:
 
         actions_list = db.session.query(history_models.ActionHistory).all()
         assert len(actions_list) == 1
-        assert actions_list[0].actionType == history_models.ActionType.USER_OFFERER_NEW
+        assert actions_list[0].actionType == history_constants.ActionType.USER_OFFERER_NEW
         assert actions_list[0].authorUser == pro_user
         assert actions_list[0].user == attached_to_other_offerer_user
         assert actions_list[0].comment == "Rattachement créé par invitation"
@@ -3512,7 +3513,7 @@ class AcceptOffererInvitationTest:
 
         actions_list = db.session.query(history_models.ActionHistory).all()
         assert len(actions_list) == 1
-        assert actions_list[0].actionType == history_models.ActionType.USER_OFFERER_NEW
+        assert actions_list[0].actionType == history_constants.ActionType.USER_OFFERER_NEW
         assert actions_list[0].authorUser == user
         assert actions_list[0].user == user
         assert actions_list[0].comment == "Rattachement créé par invitation"
@@ -4510,7 +4511,7 @@ class CloseVenueTest:
 
         venue_closed_action = (
             db.session.query(history_models.ActionHistory)
-            .filter_by(venueId=venue.id, actionType=history_models.ActionType.VENUE_CLOSED)
+            .filter_by(venueId=venue.id, actionType=history_constants.ActionType.VENUE_CLOSED)
             .one()
         )
         assert venue_closed_action.comment == comment
@@ -4669,7 +4670,7 @@ class CloseVenueTest:
         author = users_factories.BaseUserFactory()
 
         history_factories.ActionHistoryFactory(
-            authorUser=author, venue=venue, actionType=history_models.ActionType.VENUE_CLOSED
+            authorUser=author, venue=venue, actionType=history_constants.ActionType.VENUE_CLOSED
         )
 
         offerers_api.close_venue(venue, author=author)
@@ -4744,7 +4745,7 @@ class ReopenVenueTest:
         venue = offerers_factories.VenueFactory(state=offerers_models.VenueState.CLOSED)
         author = users_factories.BaseUserFactory()
         history_factories.ActionHistoryFactory(
-            actionType=history_models.ActionType.VENUE_CLOSED,
+            actionType=history_constants.ActionType.VENUE_CLOSED,
             authorUser=author,
             venue=venue,
         )
@@ -4767,7 +4768,7 @@ class ReopenVenueTest:
 
         venue_reopened_action = (
             db.session.query(history_models.ActionHistory)
-            .filter_by(venueId=venue.id, actionType=history_models.ActionType.VENUE_REOPENED)
+            .filter_by(venueId=venue.id, actionType=history_constants.ActionType.VENUE_REOPENED)
             .one()
         )
         assert venue_reopened_action.comment == comment

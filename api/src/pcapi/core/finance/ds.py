@@ -18,6 +18,7 @@ from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import constants as finance_constants
 from pcapi.core.finance import models as finance_models
 from pcapi.core.finance.models import BankAccountApplicationStatus
+from pcapi.core.history import constants as history_constants
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
@@ -292,7 +293,7 @@ class ImportBankAccountMixin:
             timespan = make_timerange(start=lower_bound, end=upper_bound)
             deprecated_link.timespan = timespan
             deprecated_log = history_models.ActionHistory(
-                actionType=history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_DEPRECATED,
+                actionType=history_constants.ActionType.LINK_VENUE_BANK_ACCOUNT_DEPRECATED,
                 venueId=venue.id,
                 bankAccountId=deprecated_link.bankAccountId,
             )
@@ -301,7 +302,7 @@ class ImportBankAccountMixin:
             bankAccount=bank_account, venue=venue, timespan=(date_utils.get_naive_utc_now(),)
         )
         created_log = history_models.ActionHistory(
-            actionType=history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_CREATED,
+            actionType=history_constants.ActionType.LINK_VENUE_BANK_ACCOUNT_CREATED,
             venue=venue,
             bankAccount=bank_account,
         )

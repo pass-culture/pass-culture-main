@@ -45,6 +45,7 @@ from flask import render_template
 
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.educational.models as educational_models
+import pcapi.core.history.constants as history_constants
 import pcapi.core.history.models as history_models
 import pcapi.core.mails.transactional as transactional_mails
 import pcapi.core.offerers.models as offerers_models
@@ -1149,7 +1150,7 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
                     ):
                         for incident in all_current_incidents:
                             history_api.add_action(
-                                history_models.ActionType.FINANCE_INCIDENT_WAIT_FOR_PAYMENT,
+                                history_constants.ActionType.FINANCE_INCIDENT_WAIT_FOR_PAYMENT,
                                 author=None,
                                 finance_incident=incident,
                                 comment="Le montant de l’incident est supérieur au montant total des réservations validées. Donc aucun justificatif n’est généré, on attend la prochaine échéance",
@@ -1159,7 +1160,7 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
 
                     for incident in all_current_incidents:
                         history_api.add_action(
-                            history_models.ActionType.FINANCE_INCIDENT_GENERATE_DEBIT_NOTE,
+                            history_constants.ActionType.FINANCE_INCIDENT_GENERATE_DEBIT_NOTE,
                             author=None,
                             finance_incident=incident,
                             comment="Une note de débit sera générée dans quelques jours",
@@ -3157,7 +3158,7 @@ def update_bank_account_venues_links(
             )
             action_history_bulk_insert_mapping.append(
                 {
-                    "actionType": history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_DEPRECATED,
+                    "actionType": history_constants.ActionType.LINK_VENUE_BANK_ACCOUNT_DEPRECATED,
                     "authorUserId": user.real_user.id,
                     "venueId": link.venueId,
                     "bankAccountId": bank_account.id,
@@ -3190,7 +3191,7 @@ def update_bank_account_venues_links(
             )
             action_history_bulk_insert_mapping.append(
                 {
-                    "actionType": history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_CREATED,
+                    "actionType": history_constants.ActionType.LINK_VENUE_BANK_ACCOUNT_CREATED,
                     "authorUserId": user.real_user.id,
                     "venueId": venue_id,
                     "bankAccountId": bank_account.id,
@@ -3263,7 +3264,7 @@ def create_overpayment_finance_incident(
     db.session.add_all(booking_finance_incidents_to_create)
 
     history_api.add_action(
-        history_models.ActionType.FINANCE_INCIDENT_CREATED,
+        history_constants.ActionType.FINANCE_INCIDENT_CREATED,
         author=author,
         finance_incident=incident,
         comment=comment,
@@ -3304,7 +3305,7 @@ def create_overpayment_finance_incident_collective_booking(
     db.session.add(booking_finance_incident)
 
     history_api.add_action(
-        history_models.ActionType.FINANCE_INCIDENT_CREATED,
+        history_constants.ActionType.FINANCE_INCIDENT_CREATED,
         author=author,
         finance_incident=incident,
         comment=comment,
@@ -3376,7 +3377,7 @@ def create_finance_commercial_gesture(
 
     db.session.add_all(booking_finance_incidents_to_create)
     history_api.add_action(
-        history_models.ActionType.FINANCE_INCIDENT_CREATED,
+        history_constants.ActionType.FINANCE_INCIDENT_CREATED,
         author=author,
         finance_incident=incident,
         comment=comment,
@@ -3413,7 +3414,7 @@ def create_finance_commercial_gesture_collective_booking(
     )
     db.session.add(booking_finance_incident)
     history_api.add_action(
-        history_models.ActionType.FINANCE_INCIDENT_CREATED,
+        history_constants.ActionType.FINANCE_INCIDENT_CREATED,
         author=author,
         finance_incident=incident,
         comment=comment,
@@ -3494,7 +3495,7 @@ def validate_finance_overpayment_incident(
         }
         for beneficiary in beneficiaries:
             history_api.add_action(
-                history_models.ActionType.FINANCE_INCIDENT_USER_RECREDIT,
+                history_constants.ActionType.FINANCE_INCIDENT_USER_RECREDIT,
                 author=author,
                 user=beneficiary,
                 linked_incident_id=finance_incident.id,
@@ -3510,7 +3511,7 @@ def validate_finance_overpayment_incident(
     db.session.add(finance_incident)
 
     history_api.add_action(
-        history_models.ActionType.FINANCE_INCIDENT_VALIDATED,
+        history_constants.ActionType.FINANCE_INCIDENT_VALIDATED,
         author=author,
         venue=finance_incident.venue,
         finance_incident=finance_incident,
@@ -3561,7 +3562,7 @@ def validate_finance_commercial_gesture(
         }
         for beneficiary in beneficiaries:
             history_api.add_action(
-                history_models.ActionType.FINANCE_INCIDENT_USER_RECREDIT,
+                history_constants.ActionType.FINANCE_INCIDENT_USER_RECREDIT,
                 author=author,
                 user=beneficiary,
                 linked_incident_id=finance_incident.id,
@@ -3572,7 +3573,7 @@ def validate_finance_commercial_gesture(
     db.session.add(finance_incident)
 
     history_api.add_action(
-        history_models.ActionType.FINANCE_INCIDENT_VALIDATED,
+        history_constants.ActionType.FINANCE_INCIDENT_VALIDATED,
         author=author,
         venue=finance_incident.venue,
         finance_incident=finance_incident,
@@ -3602,7 +3603,7 @@ def cancel_finance_incident(
     db.session.add(incident)
 
     history_api.add_action(
-        history_models.ActionType.FINANCE_INCIDENT_CANCELLED,
+        history_constants.ActionType.FINANCE_INCIDENT_CANCELLED,
         author=author,
         finance_incident=incident,
         comment=comment,
@@ -3626,7 +3627,7 @@ def deprecate_venue_bank_account_links(bank_account: models.BankAccount, comment
             action_history = history_models.ActionHistory(
                 venueId=link.venueId,
                 bankAccountId=bank_account.id,
-                actionType=history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_DEPRECATED,
+                actionType=history_constants.ActionType.LINK_VENUE_BANK_ACCOUNT_DEPRECATED,
                 comment=comment,
             )
             db.session.add_all([link, action_history])

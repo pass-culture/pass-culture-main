@@ -11,7 +11,7 @@ from pcapi.core.educational import schemas
 from pcapi.core.educational.adage import client as adage_client
 from pcapi.core.educational.api.venue import get_relative_venues_by_siret
 from pcapi.core.history import api as history_api
-from pcapi.core.history import models as history_models
+from pcapi.core.history import constants as history_constants
 from pcapi.core.mails.transactional import send_eac_offerer_activation_email
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
@@ -250,7 +250,7 @@ def synchronize_adage_partners(adage_partners: list[schemas.AdageCulturalPartner
 def _remove_venue_adage_id(venue: offerers_models.Venue) -> None:
     if venue.adageId:
         history_api.add_action(
-            history_models.ActionType.INFO_MODIFIED,
+            history_constants.ActionType.INFO_MODIFIED,
             author=None,
             venue=venue,
             comment="Synchronisation ADAGE",
@@ -270,7 +270,7 @@ def _remove_venue_adage_id(venue: offerers_models.Venue) -> None:
 def _add_venue_adage_id(venue: offerers_models.Venue, adage_id: str) -> None:
     if venue.adageId != adage_id:
         history_api.add_action(
-            history_models.ActionType.INFO_MODIFIED,
+            history_constants.ActionType.INFO_MODIFIED,
             author=None,
             venue=venue,
             comment="Synchronisation ADAGE",

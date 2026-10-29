@@ -4,6 +4,7 @@ import pytest
 from flask import url_for
 
 from pcapi.core.educational import factories as collective_offers_factories
+from pcapi.core.history import constants as history_constants
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import factories as offerers_factories
@@ -130,7 +131,7 @@ class CreateProviderTest(PostEndpointHelper):
             .order_by(history_models.ActionHistory.actionDate.desc())
             .first()
         )
-        assert action.actionType == history_models.ActionType.FRAUD_INFO_MODIFIED
+        assert action.actionType == history_constants.ActionType.FRAUD_INFO_MODIFIED
         assert action.offerer == created_offerer
         assert action.comment == "Entité juridique de provider créée manuellement depuis le BO"
 

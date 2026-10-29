@@ -12,6 +12,7 @@ from markupsafe import Markup
 from werkzeug.exceptions import NotFound
 
 from pcapi.core.history import api as history_api
+from pcapi.core.history import constants as history_constants
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
@@ -365,7 +366,7 @@ def create_rule() -> response_utils.BackofficeResponse:
             _add_sub_rule_data_to_history(sub_rule, sub_rules_info["sub_rules_created"])
 
         history_api.add_action(
-            history_models.ActionType.RULE_CREATED,
+            history_constants.ActionType.RULE_CREATED,
             author=current_user,
             rule=new_rule,
             sub_rules_info=sub_rules_info,
@@ -421,7 +422,7 @@ def delete_rule(rule_id: int) -> response_utils.BackofficeResponse:
                 db.session.delete(sub_rule)
             rule_to_delete.isActive = False
             history_api.add_action(
-                history_models.ActionType.RULE_DELETED,
+                history_constants.ActionType.RULE_DELETED,
                 author=current_user,
                 rule=rule_to_delete,
                 sub_rules_info=sub_rules_info,
@@ -585,7 +586,7 @@ def edit_rule(rule_id: int) -> response_utils.BackofficeResponse:
             ]
         ):
             history_api.add_action(
-                history_models.ActionType.RULE_MODIFIED,
+                history_constants.ActionType.RULE_MODIFIED,
                 author=current_user,
                 rule=rule_to_update,
                 sub_rules_info=sub_rules_info,

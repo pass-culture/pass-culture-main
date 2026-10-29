@@ -3,6 +3,7 @@ from operator import attrgetter
 import pytest
 from flask import url_for
 
+from pcapi.core.history import constants as history_constants
 from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import factories as offerers_factories
@@ -610,7 +611,7 @@ class CreateOfferValidationRuleTest(PostEndpointHelper):
 
         action_history = db.session.query(history_models.ActionHistory).one()
         assert action_history.authorUser == legit_user
-        assert action_history.actionType == history_models.ActionType.RULE_CREATED
+        assert action_history.actionType == history_constants.ActionType.RULE_CREATED
         assert action_history.rule.name == rule.name
 
         assert len(action_history.extraData["sub_rules_info"]["sub_rules_created"]) == 2
@@ -787,7 +788,7 @@ class DeleteOfferValidationRuleTest(PostEndpointHelper):
 
         action_history = db.session.query(history_models.ActionHistory).one()
         assert action_history.authorUser == legit_user
-        assert action_history.actionType == history_models.ActionType.RULE_DELETED
+        assert action_history.actionType == history_constants.ActionType.RULE_DELETED
         assert action_history.rule.name == rule.name
         assert len(action_history.extraData["sub_rules_info"]["sub_rules_deleted"]) == 2
         assert {
@@ -923,7 +924,7 @@ class EditOfferValidationRuleTest(PostEndpointHelper):
 
         action_history = db.session.query(history_models.ActionHistory).one()
         assert action_history.authorUser == legit_user
-        assert action_history.actionType == history_models.ActionType.RULE_MODIFIED
+        assert action_history.actionType == history_constants.ActionType.RULE_MODIFIED
         assert action_history.rule.name == rule.name
         assert len(action_history.extraData["sub_rules_info"]["sub_rules_deleted"]) == 1
         assert len(action_history.extraData["sub_rules_info"]["sub_rules_modified"]) == 0
@@ -1008,7 +1009,7 @@ class EditOfferValidationRuleTest(PostEndpointHelper):
 
         action_history = db.session.query(history_models.ActionHistory).one()
         assert action_history.authorUser == legit_user
-        assert action_history.actionType == history_models.ActionType.RULE_MODIFIED
+        assert action_history.actionType == history_constants.ActionType.RULE_MODIFIED
         assert action_history.rule.name == rule.name
         assert len(action_history.extraData["sub_rules_info"]["sub_rules_deleted"]) == 1
         assert len(action_history.extraData["sub_rules_info"]["sub_rules_modified"]) == 1
@@ -1049,7 +1050,7 @@ class ListRulesHistoryTest(GetEndpointHelper):
         rule = offers_factories.OfferValidationRuleFactory(name="Règles de fraude")
         rule_creation_history = history_factories.ActionHistoryFactory(
             ruleId=rule.id,
-            actionType=history_models.ActionType.RULE_CREATED,
+            actionType=history_constants.ActionType.RULE_CREATED,
             actionDate=date_utils.get_naive_utc_now(),
             authorUser=legit_user,
             comment=None,
@@ -1077,7 +1078,7 @@ class ListRulesHistoryTest(GetEndpointHelper):
         # totally change the first one; change the comparated only for the second one
         rule_modification_history = history_factories.ActionHistoryFactory(
             ruleId=rule.id,
-            actionType=history_models.ActionType.RULE_MODIFIED,
+            actionType=history_constants.ActionType.RULE_MODIFIED,
             actionDate=date_utils.get_naive_utc_now(),
             authorUser=legit_user,
             comment=None,
@@ -1115,7 +1116,7 @@ class ListRulesHistoryTest(GetEndpointHelper):
         )
         rule_deletion_history = history_factories.ActionHistoryFactory(
             ruleId=rule.id,
-            actionType=history_models.ActionType.RULE_DELETED,
+            actionType=history_constants.ActionType.RULE_DELETED,
             actionDate=date_utils.get_naive_utc_now(),
             authorUser=legit_user,
             comment=None,

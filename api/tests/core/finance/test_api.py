@@ -24,6 +24,7 @@ from pcapi.core.finance import exceptions
 from pcapi.core.finance import factories
 from pcapi.core.finance import models
 from pcapi.core.finance import utils
+from pcapi.core.history import constants as history_constants
 from pcapi.core.history import models as history_models
 from pcapi.core.object_storage.testing import recursive_listdir
 from pcapi.core.offerers import api as offerers_api
@@ -5388,7 +5389,7 @@ class DeprecateVenueBankAccounLinksTest:
             .one()
         )
         assert action.bankAccount == bank_account
-        assert action.actionType == history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_DEPRECATED
+        assert action.actionType == history_constants.ActionType.LINK_VENUE_BANK_ACCOUNT_DEPRECATED
         assert action.comment == "Fini la banque"
 
         assert other_link.timespan.upper is not None
@@ -5398,7 +5399,7 @@ class DeprecateVenueBankAccounLinksTest:
             .one()
         )
         assert other_action.bankAccount == bank_account
-        assert other_action.actionType == history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_DEPRECATED
+        assert other_action.actionType == history_constants.ActionType.LINK_VENUE_BANK_ACCOUNT_DEPRECATED
         assert other_action.comment == "Fini la banque"
 
 

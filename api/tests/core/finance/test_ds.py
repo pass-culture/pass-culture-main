@@ -24,6 +24,7 @@ from pcapi.core.finance.factories import BankAccountFactory
 from pcapi.core.finance.factories import BankAccountStatusHistoryFactory
 from pcapi.core.finance.models import BankAccount
 from pcapi.core.finance.models import BankAccountApplicationStatus
+from pcapi.core.history import constants as history_constants
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.factories import VenueBankAccountLinkFactory
@@ -497,7 +498,7 @@ class MarkWithoutApplicationTooOldApplicationsTest:
             mark_without_continuation_applications()
 
         action_occurred = ActionOccurred(
-            type=history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_DEPRECATED,
+            type=history_constants.ActionType.LINK_VENUE_BANK_ACCOUNT_DEPRECATED,
             venueId=venue.id,
             bankAccountId=bank_account.id,
             offererId=None,

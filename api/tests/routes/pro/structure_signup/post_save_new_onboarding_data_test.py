@@ -9,7 +9,7 @@ import pcapi.core.users.models as users_models
 from pcapi.connectors.api_adresse import AddressInfo
 from pcapi.connectors.entreprise import exceptions as sirene_exceptions
 from pcapi.core.geography import models as geography_models
-from pcapi.core.history import models as history_models
+from pcapi.core.history import constants as history_constants
 from pcapi.models import db
 
 from tests.connectors import api_entreprise_test_data
@@ -67,10 +67,10 @@ class Returns200Test:
         assert created_venue.adageInscriptionDate is None
 
         assert len(created_offerer.action_history) == 1
-        assert created_offerer.action_history[0].actionType == history_models.ActionType.OFFERER_NEW
+        assert created_offerer.action_history[0].actionType == history_constants.ActionType.OFFERER_NEW
         assert created_offerer.action_history[0].authorUser == user
         assert len(created_venue.action_history) == 1
-        assert created_venue.action_history[0].actionType == history_models.ActionType.VENUE_CREATED
+        assert created_venue.action_history[0].actionType == history_constants.ActionType.VENUE_CREATED
         assert created_venue.action_history[0].authorUser == user
 
         mocked_get_address.assert_not_called()
@@ -138,10 +138,10 @@ class Returns200Test:
         assert created_venue.adageInscriptionDate is None
 
         assert len(created_offerer.action_history) == 1
-        assert created_offerer.action_history[0].actionType == history_models.ActionType.OFFERER_NEW
+        assert created_offerer.action_history[0].actionType == history_constants.ActionType.OFFERER_NEW
         assert created_offerer.action_history[0].authorUser == user
         assert len(created_venue.action_history) == 1
-        assert created_venue.action_history[0].actionType == history_models.ActionType.VENUE_CREATED
+        assert created_venue.action_history[0].actionType == history_constants.ActionType.VENUE_CREATED
         assert created_venue.action_history[0].authorUser == user
 
         mocked_get_address.assert_not_called()
@@ -198,10 +198,10 @@ class Returns200Test:
         assert created_venue.adageInscriptionDate is None
 
         assert len(created_offerer.action_history) == 1
-        assert created_offerer.action_history[0].actionType == history_models.ActionType.OFFERER_NEW
+        assert created_offerer.action_history[0].actionType == history_constants.ActionType.OFFERER_NEW
         assert created_offerer.action_history[0].authorUser == user
         assert len(created_venue.action_history) == 1
-        assert created_venue.action_history[0].actionType == history_models.ActionType.VENUE_CREATED
+        assert created_venue.action_history[0].actionType == history_constants.ActionType.VENUE_CREATED
         assert created_venue.action_history[0].authorUser == user
 
         address = db.session.query(geography_models.Address).one()

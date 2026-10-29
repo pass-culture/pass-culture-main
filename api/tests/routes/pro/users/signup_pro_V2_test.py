@@ -5,6 +5,7 @@ import pytest
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
 
+import pcapi.core.history.constants as history_constants
 import pcapi.core.history.models as history_models
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
@@ -72,7 +73,7 @@ class Returns204Test:
             db.session.query(history_models.ActionHistory).order_by(history_models.ActionHistory.actionType).all()
         )
         assert len(actions_list) == 1
-        assert actions_list[0].actionType == history_models.ActionType.USER_CREATED
+        assert actions_list[0].actionType == history_constants.ActionType.USER_CREATED
         assert actions_list[0].authorUser == user
         assert actions_list[0].user == user
 

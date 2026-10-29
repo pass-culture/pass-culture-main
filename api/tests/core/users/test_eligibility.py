@@ -7,8 +7,8 @@ import time_machine
 from dateutil.relativedelta import relativedelta
 
 from pcapi import settings
+from pcapi.core.history import constants as history_constants
 from pcapi.core.history import factories as history_factories
-from pcapi.core.history import models as history_models
 from pcapi.core.subscription import factories as subscription_factories
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.users import api as users_api
@@ -641,7 +641,7 @@ class GetKnownBirthdateAtDateTest:
     def test_does_not_crash_on_empty_action(self, falsy_value):
         user = users_factories.UserFactory()
         history_factories.ActionHistoryFactory(
-            user=user, actionType=history_models.ActionType.INFO_MODIFIED, extraData=falsy_value
+            user=user, actionType=history_constants.ActionType.INFO_MODIFIED, extraData=falsy_value
         )
 
         birthday = eligibility_api.get_known_birthday_at_date(user, date_utils.get_naive_utc_now())

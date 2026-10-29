@@ -25,6 +25,7 @@ from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.finance import models as finance_models
 from pcapi.core.finance import repository as finance_repository
 from pcapi.core.history import api as history_api
+from pcapi.core.history import constants as history_constants
 from pcapi.core.history import models as history_models
 from pcapi.core.mails import transactional as transactional_mails
 from pcapi.core.offerers import api as offerers_api
@@ -619,11 +620,11 @@ def get_history(offerer_id: int) -> response_utils.BackofficeResponse:
     filters = [history_models.ActionHistory.offererId == offerer_id]
     if not access_control.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS):
         filters.append(
-            history_models.ActionHistory.actionType != history_models.ActionType.FRAUD_INFO_MODIFIED,
+            history_models.ActionHistory.actionType != history_constants.ActionType.FRAUD_INFO_MODIFIED,
         )
     if not access_control.has_current_user_permission(perm_models.Permissions.READ_PRO_REIMBURSEMENT_SUSPENSION):
         filters.append(
-            history_models.ActionHistory.actionType != history_models.ActionType.VENUE_REIMBURSEMENT_SUSPENDED
+            history_models.ActionHistory.actionType != history_constants.ActionType.VENUE_REIMBURSEMENT_SUSPENDED
         )
 
     actions_history = (
@@ -1569,7 +1570,7 @@ def get_entreprise_urssaf_info(offerer_id: int) -> response_utils.BackofficeResp
         data["urssaf_error"] = str(error) or "Une erreur s'est produite lors de l'appel à API Entreprise"
     else:
         history_api.add_action(
-            history_models.ActionType.OFFERER_ATTESTATION_CHECKED,
+            history_constants.ActionType.OFFERER_ATTESTATION_CHECKED,
             author=current_user,
             offerer=offerer,
             provider="URSSAF",
@@ -1596,7 +1597,7 @@ def get_entreprise_dgfip_info(offerer_id: int) -> response_utils.BackofficeRespo
         data["dgfip_error"] = str(error) or "Une erreur s'est produite lors de l'appel à API Entreprise"
     else:
         history_api.add_action(
-            history_models.ActionType.OFFERER_ATTESTATION_CHECKED,
+            history_constants.ActionType.OFFERER_ATTESTATION_CHECKED,
             author=current_user,
             offerer=offerer,
             provider="DGFIP",

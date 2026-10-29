@@ -4,8 +4,8 @@ import logging
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
+from pcapi.core.history import constants as history_constants
 from pcapi.core.history import factories as history_factories
-from pcapi.core.history import models as history_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users import factories as users_factories
@@ -46,7 +46,7 @@ def create_industrial_individual_offerers() -> None:
         tags=[ae_tag],
     )
     history_factories.ActionHistoryFactory.create(
-        actionType=history_models.ActionType.OFFERER_PENDING,
+        actionType=history_constants.ActionType.OFFERER_PENDING,
         authorUser=instructor,
         offerer=offerer,
         comment="Première action",
@@ -70,7 +70,7 @@ def create_industrial_individual_offerers() -> None:
         tags=[ae_tag, adage_tag],
     )
     history_factories.ActionHistoryFactory.create(
-        actionType=history_models.ActionType.OFFERER_PENDING,
+        actionType=history_constants.ActionType.OFFERER_PENDING,
         authorUser=instructor,
         offerer=offerer,
         comment="Première action",
@@ -92,10 +92,10 @@ def create_industrial_individual_offerers() -> None:
         tags=[ae_tag, adage_tag],
     )
     history_factories.ActionHistoryFactory.create(
-        actionType=history_models.ActionType.OFFERER_PENDING, authorUser=instructor, offerer=offerer
+        actionType=history_constants.ActionType.OFFERER_PENDING, authorUser=instructor, offerer=offerer
     )
     history_factories.ActionHistoryFactory.create(
-        actionType=history_models.ActionType.OFFERER_PENDING,
+        actionType=history_constants.ActionType.OFFERER_PENDING,
         authorUser=other_instructor,
         offerer=offerer,
         comment="Seconde action",

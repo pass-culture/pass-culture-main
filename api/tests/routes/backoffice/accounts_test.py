@@ -22,6 +22,7 @@ from pcapi.core.chronicles import factories as chronicles_factories
 from pcapi.core.finance import exceptions as finance_exceptions
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
+from pcapi.core.history import constants as history_constants
 from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
 from pcapi.core.mails import testing as mails_testing
@@ -739,7 +740,7 @@ class ListPublicAccountsTest(GetEndpointHelper):
         old_grant_18.lastName = common_name
         old_grant_18.isActive = False
         history_factories.ActionHistoryFactory(
-            actionType=history_models.ActionType.USER_SUSPENDED,
+            actionType=history_constants.ActionType.USER_SUSPENDED,
             actionDate=None,
             user=underage,
             extraData={"reason": users_constants.SuspensionReason.FRAUD_SUSPICION},
@@ -760,10 +761,10 @@ class ListPublicAccountsTest(GetEndpointHelper):
         email = user.email
         now = date_utils.get_naive_utc_now()
         for days, action_type in (
-            (4, history_models.ActionType.USER_SUSPENDED),
-            (3, history_models.ActionType.USER_UNSUSPENDED),
-            (2, history_models.ActionType.USER_SUSPENDED),
-            (1, history_models.ActionType.USER_UNSUSPENDED),
+            (4, history_constants.ActionType.USER_SUSPENDED),
+            (3, history_constants.ActionType.USER_UNSUSPENDED),
+            (2, history_constants.ActionType.USER_SUSPENDED),
+            (1, history_constants.ActionType.USER_UNSUSPENDED),
         ):
             history_factories.ActionHistoryFactory(
                 actionType=action_type,
@@ -771,7 +772,7 @@ class ListPublicAccountsTest(GetEndpointHelper):
                 user=user,
                 extraData=(
                     {"reason": users_constants.SuspensionReason.UPON_USER_REQUEST}
-                    if action_type == history_models.ActionType.USER_SUSPENDED
+                    if action_type == history_constants.ActionType.USER_SUSPENDED
                     else {}
                 ),
             )
@@ -1385,7 +1386,7 @@ class GetPublicAccountTest(GetEndpointHelper):
     def test_get_suspended_public_account(self, legit_user, authenticated_client):
         user = users_factories.UserFactory(isActive=False)
         history_factories.ActionHistoryFactory(
-            actionType=history_models.ActionType.USER_SUSPENDED,
+            actionType=history_constants.ActionType.USER_SUSPENDED,
             actionDate=datetime.datetime(2023, 11, 3, 11, 12),
             user=user,
             authorUser=legit_user,
@@ -1892,12 +1893,12 @@ class GetPublicAccountTest(GetEndpointHelper):
         ).incident
         history_factories.ActionHistoryFactory(
             actionDate=datetime.datetime(2026, 4, 2),
-            actionType=history_models.ActionType.FINANCE_INCIDENT_CREATED,
+            actionType=history_constants.ActionType.FINANCE_INCIDENT_CREATED,
             financeIncident=incident,
         )
         history_factories.ActionHistoryFactory(
             actionDate=datetime.datetime(2026, 4, 4, 15),
-            actionType=history_models.ActionType.FINANCE_INCIDENT_VALIDATED,
+            actionType=history_constants.ActionType.FINANCE_INCIDENT_VALIDATED,
             financeIncident=incident,
         )
         user.deposit.expirationDate = datetime.datetime(2026, 4, 25)
@@ -1937,7 +1938,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         # -30 days and -1 day in BeneficiaryImportStatusFactory
         user = users_factories.BeneficiaryFactory(dateCreated=date_utils.get_naive_utc_now() - relativedelta(days=40))
         no_date_action = history_factories.ActionHistoryFactory(
-            actionType=history_models.ActionType.USER_SUSPENDED,
+            actionType=history_constants.ActionType.USER_SUSPENDED,
             actionDate=None,
             user=user,
             authorUser=legit_user,
@@ -1945,13 +1946,13 @@ class GetPublicAccountTest(GetEndpointHelper):
         )
         admin = users_factories.AdminFactory()
         unsuspended = history_factories.ActionHistoryFactory(
-            actionType=history_models.ActionType.USER_UNSUSPENDED,
+            actionType=history_constants.ActionType.USER_UNSUSPENDED,
             actionDate=date_utils.get_naive_utc_now() - relativedelta(days=35),
             user=user,
             authorUser=admin,
         )
         history_factories.ActionHistoryFactory(
-            actionType=history_models.ActionType.INFO_MODIFIED,
+            actionType=history_constants.ActionType.INFO_MODIFIED,
             actionDate=date_utils.get_naive_utc_now() - relativedelta(days=30),
             user=user,
             authorUser=admin,
@@ -2296,7 +2297,7 @@ class UpdatePublicAccountTest(PostEndpointHelper):
         assert history.author == legit_user
 
         action = db.session.query(history_models.ActionHistory).one()
-        assert action.actionType == history_models.ActionType.INFO_MODIFIED
+        assert action.actionType == history_constants.ActionType.INFO_MODIFIED
         assert action.actionDate is not None
         assert action.authorUserId == legit_user.id
         assert action.userId == user.id
@@ -2370,7 +2371,7 @@ class UpdatePublicAccountTest(PostEndpointHelper):
         assert history.author == legit_user
 
         action = db.session.query(history_models.ActionHistory).one()
-        assert action.actionType == history_models.ActionType.INFO_MODIFIED
+        assert action.actionType == history_constants.ActionType.INFO_MODIFIED
         assert action.actionDate is not None
         assert action.authorUserId == legit_user.id
         assert action.userId == user.id
@@ -3399,7 +3400,7 @@ class ExtendDepositValidityTest(PostEndpointHelper):
         assert user.deposit.expirationDate.date() == new_expiration_date
         assert len(user.action_history) == 1
         action = user.action_history[0]
-        assert action.actionType == history_models.ActionType.INFO_MODIFIED
+        assert action.actionType == history_constants.ActionType.INFO_MODIFIED
         assert action.authorUser == legit_user
         assert action.extraData == {
             "modified_info": {
@@ -3473,7 +3474,7 @@ class GetPublicAccountHistoryTest:
         history = get_public_account_history(user)
 
         assert len(history) == 1
-        assert history[0].actionType == history_models.ActionType.USER_CREATED
+        assert history[0].actionType == history_constants.ActionType.USER_CREATED
         assert history[0].actionDate == user.dateCreated
         assert history[0].authorUser == user
 
@@ -5859,7 +5860,7 @@ class AnonymizePublicAccountTest(PostEndpointHelper):
         assert user.roles == [users_models.UserRole.ANONYMIZED]
         history = db.session.query(history_models.ActionHistory).one_or_none()
         assert history
-        assert history.actionType == history_models.ActionType.USER_ANONYMIZED
+        assert history.actionType == history_constants.ActionType.USER_ANONYMIZED
         assert history.authorUser == legit_user
         assert history.user == user
 
@@ -6010,7 +6011,7 @@ class AnonymizePublicAccountTest(PostEndpointHelper):
         user = users_factories.BeneficiaryFactory(isActive=False)
         history_factories.SuspendedUserActionHistoryFactory(
             actionDate=date_utils.get_naive_utc_now(),
-            actionType=history_models.ActionType.USER_SUSPENDED,
+            actionType=history_constants.ActionType.USER_SUSPENDED,
             reason=users_constants.SuspensionReason.FRAUD_RESELL_PASS,
             user=user,
         )
@@ -6186,7 +6187,7 @@ class InvalidatePublicAccountPasswordTest(PostEndpointHelper):
         assert user_password_before_response != user.password
 
         action_history = db.session.query(history_models.ActionHistory).one()
-        assert action_history.actionType == history_models.ActionType.USER_PASSWORD_INVALIDATED
+        assert action_history.actionType == history_constants.ActionType.USER_PASSWORD_INVALIDATED
         assert action_history.authorUser == legit_user
         assert action_history.user == user
 
@@ -6584,7 +6585,7 @@ class TagPublicAccountTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, user_id=user.id, form=form_data, follow_redirects=True)
         assert response.status_code == 200
         action = db.session.query(history_models.ActionHistory).one()
-        assert action.actionType == history_models.ActionType.INFO_MODIFIED
+        assert action.actionType == history_constants.ActionType.INFO_MODIFIED
         assert action.actionDate is not None
         assert action.authorUserId == legit_user.id
         assert action.userId == user.id
@@ -6601,7 +6602,7 @@ class TagPublicAccountTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, user_id=user.id, form=form_data, follow_redirects=True)
         assert response.status_code == 200
         action = db.session.query(history_models.ActionHistory).one()
-        assert action.actionType == history_models.ActionType.INFO_MODIFIED
+        assert action.actionType == history_constants.ActionType.INFO_MODIFIED
         assert action.actionDate is not None
         assert action.authorUserId == legit_user.id
         assert action.userId == user.id
@@ -6824,7 +6825,7 @@ class DisconnectPublicAccountTest(PostEndpointHelper):
 
         action_history = db.session.query(history_models.ActionHistory).one()
 
-        assert action_history.actionType == history_models.ActionType.USER_DISCONNECTED
+        assert action_history.actionType == history_constants.ActionType.USER_DISCONNECTED
         assert action_history.comment == "A funny comment"
         assert action_history.userId == user.id
 
@@ -6954,7 +6955,7 @@ class BatchInvalidatePublicAccountPasswordTest(PostEndpointHelper):
         for user, password_before_response in zip(users, passwords_before_response):
             assert user.password != password_before_response
             assert len(user.action_history) == 1
-            assert user.action_history[0].actionType == history_models.ActionType.USER_PASSWORD_INVALIDATED
+            assert user.action_history[0].actionType == history_constants.ActionType.USER_PASSWORD_INVALIDATED
             assert user.action_history[0].authorUser == legit_user
 
             html_parser.get_tag(response.data, tag="tr", id=f"user-row-{user.id}")
@@ -7037,7 +7038,7 @@ class BatchSuspendPublicAccountTest(PostEndpointHelper):
         for user in users:
             assert not user.isActive
             assert len(user.action_history) == 1
-            assert user.action_history[0].actionType == history_models.ActionType.USER_SUSPENDED
+            assert user.action_history[0].actionType == history_constants.ActionType.USER_SUSPENDED
             assert user.action_history[0].authorUser == legit_user
             assert user.action_history[0].extraData["reason"] == users_constants.SuspensionReason.FRAUD_SUSPICION.value
             assert user.action_history[0].comment == "Suspension en masse"
@@ -7072,7 +7073,7 @@ class BatchSuspendPublicAccountTest(PostEndpointHelper):
         for user in users:
             assert not user.isActive
             assert len(user.action_history) == 1
-            assert user.action_history[0].actionType == history_models.ActionType.USER_SUSPENDED
+            assert user.action_history[0].actionType == history_constants.ActionType.USER_SUSPENDED
             assert user.action_history[0].authorUser == legit_user
             assert (
                 user.action_history[0].extraData["reason"]

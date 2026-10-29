@@ -1,7 +1,7 @@
 import typing
 
 from pcapi.core.history import api as history_api
-from pcapi.core.history import models as history_models
+from pcapi.core.history import constants as history_constants
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
@@ -32,7 +32,7 @@ def update_role(
     db.session.flush()
 
     history_api.add_action(
-        history_models.ActionType.ROLE_PERMISSIONS_CHANGED,
+        history_constants.ActionType.ROLE_PERMISSIONS_CHANGED,
         author=author,
         comment=comment,
         role_name=role.name,

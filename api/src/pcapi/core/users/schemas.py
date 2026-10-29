@@ -4,7 +4,7 @@ from datetime import datetime
 import pydantic as pydantic_v2
 
 from pcapi.connectors.dms import models as dms_models
-from pcapi.core.history import models as history_models
+from pcapi.core.history import constants as history_constants
 from pcapi.core.users import models as users_models
 
 
@@ -111,7 +111,7 @@ class GdprBookingSerializer(GdprSerializer):
 
 class GdprActionHistorySerializer(GdprSerializer):
     actionDate: datetime | None = None
-    actionType: history_models.ActionType
+    actionType: history_constants.ActionType
 
 
 class GdprBeneficiaryValidation(GdprSerializer):

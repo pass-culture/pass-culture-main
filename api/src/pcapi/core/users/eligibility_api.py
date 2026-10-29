@@ -4,7 +4,7 @@ from dateutil.relativedelta import relativedelta
 
 from pcapi import settings
 from pcapi.core.finance.models import DepositType
-from pcapi.core.history import models as history_models
+from pcapi.core.history import constants as history_constants
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.users import constants
 from pcapi.core.users import models as users_models
@@ -300,7 +300,7 @@ def get_known_birthday_at_date(user: users_models.User, at_date: datetime.dateti
     birthday_actions = [
         action
         for action in user.action_history
-        if action.actionType == history_models.ActionType.INFO_MODIFIED
+        if action.actionType == history_constants.ActionType.INFO_MODIFIED
         and action.extraData
         and "modified_info" in action.extraData
         and action.extraData["modified_info"].get("validatedBirthDate") is not None

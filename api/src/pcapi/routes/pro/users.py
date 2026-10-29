@@ -16,7 +16,7 @@ from pcapi.connectors.api_recaptcha import check_web_recaptcha_token
 from pcapi.core import token as token_utils
 from pcapi.core.finance import models as finance_models
 from pcapi.core.history import api as history_api
-from pcapi.core.history import models as history_models
+from pcapi.core.history import constants as history_constants
 from pcapi.core.mails import transactional as transactional_mails
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.token.serialization import ConnectAsInternalModel
@@ -349,7 +349,7 @@ def connect_as(token: str) -> Response:
     if not (user.has_non_attached_pro_role or user.has_pro_role):
         raise ForbiddenError({"user": "L'utilisateur n'est pas un pro"})
 
-    history_api.add_action(history_models.ActionType.CONNECT_AS_USER, author=current_user, user=user)
+    history_api.add_action(history_constants.ActionType.CONNECT_AS_USER, author=current_user, user=user)
     logout_user()
     login_user(user)
     flask.session["internal_admin_email"] = token_data.internal_admin_email

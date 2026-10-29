@@ -1,6 +1,6 @@
 import pytest
 
-from pcapi.core.history import models as history_models
+from pcapi.core.history import constants as history_constants
 from pcapi.core.users import factories as users_factories
 
 from tests.conftest import TestClient
@@ -20,7 +20,7 @@ def test_patch_user_phone(client: TestClient) -> None:
     assert user.phoneNumber == "+33678961233"
 
     assert len(user.action_history) == 1
-    assert user.action_history[0].actionType == history_models.ActionType.INFO_MODIFIED
+    assert user.action_history[0].actionType == history_constants.ActionType.INFO_MODIFIED
     assert user.action_history[0].user == user
     assert user.action_history[0].extraData["modified_info"] == {
         "phoneNumber": {"new_info": "+33678961233", "old_info": "+33123456789"},

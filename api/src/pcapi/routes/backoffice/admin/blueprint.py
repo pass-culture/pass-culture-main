@@ -11,6 +11,7 @@ from werkzeug.exceptions import NotFound
 
 from pcapi import settings
 from pcapi.core.categories import subcategories
+from pcapi.core.history import constants as history_constants
 from pcapi.core.history import models as history_models
 from pcapi.core.internal_notifications.transactional import change_feature_flip as change_feature_flip_internal_message
 from pcapi.core.permissions import api as perm_api
@@ -83,7 +84,7 @@ def get_roles_management() -> response_utils.BackofficeResponse:
 def get_roles_history() -> response_utils.BackofficeResponse:
     actions_history = (
         db.session.query(history_models.ActionHistory)
-        .filter_by(actionType=history_models.ActionType.ROLE_PERMISSIONS_CHANGED)
+        .filter_by(actionType=history_constants.ActionType.ROLE_PERMISSIONS_CHANGED)
         .order_by(history_models.ActionHistory.actionDate.desc())
         .options(
             sa_orm.joinedload(history_models.ActionHistory.authorUser).load_only(

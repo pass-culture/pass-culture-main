@@ -64,6 +64,7 @@ from pcapi.core.geography import constants as geography_constants
 from pcapi.core.geography import models as geography_models
 from pcapi.core.geography import utils as geography_utils
 from pcapi.core.history import api as history_api
+from pcapi.core.history import constants as history_constants
 from pcapi.core.mails import models as mails_models
 from pcapi.core.mails import send
 from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
@@ -531,7 +532,7 @@ def create_venue(
         venue.venueTypeCode = offerers_utils.get_venue_type_code_from_activity(data["activity"])
 
     db.session.add(venue)
-    history_api.add_action(history_models.ActionType.VENUE_CREATED, author=author, venue=venue)
+    history_api.add_action(history_constants.ActionType.VENUE_CREATED, author=author, venue=venue)
 
     db.session.flush()
 
@@ -1072,7 +1073,7 @@ def create_offerer(
             extra_data: dict[str, typing.Any] = {}
             _add_new_onboarding_info_to_extra_data(new_onboarding_info, extra_data)
             history_api.add_action(
-                history_models.ActionType.USER_OFFERER_NEW,
+                history_constants.ActionType.USER_OFFERER_NEW,
                 author=author,
                 user=user,
                 offerer=offerer,
@@ -1102,7 +1103,7 @@ def create_offerer(
         extra_data.update(kwargs)
 
         history_api.add_action(
-            history_models.ActionType.OFFERER_NEW,
+            history_constants.ActionType.OFFERER_NEW,
             author=author,
             user=user,
             offerer=offerer,
@@ -1170,7 +1171,7 @@ def update_offerer(
 
     if modified_info:
         history_api.add_action(
-            history_models.ActionType.INFO_MODIFIED, author=author, offerer=offerer, modified_info=modified_info
+            history_constants.ActionType.INFO_MODIFIED, author=author, offerer=offerer, modified_info=modified_info
         )
 
     db.session.add(offerer)
@@ -1212,7 +1213,7 @@ def validate_offerer_attachment(
     db.session.add(user_offerer)
 
     history_api.add_action(
-        history_models.ActionType.USER_OFFERER_VALIDATED,
+        history_constants.ActionType.USER_OFFERER_VALIDATED,
         author=author_user,
         user=user_offerer.user,
         offerer=user_offerer.offerer,
@@ -1245,7 +1246,7 @@ def set_offerer_attachment_pending(
     remove_pro_role_and_add_non_attached_pro_role([user_offerer.user])
     db.session.add(user_offerer)
     history_api.add_action(
-        history_models.ActionType.USER_OFFERER_PENDING,
+        history_constants.ActionType.USER_OFFERER_PENDING,
         author=author_user,
         user=user_offerer.user,
         offerer=user_offerer.offerer,
@@ -1264,7 +1265,7 @@ def reject_offerer_attachment(
     db.session.add(user_offerer)
 
     history_api.add_action(
-        history_models.ActionType.USER_OFFERER_REJECTED,
+        history_constants.ActionType.USER_OFFERER_REJECTED,
         author=author_user,
         user=user_offerer.user,
         offerer=user_offerer.offerer,
@@ -1287,7 +1288,7 @@ def delete_offerer_attachment(
     db.session.add(user_offerer)
 
     history_api.add_action(
-        history_models.ActionType.USER_OFFERER_DELETED,
+        history_constants.ActionType.USER_OFFERER_DELETED,
         author=author_user,
         user=user_offerer.user,
         offerer=user_offerer.offerer,
@@ -1339,7 +1340,7 @@ def validate_offerer(
         )
 
     history_api.add_action(
-        history_models.ActionType.OFFERER_VALIDATED,
+        history_constants.ActionType.OFFERER_VALIDATED,
         author=author_user,
         offerer=offerer,
         user=applicants[0] if applicants else None,  # before validation we should have only one applicant
@@ -1374,7 +1375,7 @@ def reject_offerer(
     offerer.isActive = False
     db.session.add(offerer)
     history_api.add_action(
-        history_models.ActionType.OFFERER_REJECTED,
+        history_constants.ActionType.OFFERER_REJECTED,
         author=author_user,
         offerer=offerer,
         user=first_user_to_register_offerer,
@@ -1429,7 +1430,7 @@ def close_offerer(
     offerer.validationStatus = ValidationStatus.CLOSED
     db.session.add(offerer)
     history_api.add_action(
-        history_models.ActionType.OFFERER_CLOSED,
+        history_constants.ActionType.OFFERER_CLOSED,
         author=author_user,
         offerer=offerer,
         closure_date=closure_date.isoformat() if closure_date else None,  # may be used to check programmatically
@@ -1467,7 +1468,7 @@ def auto_delete_attachments_on_closed_offerers() -> None:
         db.session.query(history_models.ActionHistory.actionDate)
         .filter(
             history_models.ActionHistory.offererId == offerers_models.Offerer.id,
-            history_models.ActionHistory.actionType == history_models.ActionType.OFFERER_CLOSED,
+            history_models.ActionHistory.actionType == history_constants.ActionType.OFFERER_CLOSED,
         )
         .order_by(history_models.ActionHistory.actionDate.desc())
         .limit(1)
@@ -1693,7 +1694,7 @@ def handle_closed_offerer(offerer: offerers_models.Offerer, closure_date: date |
             )
         elif "modified_info" in action_kwargs:
             history_api.add_action(
-                history_models.ActionType.INFO_MODIFIED,
+                history_constants.ActionType.INFO_MODIFIED,
                 author=None,
                 offerer=offerer,
                 **action_kwargs,
@@ -1727,7 +1728,7 @@ def set_offerer_pending(
     db.session.add(offerer)
 
     history_api.add_action(
-        history_models.ActionType.OFFERER_PENDING,
+        history_constants.ActionType.OFFERER_PENDING,
         author=author_user,
         offerer=offerer,
         venue=None,  # otherwise mypy does not accept extra_data dict
@@ -1748,12 +1749,12 @@ def set_offerer_pending(
 
 
 def add_comment_to_offerer(offerer: offerers_models.Offerer, author_user: users_models.User, comment: str) -> None:
-    history_api.add_action(history_models.ActionType.COMMENT, author=author_user, offerer=offerer, comment=comment)
+    history_api.add_action(history_constants.ActionType.COMMENT, author=author_user, offerer=offerer, comment=comment)
     db.session.flush()
 
 
 def add_comment_to_venue(venue: offerers_models.Venue, author_user: users_models.User, comment: str) -> None:
-    history_api.add_action(history_models.ActionType.COMMENT, author=author_user, venue=venue, comment=comment)
+    history_api.add_action(history_constants.ActionType.COMMENT, author=author_user, venue=venue, comment=comment)
 
 
 def get_timestamp_from_url(image_url: str) -> str:
@@ -2474,7 +2475,9 @@ def suspend_offerer(offerer: models.Offerer, actor: users_models.User, comment: 
 
     offerer.isActive = False
     db.session.add(offerer)
-    history_api.add_action(history_models.ActionType.OFFERER_SUSPENDED, author=actor, offerer=offerer, comment=comment)
+    history_api.add_action(
+        history_constants.ActionType.OFFERER_SUSPENDED, author=actor, offerer=offerer, comment=comment
+    )
     db.session.flush()
 
     _update_external_offerer(offerer, index_with_reason=IndexationReason.OFFERER_DEACTIVATION)
@@ -2487,7 +2490,7 @@ def unsuspend_offerer(offerer: models.Offerer, actor: users_models.User, comment
     offerer.isActive = True
     db.session.add(offerer)
     history_api.add_action(
-        history_models.ActionType.OFFERER_UNSUSPENDED, author=actor, offerer=offerer, comment=comment
+        history_constants.ActionType.OFFERER_UNSUSPENDED, author=actor, offerer=offerer, comment=comment
     )
     db.session.flush()
 
@@ -2678,7 +2681,7 @@ def invite_member(offerer: models.Offerer, email: str, current_user: users_model
         )
         db.session.add_all([offerer_invitation, new_user_offerer])
         history_api.add_action(
-            history_models.ActionType.USER_OFFERER_NEW,
+            history_constants.ActionType.USER_OFFERER_NEW,
             author=current_user,
             user=existing_user,
             offerer=offerer_invitation.offerer,
@@ -2774,7 +2777,7 @@ def accept_offerer_invitation_if_exists(user: users_models.User) -> None:
         )
         db.session.add(user_offerer)
         history_api.add_action(
-            history_models.ActionType.USER_OFFERER_NEW,
+            history_constants.ActionType.USER_OFFERER_NEW,
             author=user,
             user=user,
             offerer=offerer_invitation.offerer,
@@ -3104,7 +3107,7 @@ def match_acceslibre(venue: offerers_models.Venue) -> None:
         return
     if old_slug != venue.accessibilityProvider.externalAccessibilityId:
         history_api.add_action(
-            history_models.ActionType.INFO_MODIFIED,
+            history_constants.ActionType.INFO_MODIFIED,
             author=None,
             venue=venue,
             comment="Recherche automatisée du lieu permanent avec Acceslibre",
@@ -3420,7 +3423,11 @@ def update_fraud_info(
         action_kwargs["comment"] = comment
 
     history_api.add_action(
-        history_models.ActionType.FRAUD_INFO_MODIFIED, author=author_user, offerer=offerer, venue=venue, **action_kwargs
+        history_constants.ActionType.FRAUD_INFO_MODIFIED,
+        author=author_user,
+        offerer=offerer,
+        venue=venue,
+        **action_kwargs,
     )
 
     return True
@@ -3673,7 +3680,7 @@ def close_venue(venue: models.Venue, author: users_models.User, comment: str | N
         return
 
     venue.state = models.VenueState.CLOSED
-    history_api.add_action(history_models.ActionType.VENUE_CLOSED, author=author, venue=venue, comment=comment)
+    history_api.add_action(history_constants.ActionType.VENUE_CLOSED, author=author, venue=venue, comment=comment)
     _update_external_venue(venue, index_with_reason=IndexationReason.VENUE_CLOSED)
     cancel_individual_bookings_on_venue_closure(venue.id, author.id)
     cancel_collective_bookings_on_venue_closure(venue.id, author.id)
@@ -3697,7 +3704,7 @@ def reopen_venue(venue: models.Venue, author: users_models.User, comment: str | 
         return
 
     venue.state = None
-    history_api.add_action(history_models.ActionType.VENUE_REOPENED, author=author, venue=venue, comment=comment)
+    history_api.add_action(history_constants.ActionType.VENUE_REOPENED, author=author, venue=venue, comment=comment)
     _update_external_venue(venue, index_with_reason=IndexationReason.VENUE_REOPENED)
 
     original_action = history_repository.get_latest_venue_closure_event(venue.id)
