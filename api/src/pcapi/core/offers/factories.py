@@ -30,6 +30,7 @@ fake = faker.Faker(locale="fr_FR")
 
 EVENT_PRODUCT_SUBCATEGORIES_IDS = [subcategories.SEANCE_CINE.id]
 THINGS_PRODUCT_SUBCATEGORIES_IDS = [
+    subcategories.CARTE_JEUNES.id,
     subcategories.LIVRE_PAPIER.id,
     subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
     subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id,
