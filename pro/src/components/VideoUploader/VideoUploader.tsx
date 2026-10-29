@@ -53,7 +53,7 @@ export const VideoUploader = ({ uploadTipsId }: VideoUploaderProps) => {
   }
 
   return (
-    <div className={styles['video-uploader-container']}>
+    <div>
       {videoThumbnailUrl ? (
         <>
           <VideoPreview
@@ -96,26 +96,33 @@ export const VideoUploader = ({ uploadTipsId }: VideoUploaderProps) => {
             [styles['video-uploader-no-video-disabled']]: isClosed,
           })}
         >
-          <SvgIcon src={strokeVideoIcon} alt="" width="44" />
-          <Button
-            variant={ButtonVariant.TERTIARY}
-            color={ButtonColor.NEUTRAL}
-            icon={fullMoreIcon}
-            label="Ajouter une URL Youtube"
-            onClick={() => setIsOpen(true)}
-            disabled={isClosed}
-            aria-describedby={uploadTipsId}
-            ref={addVideoRef}
+          <SvgIcon
+            src={strokeVideoIcon}
+            alt=""
+            className={styles['video-uploader-icon']}
           />
-          <ModalVideo
-            isOpen={isOpen}
-            onClose={() => setIsOpen(false)}
-            addVideoRef={addVideoRef}
-            editVideoRef={editVideoRef}
-          />
-          <p className={styles['video-uploader-text-subtle']}>
-            Affichage de la prévisualisation ici
-          </p>
+          <div className={styles['video-uploader-texts']}>
+            <Button
+              variant={ButtonVariant.TERTIARY}
+              color={ButtonColor.NEUTRAL}
+              size={ButtonSize.SMALL}
+              icon={fullMoreIcon}
+              label="Ajouter une URL Youtube"
+              onClick={() => setIsOpen(true)}
+              disabled={isClosed}
+              aria-describedby={uploadTipsId}
+              ref={addVideoRef}
+            />
+            <ModalVideo
+              isOpen={isOpen}
+              onClose={() => setIsOpen(false)}
+              addVideoRef={addVideoRef}
+              editVideoRef={editVideoRef}
+            />
+            <p className={styles['video-uploader-text-subtle']}>
+              Affichage de la prévisualisation ici
+            </p>
+          </div>
         </div>
       )}
     </div>
