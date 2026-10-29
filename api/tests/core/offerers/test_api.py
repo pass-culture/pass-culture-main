@@ -4633,7 +4633,7 @@ class CloseVenueTest:
             offerers_api.close_venue(venue, author)
 
         db.session.refresh(venue)
-        tag = criteria_api.get_closure_request_tag()
+        tag = criteria_api.get_siret_shift_pending_tag()
 
         assert venue.state is offerers_models.VenueState.CLOSED
         assert venue.criteria == [tag]
@@ -5245,6 +5245,10 @@ class DetectUnexpectedVenueStatusTest:
         criterion = venue.criteria[0]
         assert criterion.name == criteria_constants.CLOSURE_DETECTED_LABEL
 
+        assert len(venue.action_history) == 1
+        event = venue.action_history[0]
+        assert event.actionType == history_constants.ActionType.VENUE_ADD_CLOSURE_TAG
+
         assert len(mails_testing.outbox) == 1
         sent_email = mails_testing.outbox[0]
         assert sent_email["template"] == asdict(TransactionalEmail.VENUE_SHOULD_BE_CLOSED.value)
@@ -5326,3 +5330,34 @@ class DetectUnexpectedVenueStatusTest:
         # no new criteria, no email sent because everything is ok
         assert not venue.criteria
         assert not mails_testing.outbox
+
+
+class NotifyTaggedVenuesStillClosedTest:
+    def test_nothing_sent_if_there_is_no_event(self):
+        offerers_api.notify_tagged_venues_still_closed(30)
+        assert not mails_testing.outbox
+
+    def test_nothing_sent_to_venue_without_a_booking_email(self):
+        two_months_ago = datetime.datetime.now(datetime.UTC) - datetime.timedelta(days=60)
+        venue = offerers_factories.VenueFactory(bookingEmail=None)
+        history_factories.ActionHistoryFactory(
+            venueId=venue.id, actionType=history_constants.ActionType.VENUE_ADD_CLOSURE_TAG, actionDate=two_months_ago
+        )
+
+        offerers_api.notify_tagged_venues_still_closed(30)
+        assert not mails_testing.outbox
+
+    def test_send_email_as_expected(self):
+        two_months_ago = datetime.datetime.now(datetime.UTC) - datetime.timedelta(days=60)
+        venue = offerers_factories.VenueFactory()
+        history_factories.ActionHistoryFactory(
+            venueId=venue.id, actionType=history_constants.ActionType.VENUE_ADD_CLOSURE_TAG, actionDate=two_months_ago
+        )
+
+        offerers_api.notify_tagged_venues_still_closed(30)
+
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0]["template"] == dataclasses.asdict(
+            TransactionalEmail.VENUE_STILL_NOT_CLOSED_REMINDER.value
+        )
+        assert mails_testing.outbox[0]["To"] == venue.bookingEmail

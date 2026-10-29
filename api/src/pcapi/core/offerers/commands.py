@@ -212,3 +212,10 @@ def detect_unexpected_venue_status(days_count: int, apply: bool = False) -> None
         on_commit(
             partial(logger.info, "detect_unexpected_venue_status... done. apply: %b, days count: %d", apply, days_count)
         )
+
+
+@blueprint.cli.command("notify_tagged_venues_still_closed")
+@click.option("--days-count", type=int, default=30, help="How many days to search for")
+def notify_tagged_venues_still_closed(days_count: int, apply: bool = False) -> None:
+    offerers_api.notify_tagged_venues_still_closed(days_count)
+    logger.info("notify_tagged_venues_still_closed... done. days count: %d", days_count)

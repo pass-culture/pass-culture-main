@@ -1,3 +1,7 @@
+from datetime import UTC
+from datetime import datetime
+from datetime import timedelta
+
 import pytest
 
 import pcapi.core.history.constants as history_constants
@@ -57,3 +61,39 @@ def test_get_latest_closing_user_when_the_venue_is_closed_several_times():
 
     # Should return the last user from the list
     assert fetched_action.authorUser.id == closing_users[-1].id
+
+
+class GetEventsRegardingVenueClosureBeforeTest:
+    def test_no_events_at_all_returns_empty_query(self):
+        assert history_repository.get_events_regarding_venue_closure_before(30).count() == 0
+
+    def test_not_targetted_action_types_are_ignored(self):
+        two_months_ago = datetime.now(UTC) - timedelta(days=60)
+        user = users_factories.UserFactory()
+        history_factories.ActionHistoryFactory(
+            userId=user.id, actionType=history_constants.ActionType.COMMENT, actionDate=two_months_ago
+        )
+        assert history_repository.get_events_regarding_venue_closure_before(30).count() == 0
+
+    def test_too_close_events_are_ignored(self):
+        one_week_ago = datetime.now(UTC) - timedelta(days=7)
+        venue = offerers_factories.VenueFactory()
+        history_factories.ActionHistoryFactory(
+            venueId=venue.id, actionType=history_constants.ActionType.VENUE_ADD_CLOSURE_TAG, actionDate=one_week_ago
+        )
+        assert history_repository.get_events_regarding_venue_closure_before(30).count() == 0
+
+    def test_expected_add_closure_tag_events_are_fetched(self):
+        two_months_ago = datetime.now(UTC) - timedelta(days=60)
+        venue = offerers_factories.VenueFactory()
+        events = history_factories.ActionHistoryFactory.create_batch(
+            3,
+            venueId=venue.id,
+            actionType=history_constants.ActionType.VENUE_ADD_CLOSURE_TAG,
+            actionDate=two_months_ago,
+        )
+
+        res = history_repository.get_events_regarding_venue_closure_before(30).all()
+
+        assert len(res) == 3
+        assert {found.id for found in res} == {event.id for event in events}
