@@ -3,14 +3,14 @@
 
 import { withUserPermissions } from '@/commons/auth/withUserPermissions'
 
-import type { CustomRouteGroupChild } from './types'
+import type { CustomRouteGroup } from './types'
 import { mustBeUnauthenticated } from './utils'
 
-export const routesWelcomeCarousel: CustomRouteGroupChild[] = [
+export const routesWelcomeCarousel: CustomRouteGroup['children'] = [
   {
     lazy: () => import('@/pages/WelcomeCarousel/WelcomeStepHub/WelcomeStepHub'),
     loader: withUserPermissions(mustBeUnauthenticated),
-    path: '/bienvenue',
+    index: true,
     handle: {
       title: 'Bienvenue sur pass Culture Pro',
     },
@@ -19,7 +19,7 @@ export const routesWelcomeCarousel: CustomRouteGroupChild[] = [
     lazy: () =>
       import('@/pages/WelcomeCarousel/WelcomeStepTarget/WelcomeStepTarget'),
     loader: withUserPermissions(mustBeUnauthenticated),
-    path: '/bienvenue/publics',
+    path: 'publics',
     handle: {
       title: 'Deux manières de vous faire connaître',
     },
@@ -30,7 +30,7 @@ export const routesWelcomeCarousel: CustomRouteGroupChild[] = [
         '@/pages/WelcomeCarousel/WelcomeStepIndividual/WelcomeStepIndividual'
       ),
     loader: withUserPermissions(mustBeUnauthenticated),
-    path: '/bienvenue/offres-jeunes',
+    path: 'offres-jeunes',
     handle: {
       title: 'Offres pour les jeunes via l’application',
     },
@@ -41,7 +41,7 @@ export const routesWelcomeCarousel: CustomRouteGroupChild[] = [
         '@/pages/WelcomeCarousel/WelcomeStepCollective/WelcomeStepCollective'
       ),
     loader: withUserPermissions(mustBeUnauthenticated),
-    path: '/bienvenue/offres-scolaires',
+    path: 'offres-scolaires',
     handle: {
       title: 'Offres pour les groupes scolaires',
     },
@@ -52,7 +52,7 @@ export const routesWelcomeCarousel: CustomRouteGroupChild[] = [
         '@/pages/WelcomeCarousel/WelcomeStepAdvantages/WelcomeStepAdvantages'
       ),
     loader: withUserPermissions(mustBeUnauthenticated),
-    path: '/bienvenue/avantages',
+    path: 'avantages',
     handle: {
       title: 'Pourquoi rejoindre le pass Culture ?',
     },
@@ -63,7 +63,7 @@ export const routesWelcomeCarousel: CustomRouteGroupChild[] = [
         '@/pages/WelcomeCarousel/WelcomeStepNextSteps/WelcomeStepNextSteps'
       ),
     loader: withUserPermissions(mustBeUnauthenticated),
-    path: '/bienvenue/prochaines-etapes',
+    path: 'prochaines-etapes',
     handle: {
       title: 'Comment fonctionne l’inscription ?',
     },
