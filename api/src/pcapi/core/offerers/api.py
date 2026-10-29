@@ -489,12 +489,14 @@ def create_venue(
     venue_data: venue_serialize.PostVenueBodyModel,
     author: users_models.User,
     address: geography_models.Address | None = None,
+    validation_status: offerers_models.VenueValidationStatus = offerers_models.VenueValidationStatus.PENDING,
 ) -> models.Venue:
     # Call generate_dms_token() before objects creation to avoid autoflush which would trigger
     # _fill_departement_code_and_timezone and check constraints.
     dms_token = generate_dms_token()
 
     venue = models.Venue()
+    venue.validationStatus = validation_status
     venue_address = offerers_schemas.LocationModel(**venue_data.address.model_dump())
 
     if not address:
@@ -1308,6 +1310,11 @@ def validate_offerer(
     offerer.isActive = True
     db.session.add(offerer)
 
+    db.session.query(offerers_models.Venue).filter(offerers_models.Venue.managingOffererId == offerer.id).update(
+        {offerers_models.Venue.validationStatus: offerers_models.VenueValidationStatus.APPROVED},
+        synchronize_session=False,
+    )
+
     for applicant in applicants:
         applicant.add_pro_role()
     db.session.add_all(applicants)
@@ -1377,6 +1384,11 @@ def reject_offerer(
         offerer=offerer,
         user=first_user_to_register_offerer,
         **action_args,
+    )
+
+    db.session.query(offerers_models.Venue).filter(offerers_models.Venue.managingOffererId == offerer.id).update(
+        {offerers_models.Venue.validationStatus: offerers_models.VenueValidationStatus.REJECTED},
+        synchronize_session=False,
     )
 
     if applicants:
@@ -1711,6 +1723,11 @@ def set_offerer_pending(
     was_validated = offerer.isValidated
     offerer.validationStatus = ValidationStatus.PENDING
     offerer.isActive = True
+
+    db.session.query(offerers_models.Venue).filter(offerers_models.Venue.managingOffererId == offerer.id).update(
+        {offerers_models.Venue.validationStatus: offerers_models.VenueValidationStatus.PENDING},
+        synchronize_session=False,
+    )
 
     applicants = users_repository.get_users_with_validated_attachment_by_offerer(offerer)
     remove_pro_role_and_add_non_attached_pro_role(applicants)
@@ -2423,7 +2440,12 @@ def create_from_onboarding_data(
         venue_kwargs = common_kwargs | comment_and_siret
         venue_creation_info = venue_serialize.PostVenueBodyModel(**venue_kwargs)  # type: ignore [arg-type]
         pricing_point_id = venue.id if venue else None
-        venue = create_venue(venue_creation_info, user)
+        validation_status = (
+            models.VenueValidationStatus.APPROVED
+            if user_offerer.offerer.isValidated
+            else models.VenueValidationStatus.PENDING
+        )
+        venue = create_venue(venue_creation_info, user, validation_status=validation_status)
         db.session.flush()
         if onboarding_data.create_venue_without_siret and pricing_point_id:
             link_venue_to_pricing_point(venue, pricing_point_id)

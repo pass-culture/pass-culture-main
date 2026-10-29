@@ -171,7 +171,9 @@ def _create_pro_user(row: dict) -> User:
         visual_disability_compliant=False,
         is_open_to_public=True,
     )
-    venue = offerers_api.create_venue(venue_creation_info, user)
+    venue = offerers_api.create_venue(
+        venue_creation_info, user, validation_status=offerers_models.VenueValidationStatus.APPROVED
+    )
     offerers_api.create_venue_registration(venue.id, new_onboarding_info.target, new_onboarding_info.webPresence)
     venue.adageId = f"TEST{venue.id}"
     venue.adageInscriptionDate = now

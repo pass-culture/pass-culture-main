@@ -304,6 +304,12 @@ class StructureSimulationInfos(typing.TypedDict):
     activity: Activity
 
 
+class VenueValidationStatus(enum.Enum):
+    PENDING = "PENDING"
+    APPROVED = "APPROVED"
+    REJECTED = "REJECTED"
+
+
 class VenueState(enum.Enum):
     CLOSED = "CLOSED"
 
@@ -511,6 +517,11 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
     )
 
     activity: sa_orm.Mapped[Activity] = sa_orm.mapped_column(db_utils.MagicEnum(Activity), nullable=False, index=True)
+
+    # TODO (prouzet, 2026-10-29) set as not nullable when column is filled
+    validationStatus: sa_orm.Mapped[VenueValidationStatus | None] = sa_orm.mapped_column(
+        db_utils.MagicEnum(VenueValidationStatus), nullable=True, default=None
+    )
 
     state: sa_orm.Mapped[VenueState | None] = sa_orm.mapped_column(
         db_utils.MagicEnum(VenueState), nullable=True, default=None
