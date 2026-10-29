@@ -21,6 +21,7 @@ class ClosedVenuesSirenQuery(BaseQuery):
 
     def __init__(self, days_count: int) -> None:
         self.days_count = days_count
+        super().__init__()
 
     @property
     def raw_query(self) -> str:
