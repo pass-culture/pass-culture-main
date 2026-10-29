@@ -6,6 +6,11 @@
 {% set hide_count = true %}
 {% block title %}Explorateur de logs{% endblock %}
 {# end configuration #}
+{% block banner %}
+  <div class="py-2 px-5 text-warning bg-warning-subtle">
+    <div class="px-2">Attention à ne pas transmettre les logs à un tiers.</div>
+  </div>
+{% endblock banner %}
 {% block search_block %}
   {{ build_advanced_filters_form(form, dst) }}
 {% endblock %}
