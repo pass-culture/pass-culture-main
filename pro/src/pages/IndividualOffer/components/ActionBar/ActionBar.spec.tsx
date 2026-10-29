@@ -60,13 +60,22 @@ describe('IndividualOffer::ActionBar', () => {
       expect(await axe(container)).toHaveNoViolations()
     })
 
-    it('should always display a "Retour" button', async () => {
-      props.step = INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION
+    it('should display a "Retour" button on creation steps other than description', async () => {
+      props.step = INDIVIDUAL_OFFER_WIZARD_STEP_IDS.LOCATION
       renderActionBar({ props })
 
       const previousStepButton = screen.getByText(/Retour/)
       await userEvent.click(previousStepButton)
       expect(onClickPreviousMock).toHaveBeenCalled()
+    })
+
+    it('should display an "Annuler et quitter" link to the home page on the description step', () => {
+      props.step = INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION
+      renderActionBar({ props })
+
+      expect(
+        screen.getByRole('link', { name: 'Annuler et quitter' })
+      ).toHaveAttribute('href', '/accueil')
     })
 
     it('should display "Sauvegarder le brouillon" and "Publier l’offre" buttons on summary page', () => {

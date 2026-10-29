@@ -169,7 +169,7 @@ export const DetailsForm = ({
     })
 
   const handlePreviousStep = () => {
-    void navigate(isOnboarding ? '/onboarding/individuel' : '/offre/creation')
+    void navigate(isOnboarding ? '/onboarding/individuel' : '/accueil')
   }
 
   const subcategoryId = form.watch('subcategoryId')

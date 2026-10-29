@@ -1195,15 +1195,6 @@ describe('<IndividualOfferDescription />', () => {
         OFFER_WIZARD_MODE.CREATION
       )
     })
-
-    it('should display with the lateral bar', async () => {
-      renderDetailsScreen({ contextValue })
-      await userEvent.click(screen.getByText('Retour'))
-      await waitFor(() => {
-        expect(mockNavigate).toHaveBeenCalledWith('/offre/creation')
-      })
-    })
-
     it('should redirect to the offer creation type screen', async () => {
       vi.mocked(router.useLocation).mockReturnValue({
         pathname: '/onboarding/offre/individuelle/creation/description',
