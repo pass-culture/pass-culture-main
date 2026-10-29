@@ -40,21 +40,12 @@ class GetListLogsTest(GetEndpointHelper):
         assert search_data
         return search_data
 
-    def test_empty_search(self, authenticated_client, clear_redis):
-        before = time.time()
-
+    def test_empty_search(self, authenticated_client):
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint))
             assert response.status_code == 200
 
-        after = time.time()
-        search_data = self._get_search_data(response.text)
-        assert search_data
-        assert search_data["filters"]
-        assert before < search_data["end_date"] < after
-        assert search_data["start_date"] == search_data["end_date"] - DEFAULT_INTERVAL
-        assert search_data["original_start_date"] == search_data["start_date"]
-        assert "last_insert_id" in search_data
+        assert not get_soup(response.text).find("tbody")
 
     def test_search_end_date(self, authenticated_client, clear_redis):
 

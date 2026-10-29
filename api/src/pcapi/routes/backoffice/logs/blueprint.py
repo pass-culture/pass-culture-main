@@ -51,7 +51,16 @@ SEARCH_FIELD_TO_PYTHON: dict[str, dict[str, typing.Any]] = {
 
 @logs_blueprint.route("", methods=["GET"])
 def list_logs() -> response_utils.BackofficeResponse:
-    form = logs_forms.SearchForm(formdata=request_utils.get_query_params())
+    params = request_utils.get_query_params()
+    form = logs_forms.SearchForm(formdata=params)
+
+    if not params:
+        return render_template(
+            "logs/list.html",
+            dst=url_for("backoffice.logs.list_logs"),
+            form=form,
+        )
+
     if not form.validate():
         return (
             render_template(
