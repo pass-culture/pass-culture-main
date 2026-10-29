@@ -35,7 +35,7 @@ dependencies = [
   "geoalchemy2 ==0.20.0",
   "google-api-python-client==2.201.0",
   "google-auth==2.62.0",
-  "google-cloud-bigquery==3.46.1",
+  "google-cloud-bigquery==3.46.2",
   "google-cloud-iam==2.26.0",
   "google-cloud-logging==3.17.0",
   "google-cloud-secret-manager>=2.30.0",
