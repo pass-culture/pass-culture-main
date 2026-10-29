@@ -368,7 +368,7 @@ class ApiAdresseBackend(BaseBackend):
             response = methods[method](url, params=params, files=files, timeout=timeout)
         except requests.exceptions.RequestException as exc:
             msg = "Network error on Adresse API"
-            logger.exception(msg, extra={"exc": exc, "url": url})
+            logger.warning(msg, extra={"exc": exc, "url": url})
             raise AdresseApiException(msg) from exc
 
         if response.status_code in (500, 503):
