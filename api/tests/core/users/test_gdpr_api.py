@@ -19,6 +19,7 @@ import pcapi.core.subscription.factories as subscription_factories
 import pcapi.core.subscription.models as subscription_models
 from pcapi import settings
 from pcapi.connectors.dms import models as dms_models
+from pcapi.connectors.sso.apple import AppleSSOProvider
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.chronicles import factories as chronicles_factories
@@ -45,8 +46,6 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import gdpr_api
 from pcapi.core.users import models as users_models
 from pcapi.core.users import testing as brevo_testing
-from pcapi.core.users.api import SingleSignOnProviders
-from pcapi.core.users.api import revoke_sso_access
 from pcapi.core.users.models import SingleSignOn
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
@@ -2815,7 +2814,7 @@ class AnonymizeUserByIdTest:
         gdpr_api.anonymize_user_by_id(0)
         assert True
 
-    def test_revoke_all_sso_access(self):
+    def test_anonymization_revokes_sso_and_calls_external_portals(self):
         email = "email_with_sso@example.com"
 
         user = users_factories.UserFactory(
@@ -2824,12 +2823,15 @@ class AnonymizeUserByIdTest:
                 users_factories.SingleSignOnFactory(
                     ssoProvider="apple",
                     ssoExtraData={"mobile": "a-good-refresh-token"},
-                )
+                ),
+                users_factories.SingleSignOnFactory(ssoProvider="google"),
             ],
         )
 
-        with mock.patch("pcapi.core.users.api.revoke_apple_user") as apple_api:
-            revoke_sso_access(user, SingleSignOnProviders.ALL)
-            apple_api.assert_called_once_with("a-good-refresh-token", False)
+        with mock.patch.object(AppleSSOProvider, "revoke_access") as mock_revoke:
+            gdpr_api.anonymize_user_by_id(user.id)
+            db.session.flush()
+
+            mock_revoke.assert_called_once()
 
         assert db.session.query(SingleSignOn).filter(SingleSignOn.userId == user.id).count() == 0
