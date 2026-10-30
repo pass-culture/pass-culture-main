@@ -1,6 +1,27 @@
+import json
+import logging
+
+from flask import request
+
 from pcapi.routes.apis import misc_blueprint
 from pcapi.utils.health_checker import check_database_connection
 from pcapi.utils.health_checker import read_version_from_file
+
+
+logger = logging.getLogger(__name__)
+
+
+@misc_blueprint.route("/checktest", methods=["GET"])
+def checktest() -> tuple[dict, int]:
+    print(json.dumps(dict(request.headers), indent=2, sort_keys=True))
+    logger.debug(
+        "[Test Check] Check if client IP is available",
+        extra={
+            "headers": dict.fromkeys(request.headers.items()),
+        },
+    )
+    output = dict(request.headers)
+    return output, 200
 
 
 @misc_blueprint.route("/health/api", methods=["GET"])
