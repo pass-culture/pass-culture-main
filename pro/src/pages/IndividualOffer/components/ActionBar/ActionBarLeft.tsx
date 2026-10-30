@@ -1,3 +1,5 @@
+import { useLocation } from 'react-router'
+
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
@@ -7,7 +9,7 @@ import {
 } from '@/commons/core/Offers/constants'
 import { computeIndividualOffersUrl } from '@/commons/core/Offers/utils/computeIndividualOffersUrl'
 import { Button } from '@/design-system/Button/Button'
-import { ButtonVariant } from '@/design-system/Button/types'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullLeftIcon from '@/icons/full-left.svg'
 
 interface ActionBarLeftProps {
@@ -28,6 +30,24 @@ export const ActionBarLeft = ({
 }: Readonly<ActionBarLeftProps>) => {
   const { logEvent } = useAnalytics()
   const { offerId } = useIndividualOfferContext()
+  const { pathname } = useLocation()
+  const isOnboarding = pathname.includes('onboarding')
+
+  if (
+    !isOnboarding &&
+    mode === OFFER_WIZARD_MODE.CREATION &&
+    step === INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION
+  ) {
+    return (
+      <Button
+        variant={ButtonVariant.SECONDARY}
+        color={ButtonColor.NEUTRAL}
+        as="router-link"
+        to={'/accueil'}
+        label="Annuler et quitter"
+      />
+    )
+  }
 
   if (mode === OFFER_WIZARD_MODE.CREATION) {
     return (
