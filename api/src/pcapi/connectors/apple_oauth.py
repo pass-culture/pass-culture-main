@@ -2,6 +2,7 @@ import logging
 import time
 import typing
 from uuid import uuid4
+from warnings import deprecated
 
 import jwt
 from jwt import PyJWKClient
@@ -34,6 +35,12 @@ class AppleRevokeException(Exception):
     pass
 
 
+@deprecated("""Use SSOProviderFactory instead.
+
+>>> from pcapi.connectors.sso import SSOProviderFactory
+>>> provider = SSOProviderFactory.create("apple", is_web=False)
+>>> user = provider.validate_token(authorization_code)
+""")
 def get_apple_user(authorization_code: str, is_web: bool) -> users_schemas.SSOUser:
     client_id, client_secret = _generate_client_secret(is_web)
 
@@ -61,6 +68,12 @@ def get_apple_user(authorization_code: str, is_web: bool) -> users_schemas.SSOUs
     return _parse_identity_token(token_payload, auth_response, is_web)
 
 
+@deprecated("""Use SSOProviderFactory instead.
+
+>>> from pcapi.connectors.sso import SSOProviderFactory
+>>> provider = SSOProviderFactory.create("apple", is_web=False)
+>>> user = provider.revoke_access(refresh_token)
+""")
 def revoke_apple_user(refresh_token: str, is_web: bool) -> None:
     """
     Revoke Apple SignIn User on Apple-side, with the user's Apple refresh token.
