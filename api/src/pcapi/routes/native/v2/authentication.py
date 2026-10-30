@@ -8,8 +8,9 @@ from sqlalchemy.ext.mutable import MutableDict
 
 import pcapi.core.token as token_utils
 from pcapi.connectors import api_recaptcha
-from pcapi.connectors import apple_oauth
-from pcapi.connectors import google_oauth
+from pcapi.connectors.sso import SSOProviderFactory
+from pcapi.connectors.sso import SSOProviderName
+from pcapi.connectors.sso.exceptions import SSOException
 from pcapi.core.users import api as users_api
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import models as user_models
@@ -125,7 +126,7 @@ _SSO_ACCESS_DENIED_ERROR = {
     api=blueprint.api,
 )
 def sso_authorize(sso_provider: str, body: authentication.OAuthSigninRequestV2) -> authentication.SigninResponseV2:
-    if sso_provider not in authentication.SSOProvider:
+    if sso_provider not in SSOProviderName:
         raise api_errors.ApiErrors({"error": "Unknown SSO provider"})
 
     try:
@@ -143,13 +144,11 @@ def sso_authorize(sso_provider: str, body: authentication.OAuthSigninRequestV2) 
     oauth_state_token.expire()
 
     is_web = request.headers.get("platform") == "web"
-    if sso_provider == "apple":
-        try:
-            sso_user = apple_oauth.get_apple_user(body.authorization_code, is_web)
-        except apple_oauth.AppleSignInException:
-            raise ApiErrors({"code": "SSO_ERROR", "general": "L'authentification a échoué"}, status_code=401)
-    elif sso_provider == "google":
-        sso_user = google_oauth.get_google_user(body.authorization_code, is_web)
+    try:
+        provider = SSOProviderFactory.create(sso_provider, is_web)
+        sso_user = provider.validate_token(body.authorization_code)
+    except SSOException:
+        raise ApiErrors({"code": "SSO_ERROR", "general": "L'authentification a échoué"}, status_code=401)
 
     if not sso_user.email_verified:
         logger.warning(
