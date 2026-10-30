@@ -1,6 +1,3 @@
-/* No need to test this file */
-/* istanbul ignore file */
-
 import { Navigate } from 'react-router'
 
 import { noop } from '@/commons/utils/noop'

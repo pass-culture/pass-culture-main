@@ -1,6 +1,3 @@
-/* No need to test this file */
-/* istanbul ignore file */
-
 import { withUserPermissions } from '@/commons/auth/withUserPermissions'
 import { Activity } from '@/components/SignupJourneyForm/Activity/Activity'
 import { OffererAuthentication } from '@/components/SignupJourneyForm/Authentication/OffererAuthentication'

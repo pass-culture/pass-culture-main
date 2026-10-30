@@ -1,6 +1,3 @@
-/* No need to test this file */
-/* istanbul ignore file */
-
 import { Navigate, type NavigateProps, useLocation } from 'react-router'
 
 import { routesSimulator } from '@/app/AppRouter/subroutesSimulator'
