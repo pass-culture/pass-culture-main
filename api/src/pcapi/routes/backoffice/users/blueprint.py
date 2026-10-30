@@ -41,14 +41,16 @@ users_blueprint = backoffice_blueprint.child_backoffice_blueprint(
 )
 
 
-def _redirect_to_user_page(user: users_models.User) -> response_utils.BackofficeResponse:
-    # Actions should always come from user details page
-    # Fallback in case referrer is missing (maybe because of browser settings)
+def _get_user_page_url(user: users_models.User) -> str:
+    if user.backoffice_profile:
+        return url_for("backoffice.bo_users.get_bo_user", user_id=user.id)
     if user.has_any_pro_role:
-        url = url_for("backoffice.pro_user.get", user_id=user.id)
-    else:
-        url = url_for("backoffice.public_accounts.get_public_account", user_id=user.id)
+        return url_for("backoffice.pro_user.get", user_id=user.id)
+    return url_for("backoffice.public_accounts.get_public_account", user_id=user.id)
 
+
+def _redirect_to_user_page(user: users_models.User) -> response_utils.BackofficeResponse:
+    url = _get_user_page_url(user)
     return request_utils.safe_redirect_back(request, url)
 
 
@@ -72,6 +74,30 @@ def _check_user_role_vs_backoffice_permission(user: users_models.User, unsuspend
             _check_public_account_role()
     else:  # not pro, not admin
         _check_public_account_role()
+
+
+@users_blueprint.route("/<int:user_id>", methods=["GET"])
+@access_control.permission_required_in(
+    [
+        perm_models.Permissions.READ_PUBLIC_ACCOUNT,
+        perm_models.Permissions.READ_PRO_ENTITY,
+        perm_models.Permissions.READ_ADMIN_ACCOUNTS,
+    ]
+)
+def get_user(user_id: int) -> response_utils.BackofficeResponse:
+    user = (
+        db.session.query(users_models.User)
+        .filter_by(id=user_id)
+        .options(joinedload(users_models.User.backoffice_profile).load_only())
+        .one_or_none()
+    )
+    if not user:
+        raise NotFound()
+
+    return redirect(
+        location=_get_user_page_url(user),
+        code=303,
+    )
 
 
 @users_blueprint.route("/<int:user_id>/suspend", methods=["POST"])
