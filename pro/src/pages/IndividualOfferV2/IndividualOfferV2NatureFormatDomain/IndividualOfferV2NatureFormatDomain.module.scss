@@ -1,0 +1,15 @@
+@use "styles/mixins/_fonts.scss" as fonts;
+
+.title {
+  @include fonts.title2;
+
+  margin-bottom: var(--size-spacing-l);
+}
+
+.nature {
+  margin-bottom: var(--size-spacing-4xl);
+}
+
+.format {
+  margin-bottom: var(--size-spacing-3xl);
+}

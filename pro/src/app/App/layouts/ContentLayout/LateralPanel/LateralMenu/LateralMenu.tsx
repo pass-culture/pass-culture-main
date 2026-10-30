@@ -9,6 +9,7 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useOnClickOrFocusOutside } from '@/commons/hooks/useOnClickOrFocusOutside'
 import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
@@ -139,6 +140,7 @@ export const LateralMenu = ({ isLateralPanelOpen }: SideNavLinksProps) => {
   const selectedPartnerVenue = useAppSelector(
     (state) => state.user.selectedPartnerVenue
   )
+  const isNFDEnabled = useActiveFeature('WIP_NFD')
 
   const closeCreateOfferPanel = () => setIsCreateOfferOpen(false)
 
@@ -229,6 +231,22 @@ export const LateralMenu = ({ isLateralPanelOpen }: SideNavLinksProps) => {
                   />
                   Pour le grand public
                 </Link>
+                {/* Remove me when activating WIP_NFD in prod */}
+                {isNFDEnabled && (
+                  <Link
+                    className={styles['create-offer-panel-item']}
+                    to={'/offre/individuelle/v2/creation/nature-format-domaine'}
+                    onClick={closeCreateOfferPanel}
+                    onKeyDown={handleCreateOfferKeyDown}
+                  >
+                    <SvgIcon
+                      className={styles['create-offer-panel-item-icon']}
+                      src={strokePhoneIcon}
+                      alt=""
+                    />
+                    Pour le gd public - NFD
+                  </Link>
+                )}
                 <Link
                   className={styles['create-offer-panel-item']}
                   to="/offre/creation"
