@@ -31,6 +31,7 @@ import pcapi.utils.email as email_utils
 import pcapi.utils.postal_code as postal_code_utils
 from pcapi import settings
 from pcapi.connectors.apple_oauth import revoke_apple_user
+from pcapi.connectors.sso.models import SSOUser
 from pcapi.core import mails as mails_api
 from pcapi.core import token as token_utils
 from pcapi.core.external.attributes import api as external_attributes_api
@@ -914,7 +915,7 @@ def create_oauth_state_token() -> str:
     return token.encoded_token
 
 
-def create_account_creation_token(sso_user: users_schemas.SSOUser) -> str:
+def create_account_creation_token(sso_user: SSOUser | users_schemas.SSOUser) -> str:
     token = token_utils.UUIDToken.create(
         token_utils.TokenType.ACCOUNT_CREATION,
         constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME,
