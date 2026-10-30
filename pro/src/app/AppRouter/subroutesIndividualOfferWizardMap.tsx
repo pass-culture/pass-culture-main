@@ -1,5 +1,3 @@
-/* No need to test this file */
-/* istanbul ignore file */
 import { withUserPermissions } from '@/commons/auth/withUserPermissions'
 
 import type { CustomRouteGroupChild } from './types'

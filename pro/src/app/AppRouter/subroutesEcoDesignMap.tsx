@@ -1,6 +1,3 @@
-/* No need to test this file */
-/* istanbul ignore file */
-
 import { noop } from '@/commons/utils/noop'
 
 import type { CustomRouteGroup } from './types'
