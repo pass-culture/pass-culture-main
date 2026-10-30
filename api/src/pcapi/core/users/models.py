@@ -49,6 +49,7 @@ if typing.TYPE_CHECKING:
     from pcapi.core.bookings.models import Booking
     from pcapi.core.chronicles.models import Chronicle
     from pcapi.core.educational.models import CollectiveOffer
+    from pcapi.core.educational.models import CollectiveOfferTemplate
     from pcapi.core.favorites.models import FavoriteArtist
     from pcapi.core.favorites.models import FavoriteOffer
     from pcapi.core.finance.models import BookingFinanceIncident
@@ -234,6 +235,13 @@ class User(PcObject, Model, DeactivableMixin):
     firstName: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.String(128), nullable=True)
     idPieceNumber: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.String, nullable=True, unique=True)
     ineHash: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text(), nullable=True, unique=True)
+    instructedOffers: sa_orm.Mapped[list[Offer]] = sa_orm.relationship("Offer", secondary="offer_instructor")
+    instructedCollectiveOffers: sa_orm.Mapped[list[CollectiveOffer]] = sa_orm.relationship(
+        "CollectiveOffer", secondary="collective_offer_instructor"
+    )
+    instructedCollectiveOfferTemplates: sa_orm.Mapped[list[CollectiveOfferTemplate]] = sa_orm.relationship(
+        "CollectiveOfferTemplate", secondary="collective_offer_template_instructor"
+    )
     irisFranceId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("iris_france.id"), nullable=True
     )

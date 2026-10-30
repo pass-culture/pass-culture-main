@@ -474,6 +474,38 @@ class CollectiveOfferDomain(models.Model):
     )
 
 
+class CollectiveOfferInstructor(PcObject, models.Model):
+    __tablename__ = "collective_offer_instructor"
+
+    instructorId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    collectiveOfferId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("collective_offer.id", ondelete="CASCADE"), index=True, nullable=False
+    )
+
+    __table_args__ = (
+        sa.UniqueConstraint("instructorId", "collectiveOfferId", name="unique_collective_offer_instructor"),
+    )
+
+
+class CollectiveOfferTemplateInstructor(PcObject, models.Model):
+    __tablename__ = "collective_offer_template_instructor"
+
+    instructorId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    collectiveOfferTemplateId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("collective_offer_template.id", ondelete="CASCADE"), index=True, nullable=False
+    )
+
+    __table_args__ = (
+        sa.UniqueConstraint(
+            "instructorId", "collectiveOfferTemplateId", name="unique_collective_offer_template_instructor"
+        ),
+    )
+
+
 class CollectiveOffer(
     PcObject,
     models.Model,
@@ -553,6 +585,10 @@ class CollectiveOffer(
     )
     institution: sa_orm.Mapped["EducationalInstitution | None"] = sa_orm.relationship(
         "EducationalInstitution", foreign_keys=[institutionId], back_populates="collectiveOffers"
+    )
+
+    instructors: sa_orm.Mapped[list["User"]] = sa_orm.relationship(
+        "User", secondary=CollectiveOfferInstructor.__table__, back_populates="instructedCollectiveOffers"
     )
 
     templateId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
@@ -994,6 +1030,12 @@ class CollectiveOfferTemplate(
 
     interventionArea: sa_orm.Mapped[list[str]] = sa_orm.mapped_column(
         sa_mutable.MutableList.as_mutable(postgresql.ARRAY(sa.Text())), nullable=False, server_default="{}"
+    )
+
+    instructors: sa_orm.Mapped[list["User"]] = sa_orm.relationship(
+        "User",
+        secondary=CollectiveOfferTemplateInstructor.__table__,
+        back_populates="instructedCollectiveOfferTemplates",
     )
 
     domains: sa_orm.Mapped[list["EducationalDomain"]] = sa_orm.relationship(

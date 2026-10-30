@@ -1702,7 +1702,7 @@ def format_offer_validation_sub_rule(sub_rule: offers_models.OfferValidationSubR
 
 
 def format_offer_validation_rule_list(rules: list[offers_models.OfferValidationRule]) -> str:
-    return ", ".join(rule.name for rule in rules)
+    return ", ".join(rule.name for rule in sorted(rules, key=lambda r: r.name))
 
 
 def format_sub_rules_info_type(info: str) -> str:

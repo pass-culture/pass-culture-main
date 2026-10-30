@@ -14,6 +14,7 @@ from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import constants as educational_constants
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.utils import format_collective_offer_displayed_status
+from pcapi.core.permissions.models import Permissions
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import filters
@@ -419,6 +420,17 @@ class RejectCollectiveOfferForm(FlaskForm):
 
 
 class BatchRejectCollectiveOfferForm(empty_forms.BatchForm, RejectCollectiveOfferForm):
+    pass
+
+
+class SetInstructorForm(FlaskForm):
+    instructor = fields.PCBOUsersSelectField(
+        "Responsable",
+        permissions=[Permissions.MANAGE_OFFER_INSTRUCTOR],
+    )
+
+
+class BatchSetInstructorForm(empty_forms.BatchForm, SetInstructorForm):
     pass
 
 
