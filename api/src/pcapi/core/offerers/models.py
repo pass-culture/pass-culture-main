@@ -60,6 +60,7 @@ if typing.TYPE_CHECKING:
     import pcapi.core.offers.models as offers_models
     import pcapi.core.providers.models as providers_models
     import pcapi.core.users.models as users_models
+    from pcapi.core.favorites.models import FavoriteVenue
 
 
 logger = logging.getLogger(__name__)
@@ -513,6 +514,10 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
 
     state: sa_orm.Mapped[VenueState | None] = sa_orm.mapped_column(
         db_utils.MagicEnum(VenueState), nullable=True, default=None
+    )
+
+    favorites: sa_orm.Mapped[list["FavoriteVenue"]] = sa_orm.relationship(
+        "FavoriteVenue", foreign_keys="FavoriteVenue.venueId", back_populates="venue"
     )
 
     __table_args__ = (

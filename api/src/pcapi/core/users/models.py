@@ -51,6 +51,7 @@ if typing.TYPE_CHECKING:
     from pcapi.core.educational.models import CollectiveOffer
     from pcapi.core.favorites.models import FavoriteArtist
     from pcapi.core.favorites.models import FavoriteOffer
+    from pcapi.core.favorites.models import FavoriteVenue
     from pcapi.core.finance.models import BookingFinanceIncident
     from pcapi.core.finance.models import Deposit
     from pcapi.core.history.models import ActionHistory
@@ -230,6 +231,9 @@ class User(PcObject, Model, DeactivableMixin):
     )
     favoriteArtists: sa_orm.Mapped[list[FavoriteArtist]] = sa_orm.relationship(
         "FavoriteArtist", foreign_keys="FavoriteArtist.userId", back_populates="user"
+    )
+    favoriteVenues: sa_orm.Mapped[list[FavoriteVenue]] = sa_orm.relationship(
+        "FavoriteVenue", foreign_keys="FavoriteVenue.userId", back_populates="user"
     )
     firstName: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.String(128), nullable=True)
     idPieceNumber: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.String, nullable=True, unique=True)
