@@ -6,10 +6,10 @@ import sqlalchemy as sa
 
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers import api as offerers_api
+from pcapi.core.offerers import exceptions as offers_exceptions
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offers import api as offers_api
-from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import schemas as offers_schemas
 from pcapi.core.providers import models as providers_models
@@ -18,6 +18,9 @@ from pcapi.models import offer_mixin
 from pcapi.routes.provider.individual_offers.v1 import utils as individual_offers_v1_utils
 from pcapi.utils import date as utils_date
 from pcapi.utils.transaction_manager import atomic
+
+
+logger = logging.getLogger(__name__)
 
 
 logger = logging.getLogger(__name__)
