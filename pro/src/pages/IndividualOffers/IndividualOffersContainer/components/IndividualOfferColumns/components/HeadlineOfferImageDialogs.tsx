@@ -13,6 +13,7 @@ import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
+import { prepareImageForUpload } from '@/commons/utils/prepareImageForUpload'
 import {
   ModalImageUpsertOrEdit,
   type OnImageUploadArgs,
@@ -70,7 +71,9 @@ export const HeadlineOfferImageDialogs = ({
       setIsImageUploaderOpen(false)
 
       const thumbnail = {
-        thumb: imageFile,
+        thumb: await prepareImageForUpload(imageFile, {
+          cropWidth: cropParams?.width,
+        }),
         credit: credit ?? '',
         croppingRectHeight: cropParams?.height,
         croppingRectWidth: cropParams?.width,

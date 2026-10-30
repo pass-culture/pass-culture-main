@@ -66,6 +66,7 @@
     "libphonenumber-js": "1.13.14",
     "lodash.invert": "4.3.0",
     "magic-bytes.js": "^1.13.1",
+    "pica": "10.0.3",
     "qrcode.react": "4.2.0",
     "react": "19.3.1",
     "react-avatar-editor": "16.0.0",
