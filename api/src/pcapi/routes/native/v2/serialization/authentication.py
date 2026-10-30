@@ -1,14 +1,7 @@
-from enum import Enum
-
 from pcapi.core.users.models import AccountState
 from pcapi.routes.native.v2.serialization.common_models import DeviceInfoV2
 from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.serialization import HttpQueryParamsModel
-
-
-class SSOProvider(Enum):
-    APPLE = "apple"
-    GOOGLE = "google"
 
 
 class SigninRequestV2(HttpQueryParamsModel):
