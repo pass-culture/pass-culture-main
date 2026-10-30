@@ -829,12 +829,12 @@ def get_domains_credit(
 
 
 def create_and_send_signup_email_confirmation(
-    new_pro_user: models.User, structure_simulation_infos: offerers_models.StructureSimulationInfos | None
+    new_pro_user: models.User, structure_simulation_info: offerers_models.StructureSimulationInfo | None
 ) -> None:
     token = token_utils.create_passwordless_login_token(
         user_id=new_pro_user.id, ttl=constants.PASSWORDLESS_TOKEN_LIFE_TIME
     )
-    transactional_mails.send_signup_email_confirmation_to_pro(new_pro_user, token, structure_simulation_infos)
+    transactional_mails.send_signup_email_confirmation_to_pro(new_pro_user, token, structure_simulation_info)
 
     external_attributes_api.update_external_pro(new_pro_user.email)
 

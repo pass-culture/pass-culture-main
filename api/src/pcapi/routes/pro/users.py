@@ -72,15 +72,17 @@ def signup_pro(body: users_serializers.ProUserCreationBodyV2Model) -> None:
 
     try:
         new_user = users_api.create_pro_user(body)
-        structure_simulation_infos = None
+
+        structure_simulation_info = None
         if body.structure_simulation_infos is not None:
-            structure_simulation_infos = offerers_models.StructureSimulationInfos(
+            structure_simulation_info = offerers_models.StructureSimulationInfo(
                 activity=offerers_models.Activity[body.structure_simulation_infos.activity.name],
                 is_open_to_public=body.structure_simulation_infos.is_open_to_public,
                 siret=body.structure_simulation_infos.siret,
                 targets=body.structure_simulation_infos.targets,
             )
-        users_api.create_and_send_signup_email_confirmation(new_user, structure_simulation_infos)
+
+        users_api.create_and_send_signup_email_confirmation(new_user, structure_simulation_info)
     except users_exceptions.UserAlreadyExistsException:
         user = users_repo.find_user_by_email(body.email)
         assert user

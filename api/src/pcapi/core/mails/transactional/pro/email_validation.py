@@ -13,10 +13,10 @@ logger = logging.getLogger(__name__)
 
 
 def get_email_validation_to_pro_email_data(
-    token: str, structure_simulation_infos: offerers_models.StructureSimulationInfos | None
+    token: str, structure_simulation_info: offerers_models.StructureSimulationInfo | None
 ) -> models.TransactionalEmailData:
     query_string = (
-        build_signup_structure_params(**structure_simulation_infos) if structure_simulation_infos is not None else None
+        build_signup_structure_params(structure_simulation_info) if structure_simulation_info is not None else None
     )
     encoded_params = f"?{query_string}" if query_string else ""
     email_validation_link = f"{settings.PRO_URL}/inscription/compte/confirmation/{token}{encoded_params}"
@@ -33,7 +33,7 @@ def get_email_validation_to_pro_email_data(
 
 
 def send_signup_email_confirmation_to_pro(
-    user: User, token: str, structure_simulation_infos: offerers_models.StructureSimulationInfos | None = None
+    user: User, token: str, structure_simulation_info: offerers_models.StructureSimulationInfo | None = None
 ) -> None:
-    data = get_email_validation_to_pro_email_data(token, structure_simulation_infos)
+    data = get_email_validation_to_pro_email_data(token, structure_simulation_info)
     mails.send(recipients=[user.email], data=data)

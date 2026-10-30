@@ -73,6 +73,17 @@ BOOKSTORE_MESSAGE = SignupSimulationMessage(
     level=SignupSimulationMessageLevel.ALERT, type=SignupSimulationMessageType.BOOKSTORE
 )
 
+MINOR_CONTACT_ACTIVITIES: typing.Final = {
+    offerers_models.Activity.ARTISTIC_PRACTICE,
+    offerers_models.Activity.CULTURAL_CENTRE,
+    offerers_models.Activity.CULTURAL_MEDIATION,
+    offerers_models.Activity.HERITAGE_SITE,
+    offerers_models.Activity.RADIO_OR_MUSIC_STREAMING,
+    offerers_models.Activity.SCIENTIFIC_CULTURE,
+    offerers_models.Activity.TOURIST_INFORMATION_CENTRE,
+    offerers_models.Activity.OTHER,
+}
+
 
 @dataclass
 class SignupSimulationResult:
@@ -95,37 +106,29 @@ def _is_bookstore(ape_code: str, activity: offerers_models.Activity) -> bool:
     }
 
 
-def get_signup_documents_and_messages(
+def get_signup_documents(
     ape_code: str,
     legal_category_code: str,
     is_open_to_public: bool,
-    targets: list[offerers_models.TargetAudience],
     activity: offerers_models.Activity,
-) -> SignupSimulationResult:
-    """List the necessary documents for homologation and warnings depending on signup inputs and siret data"""
+) -> list[EligibilityDocument]:
+    """List the necessary documents for homologation depending on signup inputs and siret data"""
 
     # all structures must provide a website
     eligibility_documents = [EligibilityDocument.WEBSITE]
-    messages = []
 
-    # if "collective" is a target, display a warning for adage inscription
-    if offerers_models.TargetAudience.COLLECTIVE in targets:
-        messages.append(COLLECTIVE_MESSAGE)
-
+    # public structures do not need any other document
     if (
         ape_code in APE_CODES_ADMINISTRATION_PUBLIQUE_GENERALE
         or ape_code in APE_CODES_ENSEIGNEMENT_SUPERIEUR
         or _is_national_public_institution(legal_category_code)
     ):
-        return SignupSimulationResult(documents=eligibility_documents, messages=messages)
+        return eligibility_documents
 
     # all other structures need to provide an offer description
     eligibility_documents.append(EligibilityDocument.DESCRIPTION)
 
-    # display a warning if ape code is unusual
-    if not ape_code.startswith(APE_CODE_WHITELIST):
-        messages.append(UNUSUAL_APE_CODE_MESSAGE)
-
+    # recording studio case
     if ape_code in APE_CODES_STUDIO_ENREGISTREMENT:
         eligibility_documents += [
             EligibilityDocument.RESUME_OR_PORTFOLIO,
@@ -138,8 +141,9 @@ def get_signup_documents_and_messages(
         if _is_single_member_structure(legal_category_code):
             eligibility_documents.append(EligibilityDocument.CRIMINAL_RECORDS)
 
-        return SignupSimulationResult(documents=eligibility_documents, messages=messages)
+        return eligibility_documents
 
+    # single member structure case
     if _is_single_member_structure(legal_category_code):
         eligibility_documents += [EligibilityDocument.RESUME_OR_PORTFOLIO, EligibilityDocument.DIPLOMAS]
 
@@ -156,38 +160,49 @@ def get_signup_documents_and_messages(
         }:
             eligibility_documents.append(EligibilityDocument.CRIMINAL_RECORDS)
 
+    # bookstore case
+    if _is_bookstore(ape_code, activity) and is_open_to_public:
+        eligibility_documents.append(EligibilityDocument.SHOP_PICTURES)
+
+    return eligibility_documents
+
+
+def get_signup_messages(
+    ape_code: str,
+    targets: list[offerers_models.TargetAudience],
+    activity: offerers_models.Activity,
+) -> list[SignupSimulationMessage]:
+    """List warnings depending on signup inputs and siret data"""
+    messages = []
+
+    # warning for adage inscription
+    if offerers_models.TargetAudience.COLLECTIVE in targets:
+        messages.append(COLLECTIVE_MESSAGE)
+
+    # warning for unusual ape code
+    if not ape_code.startswith(APE_CODE_WHITELIST):
+        messages.append(UNUSUAL_APE_CODE_MESSAGE)
+
+    # warning for bookstores
     if _is_bookstore(ape_code, activity):
         messages.append(BOOKSTORE_MESSAGE)
 
-        if is_open_to_public:
-            eligibility_documents.append(EligibilityDocument.SHOP_PICTURES)
-
-    return SignupSimulationResult(documents=eligibility_documents, messages=messages)
+    return messages
 
 
-def build_signup_structure_params(
-    siret: str,
-    is_open_to_public: bool,
-    targets: list[offerers_models.TargetAudience],
-    activity: offerers_models.Activity,
-) -> str:
+def build_signup_structure_params(structure_simulation_info: offerers_models.StructureSimulationInfo) -> str:
     # use an OrderedDict to get a deterministic output
     params = OrderedDict(
         {
-            "siret": siret,
-            "isOpenToPublic": "true" if is_open_to_public else "false",
-            "targets": [target.name for target in targets],
-            "activity": activity.name,
+            "siret": structure_simulation_info.siret,
+            "isOpenToPublic": "true" if structure_simulation_info.is_open_to_public else "false",
+            "targets": [target.name for target in structure_simulation_info.targets],
+            "activity": structure_simulation_info.activity.name,
         }
     )
     return urlencode(params, doseq=True)
 
 
-def build_signup_link(
-    siret: str,
-    is_open_to_public: bool,
-    targets: list[offerers_models.TargetAudience],
-    activity: offerers_models.Activity,
-) -> str:
-    encoded_params = build_signup_structure_params(siret, is_open_to_public, targets, activity)
+def build_signup_link(structure_simulation_info: offerers_models.StructureSimulationInfo) -> str:
+    encoded_params = build_signup_structure_params(structure_simulation_info)
     return f"{settings.PRO_URL}/inscription/compte/creation?{encoded_params}"
