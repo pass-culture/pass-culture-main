@@ -1,8 +1,8 @@
 import type { StoryObj } from '@storybook/react-vite'
 
 import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
+import testImg from '@/ui-kit/Card/assets/sample-image-landscape.jpg'
 
-import testImg from './__specs__/offer_storie_image.jpg'
 import { OfferAppPreview } from './OfferAppPreview'
 
 const baseOfferData = {
