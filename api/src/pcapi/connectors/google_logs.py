@@ -102,8 +102,8 @@ class GoogleLogsBackend(BaseBackend):
                 insert_id=log.insert_id,
                 timestamp=log.timestamp.timestamp(),  # type: ignore [attr-defined]
                 text=payload.get("message", ""),  # type: ignore [attr-defined]
-                user_id=int(payload["user_id"]) if "user_id" in payload else None,  # type: ignore [arg-type]
-                impersonator_id=int(payload["impersonator_id"]) if "impersonator_id" in payload else None,  # type: ignore [arg-type]
+                user_id=int(payload["user_id"]) if payload.get("user_id") else None,  # type: ignore [arg-type, attr-defined]
+                impersonator_id=int(payload["impersonator_id"]) if payload.get("impersonator_id") else None,  # type: ignore [arg-type, attr-defined]
                 severity=Severity(log.severity),
                 extra=dict(payload.get("extra", {})),  # type: ignore [attr-defined]
             )
