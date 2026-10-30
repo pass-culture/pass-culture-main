@@ -937,6 +937,13 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
             "publicationDatetime",
             postgresql_include=["id"],
         ),
+        # Offers sorted by name
+        sa.Index(
+            "ix_offer_venueId_name_id",
+            "venueId",
+            sa.text("lower(immutable_unaccent(name))"),
+            sa.text("id DESC"),
+        ),
     )
 
     @property
