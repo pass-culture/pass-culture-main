@@ -137,8 +137,7 @@ const MOCK_DATA = {
 
 const LABELS = {
   mainSection: 'Illustrez votre offre',
-  imageSubSection: 'Ajoutez une image',
-  imageInput: 'Importez une image',
+  imageInput: 'Ajoutez une image',
   imageUpsertOrEditModalButton: 'Importer',
   videoSubSection: 'Ajoutez une vidéo',
   videoInput: 'Lien URL Youtube',
@@ -221,9 +220,6 @@ describe('IndividualOfferMediaScreen', () => {
   it('should always render an image input', async () => {
     await renderIndividualOfferMediaScreen()
 
-    expect(
-      screen.getByRole('heading', { name: LABELS.imageSubSection })
-    ).toBeInTheDocument()
     const input = screen.getByLabelText(LABELS.imageInput)
     expect(input).toBeInTheDocument()
     expect(input).toHaveAttribute('type', 'file')
@@ -247,7 +243,7 @@ describe('IndividualOfferMediaScreen', () => {
       }))
       await renderIndividualOfferMediaScreen()
 
-      const imageInput = screen.getByLabelText('Importez une image')
+      const imageInput = screen.getByLabelText(LABELS.imageInput)
       await userEvent.upload(
         imageInput,
         Object.assign(imageFileFactory('fake_img.jpg'), {
@@ -263,6 +259,139 @@ describe('IndividualOfferMediaScreen', () => {
             imageCreationStage: 'add image',
           }
         )
+      })
+    })
+
+    it('should open the image edition modal when a valid image is uploaded', async () => {
+      await renderIndividualOfferMediaScreen()
+
+      await userEvent.upload(
+        screen.getByLabelText(LABELS.imageInput),
+        Object.assign(imageFileFactory('fake_img.jpg'), {
+          width: 100,
+          height: 100,
+        })
+      )
+
+      expect(
+        await screen.findByLabelText('Crédit de l’image')
+      ).toBeInTheDocument()
+    })
+
+    it('should display an error when the image resolution is too large', async () => {
+      await renderIndividualOfferMediaScreen()
+      const imageInput = screen.getByLabelText(LABELS.imageInput)
+
+      await userEvent.upload(
+        imageInput,
+        Object.assign(imageFileFactory('huge_img.jpg'), {
+          width: 10_000,
+          height: 9000,
+        })
+      )
+
+      expect(
+        await screen.findByText(/^Image trop volumineuse/)
+      ).toBeInTheDocument()
+      expect(imageInput).toBeInvalid()
+      expect(imageInput).toHaveFocus()
+      expect(
+        screen.queryByLabelText('Crédit de l’image')
+      ).not.toBeInTheDocument()
+    })
+
+    it('should display an error when the file content is not an image', async () => {
+      await renderIndividualOfferMediaScreen()
+
+      await userEvent.upload(
+        screen.getByLabelText(LABELS.imageInput),
+        new File(['not an image'], 'fake_img.jpg', { type: 'image/jpeg' })
+      )
+
+      expect(
+        await screen.findByText('Le format de l’image n’est pas valide')
+      ).toBeInTheDocument()
+      expect(
+        screen.queryByLabelText('Crédit de l’image')
+      ).not.toBeInTheDocument()
+    })
+
+    it('should display an error when the file type is not accepted', async () => {
+      await renderIndividualOfferMediaScreen()
+
+      await userEvent
+        .setup({ applyAccept: false })
+        .upload(
+          screen.getByLabelText(LABELS.imageInput),
+          new File(['%PDF'], 'document.pdf', { type: 'application/pdf' })
+        )
+
+      expect(
+        await screen.findByText('Le format du fichier n’est pas accepté.')
+      ).toBeInTheDocument()
+    })
+
+    describe('when the offer has an image', () => {
+      const offerWithImage = {
+        activeMediation: {
+          thumbUrl: 'https://image.url/thumb.jpg',
+          credit: 'Un crédit',
+          alternativeText: 'Texte alternatif',
+        },
+      }
+
+      it('should display the image preview and its actions', async () => {
+        await renderIndividualOfferMediaScreen({
+          props: { offer: getIndividualOfferFactory(offerWithImage) },
+        })
+
+        expect(screen.getByTestId('image-preview')).toBeInTheDocument()
+        expect(
+          screen.queryByLabelText(LABELS.imageInput)
+        ).not.toBeInTheDocument()
+        expect(
+          screen.getByRole('button', { name: 'Modifier l’image' })
+        ).toBeInTheDocument()
+        expect(
+          screen.getByRole('button', { name: 'Supprimer' })
+        ).toBeInTheDocument()
+      })
+
+      it('should ask for a confirmation before deleting the image of a headline offer', async () => {
+        await renderIndividualOfferMediaScreen({
+          props: {
+            offer: getIndividualOfferFactory({
+              ...offerWithImage,
+              isHeadlineOffer: true,
+            }),
+          },
+        })
+
+        await userEvent.click(screen.getByRole('button', { name: 'Supprimer' }))
+
+        expect(
+          await screen.findByText('Votre offre ne sera plus à la une')
+        ).toBeInTheDocument()
+        expect(screen.getByTestId('image-preview')).toBeInTheDocument()
+      })
+
+      it('should not display the image actions when the offer is product based', async () => {
+        await renderIndividualOfferMediaScreen({
+          props: {
+            offer: getIndividualOfferFactory({
+              ...offerWithImage,
+              productId: 1,
+            }),
+          },
+        })
+
+        expect(screen.getByTestId('image-preview')).toBeInTheDocument()
+        expect(
+          screen.queryByRole('button', { name: 'Modifier l’image' })
+        ).not.toBeInTheDocument()
+        expect(
+          screen.queryByRole('button', { name: 'Supprimer' })
+        ).not.toBeInTheDocument()
       })
     })
 

@@ -23,7 +23,7 @@ async function handleImageUpload(
   checkAccessibility: (disabledRules?: string[]) => Promise<void>
 ) {
   await page
-    .getByLabel('Importez une image')
+    .getByLabel('Ajoutez une image')
     .setInputFiles(
       path.join(testInfo.project.testDir, 'common/data/librairie.jpeg')
     )

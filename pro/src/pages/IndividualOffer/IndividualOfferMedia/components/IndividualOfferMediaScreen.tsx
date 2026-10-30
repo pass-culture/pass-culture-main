@@ -1,4 +1,4 @@
-import { useId, useRef } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
@@ -24,12 +24,36 @@ import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
 import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
-import { ImageDragAndDropUploader } from '@/components/ImageDragAndDropUploader/ImageDragAndDropUploader'
+import {
+  ALLOWED_IMAGE_TYPES_TO_EXTENSIONS,
+  MAX_FILE_SIZE,
+  UPLOAD_IMAGE_MAX_RESOLUTION,
+} from '@/components/ImageDragAndDrop/constants'
+import { getImageDimensions } from '@/components/ImageDragAndDrop/getImageDimensions'
+import { getImageFormat } from '@/components/ImageDragAndDrop/getImageFormat'
+import {
+  ModalImageUpsertOrEdit,
+  type OnImageUploadArgs,
+} from '@/components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
+import { ImagePlaceholder } from '@/components/SafeImage/ImagePlaceholder/ImagePlaceholder'
+import { SafeImage } from '@/components/SafeImage/SafeImage'
 import { VideoUploader } from '@/components/VideoUploader/VideoUploader'
+import { Button } from '@/design-system/Button/Button'
+import {
+  ButtonColor,
+  ButtonSize,
+  ButtonVariant,
+} from '@/design-system/Button/types'
+import { SimpleModal } from '@/design-system/SimpleModal/SimpleModal'
+import { UploadZone } from '@/design-system/UploadZone/UploadZone'
+import { getConditionsText } from '@/design-system/UploadZone/utils'
+import fullEditIcon from '@/icons/full-edit.svg'
+import fullTrashIcon from '@/icons/full-trash.svg'
+import strokePictureIcon from '@/icons/stroke-picture.svg'
+import strokeWarningIcon from '@/icons/stroke-warning.svg'
 import { useIndividualOfferImageUpload } from '@/pages/IndividualOffer/commons/useIndividualOfferImageUpload'
 import { getAfterSubmitPath } from '@/pages/IndividualOffer/commons/utils/getAfterSubmitPath'
 import { ActionBar } from '@/pages/IndividualOffer/components/ActionBar/ActionBar'
-import { Divider } from '@/ui-kit/Divider/Divider'
 
 import { ProductBanner } from '../../components/ProductBanner/ProductBanner'
 import { buildInitialValues } from '../commons/buildInitialValues'
@@ -39,6 +63,40 @@ import { VideoUploaderTips } from './VideoUploaderOfferTips/VideoUploaderOfferTi
 
 type IndividualOfferMediaScreenProps = {
   offer: GetIndividualOfferResponseModel
+}
+
+const IMAGE_CONDITIONS_TEXT = `${getConditionsText(
+  ALLOWED_IMAGE_TYPES_TO_EXTENSIONS,
+  MAX_FILE_SIZE
+)} Résolution maximale : 80 mégapixels.`
+
+const IMAGE_FORMAT_ERROR = 'Le format de l’image n’est pas valide'
+const IMAGE_RESOLUTION_ERROR =
+  "Image trop volumineuse. La résolution maximale acceptée est d'environ 80 millions de pixels (9000 x 9000 pixels)"
+
+// UploadZone only checks the declared type and the weight of the file:
+// the actual content format and the resolution are checked here.
+const validateImage = async (
+  file: File
+): Promise<
+  { image: File; error?: never } | { image?: never; error: string }
+> => {
+  try {
+    const content = await file.arrayBuffer()
+    const { width, height } = await getImageDimensions(file)
+
+    if (getImageFormat(content) === null) {
+      return { error: IMAGE_FORMAT_ERROR }
+    }
+    if (width * height > UPLOAD_IMAGE_MAX_RESOLUTION) {
+      return { error: IMAGE_RESOLUTION_ERROR }
+    }
+
+    const image = new File([content], file.name, { type: file.type })
+    return { image: Object.assign(image, { width, height }) }
+  } catch {
+    return { error: IMAGE_FORMAT_ERROR }
+  }
 }
 
 export const IndividualOfferMediaScreen = ({
@@ -63,6 +121,32 @@ export const IndividualOfferMediaScreen = ({
     handleImageOnSubmit,
   } = useIndividualOfferImageUpload(initialImageOffer)
 
+  const uploadZoneId = useId()
+  const editButtonId = useId()
+  const uploadZoneRef = useRef<HTMLInputElement>(null)
+  const editButtonRef = useRef<HTMLButtonElement>(null)
+
+  const initialValues = buildInitialValues(displayedImage)
+  const { croppedImageUrl, originalImageUrl, credit, alternativeText } =
+    initialValues
+  const [isModalImageOpen, setIsModalImageOpen] = useState(false)
+  const [isDeleteImageOpen, setIsDeleteImageOpen] = useState(false)
+  const [draftImage, setDraftImage] = useState<File | undefined>(undefined)
+  const [draftCredit, setDraftCredit] = useState<string | undefined>(credit)
+  const [draftAlternativeText, setDraftAlternativeText] = useState<
+    string | undefined
+  >(alternativeText)
+  const [imageError, setImageError] = useState<string | undefined>(undefined)
+  // Remounting the upload zone clears its errors.
+  const [uploadZoneKey, setUploadZoneKey] = useState(0)
+
+  useEffect(() => {
+    setDraftCredit(credit)
+  }, [credit])
+  useEffect(() => {
+    setDraftAlternativeText(alternativeText)
+  }, [alternativeText])
+
   const { handleVideoOnSubmit, videoUrl, videoDescription, videoData } =
     useVideoUploaderContext()
   const snackBar = useSnackBar()
@@ -71,6 +155,9 @@ export const IndividualOfferMediaScreen = ({
   const hasSavedOfferRef = useRef(false)
 
   const isProductBased = isOfferProductBasedButNotSynchronized(offer)
+  const isImageReadOnly = isProductBased || isClosed
+  const imageUrl = croppedImageUrl || originalImageUrl
+  const hasImage = !!imageUrl
 
   const form = useForm()
 
@@ -208,6 +295,52 @@ export const IndividualOfferMediaScreen = ({
     })
   }
 
+  const handleImageAdded = async (file: File) => {
+    const { image, error } = await validateImage(file)
+    setImageError(error)
+
+    if (error) {
+      uploadZoneRef.current?.focus({ preventScroll: true })
+      return
+    }
+
+    logOnImageDropOrSelected()
+    setDraftImage(image)
+    setIsModalImageOpen(true)
+  }
+
+  const onImageUploadHandler = async (
+    values: OnImageUploadArgs,
+    successMessage: string
+  ) => {
+    setIsModalImageOpen(false)
+    setDraftImage(values.imageFile)
+    setDraftCredit(values.credit ?? '')
+    setDraftAlternativeText(values.alternativeText ?? '')
+    try {
+      await Promise.resolve(onImageUpload(values))
+      snackBar.success(successMessage, editButtonId)
+    } catch {
+      snackBar.error(
+        "Une erreur est survenue lors de l'importation de votre image",
+        uploadZoneId
+      )
+    }
+  }
+
+  const onImageDeleteHandler = () => {
+    if (offer.isHeadlineOffer && !isDeleteImageOpen) {
+      setIsDeleteImageOpen(true)
+      return
+    }
+    setIsDeleteImageOpen(false)
+    setIsModalImageOpen(false)
+    setDraftImage(undefined)
+    setDraftCredit(undefined)
+    onImageDelete()
+    snackBar.success('L’image a bien été supprimée', uploadZoneId)
+  }
+
   return (
     <>
       <FormProvider {...form}>
@@ -215,37 +348,121 @@ export const IndividualOfferMediaScreen = ({
           <FormLayout>
             {isOfferProductBasedButNotSynchronized(offer) && <ProductBanner />}
             <FormLayout.Section title="Illustrez votre offre">
-              <FormLayout.Row inline className={styles['media-row']}>
-                <FormLayout.SubSection
-                  title="Ajoutez une image"
-                  className={styles['media-sub-section']}
-                >
-                  <ImageDragAndDropUploader
-                    onImageUpload={onImageUpload}
-                    onImageDelete={onImageDelete}
-                    initialValues={buildInitialValues(displayedImage)}
-                    mode={UploaderModeEnum.OFFER}
-                    onImageDropOrSelected={logOnImageDropOrSelected}
-                    hideActionButtons={isProductBased || isClosed}
-                    warnBeforeDeleting={offer.isHeadlineOffer}
-                    disabled={isProductBased || isClosed}
-                  />
-                </FormLayout.SubSection>
-                <Divider
-                  orientation="vertical"
-                  className={styles['media-divider']}
-                />
-                <FormLayout.SubSection
-                  title="Ajoutez une vidéo"
-                  className={styles['media-sub-section']}
-                >
-                  <VideoUploader uploadTipsId={tipsVideoUploaderId} />
-                  {!videoData?.videoThumbnailUrl && (
-                    <div id={tipsVideoUploaderId}>
-                      <VideoUploaderTips />
+              <FormLayout.Row className={styles['media-rows']}>
+                <FormLayout.Row className={styles['media-cell']}>
+                  {hasImage ? (
+                    <div className={styles['image']}>
+                      <SafeImage
+                        alt={alternativeText || 'Prévisualisation de l’image'}
+                        testId="image-preview"
+                        className={styles['image-preview']}
+                        src={imageUrl}
+                        placeholder={
+                          <ImagePlaceholder
+                            className={styles['image-placeholder']}
+                          />
+                        }
+                        credit={draftCredit}
+                      />
+                      {!isImageReadOnly && (
+                        <div className={styles['image-actions']}>
+                          <Button
+                            ref={editButtonRef}
+                            onClick={() => setIsModalImageOpen(true)}
+                            variant={ButtonVariant.SECONDARY}
+                            color={ButtonColor.NEUTRAL}
+                            size={ButtonSize.SMALL}
+                            aria-label="Modifier l’image"
+                            icon={fullEditIcon}
+                            label="Modifier"
+                            id={editButtonId}
+                          />
+                          <Button
+                            onClick={onImageDeleteHandler}
+                            variant={ButtonVariant.SECONDARY}
+                            color={ButtonColor.NEUTRAL}
+                            size={ButtonSize.SMALL}
+                            icon={fullTrashIcon}
+                            label="Supprimer"
+                          />
+                        </div>
+                      )}
                     </div>
+                  ) : (
+                    <UploadZone
+                      key={uploadZoneKey}
+                      ref={uploadZoneRef}
+                      id={uploadZoneId}
+                      label="Ajoutez une image"
+                      labelVariant="title3"
+                      icon={strokePictureIcon}
+                      accept={ALLOWED_IMAGE_TYPES_TO_EXTENSIONS}
+                      maxSize={MAX_FILE_SIZE}
+                      conditionsText={IMAGE_CONDITIONS_TEXT}
+                      maxFiles={1}
+                      disabled={isImageReadOnly}
+                      error={imageError}
+                      onFilesAdded={([file]) => void handleImageAdded(file)}
+                    />
                   )}
-                </FormLayout.SubSection>
+                  <ModalImageUpsertOrEdit
+                    mode={UploaderModeEnum.OFFER}
+                    onImageUpload={onImageUploadHandler}
+                    onImageDelete={onImageDeleteHandler}
+                    initialValues={{
+                      ...initialValues,
+                      draftImage,
+                      credit: draftCredit,
+                      alternativeText: draftAlternativeText,
+                    }}
+                    refToFocusOnClose={hasImage ? editButtonRef : uploadZoneRef}
+                    onOpenChange={(open) => {
+                      if (!open) {
+                        setUploadZoneKey((prev) => prev + 1)
+                      }
+                      setIsModalImageOpen(open)
+                    }}
+                    open={isModalImageOpen}
+                  />
+                  <SimpleModal
+                    title="Votre offre ne sera plus à la une"
+                    iconPath={strokeWarningIcon}
+                    isOpen={isDeleteImageOpen}
+                    onClose={() => setIsDeleteImageOpen(false)}
+                    actionButtons={[
+                      <Button
+                        onClick={() => setIsDeleteImageOpen(false)}
+                        variant={ButtonVariant.SECONDARY}
+                        color={ButtonColor.NEUTRAL}
+                        label="Annuler"
+                        key="cancel"
+                      />,
+                      <Button
+                        onClick={onImageDeleteHandler}
+                        color={ButtonColor.DANGER}
+                        label="Supprimer l'image"
+                        key="confirm"
+                      />,
+                    ]}
+                  >
+                    <p>
+                      Sans image d'illustration, cette offre ne pourra plus être
+                      mise à la une de votre catalogue.
+                    </p>
+                    <p>Souhaitez-vous réellement supprimer cette image ?</p>
+                  </SimpleModal>
+                </FormLayout.Row>
+                <FormLayout.Row className={styles['media-cell']}>
+                  <div className={styles['media-wrapper']}>
+                    <h3 className={styles['media-title']}>Ajoutez une vidéo</h3>
+                    <VideoUploader uploadTipsId={tipsVideoUploaderId} />
+                    {!videoData?.videoThumbnailUrl && (
+                      <div id={tipsVideoUploaderId}>
+                        <VideoUploaderTips />
+                      </div>
+                    )}
+                  </div>
+                </FormLayout.Row>
               </FormLayout.Row>
             </FormLayout.Section>
           </FormLayout>
