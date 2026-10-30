@@ -435,6 +435,15 @@ class Stock(PcObject, Model, SoftDeletableMixin):
             "quantity",
             "dnBookedQuantity",
         ),
+        # Offers with a bookable stock
+        sa.Index(
+            "ix_stock_offerId_beginningDatetime_available",
+            "offerId",
+            "beginningDatetime",
+            postgresql_where=sa.text(
+                '"isSoftDeleted" IS NOT TRUE AND (quantity IS NULL OR quantity > "dnBookedQuantity")'
+            ),
+        ),
     )
 
     @property
