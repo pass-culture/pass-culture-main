@@ -444,6 +444,13 @@ class Stock(PcObject, Model, SoftDeletableMixin):
                 '"isSoftDeleted" IS NOT TRUE AND (quantity IS NULL OR quantity > "dnBookedQuantity")'
             ),
         ),
+        # Offers with an expirable stock
+        sa.Index(
+            "ix_stock_offerId_bookingLimitDatetime_notnull",
+            "offerId",
+            "bookingLimitDatetime",
+            postgresql_where=sa.text('"isSoftDeleted" IS NOT TRUE AND "bookingLimitDatetime" IS NOT NULL'),
+        ),
     )
 
     @property
