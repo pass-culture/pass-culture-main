@@ -13,7 +13,7 @@ export const getUserDefaultPath = (search: string = '') => {
       return `/inscription/structure/recherche${search}`
 
     case !userPermissions.hasSelectedPartnerVenue:
-      return '/hub'
+      return `/hub${search}`
 
     case !userPermissions.isSelectedPartnerVenueAssociated:
       return '/rattachement-en-cours'

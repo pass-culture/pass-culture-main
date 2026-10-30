@@ -9,6 +9,34 @@ import {
 } from './helpers/sandbox'
 
 test.describe('Hub', () => {
+  test('I should be redirected to the requested internal page after picking a venue', async ({
+    page,
+  }) => {
+    const requestContext = await playwrightRequest.newContext({
+      baseURL: BASE_API_URL,
+    })
+
+    const userData =
+      await createProUserWithFinancialDataAnd3Venues(requestContext)
+
+    await requestContext.dispose()
+
+    await doLogin(page, userData.user.email)
+    await page.goto('/parametres/notifications')
+
+    await expect(page).toHaveURL('/hub?redirectTo=/parametres/notifications')
+    await expect(
+      page.getByText('À quelle structure souhaitez-vous accéder ?')
+    ).toBeVisible()
+
+    const venueButton = page.getByRole('button', { name: 'Mon lieu 2' }).first()
+    await expect(venueButton).toBeVisible()
+    await venueButton.click()
+
+    await expect(page).toHaveURL(/\/parametres\/notifications$/)
+    await expect(page.getByText('Notifications de réservations')).toBeVisible()
+  })
+
   test('I should be able to switch from one venue to another', async ({
     page,
   }) => {
