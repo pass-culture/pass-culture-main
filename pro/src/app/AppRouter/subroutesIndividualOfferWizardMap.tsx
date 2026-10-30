@@ -1,5 +1,3 @@
-/* No need to test this file */
-/* istanbul ignore file */
 import { withUserPermissions } from '@/commons/auth/withUserPermissions'
 
 import type { CustomRouteGroupChild } from './types'
@@ -15,7 +13,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
       import(
         '@/pages/IndividualOffer/IndividualOfferDescription/IndividualOfferDescription'
       ),
-    path: '/offre/individuelle/:offerId/edition/details',
+    path: ':offerId/edition/details',
     handle: {
       title: 'Détails de l’offre - Modifier une offre individuelle',
     },
@@ -27,7 +25,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
       import(
         '@/pages/IndividualOffer/IndividualOfferExposure/IndividualOfferExposure'
       ),
-    path: '/offre/individuelle/:offerId/visibilite',
+    path: ':offerId/visibilite',
     handle: {
       title: 'Visibilité - Consulter une offre individuelle',
     },
@@ -39,7 +37,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
       import(
         '@/pages/IndividualOffer/IndividualOfferDescription/IndividualOfferDescription'
       ),
-    path: '/offre/individuelle/creation/description',
+    path: 'creation/description',
     handle: {
       title: 'Description - Créer une offre individuelle',
     },
@@ -50,7 +48,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
       import(
         '@/pages/IndividualOffer/IndividualOfferDescription/IndividualOfferDescription'
       ),
-    path: '/offre/individuelle/:offerId/creation/description',
+    path: ':offerId/creation/description',
     handle: {
       title: 'Description - Créer une offre individuelle',
     },
@@ -61,7 +59,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
       import(
         '@/pages/IndividualOffer/IndividualOfferDescription/IndividualOfferDescription'
       ),
-    path: '/offre/individuelle/:offerId/edition/description',
+    path: ':offerId/edition/description',
     handle: {
       title: 'Description - Modifier une offre individuelle',
     },
@@ -74,7 +72,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
       import(
         '@/pages/IndividualOffer/IndividualOfferLocation/IndividualOfferLocation'
       ),
-    path: '/offre/individuelle/:offerId/creation/pratiques',
+    path: ':offerId/creation/pratiques',
     handle: {
       title: 'Informations pratiques - Créer une offre individuelle',
     },
@@ -85,7 +83,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
       import(
         '@/pages/IndividualOffer/IndividualOfferLocation/IndividualOfferLocation'
       ),
-    path: '/offre/individuelle/:offerId/edition/pratiques',
+    path: ':offerId/edition/pratiques',
     handle: {
       title: 'Informations pratiques - Modifier une offre individuelle',
     },
@@ -97,7 +95,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
       import(
         '@/pages/IndividualOffer/IndividualOfferLocation/IndividualOfferLocation'
       ),
-    path: '/offre/individuelle/:offerId/creation/localisation',
+    path: ':offerId/creation/localisation',
     handle: {
       title: 'Localisation - Créer une offre individuelle',
     },
@@ -108,7 +106,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
       import(
         '@/pages/IndividualOffer/IndividualOfferLocation/IndividualOfferLocation'
       ),
-    path: '/offre/individuelle/:offerId/edition/localisation',
+    path: ':offerId/edition/localisation',
     handle: {
       title: 'Localisation - Modifier une offre individuelle',
     },
@@ -120,7 +118,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
       import(
         '@/pages/IndividualOffer/IndividualOfferMedia/IndividualOfferMedia'
       ),
-    path: '/offre/individuelle/:offerId/creation/media',
+    path: ':offerId/creation/media',
     handle: {
       title: 'Image et vidéo - Créer une offre individuelle',
     },
@@ -131,7 +129,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
       import(
         '@/pages/IndividualOffer/IndividualOfferMedia/IndividualOfferMedia'
       ),
-    path: '/offre/individuelle/:offerId/edition/media',
+    path: ':offerId/edition/media',
     handle: {
       title: 'Image et vidéo - Modifier une offre individuelle',
     },
@@ -143,7 +141,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
       import(
         '@/pages/IndividualOffer/IndividualOfferPriceTable/IndividualOfferPriceTable'
       ),
-    path: '/offre/individuelle/:offerId/creation/tarifs',
+    path: ':offerId/creation/tarifs',
     handle: {
       title: 'Tarifs - Créer une offre individuelle',
     },
@@ -154,7 +152,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
       import(
         '@/pages/IndividualOffer/IndividualOfferPriceTable/IndividualOfferPriceTable'
       ),
-    path: '/offre/individuelle/:offerId/edition/tarifs',
+    path: ':offerId/edition/tarifs',
     handle: {
       title: 'Tarifs - Modifier une offre individuelle',
     },
@@ -166,7 +164,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
       import(
         '@/pages/IndividualOffer/IndividualOfferTimetable/IndividualOfferTimetable'
       ),
-    path: '/offre/individuelle/:offerId/creation/horaires',
+    path: ':offerId/creation/horaires',
     handle: {
       title: 'Horaires - Créer une offre individuelle',
     },
@@ -177,7 +175,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
       import(
         '@/pages/IndividualOffer/IndividualOfferTimetable/IndividualOfferTimetable'
       ),
-    path: '/offre/individuelle/:offerId/edition/horaires',
+    path: ':offerId/edition/horaires',
     handle: {
       title: 'Horaires - Modifier une offre individuelle',
     },
@@ -188,7 +186,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
       import(
         '@/pages/IndividualOffer/IndividualOfferPracticalInfos/IndividualOfferPracticalInfos'
       ),
-    path: '/offre/individuelle/:offerId/creation/informations_pratiques',
+    path: ':offerId/creation/informations_pratiques',
     handle: {
       title: 'Informations pratiques - Créer une offre individuelle',
     },
@@ -199,7 +197,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
       import(
         '@/pages/IndividualOffer/IndividualOfferPracticalInfos/IndividualOfferPracticalInfos'
       ),
-    path: '/offre/individuelle/:offerId/edition/informations_pratiques',
+    path: ':offerId/edition/informations_pratiques',
     handle: {
       title: 'Informations pratiques - Modifier une offre individuelle',
     },
@@ -211,7 +209,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
       import(
         '@/pages/IndividualOfferSummary/IndividualOfferSummaryBookings/IndividualOfferSummaryBookings'
       ),
-    path: '/offre/individuelle/:offerId/reservations',
+    path: ':offerId/reservations',
     handle: {
       title: 'Réservations - Consulter une offre individuelle',
     },
@@ -223,7 +221,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
       import(
         '@/pages/IndividualOffer/IndividualOfferConfirmation/IndividualOfferConfirmation'
       ),
-    path: '/offre/individuelle/:offerId/creation/confirmation',
+    path: ':offerId/creation/confirmation',
     handle: {
       title: 'Confirmation - Offre individuelle publiée',
     },
@@ -235,7 +233,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
       import(
         '@/pages/IndividualOffer/IndividualOfferSummary/IndividualOfferSummary'
       ),
-    path: '/offre/individuelle/:offerId/creation/recapitulatif',
+    path: ':offerId/creation/recapitulatif',
     handle: {
       title: 'Récapitulatif - Créer une offre individuelle',
     },
@@ -250,7 +248,7 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteGroupChild[] = [
       import(
         '@/pages/IndividualOffer/IndividualOfferDescription/IndividualOfferDescription'
       ),
-    path: '/onboarding/offre/individuelle/creation/description',
+    path: 'creation/description',
     handle: {
       title: 'Description - Créer une offre individuelle - Onboarding',
     },
@@ -261,7 +259,7 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteGroupChild[] = [
       import(
         '@/pages/IndividualOffer/IndividualOfferDescription/IndividualOfferDescription'
       ),
-    path: '/onboarding/offre/individuelle/:offerId/creation/description',
+    path: ':offerId/creation/description',
     handle: {
       title: 'Description - Créer une offre individuelle - Onboarding',
     },
@@ -272,7 +270,7 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteGroupChild[] = [
       import(
         '@/pages/IndividualOffer/IndividualOfferLocation/IndividualOfferLocation'
       ),
-    path: '/onboarding/offre/individuelle/:offerId/creation/pratiques',
+    path: ':offerId/creation/pratiques',
     handle: {
       title:
         'Informations pratiques - Créer une offre individuelle - Onboarding',
@@ -285,7 +283,7 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteGroupChild[] = [
       import(
         '@/pages/IndividualOffer/IndividualOfferLocation/IndividualOfferLocation'
       ),
-    path: '/onboarding/offre/individuelle/:offerId/creation/localisation',
+    path: ':offerId/creation/localisation',
     handle: {
       title: 'Localisation - Créer une offre individuelle - Onboarding',
     },
@@ -296,7 +294,7 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteGroupChild[] = [
       import(
         '@/pages/IndividualOffer/IndividualOfferMedia/IndividualOfferMedia'
       ),
-    path: '/onboarding/offre/individuelle/:offerId/creation/media',
+    path: ':offerId/creation/media',
     handle: {
       title: 'Image et vidéo - Créer une offre individuelle - Onboarding',
     },
@@ -307,7 +305,7 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteGroupChild[] = [
       import(
         '@/pages/IndividualOffer/IndividualOfferPriceTable/IndividualOfferPriceTable'
       ),
-    path: '/onboarding/offre/individuelle/:offerId/creation/tarifs',
+    path: ':offerId/creation/tarifs',
     handle: {
       title: 'Tarifs - Créer une offre individuelle - Onboarding',
     },
@@ -318,7 +316,7 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteGroupChild[] = [
       import(
         '@/pages/IndividualOffer/IndividualOfferPracticalInfos/IndividualOfferPracticalInfos'
       ),
-    path: '/onboarding/offre/individuelle/:offerId/creation/informations_pratiques',
+    path: ':offerId/creation/informations_pratiques',
     handle: {
       title:
         'Informations pratiques - Créer une offre individuelle - Onboarding',
@@ -331,7 +329,7 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteGroupChild[] = [
       import(
         '@/pages/IndividualOffer/IndividualOfferTimetable/IndividualOfferTimetable'
       ),
-    path: '/onboarding/offre/individuelle/:offerId/creation/stocks',
+    path: ':offerId/creation/stocks',
     handle: {
       title: 'Stocks et prix - Créer une offre individuelle - Onboarding',
     },
@@ -343,7 +341,7 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteGroupChild[] = [
       import(
         '@/pages/IndividualOffer/IndividualOfferTimetable/IndividualOfferTimetable'
       ),
-    path: '/onboarding/offre/individuelle/:offerId/creation/horaires',
+    path: ':offerId/creation/horaires',
     handle: {
       title: 'Horaires - Créer une offre individuelle - Onboarding',
     },
@@ -354,7 +352,7 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteGroupChild[] = [
       import(
         '@/pages/IndividualOffer/IndividualOfferSummary/IndividualOfferSummary'
       ),
-    path: '/onboarding/offre/individuelle/:offerId/creation/recapitulatif',
+    path: ':offerId/creation/recapitulatif',
     handle: {
       title: 'Récapitulatif - Créer une offre individuelle - Onboarding',
     },

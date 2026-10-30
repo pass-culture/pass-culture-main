@@ -1,6 +1,3 @@
-/* No need to test this file */
-/* istanbul ignore file */
-
 import {
   generatePath,
   Navigate,
@@ -14,7 +11,7 @@ import { SignupConfirmation } from '@/pages/Signup/SignupConfirmation/SignupConf
 import { SignupContainer } from '@/pages/Signup/SignupContainer/SignupContainer'
 
 import { validateSignupActivation } from './middlewares/validateSignupActivation'
-import type { CustomRouteGroupChild } from './types'
+import type { CustomRouteGroup } from './types'
 import { mustBeUnauthenticated } from './utils'
 
 const NavigateWithParams = ({ to, ...props }: NavigateProps) => {
@@ -22,16 +19,16 @@ const NavigateWithParams = ({ to, ...props }: NavigateProps) => {
   return <Navigate {...props} to={generatePath(to as string, params)} />
 }
 
-export const routesSignup: CustomRouteGroupChild[] = [
+export const routesSignup: CustomRouteGroup['children'] = [
   {
-    path: '/inscription',
+    index: true,
     element: <Navigate to="/bienvenue" />,
     loader: withUserPermissions(mustBeUnauthenticated),
   },
   {
     element: <SignupContainer />,
     loader: noop,
-    path: '/inscription/compte/creation',
+    path: 'compte/creation',
     handle: {
       title: 'Créer un compte',
     },
@@ -39,7 +36,7 @@ export const routesSignup: CustomRouteGroupChild[] = [
   {
     element: <SignupConfirmation />,
     loader: noop,
-    path: '/inscription/compte/confirmation',
+    path: 'compte/confirmation',
     handle: {
       title: 'Validez votre adresse email',
     },
@@ -47,7 +44,7 @@ export const routesSignup: CustomRouteGroupChild[] = [
   {
     element: null,
     loader: withUserPermissions(() => true, validateSignupActivation),
-    path: '/inscription/compte/confirmation/:token',
+    path: 'compte/confirmation/:token',
     handle: {
       title: 'Confirmation de création de compte',
     },
@@ -58,7 +55,7 @@ export const routesSignup: CustomRouteGroupChild[] = [
       <NavigateWithParams to="/inscription/compte/confirmation/:token" />
     ),
     loader: noop,
-    path: '/inscription/validation/:token',
+    path: 'validation/:token',
     handle: {
       title: 'Confirmation de création de compte',
     },
@@ -66,7 +63,7 @@ export const routesSignup: CustomRouteGroupChild[] = [
   {
     element: <Navigate to="/inscription/compte/confirmation" />,
     loader: noop,
-    path: '/inscription/confirmation',
+    path: 'confirmation',
     handle: {
       title: 'Confirmation de création de compte',
     },

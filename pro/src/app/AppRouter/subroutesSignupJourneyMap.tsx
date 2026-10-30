@@ -1,6 +1,3 @@
-/* No need to test this file */
-/* istanbul ignore file */
-
 import { withUserPermissions } from '@/commons/auth/withUserPermissions'
 import { Activity } from '@/components/SignupJourneyForm/Activity/Activity'
 import { OffererAuthentication } from '@/components/SignupJourneyForm/Authentication/OffererAuthentication'
@@ -16,7 +13,7 @@ export const routesSignupJourney: CustomRouteGroupChild[] = [
   {
     element: <Offerer />,
     loader: withUserPermissions(mustBeAuthenticated),
-    path: '/inscription/structure/recherche',
+    path: 'recherche',
     handle: {
       title: 'Structure - Parcours d’inscription',
     },
@@ -24,7 +21,7 @@ export const routesSignupJourney: CustomRouteGroupChild[] = [
   {
     element: <SignupJourneyOfferers />,
     loader: withUserPermissions(mustBeAuthenticated),
-    path: '/inscription/structure/rattachement',
+    path: 'rattachement',
     handle: {
       title: 'Rattachement à une structure - Parcours d’inscription',
     },
@@ -32,7 +29,7 @@ export const routesSignupJourney: CustomRouteGroupChild[] = [
   {
     element: <ConfirmedAttachment />,
     loader: withUserPermissions(mustBeAuthenticated),
-    path: '/inscription/structure/rattachement/confirmation-rattachement',
+    path: 'rattachement/confirmation-rattachement',
     handle: {
       title:
         'Confirmation rattachement à une structure - Parcours d’inscription',
@@ -41,7 +38,7 @@ export const routesSignupJourney: CustomRouteGroupChild[] = [
   {
     element: <OffererAuthentication />,
     loader: withUserPermissions(mustBeAuthenticated),
-    path: '/inscription/structure/identification',
+    path: 'identification',
     handle: {
       title: 'Identification - Parcours d’inscription',
     },
@@ -49,7 +46,7 @@ export const routesSignupJourney: CustomRouteGroupChild[] = [
   {
     element: <Activity />,
     loader: withUserPermissions(mustBeAuthenticated),
-    path: '/inscription/structure/activite',
+    path: 'activite',
     handle: {
       title: 'Activité - Parcours d’inscription',
     },
@@ -57,7 +54,7 @@ export const routesSignupJourney: CustomRouteGroupChild[] = [
   {
     element: <Validation />,
     loader: withUserPermissions(mustBeAuthenticated),
-    path: '/inscription/structure/confirmation',
+    path: 'confirmation',
     handle: {
       title: 'Validation - Parcours d’inscription',
     },
