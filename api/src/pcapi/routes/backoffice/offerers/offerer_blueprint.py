@@ -1135,7 +1135,12 @@ def create_venue(offerer_id: int) -> response_utils.BackofficeResponse:
         visual_disability_compliant=None,
         is_open_to_public=form.is_open_to_public.data,
     )
-    venue = offerers_api.create_venue(venue_creation_info, current_user, address=attachment_address)
+    venue = offerers_api.create_venue(
+        venue_creation_info,
+        current_user,
+        address=attachment_address,
+        validation_status=offerers_models.VenueValidationStatus.APPROVED,
+    )
     db.session.add(venue)
     offerers_api.link_venue_to_pricing_point(venue, attachment_venue.id)
 
