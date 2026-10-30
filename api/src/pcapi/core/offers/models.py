@@ -960,6 +960,12 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
             sa.text("lower(immutable_unaccent(name))"),
             sa.text("id DESC"),
         ),
+        # Offers not synchronized with a provider
+        sa.Index(
+            "ix_offer_venueId_lastProviderId_null",
+            "venueId",
+            postgresql_where=sa.text('"lastProviderId" IS NULL'),
+        ),
     )
 
     @property
