@@ -184,16 +184,16 @@ class CollectiveOffersFilter:
     offerer_address_id: int | None = None
 
 
-class AdageEducationalInstitution(AdageBaseResponseModel):
+class AdageEducationalInstitution(pydantic_v2.BaseModel):
     uai: str
     sigle: str
     libelle: str
     communeLibelle: str
-    courriel: str | None
-    telephone: str | None
+    courriel: str | None = None
+    telephone: str | None = None
     codePostal: str
-    latitude: decimal.Decimal | None
-    longitude: decimal.Decimal | None
+    latitude: decimal.Decimal | None = None
+    longitude: decimal.Decimal | None = None
 
 
 class AdageCollectiveOfferContact(AdageBaseResponseModel):
