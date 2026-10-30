@@ -7,6 +7,7 @@ export const reimbursementsRouteGroup: CustomRouteGroup['children'] = [
     index: true,
     handle: {
       title: 'Gestion financière',
+      mainTitle: 'Gestion financière',
     },
     Component: () => {
       const location = useLocation()
@@ -22,13 +23,15 @@ export const reimbursementsRouteGroup: CustomRouteGroup['children'] = [
       ),
     handle: {
       title: 'Gestion financière - justificatifs',
+      mainTitle: 'Gestion financière',
     },
   },
   {
     path: 'virements',
     lazy: () => import('@/pages/Reimbursements/Settlements/Settlements'),
     handle: {
-      title: 'Gestion financière',
+      title: 'Gestion financière - virements',
+      mainTitle: 'Gestion financière',
     },
     featureName: 'WIP_ENABLE_FINANCE_SETTLEMENTS',
   },
@@ -37,14 +40,16 @@ export const reimbursementsRouteGroup: CustomRouteGroup['children'] = [
     lazy: () =>
       import('@/pages/Reimbursements/BankInformations/BankInformations'),
     handle: {
-      title: 'Informations bancaires',
+      title: 'Gestion financière - informations bancaires',
+      mainTitle: 'Gestion financière',
     },
   },
   {
     path: 'chiffre-d-affaires',
     lazy: () => import('@/pages/Reimbursements/Income/Income'),
     handle: {
-      title: 'Chiffre d’affaires',
+      title: 'Gestion financière - chiffre d’affaires',
+      mainTitle: 'Gestion financière',
     },
   },
 ]
