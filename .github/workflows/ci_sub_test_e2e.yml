@@ -146,7 +146,7 @@ jobs:
 
       - name: "Download artifact"
         if: ${{ inputs.tag != 'latest' }}
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: ${{ inputs.image }}-${{ inputs.tag }}.tar
           path: ${{ runner.temp }}
@@ -185,7 +185,7 @@ jobs:
           timeout: 120000
 
       - name: Download the build folder
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: build-playwright
           path: pro/build
@@ -249,7 +249,7 @@ jobs:
             pnpm ci
 
       - name: Download blob reports from GitHub Actions Artifacts
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           path: pro/all-blob-reports
           pattern: report-chromium-*
