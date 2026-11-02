@@ -34,3 +34,9 @@ class OAuthSigninRequestV2(HttpQueryParamsModel):
     authorization_code: str
     oauth_state_token: str
     device_info: DeviceInfoV2
+
+
+class SSOAttachAccountRequest(HttpQueryParamsModel):
+    authorization_code: str
+    oauth_state_token: str
+    device_info: DeviceInfoV2
