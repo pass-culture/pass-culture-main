@@ -1,6 +1,5 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { vi } from 'vitest'
 import { axe } from 'vitest-axe'
 
 import { ImageEditor, map } from './ImageEditor'
@@ -11,7 +10,14 @@ vi.mock('use-debounce', async () => ({
 }))
 
 describe('ImageEditor', () => {
-  const mockImage = new File(['image'], 'image.jpg', { type: 'image/jpeg' })
+  const mockImage = new File(
+    // Use Uint8Array with JPEG signature bytes so react-avatar-editor file reader accept it.
+    [new Uint8Array([0xff, 0xd8, 0xff, 0xe0])],
+    'image.jpg',
+    {
+      type: 'image/jpeg',
+    }
+  )
   const initialInnerWidth = global.innerWidth
 
   afterEach(() => {
@@ -91,13 +97,14 @@ describe('ImageEditor', () => {
     })
 
     it('should move the cropped area with the keyboard arrows', async () => {
+      const user = userEvent.setup()
       const onChangeDone = vi.fn()
       await renderLoadedImageEditor({ onChangeDone })
 
-      await userEvent.tab()
+      await user.tab()
       expect(screen.getByLabelText(CANVAS_LABEL)).toHaveFocus()
 
-      await userEvent.keyboard('{Shift>}{ArrowRight}{/Shift}')
+      await user.keyboard('{Shift>}{ArrowRight}{/Shift}')
 
       await waitFor(() =>
         expect(screen.getByRole('status')).toHaveTextContent(
@@ -108,11 +115,12 @@ describe('ImageEditor', () => {
     })
 
     it('should zoom in and out with the keyboard "+" and "-" keys', async () => {
+      const user = userEvent.setup()
       const onChangeDone = vi.fn()
       await renderLoadedImageEditor({ onChangeDone })
 
-      await userEvent.tab()
-      await userEvent.keyboard('+')
+      await user.tab()
+      await user.keyboard('+')
 
       expect(screen.getByText('Zoom : 110 %')).toBeInTheDocument()
       await waitFor(() =>
@@ -122,25 +130,27 @@ describe('ImageEditor', () => {
       )
       expect(onChangeDone).toHaveBeenCalled()
 
-      await userEvent.keyboard('-')
+      await user.keyboard('-')
 
       expect(screen.getByText('Zoom : 100 %')).toBeInTheDocument()
     })
 
     it('should not zoom out below 100 % with the keyboard', async () => {
+      const user = userEvent.setup()
       await renderLoadedImageEditor()
 
-      await userEvent.tab()
-      await userEvent.keyboard('-')
+      await user.tab()
+      await user.keyboard('-')
 
       expect(screen.getByText('Zoom : 100 %')).toBeInTheDocument()
     })
 
     it('should not zoom with the keyboard when zoom is disabled', async () => {
+      const user = userEvent.setup()
       await renderLoadedImageEditor({ maxScale: 1 })
 
-      await userEvent.tab()
-      await userEvent.keyboard('+')
+      await user.tab()
+      await user.keyboard('+')
 
       expect(screen.getByText('Zoom : 100 %')).toBeInTheDocument()
     })
