@@ -9,10 +9,15 @@ import logging
 import warnings
 from uuid import uuid4
 
+import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 from urllib3 import exceptions as urllib_execptions
 
 import pcapi.core.users.models as users_models
 from pcapi import settings
+from pcapi.core.artist.models import Artist
+from pcapi.core.offers.models import Offer
+from pcapi.models import db
 from pcapi.utils import module_loading
 from pcapi.utils import requests
 
@@ -163,6 +168,109 @@ class TestingBackend:
             raise RecommendationApiValidationException
 
         artists = [str(uuid4()) for _ in range(10)]
+        response = {
+            "playlist_artists": artists,
+            "params": {
+                "search_group_name": search_group_name,
+                "score_name": "score",
+                "call_id": str(uuid4()),
+            },
+        }
+
+        return bytes(json.dumps(response), encoding="utf-8")
+
+
+def _random_ids(
+    column: sa_orm.InstrumentedAttribute[int] | sa_orm.InstrumentedAttribute[str],
+    limit: int,
+) -> list[str]:
+    """Return `limit` random values of `column`, as strings (the format of the reco API)."""
+    ids = db.session.scalars(sa.select(column).order_by(sa.func.random()).limit(limit))
+    return [str(id_) for id_ in ids]
+
+
+class LocalBackend:
+    def get_similar_offers(self, offer_id: int, user: users_models.User | None, params: dict) -> bytes:
+        offers = _random_ids(Offer.id, 3)
+
+        response = {
+            "results": offers,
+            "params": {
+                "reco_origin": "unknown",
+                "model_origin": "default",
+                "call_id": "956bd070-cbb1-42d3-bea4-89855bf3b11c",
+            },
+        }
+        return bytes(json.dumps(response), encoding="utf-8")
+
+    def get_offer_page_playlists(self, offer_id: int, user: users_models.User | None, params: dict) -> bytes:
+        offers = _random_ids(Offer.id, 10)
+        other_offers = _random_ids(Offer.id, 10)
+
+        response = {
+            "offer_id": str(offer_id),
+            "playlists": [
+                {
+                    "title": "Les fans aiment aussi",
+                    "analytics_playlist_type": "sameCategorySimilarOffersTwoTower",
+                    "results": offers,
+                    "params": {
+                        "reco_origin": "similar_offer",
+                        "model_origin": "default",
+                        "call_id": str(uuid4()),
+                        "unique_call_id": str(uuid4()),
+                        "ab_test": "main",
+                    },
+                },
+                {
+                    "title": "Ça peut aussi te plaire",
+                    "analytics_playlist_type": "otherCategoriesSimilarOffersTwoTower",
+                    "results": other_offers,
+                    "params": {
+                        "reco_origin": "similar_offer",
+                        "model_origin": "default",
+                        "call_id": str(uuid4()),
+                        "unique_call_id": str(uuid4()),
+                        "ab_test": "main",
+                    },
+                },
+            ],
+            "from_cache": False,
+        }
+        return bytes(json.dumps(response), encoding="utf-8")
+
+    def get_similar_artists(self, artist_id: str, params: dict) -> bytes:
+        artists = _random_ids(Artist.id, 3)
+
+        response = {
+            "similar_artists": [{"artist_id_match": id_} for id_ in artists],
+            "params": {
+                "artist_id": artist_id,
+                "call_id": "00000000-0000-0000-0000-000000000000",
+            },
+        }
+        return bytes(json.dumps(response), encoding="utf-8")
+
+    def get_playlist(self, user: users_models.User, params: dict, body: dict) -> bytes:
+        offers = _random_ids(Offer.id, 3)
+        response = {
+            "playlist_recommended_offers": offers,
+            "params": {
+                "reco_origin": "unknown",
+                "model_origin": "default",
+                "call_id": "1dc4c5f2-303c-4d8a-94c3-77c0085c0c70",
+            },
+        }
+        return bytes(json.dumps(response), encoding="utf-8")
+
+    def get_top_artists_playlist(self, search_group_name: str) -> bytes:
+        name = search_group_name.upper()
+
+        if name not in TOP_ARTISTS_CATEGORIES:
+            raise RecommendationApiValidationException
+
+        artists = _random_ids(Artist.id, 3)
+
         response = {
             "playlist_artists": artists,
             "params": {
