@@ -212,6 +212,7 @@ class TiteLiveBookArticle(pydantic_v2.BaseModel):
     gtl: TiteliveGtl | None = None
     id_lectorat: str | None = None
     taux_tva: str | None = None
+    public_averti: bool | None = None
 
     @pydantic_v2.field_validator("id_lectorat", mode="before")
     @classmethod

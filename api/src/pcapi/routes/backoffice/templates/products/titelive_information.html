@@ -37,6 +37,11 @@
                 {{ article.id_lectorat|format_titelive_id_lectorat }}
               {% endcall %}
             </li>
+            <li class="list-group-item">
+              {% call description_detail_horizontal("Réservé à un public averti") %}
+                {{ (article.public_averti if article.public_averti is defined else None)|format_bool("Non renseigné") }}
+              {% endcall %}
+            </li>
             {% if article.prixpays.fr %}
               <li class="list-group-item">
                 {% call description_detail_horizontal("Prix HT") %}
