@@ -152,3 +152,13 @@ class GetApplicantOfOffererUnderValidationTest:
         # Then
         assert len(applicants_found) == 1
         assert applicants_found[0].id == applicant.id
+
+
+class CreateSingleSignOnTest:
+    def test_creates_sso(self):
+        user = users_factories.UserFactory()
+
+        sso = repository.create_single_sign_on(user, "google", "100428144463745704968")
+
+        assert sso.user == user
+        assert user.single_sign_ons == [sso]
