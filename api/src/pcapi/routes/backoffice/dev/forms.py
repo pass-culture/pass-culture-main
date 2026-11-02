@@ -249,3 +249,11 @@ class OfferGeneratorForm(utils.PCForm):
         validators=[wtforms.validators.Optional()],
     )
     is_duo = fields.PCSwitchBooleanField("Offre Duo", default=False)
+    provider_id = fields.PCOptIntegerField("Provider id")
+
+
+class ProviderGeneratorForm(utils.PCForm):
+    name = fields.PCStringField("Nom du provider")
+    bookingExternalUrl = fields.PCURLField("URL de réservation")
+    cancelExternalUrl = fields.PCURLField("URL d'annulation")
+    notificationExternalUrl = fields.PCURLField("URL de notification")

@@ -15,6 +15,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import constants as offers_constants
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
+from pcapi.core.providers import models as providers_models
 from pcapi.models import db
 from pcapi.utils import date as date_utils
 from pcapi.utils import siren as siren_utils
@@ -54,6 +55,14 @@ def _create_cinema_offer(
         set_all_fields=True,
     )
     db.session.add(product)
+
+    # if the venue is linked to a provider and this provider has a ticketing service
+    # we link the offer to the ticketing service
+    withdrawal_type = None
+    provider = venue.venueProviders[0].provider if venue.venueProviders else None
+    if provider and provider.hasTicketingService:
+        withdrawal_type = offers_models.WithdrawalTypeEnum.IN_APP
+
     offer = offers_factories.OfferFactory.create(
         isDuo=is_duo,
         name=offer_name,
@@ -61,6 +70,8 @@ def _create_cinema_offer(
         subcategoryId=subcategories.SEANCE_CINE.id,
         publicationDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
         product=product,
+        withdrawalType=withdrawal_type,
+        lastProvider=provider,
     )
     db.session.add(offer)
     mediation = offers_factories.MediationFactory.build(offer=offer, credit=fake.name())
@@ -142,7 +153,10 @@ def _create_cinema_offer(
 
 
 def _create_venue(
-    offerer: offerers_models.Offerer, activity: offerers_models.Activity, timezone: str
+    offerer: offerers_models.Offerer,
+    activity: offerers_models.Activity,
+    timezone: str,
+    provider: providers_models.Provider | None,
 ) -> offerers_models.Venue:
     fake = faker.Faker(["fr-FR"])
     latitude, longitude, _, _, _ = fake.local_latlng(country_code=TIME_ZONE_COUNTRY_CODE[timezone]) or (
@@ -227,18 +241,26 @@ def _create_venue(
     db.session.add_all(
         [opening_hours1, opening_hours2, opening_hours3, opening_hours4, opening_hours5, opening_hours6, opening_hours7]
     )
+    if provider:
+        venue_provider = providers_models.VenueProvider(venue=venue, provider=provider)
+        db.session.add(venue_provider)
     return venue
 
 
 def create_offer(
-    offer_name: str, price: decimal.Decimal, subcategory_id: str, is_duo: bool, timezone: str
+    offer_name: str,
+    price: decimal.Decimal,
+    subcategory_id: str,
+    is_duo: bool,
+    timezone: str,
+    provider: providers_models.Provider | None = None,
 ) -> offers_models.Offer | None:
     # For the moment this function can only generate offers having SEANCE_CINE subcategory
     offerer = _create_offerer()
     offer = None
     venue = None
     if subcategory_id == subcategories.SEANCE_CINE.id:
-        venue = _create_venue(offerer, offerers_models.Activity.CINEMA, timezone)
+        venue = _create_venue(offerer, offerers_models.Activity.CINEMA, timezone, provider=provider)
         offer = _create_cinema_offer(venue, offer_name, price, is_duo, timezone)
 
     if offer is not None and venue is not None:

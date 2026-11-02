@@ -2,6 +2,7 @@ import pytest
 
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
+from pcapi.core.providers import factories as providers_factories
 from pcapi.models import db
 
 
@@ -36,6 +37,52 @@ class E2EOfferTest:
         assert response.json["subcategoryId"] == "SEANCE_CINE"
         assert response.json["venueId"] == offer.venueId
         assert response.json["timezone"] == "Europe/Paris"
+
+    @pytest.mark.parametrize(
+        "provider_data,expected_withdrawalType",
+        [
+            (
+                {
+                    "name": "E2E provider",
+                    "bookingExternalUrl": "http://bookingExternalUrl.test",
+                    "cancelExternalUrl": "http://cancelExternalUrl.test",
+                    "notificationExternalUrl": "http://notificationExternalUrl.test",
+                },
+                offers_models.WithdrawalTypeEnum.IN_APP,  # linked to ticketing service
+            ),
+            (
+                {
+                    "name": "E2E provider",
+                    "bookingExternalUrl": None,
+                    "cancelExternalUrl": None,
+                    "notificationExternalUrl": None,
+                },
+                None,  # NOT linked to ticketing service
+            ),
+        ],
+    )
+    def test_create_offer_linked_to_provider(self, auth_client, provider_data, expected_withdrawalType):
+        public_api_provider = providers_factories.PublicApiProviderFactory(**provider_data)
+        response = auth_client.post(
+            "/e2e/offer",
+            {
+                "name": "Test Offer",
+                "subcategory_id": "SEANCE_CINE",
+                "price": 8.2,
+                "provider_id": public_api_provider.id,
+            },
+        )
+        assert response.status_code == 200
+
+        offers = db.session.query(offers_models.Offer).all()
+
+        assert len(offers) == 1
+        offer = offers[0]
+        assert offer.subcategoryId == "SEANCE_CINE"
+        assert offer.lastProviderId == public_api_provider.id
+        assert offer.withdrawalType == expected_withdrawalType
+
+        assert response.json["id"] == offer.id
 
     @pytest.mark.parametrize(
         "timezone",
