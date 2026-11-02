@@ -2084,6 +2084,24 @@ export type GetBookingsProResponseModel = {
 };
 
 /**
+ * GetCapabilitiesQueryModel
+ */
+export type GetCapabilitiesQueryModel = {
+    format: FormatEnum;
+    nature: NatureEnum;
+};
+
+/**
+ * GetCapabilitiesResponseModel
+ */
+export type GetCapabilitiesResponseModel = {
+    /**
+     * Capabilities
+     */
+    capabilities: Array<string>;
+};
+
+/**
  * GetCollectiveOfferBookingResponseModel
  */
 export type GetCollectiveOfferBookingResponseModel = {
@@ -7702,6 +7720,38 @@ export type patchBookingsUseTokenByTokenResponses = {
 };
 
 export type patchBookingsUseTokenByTokenResponse = patchBookingsUseTokenByTokenResponses[keyof patchBookingsUseTokenByTokenResponses];
+
+export type getCapabilitiesData = {
+    body?: never;
+    path?: never;
+    query: {
+        nature: NatureEnum;
+        format: FormatEnum;
+    };
+    url: '/capabilities';
+};
+
+export type getCapabilitiesErrors = {
+    /**
+     * Forbidden
+     */
+    403: unknown;
+    /**
+     * Unprocessable Content
+     */
+    422: ValidationError;
+};
+
+export type getCapabilitiesError = getCapabilitiesErrors[keyof getCapabilitiesErrors];
+
+export type getCapabilitiesResponses = {
+    /**
+     * OK
+     */
+    200: GetCapabilitiesResponseModel;
+};
+
+export type getCapabilitiesResponse = getCapabilitiesResponses[keyof getCapabilitiesResponses];
 
 export type getCollectiveBookableOffersData = {
     body?: never;
