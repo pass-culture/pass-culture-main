@@ -21,6 +21,7 @@ else:
 
 # mypy: disable-error-code="no-untyped-def"
 import logging
+import pathlib
 
 import gunicorn.config
 import prometheus_client
@@ -34,6 +35,7 @@ from pcapi.utils import kubernetes as kubernetes_utils
 
 FLASK_PROMETHEUS_EXPORTER_PORT = int(os.environ.get("FLASK_PROMETHEUS_EXPORTER_PORT", "5002"))
 ENABLE_FLASK_PROMETHEUS_EXPORTER = int(os.environ.get("ENABLE_FLASK_PROMETHEUS_EXPORTER", "0"))
+FLASK_PROMETHEUS_EXPORTER_METRICS_DIR = os.environ.get("PROMETHEUS_MULTIPROC_DIR")
 KUBERNETES_DEPLOYMENT = kubernetes_utils.get_deployment()
 
 logger = logging.getLogger(__name__)
@@ -49,20 +51,18 @@ def child_exit(server, worker):
     if not ENABLE_FLASK_PROMETHEUS_EXPORTER:
         return
 
-    _mark_dead_worker(worker.pid)
+    _clean_up_worker_metrics(worker.pid)
 
 
 def worker_exit(server, worker):
     if not ENABLE_FLASK_PROMETHEUS_EXPORTER:
         return
 
-    _mark_dead_worker(worker.pid)
+    _clean_up_worker_metrics(worker.pid)
 
 
-def _mark_dead_worker(pid: int) -> None:
-    """Remove live gauges without discarding cumulative counters and histograms."""
-    # Mark dead through both helper and official prom client call
-    # so that collectors using live modes and dead markers behave correctly.
+def _clean_up_worker_metrics(pid: int) -> None:
+    """Apply the same best-effort metrics cleanup from either exit hook."""
     try:
         GunicornPrometheusMetrics.mark_process_dead_on_child_exit(pid)
     except Exception:
@@ -72,6 +72,23 @@ def _mark_dead_worker(pid: int) -> None:
         multiprocess.mark_process_dead(pid)
     except Exception:
         logger.exception("Failed to mark worker dead via prometheus_client.multiprocess")
+
+    try:
+        _clean_up_prometheus_metrics_directory(pid)
+    except Exception:
+        logger.exception("Got error while cleaning up Prometheus metrics directory")
+
+
+def _clean_up_prometheus_metrics_directory(pid: int) -> None:
+    if not FLASK_PROMETHEUS_EXPORTER_METRICS_DIR:
+        return
+
+    # PC-25742: accumulated dead-worker files caused pod crashes.
+    # Upstream file accumulation: https://github.com/prometheus/client_python/issues/275
+    # Cleanup can reduce cumulative totals: https://github.com/prometheus/client_python/issues/566
+    directory = pathlib.Path(FLASK_PROMETHEUS_EXPORTER_METRICS_DIR)
+    for path in directory.glob(f"*_{pid}.db"):
+        path.unlink(missing_ok=True)
 
 
 def pre_fork(server, worker):

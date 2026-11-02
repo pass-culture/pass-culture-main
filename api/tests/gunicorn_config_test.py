@@ -40,8 +40,8 @@ def worker_metrics(monkeypatch, tmp_path):
 
 
 @pytest.mark.parametrize("hook_name", ["child_exit", "worker_exit"])
-def test_worker_exit_preserves_cumulative_metrics(gunicorn_config, worker_metrics, tmp_path, hook_name):
-    """Worker recycling must not erase HTTP history or retain dead worker capacity."""
+def test_worker_exit_cleans_up_metrics(gunicorn_config, worker_metrics, tmp_path, hook_name):
+    """Bound dead-worker files while retaining the deliberate loss of their cumulative metrics."""
     assert worker_metrics.get_sample_value("test_http_requests_total") == 5
     assert worker_metrics.get_sample_value("test_http_duration_seconds_count") == 2
     assert worker_metrics.get_sample_value("test_http_duration_seconds_sum") == 1.5
@@ -52,11 +52,12 @@ def test_worker_exit_preserves_cumulative_metrics(gunicorn_config, worker_metric
     hook(None, SimpleNamespace(pid=123))
     hook(None, SimpleNamespace(pid=123))
 
-    assert worker_metrics.get_sample_value("test_http_requests_total") == 5
-    assert worker_metrics.get_sample_value("test_http_duration_seconds_count") == 2
-    assert worker_metrics.get_sample_value("test_http_duration_seconds_sum") == 1.5
-    assert worker_metrics.get_sample_value("test_http_duration_seconds_bucket", {"le": "0.5"}) == 1
-    assert worker_metrics.get_sample_value("test_http_duration_seconds_bucket", {"le": "+Inf"}) == 2
+    assert not list(tmp_path.glob("*_123.db"))
+    assert worker_metrics.get_sample_value("test_http_requests_total") == 3
+    assert worker_metrics.get_sample_value("test_http_duration_seconds_count") == 1
+    assert worker_metrics.get_sample_value("test_http_duration_seconds_sum") == 1.0
+    assert worker_metrics.get_sample_value("test_http_duration_seconds_bucket", {"le": "0.5"}) == 0
+    assert worker_metrics.get_sample_value("test_http_duration_seconds_bucket", {"le": "+Inf"}) == 1
     assert worker_metrics.get_sample_value("test_worker_threads") == 3
     assert set(tmp_path.glob("*_456.db")) == other_worker_files
 
@@ -71,3 +72,33 @@ def test_worker_exit_without_metrics(gunicorn_config, worker_metrics, monkeypatc
     assert set(tmp_path.iterdir()) == existing_files
     assert worker_metrics.get_sample_value("test_http_requests_total") == 5
     assert worker_metrics.get_sample_value("test_worker_threads") == 5
+
+
+def test_both_exit_hooks_can_clean_up_the_same_worker(gunicorn_config, worker_metrics, tmp_path):
+    """Gunicorn may notify worker exit and then child exit for the same PID."""
+    worker = SimpleNamespace(pid=123)
+
+    gunicorn_config.worker_exit(None, worker)
+    gunicorn_config.child_exit(None, worker)
+
+    assert not list(tmp_path.glob("*_123.db"))
+    assert worker_metrics.get_sample_value("test_http_requests_total") == 3
+    assert worker_metrics.get_sample_value("test_worker_threads") == 3
+
+
+@pytest.mark.parametrize("hook_name", ["child_exit", "worker_exit"])
+def test_worker_exit_logs_cleanup_errors(gunicorn_config, mocker, caplog, hook_name):
+    cleanup = mocker.patch.object(
+        gunicorn_config, "_clean_up_prometheus_metrics_directory", side_effect=OSError("Cannot remove metrics file")
+    )
+
+    getattr(gunicorn_config, hook_name)(None, SimpleNamespace(pid=123))
+
+    cleanup.assert_called_once_with(123)
+    assert "Got error while cleaning up Prometheus metrics directory" in caplog.text
+
+
+def test_cleanup_without_metrics_directory(gunicorn_config, monkeypatch):
+    monkeypatch.setattr(gunicorn_config, "FLASK_PROMETHEUS_EXPORTER_METRICS_DIR", None)
+
+    gunicorn_config._clean_up_prometheus_metrics_directory(123)
