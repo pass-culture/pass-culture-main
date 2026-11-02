@@ -460,6 +460,14 @@ class User(PcObject, Model, DeactivableMixin):
     def set_marketing_email_subscription(self, subscribe: bool) -> None:
         self.notificationSubscriptions = (self.notificationSubscriptions or {}) | {"marketing_email": subscribe}
 
+    def get_sso(self, provider: str) -> SingleSignOn | None:
+        _provider = provider.lower().strip()
+        for sso in self.single_sign_ons:
+            if sso.ssoProvider == _provider:
+                return sso
+
+        return None
+
     @property
     def is_authenticated(self) -> bool:  # required by flask-login
         return True
