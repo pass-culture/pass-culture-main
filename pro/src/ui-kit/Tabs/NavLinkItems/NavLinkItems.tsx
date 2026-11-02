@@ -3,6 +3,7 @@ import { useEffect, useRef } from 'react'
 import { Link } from 'react-router'
 
 import { claimNavigationFocus } from '@/app/App/hook/useFocus'
+import { noop } from '@/commons/utils/noop'
 
 import type { BaseTabsProps } from '../Tabs'
 import styles from './NavLinkItems.module.scss'
@@ -24,12 +25,14 @@ export type NavLinkItem<T extends string> = {
 
 type NavLinkItemsProps<T extends string> = BaseTabsProps<T> & {
   links: NavLinkItem<T>[]
+  onClick?: (selectedKey: T) => void
 }
 
 export const NavLinkItems = <T extends string>({
   navLabel,
   selectedKey,
   links,
+  onClick,
   className,
 }: NavLinkItemsProps<T>): JSX.Element => {
   const selectedLinkRef = useRef<HTMLAnchorElement>(null)
@@ -58,6 +61,7 @@ export const NavLinkItems = <T extends string>({
               <Link
                 ref={isSelected ? selectedLinkRef : undefined}
                 to={url}
+                onClick={onClick ? () => onClick(key) : noop}
                 className={cn(styles['menu-list-item'], {
                   [styles['is-selected']]: isSelected,
                 })}

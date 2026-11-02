@@ -28,6 +28,7 @@ describe('Tabs', () => {
             key: 'collective',
           },
         ]}
+        onClick={vi.fn()}
         navLabel={'Tabs - links mode'}
       />
     )
@@ -51,7 +52,7 @@ describe('Tabs', () => {
             key: 'collective',
           },
         ]}
-        onChange={vi.fn()}
+        onClick={vi.fn()}
         navLabel={'Tabs - tabs mode'}
       />
     )

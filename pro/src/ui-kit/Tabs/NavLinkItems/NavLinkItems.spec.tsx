@@ -27,6 +27,7 @@ const renderNavLinkItems = (nav: string = 'Menu') => {
               },
             ]}
             navLabel={nav}
+            onClick={vi.fn()}
           />
         }
       />

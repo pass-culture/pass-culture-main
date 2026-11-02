@@ -19,7 +19,7 @@ const renderTabItems = (handleChange = () => {}) =>
             key: 'collective',
           },
         ]}
-        onChange={handleChange}
+        onClick={handleChange}
         navLabel={'Onglets - tabs mode'}
       />
       <div id="panel-individual" role="tabpanel"></div>
