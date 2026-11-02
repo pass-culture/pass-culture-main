@@ -7,11 +7,24 @@ from google.auth import iam
 from google.auth.transport import requests as auth_requests
 from google.oauth2 import id_token
 from google.oauth2 import service_account
+from sqlalchemy import exc as sa_exc
 
 from pcapi import settings
+from pcapi.connectors.sso import SSOProviderFactory
+from pcapi.connectors.sso import SSOUser
+from pcapi.core.auth import exceptions
+from pcapi.core.auth import repository
+from pcapi.core.users import repository as users_repo
+from pcapi.core.users.models import User
 
 
 TOKEN_URI = "https://accounts.google.com/o/oauth2/token"
+
+# unique constraints of `single_sign_on`, see `SingleSignOn.__table_args__`
+SSO_UNIQUE_CONSTRAINT_EXCEPTIONS: dict[str, type[exceptions.AuthException]] = {
+    "unique_user_per_sso_provider": exceptions.SSOAlreadyAttached,
+    "unique_sso_user_per_sso_provider": exceptions.SSOAttachedToAnotherAccount,
+}
 
 BACKOFFICE_SERVICE_ACCOUNT_SCOPES = ("https://www.googleapis.com/auth/admin.directory.group.readonly",)
 
@@ -69,3 +82,45 @@ def extract_roles_from_google_workspace_groups(api_response: dict) -> set[str]:
 def get_id_token_from_google(client_id: str) -> str:
     open_id_connect_token = id_token.fetch_id_token(auth_requests.Request(), client_id)
     return open_id_connect_token
+
+
+def get_sso_user_from_auth_token(authorization_code: str, provider: str, is_web: bool) -> SSOUser:
+    sso_provider = SSOProviderFactory.create(provider, is_web)
+    user = sso_provider.validate_token(authorization_code)
+
+    return user
+
+
+def attach_sso_to_user(user: User, sso_user: SSOUser, provider: str) -> User:
+    # raise if the account is not active (suspended or anonymized)
+    if user.has_anonymized_role or user.account_state.is_deleted:
+        raise exceptions.SSOAccountNotActive
+
+    # raise if email from user or from sso is not verified
+    if not (user.isEmailValidated and sso_user.email_verified):
+        raise exceptions.SSOUnverifiedEmail
+
+    # raise if an account has already an SSO from the same provider attached
+    if user.get_sso(provider) is not None:
+        raise exceptions.SSOAlreadyAttached
+
+    # raise if the sso account is already attached to another account
+    if repository.get_sso_user_by_provider_and_id(provider, sso_user.sub) is not None:
+        raise exceptions.SSOAttachedToAnotherAccount
+
+    # the checks above can be bypassed by concurrent requests: the unique constraints of the database decide
+    try:
+        users_repo.create_single_sign_on(
+            user,
+            provider,
+            sso_user.sub,
+            sso_user.extra_data,
+        )
+    except sa_exc.IntegrityError as e:
+        constraint_name = getattr(getattr(e.orig, "diag", None), "constraint_name", None)
+        exception_class = SSO_UNIQUE_CONSTRAINT_EXCEPTIONS.get(constraint_name or "")
+        if exception_class is None:
+            raise
+        raise exception_class from e
+
+    return user
