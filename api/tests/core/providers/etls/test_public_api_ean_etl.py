@@ -3,11 +3,13 @@ import pytest
 import pcapi.core.geography.factories as geography_factories
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import schemas as offers_schemas
 from pcapi.core.providers import factories
 from pcapi.core.providers.etls import public_api_ean_etl
+from pcapi.models import db
 
 
 @pytest.mark.usefixtures("db_session")
@@ -173,7 +175,7 @@ def test_transform_with_non_existing_ean():
     not_existing_product_ean = "2251745606266"
     products_stocks[not_existing_product_ean] = offers_schemas.SerializedProductsStock(
         quantity=1,
-        price=1,
+        price=100,
         booking_limit_datetime=None,
         publication_datetime=None,
         booking_allowed_datetime=None,
@@ -216,3 +218,72 @@ def test_transform_with_no_ean():
 
     assert len(transform["offers_to_update"]) == 0
     assert len(transform["offers_to_create"]) == 0
+
+
+@pytest.mark.usefixtures("db_session")
+def test_load():
+    provider = factories.PublicApiProviderFactory()
+    venue = offerers_factories.VenueFactory()
+    event = offers_factories.ProductFactory(
+        ean="2251745606264",
+        gcuCompatibilityType=offers_models.GcuCompatibilityType.COMPATIBLE,
+        subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
+    )
+    product = offers_factories.ProductFactory(
+        ean="2251745606265",
+        gcuCompatibilityType=offers_models.GcuCompatibilityType.COMPATIBLE,
+        subcategoryId=subcategories.CARTE_JEUNES.id,
+    )
+    offer = offers_factories.OfferFactory(
+        subcategoryId=subcategories.CARTE_JEUNES.id,
+        product=product,
+        venue=venue,
+        offererAddress=offerers_factories.OffererAddressFactory(
+            label="initial", type=offerers_models.LocationType.OFFER_LOCATION
+        ),
+    )
+    stock = offers_factories.StockFactory(price=10, quantity=200, offer=offer)
+    assert stock.quantity == 200
+    assert not offer.isEvent
+    assert offer.ean == product.ean
+
+    products_stocks = {
+        f"{event.ean}": offers_schemas.SerializedProductsStock(
+            quantity=1,
+            price=1,
+            booking_limit_datetime=None,
+            publication_datetime=None,
+            booking_allowed_datetime=None,
+            external_ticket_office_url=None,
+        ),
+        f"{product.ean}": offers_schemas.SerializedProductsStock(
+            quantity=1,
+            price=100,
+            booking_limit_datetime=None,
+            publication_datetime=None,
+            booking_allowed_datetime=None,
+            external_ticket_office_url=None,
+        ),
+    }
+
+    request_payload = offers_schemas.CreateOrUpdateEANOffersRequest(
+        serialized_products_stocks=products_stocks,
+        venue_id=venue.id,
+        provider_id=provider.id,
+        address_id=None,
+        address_label=None,
+    )
+
+    public_api_ean_etl.batch_create_or_update_ean_offers(request_payload)
+    offers = db.session.query(offers_models.Offer).all()
+    assert len(offers) == 2
+    for o in offers:
+        if o.id == offer.id:
+            assert o.offererAddress is not None
+            assert o.offererAddress.label != "initial"
+            assert len(o.stocks) == 1
+            assert o.stocks[0].price == 1
+            assert o.stocks[0].quantity == 1
+
+    stocks = db.session.query(offers_models.Stock).all()
+    assert len(stocks) == 2
