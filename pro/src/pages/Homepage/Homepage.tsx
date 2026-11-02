@@ -163,7 +163,7 @@ export const Homepage = (): JSX.Element => {
           navLabel="Sous menu - page d'accueil"
           items={tabs}
           selectedKey={selectedTab}
-          onChange={handleTabChange}
+          onClick={handleTabChange}
         />
       )}
       {hasIndividualTab && selectedTab === TABS.INDIVIDUAL && (

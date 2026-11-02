@@ -35,7 +35,7 @@ export type TabItem<T extends string> = {
 type TabItemsProps<T extends string> = BaseTabsProps<T> & {
   navLabel: string
   tabs: TabItem<T>[]
-  onChange: (selectedKey: T) => void
+  onClick: (selectedKey: T) => void
 }
 
 export const getTabId = (baseId: string): string => `tab-${baseId}`
@@ -44,7 +44,7 @@ export const getPanelId = (baseId: string): string => `panel-${baseId}`
 export const TabItems = <T extends string>({
   navLabel,
   tabs,
-  onChange,
+  onClick,
   selectedKey,
   className,
 }: TabItemsProps<T>): JSX.Element => {
@@ -80,7 +80,7 @@ export const TabItems = <T extends string>({
     event.preventDefault()
     const newTab = tabs[newIndex]
     focusTab(newTab.key)
-    onChange(newTab.key)
+    onClick(newTab.key)
   }
 
   return (
@@ -106,7 +106,7 @@ export const TabItems = <T extends string>({
               }}
               type="button"
               role="tab"
-              onClick={() => onChange(key)}
+              onClick={() => onClick(key)}
               onKeyDown={(event) => handleKeyDown(event, index)}
               aria-selected={isSelected}
               aria-controls={getPanelId(baseId ?? key)}

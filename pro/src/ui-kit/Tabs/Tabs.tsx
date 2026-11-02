@@ -22,7 +22,7 @@ type StandardTabsProps<T extends string> = BaseTabsProps<T> & {
   /**
    * The function called when a tab is clicked
    */
-  onChange: (selectedKey: T) => void
+  onClick: (selectedKey: T) => void
 }
 
 type NavTabsProps<T extends string> = BaseTabsProps<T> & {
@@ -31,6 +31,10 @@ type NavTabsProps<T extends string> = BaseTabsProps<T> & {
    * An array of links or tabs to be rendered.
    */
   items: NavLinkItem<T>[]
+  /**
+   * The function called when a tab is clicked (optional in the 'links' case)
+   */
+  onClick?: (selectedKey: T) => void
 }
 
 /**
@@ -61,7 +65,7 @@ export const Tabs = <T extends string>(
       navLabel={props.navLabel}
       selectedKey={props.selectedKey}
       tabs={props.items}
-      onChange={props.onChange}
+      onClick={props.onClick}
       className={props.className}
     />
   ) : (
@@ -69,6 +73,7 @@ export const Tabs = <T extends string>(
       navLabel={props.navLabel}
       selectedKey={props.selectedKey}
       links={props.items}
+      onClick={props.onClick}
       className={props.className}
     />
   )
