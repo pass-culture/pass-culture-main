@@ -8,4 +8,4 @@ export const STEP_NAMES = [
   STEP_ID_SETTLEMENTS,
   STEP_ID_BANK_INFORMATIONS,
   STEP_ID_INCOMES,
-]
+] as const
