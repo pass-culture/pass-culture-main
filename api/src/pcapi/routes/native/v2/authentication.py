@@ -11,6 +11,9 @@ from pcapi.connectors import api_recaptcha
 from pcapi.connectors.sso import SSOProviderFactory
 from pcapi.connectors.sso import SSOProviderName
 from pcapi.connectors.sso.exceptions import SSOException
+from pcapi.core.auth import exceptions as auth_exceptions
+from pcapi.core.auth.api import attach_sso_to_user
+from pcapi.core.auth.api import get_sso_user_from_auth_token
 from pcapi.core.users import api as users_api
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import models as user_models
@@ -22,6 +25,7 @@ from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
 from pcapi.routes.native.security import _raise_forbidden
+from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.routes.native.security import authenticated_with_refresh_token
 from pcapi.routes.native.v2.serialization import authentication
 from pcapi.serialization.decorator import spectree_serialize
@@ -253,3 +257,42 @@ def sso_authorize(sso_provider: str, body: authentication.OAuthSigninRequestV2) 
         refresh_token=tokens.refresh,
         account_state=user.account_state,
     )
+
+
+@blueprint.native_route("/sso/<string:sso_provider>", version="v2", methods=["POST"])
+@authenticated_and_active_user_required
+@spectree_serialize(
+    response_model=None,
+    on_success_status=204,
+    on_error_statuses=[400, 401],
+    api=blueprint.api,
+)
+def sso_attach_account(sso_provider: str, body: authentication.SSOAttachAccountRequest) -> None:
+    if sso_provider not in SSOProviderName:
+        raise api_errors.ApiErrors({"error": "Unknown SSO provider"})
+
+    try:
+        is_web = request.headers.get("platform") == "web"
+        auth_code = body.authorization_code
+
+        oauth_state_token = token_utils.UUIDToken.load_and_check(
+            body.oauth_state_token, token_utils.TokenType.OAUTH_STATE
+        )
+        oauth_state_token.expire()
+
+        sso_user = get_sso_user_from_auth_token(auth_code, sso_provider, is_web)
+        attach_sso_to_user(current_user, sso_user, sso_provider)
+    except (users_exceptions.ExpiredToken, users_exceptions.InvalidToken) as e:
+        raise ApiErrors(
+            {
+                "code": "SSO_LOGIN_TIMEOUT",
+                "general": ["La demande de connexion a mis trop de temps."],
+            },
+            status_code=400,
+        ) from e
+    except SSOException:
+        raise ApiErrors({"code": "SSO_ERROR", "general": "L'authentification a échoué"}, status_code=401)
+    except (auth_exceptions.SSOUnverifiedEmail, auth_exceptions.SSOAccountNotActive) as e:
+        raise ApiErrors({"code": e.code}, status_code=401)
+    except auth_exceptions.AuthException as e:
+        raise ApiErrors({"code": e.code}, status_code=400)
