@@ -67,7 +67,6 @@ from pcapi.core.mails.transactional.finance_incidents.finance_incident_notificat
 from pcapi.core.mails.transactional.pro.provider_reimbursement_csv import send_provider_reimbursement_email
 from pcapi.core.object_storage import store_public_object
 from pcapi.models import db
-from pcapi.models.feature import FeatureToggle
 from pcapi.routes.serialization.reimbursement_csv_serialize import ReimbursementDetails
 from pcapi.routes.serialization.reimbursement_csv_serialize import find_reimbursement_details_by_invoices
 from pcapi.utils import human_ids
@@ -2222,94 +2221,93 @@ def _generate_invoice(
             },
         )
 
-    if FeatureToggle.WIP_ENABLE_FINANCE_SETTLEMENTS.is_active():
-        # Pricing.status: PROCESSED -> INVOICED
-        # SQLAlchemy ORM cannot call `update()` if a query has been JOINed.
-        with log_elapsed(logger, "Updating status of pricings"):
-            db.session.execute(
-                sa.text(
-                    """
-                    WITH updated AS (
-                    UPDATE pricing
-                    SET status = :invoiced
-                    FROM cashflow_pricing
-                    WHERE
-                        cashflow_pricing."pricingId" = pricing.id
-                        AND cashflow_pricing."cashflowId" IN :cashflow_ids
-                    RETURNING id AS pricing_id
-                    )
-                    INSERT INTO pricing_log
-                    ("pricingId", "statusBefore", "statusAfter", reason)
-                    SELECT updated.pricing_id, :processed, :invoiced, :log_reason from updated
+    # Pricing.status: PROCESSED -> INVOICED
+    # SQLAlchemy ORM cannot call `update()` if a query has been JOINed.
+    with log_elapsed(logger, "Updating status of pricings"):
+        db.session.execute(
+            sa.text(
                 """
-                ),
-                {
-                    "processed": models.PricingStatus.PROCESSED.value,
-                    "invoiced": models.PricingStatus.INVOICED.value,
-                    "log_reason": models.PricingLogReason.GENERATE_INVOICE.value,
-                    "cashflow_ids": tuple(cashflow_ids),
-                },
-            )
-
-        # Booking.status: USED -> PENDING_REIMBURSEMENT (but keep CANCELLED as is)
-        with log_elapsed(logger, "Updating status of individual bookings"):
-            booking_ids = (
-                db.session.query(models.Pricing)
-                .join(models.Pricing.cashflows)
-                .filter(
-                    models.Cashflow.id.in_(cashflow_ids),
+                WITH updated AS (
+                UPDATE pricing
+                SET status = :invoiced
+                FROM cashflow_pricing
+                WHERE
+                    cashflow_pricing."pricingId" = pricing.id
+                    AND cashflow_pricing."cashflowId" IN :cashflow_ids
+                RETURNING id AS pricing_id
                 )
-                .with_entities(models.Pricing.bookingId)
-                .all()
-            )
-            booking_ids = [b[0] for b in booking_ids]
-            for chunk in get_chunks(booking_ids, 1000):
-                db.session.execute(
-                    sa.text(
-                        """
-                    UPDATE booking
-                    SET
-                    status =
-                        CASE WHEN booking.status = CAST(:cancelled AS booking_status)
-                        THEN CAST(:cancelled AS booking_status)
-                        ELSE CAST(:pending_reimbursement AS booking_status)
-                        END
-                    WHERE
-                    booking.id IN :booking_ids
-                    """
-                    ),
-                    {
-                        "cancelled": bookings_models.BookingStatus.CANCELLED.value,
-                        "pending_reimbursement": bookings_models.BookingStatus.PENDING_REIMBURSEMENT.value,
-                        "booking_ids": tuple(chunk),
-                    },
-                )
+                INSERT INTO pricing_log
+                ("pricingId", "statusBefore", "statusAfter", reason)
+                SELECT updated.pricing_id, :processed, :invoiced, :log_reason from updated
+            """
+            ),
+            {
+                "processed": models.PricingStatus.PROCESSED.value,
+                "invoiced": models.PricingStatus.INVOICED.value,
+                "log_reason": models.PricingLogReason.GENERATE_INVOICE.value,
+                "cashflow_ids": tuple(cashflow_ids),
+            },
+        )
 
-        # CollectiveBooking.status: USED -> PENDING_REIMBURSEMENT (but keep CANCELLED as is)
-        with log_elapsed(logger, "Updating status of collective bookings"):
+    # Booking.status: USED -> PENDING_REIMBURSEMENT (but keep CANCELLED as is)
+    with log_elapsed(logger, "Updating status of individual bookings"):
+        booking_ids = (
+            db.session.query(models.Pricing)
+            .join(models.Pricing.cashflows)
+            .filter(
+                models.Cashflow.id.in_(cashflow_ids),
+            )
+            .with_entities(models.Pricing.bookingId)
+            .all()
+        )
+        booking_ids = [b[0] for b in booking_ids]
+        for chunk in get_chunks(booking_ids, 1000):
             db.session.execute(
                 sa.text(
                     """
-                UPDATE collective_booking
+                UPDATE booking
                 SET
                 status =
-                    CASE WHEN collective_booking.status = CAST(:cancelled AS bookingstatus)
-                    THEN CAST(:cancelled AS bookingstatus)
-                    ELSE CAST(:pending_reimbursement AS bookingstatus)
+                    CASE WHEN booking.status = CAST(:cancelled AS booking_status)
+                    THEN CAST(:cancelled AS booking_status)
+                    ELSE CAST(:pending_reimbursement AS booking_status)
                     END
-                FROM pricing, cashflow_pricing
                 WHERE
-                    collective_booking.id = pricing."collectiveBookingId"
-                AND pricing.id = cashflow_pricing."pricingId"
-                AND cashflow_pricing."cashflowId" IN :cashflow_ids
+                booking.id IN :booking_ids
                 """
                 ),
                 {
-                    "cancelled": educational_models.CollectiveBookingStatus.CANCELLED.value,
-                    "pending_reimbursement": educational_models.CollectiveBookingStatus.PENDING_REIMBURSEMENT.value,
-                    "cashflow_ids": tuple(cashflow_ids),
+                    "cancelled": bookings_models.BookingStatus.CANCELLED.value,
+                    "pending_reimbursement": bookings_models.BookingStatus.PENDING_REIMBURSEMENT.value,
+                    "booking_ids": tuple(chunk),
                 },
             )
+
+    # CollectiveBooking.status: USED -> PENDING_REIMBURSEMENT (but keep CANCELLED as is)
+    with log_elapsed(logger, "Updating status of collective bookings"):
+        db.session.execute(
+            sa.text(
+                """
+            UPDATE collective_booking
+            SET
+            status =
+                CASE WHEN collective_booking.status = CAST(:cancelled AS bookingstatus)
+                THEN CAST(:cancelled AS bookingstatus)
+                ELSE CAST(:pending_reimbursement AS bookingstatus)
+                END
+            FROM pricing, cashflow_pricing
+            WHERE
+                collective_booking.id = pricing."collectiveBookingId"
+            AND pricing.id = cashflow_pricing."pricingId"
+            AND cashflow_pricing."cashflowId" IN :cashflow_ids
+            """
+            ),
+            {
+                "cancelled": educational_models.CollectiveBookingStatus.CANCELLED.value,
+                "pending_reimbursement": educational_models.CollectiveBookingStatus.PENDING_REIMBURSEMENT.value,
+                "cashflow_ids": tuple(cashflow_ids),
+            },
+        )
 
     db.session.commit()
     return invoice
@@ -2369,20 +2367,16 @@ def _prepare_invoice_context(invoice: models.Invoice, batch: models.CashflowBatc
     if not bank_account:
         raise ValueError("Could not generate invoice without bank account")
     bank_account_label = bank_account.label
-    bank_account_iban = bank_account.iban
 
     invoice_date = invoice.date.strftime("%d/%m/%Y")
     period_start, period_end = get_invoice_period(batch.cutoff)
 
-    # TODO (vroullier 16/01/2026) remove unused entries when legacy files are dropped
     return {
         "invoice": invoice,
         "is_caledonian_invoice": is_caledonian_invoice,
-        "cashflows": cashflows,  # legacy
         "groups": groups,
         "bank_account": bank_account,
         "bank_account_label": bank_account_label,
-        "bank_account_iban": bank_account_iban,  # legacy
         "total_used_bookings_amount": total_used_bookings_amount,
         "total_contribution_amount": total_contribution_amount,
         "total_reimbursed_amount": total_reimbursed_amount,
@@ -2594,16 +2588,12 @@ def get_reimbursements_by_venue(invoice: models.Invoice) -> typing.ValuesView:
 
 def _generate_invoice_html(invoice: models.Invoice, batch: models.CashflowBatch) -> str:
     context = _prepare_invoice_context(invoice, batch)
-    if FeatureToggle.WIP_ENABLE_FINANCE_SETTLEMENTS.is_active():
-        return render_template("invoices/invoice.html", **context)
-    return render_template("invoices/invoice_legacy.html", **context)
+    return render_template("invoices/invoice.html", **context)
 
 
 def _generate_debit_note_html(invoice: models.Invoice, batch: models.CashflowBatch) -> str:
     context = _prepare_invoice_context(invoice, batch)
-    if FeatureToggle.WIP_ENABLE_FINANCE_SETTLEMENTS.is_active():
-        return render_template("invoices/debit_note.html", **context)
-    return render_template("invoices/debit_note_legacy.html", **context)
+    return render_template("invoices/debit_note.html", **context)
 
 
 def _store_invoice_pdf(invoice_storage_id: str, invoice_html: str) -> None:
@@ -2652,36 +2642,7 @@ def validate_invoices(invoice_ids: list[int]) -> None:
             },
         )
 
-    if not FeatureToggle.WIP_ENABLE_FINANCE_SETTLEMENTS.is_active():
-        # Pricing.status: PROCESSED -> INVOICED
-        # SQLAlchemy ORM cannot call `update()` if a query has been JOINed.
-        with log_elapsed(logger, "Updating status of pricings"):
-            db.session.execute(
-                sa.text(
-                    """
-                    WITH updated AS (
-                    UPDATE pricing
-                    SET status = :invoiced
-                    FROM cashflow_pricing
-                    WHERE
-                        cashflow_pricing."pricingId" = pricing.id
-                        AND cashflow_pricing."cashflowId" IN :cashflow_ids
-                    RETURNING id AS pricing_id
-                    )
-                    INSERT INTO pricing_log
-                    ("pricingId", "statusBefore", "statusAfter", reason)
-                    SELECT updated.pricing_id, :processed, :invoiced, :log_reason from updated
-                """
-                ),
-                {
-                    "processed": models.PricingStatus.PROCESSED.value,
-                    "invoiced": models.PricingStatus.INVOICED.value,
-                    "log_reason": models.PricingLogReason.GENERATE_INVOICE.value,
-                    "cashflow_ids": tuple(cashflow_ids),
-                },
-            )
-
-    # Booking.status: PENDING_REIMBURSEMENT if SETTLEMENTS_FF else USED -> REIMBURSED (but keep CANCELLED as is)
+    # Booking.status: PENDING_REIMBURSEMENT -> REIMBURSED (but keep CANCELLED as is)
     with log_elapsed(logger, "Updating status of individual bookings"):
         booking_ids = (
             db.session.query(models.Pricing)
@@ -2716,7 +2677,7 @@ def validate_invoices(invoice_ids: list[int]) -> None:
                 },
             )
 
-    # CollectiveBooking.status: PENDING_REIMBURSEMENT if SETTLEMENTS_FF else USED -> REIMBURSED (but keep CANCELLED as is)
+    # CollectiveBooking.status: PENDING_REIMBURSEMENT -> REIMBURSED (but keep CANCELLED as is)
     with log_elapsed(logger, "Updating status of collective bookings"):
         db.session.execute(
             sa.text(

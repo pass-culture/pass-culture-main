@@ -15,7 +15,6 @@ from pcapi.core.internal_notifications.transactional import notify_invoices_fini
 from pcapi.core.mails import transactional as transactional_mails
 from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
-from pcapi.models.feature import FeatureToggle
 from pcapi.utils import date as date_utils
 from pcapi.utils import db as db_utils
 from pcapi.utils.redis import get_redis_client
@@ -128,7 +127,7 @@ def push_invoices(count: int, override_work_hours_check: bool = False) -> None:
                     synchronize_session=False,
                 )
                 # We validate all dependent objects if the FF is inactive, and free ones only if the FF is active
-                if not FeatureToggle.WIP_ENABLE_FINANCE_SETTLEMENTS.is_active() or invoice.amount == 0:
+                if invoice.amount == 0:
                     finance_api.validate_invoices([invoice_id])
 
                 db.session.commit()

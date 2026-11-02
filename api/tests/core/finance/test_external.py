@@ -54,57 +54,6 @@ class PushInvoicesTest:
     def test_push_invoices(self):
         batch = finance_factories.CashflowBatchFactory(cutoff=datetime.date(2026, 5, 30), label="VIRXXX")
         invoice1 = finance_factories.InvoiceFactory(
-            status=finance_models.InvoiceStatus.PENDING,
-            cashflows=[finance_factories.CashflowFactory(batch=batch)],
-            bankAccount=finance_factories.BankAccountFactory(),
-        )
-        invoice2 = finance_factories.InvoiceFactory(
-            status=finance_models.InvoiceStatus.PAID, cashflows=[finance_factories.CashflowFactory(batch=batch)]
-        )
-        invoice3 = finance_factories.InvoiceFactory(
-            status=finance_models.InvoiceStatus.PENDING_PAYMENT,
-            cashflows=[finance_factories.CashflowFactory(batch=batch)],
-        )
-        free_invoice = finance_factories.InvoiceFactory(
-            status=finance_models.InvoiceStatus.PENDING,
-            cashflows=[finance_factories.CashflowFactory(batch=batch)],
-            amount=0,
-        )
-
-        external.push_invoices(10)
-        db.session.flush()
-        db.session.refresh(invoice1)
-        db.session.refresh(invoice2)
-        db.session.refresh(invoice3)
-        db.session.refresh(free_invoice)
-        assert invoice1.status == finance_models.InvoiceStatus.PAID
-        assert invoice2.status == finance_models.InvoiceStatus.PAID
-        assert invoice3.status == finance_models.InvoiceStatus.PENDING_PAYMENT
-        assert free_invoice.status == finance_models.InvoiceStatus.PAID
-
-        assert sorted(dummy_invoices, key=attrgetter("invoice_id")) == [
-            InvoicePayload(
-                invoice_id=invoice1.id,
-                reference=invoice1.reference,
-                bank_account_id=str(invoice1.bankAccountId),
-                invoice_date=invoice1.date,
-                description="VIRXXX - 16/05-31/05",
-                invoice_external_type=ExternalType.INV,
-            ),
-            InvoicePayload(
-                invoice_id=free_invoice.id,
-                reference=free_invoice.reference,
-                bank_account_id=str(free_invoice.bankAccountId),
-                invoice_date=free_invoice.date,
-                description="VIRXXX - 16/05-31/05",
-                invoice_external_type=ExternalType.INV,
-            ),
-        ]
-
-    @pytest.mark.features(WIP_ENABLE_FINANCE_SETTLEMENTS=True)
-    def test_push_invoices_with_FF(self):
-        batch = finance_factories.CashflowBatchFactory(cutoff=datetime.date(2026, 5, 30), label="VIRXXX")
-        invoice1 = finance_factories.InvoiceFactory(
             status=finance_models.InvoiceStatus.PENDING, cashflows=[finance_factories.CashflowFactory(batch=batch)]
         )
         invoice2 = finance_factories.InvoiceFactory(
@@ -178,7 +127,7 @@ class PushInvoicesTest:
         "check_value,expected_status",
         [
             (False, finance_models.InvoiceStatus.PENDING),
-            (True, finance_models.InvoiceStatus.PAID),
+            (True, finance_models.InvoiceStatus.PENDING_PAYMENT),
         ],
     )
     def test_push_invoices_doesnt_run_during_work_hours(self, monkeypatch, check_value, expected_status):
@@ -840,16 +789,8 @@ class ExternalFinanceCommandTest:
 
         assert push_invoices_mock.call_count == 0
 
-    @pytest.mark.features(WIP_ENABLE_FINANCE_SETTLEMENTS=True)
     def test_sync_settlements_command(self, run_command, mocker):
         sync_settlements_mock = mocker.patch("pcapi.core.finance.external.sync_settlements")
         run_command("sync_settlements", raise_on_error=True)
 
         assert sync_settlements_mock.call_count == 1
-
-    @pytest.mark.features(WIP_ENABLE_FINANCE_SETTLEMENTS=False)
-    def test_sync_settlements_command_feature_toggle(self, run_command, mocker):
-        sync_settlements_mock = mocker.patch("pcapi.core.finance.external.sync_settlements")
-        run_command("sync_settlements", raise_on_error=True)
-
-        assert sync_settlements_mock.call_count == 0
