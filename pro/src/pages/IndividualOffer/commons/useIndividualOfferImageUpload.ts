@@ -3,6 +3,7 @@ import { useCallback, useState } from 'react'
 import { api } from '@/apiClient/api'
 import type { CreateThumbnailResponseModel } from '@/apiClient/v1'
 import type { IndividualOfferImage } from '@/commons/core/Offers/types'
+import { prepareImageForUpload } from '@/commons/utils/prepareImageForUpload'
 import type { OnImageUploadArgs } from '@/components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
 
 type IndividualImageOfferContextValues = {
@@ -52,18 +53,17 @@ export const useIndividualOfferImageUpload = (
       const shouldDeleteThumbnail = hasUpsertedImage && !imageToUpsert
 
       if (shouldUploadThumbnail) {
-        const {
-          imageFile: thumb,
-          credit,
-          cropParams,
-          alternativeText,
-        } = imageToUpsert
+        const { imageFile, credit, cropParams, alternativeText } = imageToUpsert
         const {
           height: croppingRectHeight,
           width: croppingRectWidth,
           x: croppingRectX,
           y: croppingRectY,
         } = cropParams ?? {}
+
+        const thumb = await prepareImageForUpload(imageFile, {
+          cropWidth: croppingRectWidth,
+        })
 
         const thumbnail = {
           thumb,
