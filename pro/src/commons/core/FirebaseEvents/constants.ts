@@ -87,6 +87,13 @@ export enum OffererLinkEvents {
   CLICKED_SEND_INVITATION = 'hasSentInvitation',
 }
 
+export enum FinanceEvents {
+  CLICKED_SETTLEMENTS_TAB = 'hasClickedSettlementsTab',
+  CLICKED_INVOICES_TAB = 'hasClickedInvoicesTab',
+  CLICKED_BANK_INFO_TAB = 'hasClickedBankInfoTab',
+  CLICKED_REVENUE_TAB = 'hasClickedRevenueTab',
+}
+
 export enum BankAccountEvents {
   CLICKED_ADD_BANK_ACCOUNT = 'hasClickedAddBankAccount',
   CLICKED_ADD_VENUE_TO_BANK_ACCOUNT = 'HasClickedAddVenueToBankAccount',

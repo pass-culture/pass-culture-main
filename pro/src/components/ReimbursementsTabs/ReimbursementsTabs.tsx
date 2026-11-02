@@ -1,4 +1,6 @@
 import type { GetOffererResponseModel } from '@/apiClient/v1'
+import { useAnalytics } from '@/app/App/analytics/firebase'
+import { FinanceEvents } from '@/commons/core/FirebaseEvents/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useActiveStep } from '@/commons/hooks/useActiveStep'
 import fullErrorIcon from '@/icons/full-error.svg'
@@ -15,6 +17,15 @@ import {
 } from './constants'
 import styles from './ReimbursementsTabs.module.scss'
 
+const EVENT_BY_STEP = {
+  [STEP_ID_SETTLEMENTS]: FinanceEvents.CLICKED_SETTLEMENTS_TAB,
+  [STEP_ID_INVOICES]: FinanceEvents.CLICKED_INVOICES_TAB,
+  [STEP_ID_BANK_INFORMATIONS]: FinanceEvents.CLICKED_BANK_INFO_TAB,
+  [STEP_ID_INCOMES]: FinanceEvents.CLICKED_REVENUE_TAB,
+} as const
+
+type Step = (typeof STEP_NAMES)[number]
+
 type ReimbursementsTabsProps = {
   selectedOfferer: GetOffererResponseModel | null
 }
@@ -22,10 +33,11 @@ type ReimbursementsTabsProps = {
 export const ReimbursementsTabs = ({
   selectedOfferer,
 }: ReimbursementsTabsProps) => {
+  const { logEvent } = useAnalytics()
   const isNewSettlementsActivated = useActiveFeature(
     'WIP_ENABLE_FINANCE_SETTLEMENTS'
   )
-  const activeStep = useActiveStep(STEP_NAMES)
+  const activeStep = useActiveStep([...STEP_NAMES])
   const hasWarning =
     (selectedOfferer &&
       (selectedOfferer.venuesWithNonFreeOffersWithoutBankAccounts.length > 0 ||
@@ -79,12 +91,18 @@ export const ReimbursementsTabs = ({
     url,
   }))
 
+  const onTabClick = (selectedTab: string) => {
+    const event = EVENT_BY_STEP[selectedTab as Step]
+    logEvent(event)
+  }
+
   return (
     <Tabs
       type="links"
       items={tabs}
       selectedKey={activeStep}
       navLabel="Sous menu - Gestion financière"
+      onClick={onTabClick}
     />
   )
 }
