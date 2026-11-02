@@ -221,6 +221,7 @@ def create_single_sign_on(
     )
 
     db.session.add(sso_user)
+    db.session.flush()
 
     return sso_user
 
