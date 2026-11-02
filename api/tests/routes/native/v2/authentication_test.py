@@ -1054,3 +1054,205 @@ class SSORefreshTokenPersistenceTest:
         )
         assert sso.ssoExtraData is not None
         assert sso.ssoExtraData == {"mobile": "apple-refresh-token"}
+
+
+class SSOAttachAccountTest:
+    apple_sso_user = SSOUser(
+        sub="001234.apple-sub",
+        email="xyz123@privaterelay.appleid.com",
+        email_verified=True,
+        is_private_email=True,
+        extra_data={"mobile": "apple-refresh-token"},
+    )
+    google_sso_user = SSOUser(
+        sub="100428144463745704968",
+        email="docteur.cuesta@passkoultour.app",
+        email_verified=True,
+    )
+    device_info = {
+        "os": "iOS",
+        "deviceId": "ID",
+        "source": "app",
+    }
+
+    def _create_oauth_state_token(self) -> token_utils.UUIDToken:
+        return token_utils.UUIDToken.create(
+            token_utils.TokenType.OAUTH_STATE, users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME
+        )
+
+    def _attach(self, client, provider, oauth_state_token=None):
+        oauth_state_token = oauth_state_token or self._create_oauth_state_token()
+        return client.post(
+            f"/native/v2/sso/{provider}",
+            json={
+                "authorizationCode": f"4/{provider}_code",
+                "oauthStateToken": oauth_state_token.encoded_token,
+                "device_info": self.device_info,
+            },
+        )
+
+    def _get_ssos(self, user):
+        return db.session.query(SingleSignOn).filter(SingleSignOn.userId == user.id).all()
+
+    # Scenario: Rattachement réussi d'un SSO Apple
+    @patch("pcapi.connectors.sso.apple.AppleSSOProvider.validate_token")
+    def test_attach_apple_sso(self, mocked_apple_oauth, client):
+        user = users_factories.UserFactory(email=self.apple_sso_user.email, isEmailValidated=True)
+        mocked_apple_oauth.return_value = self.apple_sso_user
+
+        response = self._attach(client.with_token(user), "apple")
+
+        print(response.text)
+        assert response.status_code == 204, response.json
+        [sso] = self._get_ssos(user)
+        assert sso.ssoProvider == "apple"
+        assert sso.ssoUserId == self.apple_sso_user.sub
+        assert sso.ssoExtraData == {"mobile": "apple-refresh-token"}
+
+    # Scenario: Rattachement réussi d'un SSO Google
+    @patch("pcapi.connectors.sso.google.GoogleSSOProvider.validate_token")
+    def test_attach_google_sso(self, mocked_google_oauth, client):
+        user = users_factories.UserFactory(email=self.google_sso_user.email, isEmailValidated=True)
+        mocked_google_oauth.return_value = self.google_sso_user
+
+        response = self._attach(client.with_token(user), "google")
+
+        assert response.status_code == 204, response.json
+        [sso] = self._get_ssos(user)
+        assert sso.ssoProvider == "google"
+        assert sso.ssoUserId == self.google_sso_user.sub
+
+    # Scenario: Email du SSO différent de l'email du compte
+    @patch("pcapi.connectors.sso.apple.AppleSSOProvider.validate_token")
+    def test_attach_sso_with_email_different_from_account_email(self, mocked_apple_oauth, client):
+        user = users_factories.UserFactory(email="jeune@example.com", isEmailValidated=True)
+        mocked_apple_oauth.return_value = self.apple_sso_user
+
+        response = self._attach(client.with_token(user), "apple")
+
+        assert response.status_code == 204, response.json
+        [sso] = self._get_ssos(user)
+        assert sso.ssoUserId == self.apple_sso_user.sub
+        assert user.email == "jeune@example.com"
+
+    # Scenario: Email du compte non validé
+    @patch("pcapi.connectors.sso.google.GoogleSSOProvider.validate_token")
+    def test_account_email_not_validated(self, mocked_google_oauth, client):
+        user = users_factories.UserFactory(email=self.google_sso_user.email, isEmailValidated=False)
+        mocked_google_oauth.return_value = self.google_sso_user
+
+        response = self._attach(client.with_token(user), "google")
+
+        assert response.status_code == 401
+        assert response.json["code"] == "SSO_UNVERIFIED_EMAIL"
+        assert self._get_ssos(user) == []
+
+    # Scenario: SSO déjà lié à un autre compte
+    @patch("pcapi.connectors.sso.google.GoogleSSOProvider.validate_token")
+    def test_sso_already_attached_to_another_account(self, mocked_google_oauth, client):
+        existing_sso = users_factories.SingleSignOnFactory(ssoProvider="google", ssoUserId=self.google_sso_user.sub)
+        account_a = existing_sso.user
+        account_b = users_factories.UserFactory(isEmailValidated=True)
+        mocked_google_oauth.return_value = self.google_sso_user
+
+        response = self._attach(client.with_token(account_b), "google")
+
+        assert response.status_code == 400
+        assert response.json["code"] == "SSO_ATTACHED_TO_ANOTHER_ACCOUNT"
+        assert self._get_ssos(account_b) == []
+        [sso] = self._get_ssos(account_a)
+        assert sso.ssoUserId == self.google_sso_user.sub
+
+    # Scenario: Provider déjà rattaché au compte
+    @patch("pcapi.connectors.sso.apple.AppleSSOProvider.validate_token")
+    def test_provider_already_attached_to_account(self, mocked_apple_oauth, client):
+        user = users_factories.UserFactory(isEmailValidated=True)
+        users_factories.SingleSignOnFactory(
+            user=user,
+            ssoProvider="apple",
+            ssoUserId="previous-apple-sub",
+            ssoExtraData={"mobile": "previous-token"},
+        )
+        mocked_apple_oauth.return_value = self.apple_sso_user
+
+        response = self._attach(client.with_token(user), "apple")
+
+        assert response.status_code == 400
+        assert response.json["code"] == "SSO_ALREADY_ATTACHED"
+        [sso] = self._get_ssos(user)
+        assert sso.ssoUserId == "previous-apple-sub"
+        assert sso.ssoExtraData == {"mobile": "previous-token"}
+
+    # Scenario: Code provider invalide
+    @pytest.mark.parametrize(
+        "provider,validate_token_path,exception",
+        [
+            ("apple", "pcapi.connectors.sso.apple.AppleSSOProvider.validate_token", AppleSignInException),
+            ("google", "pcapi.connectors.sso.google.GoogleSSOProvider.validate_token", GoogleSignInException),
+        ],
+    )
+    def test_invalid_provider_code(self, provider, validate_token_path, exception, client):
+        user = users_factories.UserFactory(isEmailValidated=True)
+
+        with patch(validate_token_path, side_effect=exception):
+            response = self._attach(client.with_token(user), provider)
+
+        assert response.status_code == 401
+        assert response.json["code"] == "SSO_ERROR"
+        assert self._get_ssos(user) == []
+
+    # Scenario: State token expiré
+    @patch("pcapi.connectors.sso.google.GoogleSSOProvider.validate_token")
+    def test_oauth_state_token_expired(self, mocked_google_oauth, client):
+        user = users_factories.UserFactory(isEmailValidated=True)
+        oauth_state_token = self._create_oauth_state_token()
+        oauth_state_token.expire()
+        mocked_google_oauth.return_value = self.google_sso_user
+
+        response = self._attach(client.with_token(user), "google", oauth_state_token)
+
+        assert response.status_code == 400
+        assert response.json["code"] == "SSO_LOGIN_TIMEOUT"
+        assert self._get_ssos(user) == []
+        mocked_google_oauth.assert_not_called()
+
+    @patch("pcapi.connectors.sso.google.GoogleSSOProvider.validate_token")
+    def test_oauth_state_token_past_expiration_date(self, mocked_google_oauth, client):
+        user = users_factories.UserFactory(isEmailValidated=True)
+        with time_machine.travel("2022-01-01"):
+            oauth_state_token = self._create_oauth_state_token()
+        mocked_google_oauth.return_value = self.google_sso_user
+
+        response = self._attach(client.with_token(user), "google", oauth_state_token)
+
+        assert response.status_code == 400
+        assert response.json["code"] == "SSO_LOGIN_TIMEOUT"
+        assert self._get_ssos(user) == []
+
+    # Règle de gestion : le state token est à usage unique
+    @patch("pcapi.connectors.sso.google.GoogleSSOProvider.validate_token")
+    def test_attach_expires_oauth_state_token(self, mocked_google_oauth, client):
+        user = users_factories.UserFactory(isEmailValidated=True)
+        oauth_state_token = self._create_oauth_state_token()
+        mocked_google_oauth.return_value = self.google_sso_user
+
+        response = self._attach(client.with_token(user), "google", oauth_state_token)
+
+        assert response.status_code == 204, response.json
+        assert not token_utils.UUIDToken.token_exists(token_utils.TokenType.OAUTH_STATE, oauth_state_token.key_suffix)
+
+    # Scenario: Appel non authentifié
+    @patch("pcapi.connectors.sso.google.GoogleSSOProvider.validate_token")
+    def test_unauthenticated(self, mocked_google_oauth, client):
+        response = self._attach(client, "google")
+
+        assert response.status_code == 401
+        mocked_google_oauth.assert_not_called()
+
+    def test_unknown_provider(self, client):
+        user = users_factories.UserFactory(isEmailValidated=True)
+
+        response = self._attach(client.with_token(user), "unknown_sso")
+
+        assert response.status_code == 400
+        assert self._get_ssos(user) == []
