@@ -1,5 +1,6 @@
 from pcapi.core.offers import generator as offers_generator
 from pcapi.core.offers import models as offers_models
+from pcapi.core.providers import models as providers_models
 from pcapi.models.utils import get_or_404
 from pcapi.routes.backoffice.dev import forms as dev_forms
 from pcapi.routes.internal.auth import api_key_required
@@ -17,12 +18,17 @@ def generate_offer() -> tuple[dict, int]:
         transaction_manager.mark_transaction_as_invalid()
         return form.errors, 400
 
+    provider = None
+    if form.provider_id.data:
+        provider = get_or_404(providers_models.Provider, form.provider_id.data)
+
     offer = offers_generator.create_offer(
         offer_name=form.name.data,
         price=form.price.data,
         subcategory_id=form.subcategory_id.data,
         is_duo=form.is_duo.data,
         timezone=form.timezone.data,
+        provider=provider,
     )
 
     if offer is None:
