@@ -139,6 +139,8 @@ class SearchProductTest(search_helpers.SearchHelper, GetEndpointHelper):
         assert titelive_data["oeuvre"]["titre"] in card_text[0]
         assert "EAN-13 " + titelive_data["ean"] in card_text[0]
         assert "Lectorat " + format_titelive_id_lectorat(article["id_lectorat"]) in card_text[0]
+        assert "Réservé à un public averti Non" in card_text[0]
+        assert "Réservé à un public averti Non renseigné" not in card_text[0]
 
         assert (
             f"Prix HT {finance_utils.format_currency_for_backoffice(article['prixpays']['fr']['value'])}"
@@ -193,6 +195,8 @@ class SearchProductTest(search_helpers.SearchHelper, GetEndpointHelper):
         assert titelive_data["oeuvre"]["titre"] in card_text[0]
         assert "EAN-13 " + titelive_data["ean"] in card_text[0]
         assert "Lectorat " + format_titelive_id_lectorat(article["id_lectorat"]) in card_text[0]
+        assert "Réservé à un public averti Non" in card_text[0]
+        assert "Réservé à un public averti Non renseigné" not in card_text[0]
 
         assert (
             f"Prix HT {finance_utils.format_currency_for_backoffice(article['prixpays']['fr']['value'])}"

@@ -139,6 +139,8 @@ class GetProductDetailsTest(GetEndpointHelper):
         assert fixtures.BOOK_BY_SINGLE_EAN_FIXTURE["oeuvre"]["titre"] in card_text[0]
         assert "EAN-13 " + fixtures.BOOK_BY_SINGLE_EAN_FIXTURE["ean"] in card_text[0]
         assert "Lectorat " + format_titelive_id_lectorat(article["id_lectorat"]) in card_text[0]
+        assert "Réservé à un public averti Non" in card_text[0]
+        assert "Réservé à un public averti Non renseigné" not in card_text[0]
 
         assert "Prix HT 8,30 €" in card_text[0]
         assert "Taux TVA 5,50 %" in card_text[0]
@@ -311,6 +313,8 @@ class GetProductSynchronizationWithTiteliveFormTest(GetEndpointHelper):
         assert fixtures.BOOK_BY_SINGLE_EAN_FIXTURE["oeuvre"]["titre"] in card_text[0]
         assert "EAN-13 " + fixtures.BOOK_BY_SINGLE_EAN_FIXTURE["ean"] in card_text[0]
         assert "Lectorat " + format_titelive_id_lectorat(article["id_lectorat"]) in card_text[0]
+        assert "Réservé à un public averti Non" in card_text[0]
+        assert "Réservé à un public averti Non renseigné" not in card_text[0]
 
         assert "Prix HT 8,30 €" in card_text[0]
         assert "Taux TVA 5,50 %" in card_text[0]

@@ -980,6 +980,7 @@ BOOK_BY_SINGLE_EAN_FIXTURE = {
                 "operations": [],
                 "tracks": [],
                 "cmb": "110206",
+                "public_averti": 0,
                 "deee_ht": 0,
                 "tva": 0,
                 "minutesdejeu": 0,

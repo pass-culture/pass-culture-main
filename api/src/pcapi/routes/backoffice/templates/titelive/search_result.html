@@ -39,6 +39,9 @@
                     <li class="list-group-item">
                       <b>Lectorat : </b> {{ article.id_lectorat|format_titelive_id_lectorat }}
                     </li>
+                    <li class="list-group-item">
+                      <b>Réservé à un public averti : </b> {{ (article.public_averti if article.public_averti is defined else None)|format_bool("Non renseigné") }}
+                    </li>
                     {% if article.prixpays.fr %}
                       <li class="list-group-item">
                         <b>Prix HT
