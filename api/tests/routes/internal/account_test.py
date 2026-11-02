@@ -80,6 +80,22 @@ class E2EAccountTest:
         assert response.json["id"] == user.id
         assert user.deposit.amount == decimal.Decimal("34.7")
 
+    def test_create_multiple_accounts_with_credit(self, auth_client):
+        response = auth_client.post(
+            "/e2e/account",
+            {"age": 18, "step": "BENEFICIARY", "id_provider": "UBBLE", "credit": decimal.Decimal("34.7"), "count": 10},
+        )
+        assert response.status_code == 200
+
+        users = db.session.query(users_models.User).all()
+        assert len(users) == 10
+
+        for user in users:
+            assert user.is_beneficiary
+            assert user.deposit.amount == decimal.Decimal("34.7")
+
+        assert len(response.json) == 10
+
 
 class E2EAccountUbbleConfigTest:
     def test_configure_account_ubble_unauthorized(self, client):

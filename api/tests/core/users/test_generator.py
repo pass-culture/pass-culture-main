@@ -80,7 +80,7 @@ class UserGeneratorTest:
 
     def test_generate_default_user(self):
         user_data = users_generator.GenerateUserData()
-        user = users_generator.generate_user(user_data)
+        user = users_generator.generate_users(user_data)[0]
 
         assert user.isEmailValidated is True
         assert user.age == users_constants.ELIGIBILITY_AGE_18
@@ -88,7 +88,7 @@ class UserGeneratorTest:
 
     def test_generate_beneficiary_user(self):
         user_data = users_generator.GenerateUserData(step=users_generator.GeneratedSubscriptionStep.BENEFICIARY)
-        user = users_generator.generate_user(user_data)
+        user = users_generator.generate_users(user_data)[0]
 
         self.assert_user_is_beneficiary(user)
 
@@ -116,7 +116,7 @@ class UserGeneratorTest:
             id_provider=users_generator.GeneratedIdProvider.UBBLE,
             step=step,
         )
-        user = users_generator.generate_user(user_data)
+        user = users_generator.generate_users(user_data)[0]
         tests(self, user)
 
     @pytest.mark.parametrize(
@@ -133,7 +133,7 @@ class UserGeneratorTest:
             id_provider=id_provider,
             step=users_generator.GeneratedSubscriptionStep.IDENTITY_CHECK,
         )
-        user = users_generator.generate_user(user_data)
+        user = users_generator.generate_users(user_data)[0]
         self.has_fraud_check_validated(user, id_provider.value)
 
     def test_generate_underage_beneficiary_user(self):
@@ -141,7 +141,7 @@ class UserGeneratorTest:
             age=17,
             step=users_generator.GeneratedSubscriptionStep.BENEFICIARY,
         )
-        user = users_generator.generate_user(user_data)
+        user = users_generator.generate_users(user_data)[0]
 
         assert user.age == 17
         self.assert_user_is_beneficiary(user, expected_deposit_type=users_models.DepositType.GRANT_17_18)
@@ -151,7 +151,7 @@ class UserGeneratorTest:
             age=users_constants.ELIGIBILITY_AGE_18,
             step=users_generator.GeneratedSubscriptionStep.EMAIL_VALIDATION,
         )
-        user = users_generator.generate_user(user_data)
+        user = users_generator.generate_users(user_data)[0]
         assert user.email == f"user.{user.id}@passculture.gen"
 
     def test_email_is_consistent_with_user_data_when_names(self):
@@ -159,7 +159,7 @@ class UserGeneratorTest:
             age=users_constants.ELIGIBILITY_AGE_18,
             step=users_generator.GeneratedSubscriptionStep.PROFILE_COMPLETION,
         )
-        user = users_generator.generate_user(user_data)
+        user = users_generator.generate_users(user_data)[0]
         assert (
             user.email
             == f"{re.sub(r'\W+', '', user.firstName or '')}.{re.sub(r'\W+', '', user.lastName or '')}.{user.id}@passculture.gen".lower()
@@ -170,7 +170,7 @@ class UserGeneratorTest:
             age=users_constants.ELIGIBILITY_AGE_18,
             step=users_generator.GeneratedSubscriptionStep.IDENTITY_CHECK,
         )
-        user = users_generator.generate_user(user_data)
+        user = users_generator.generate_users(user_data)[0]
         fraud_item = fraud_api.validate_id_piece_number_format_fraud_item(user.idPieceNumber)
         assert fraud_item.status == subscription_schemas.FraudStatus.OK
 
@@ -179,7 +179,7 @@ class UserGeneratorTest:
             age=users_constants.ELIGIBILITY_AGE_18,
             step=users_generator.GeneratedSubscriptionStep.PROFILE_COMPLETION,
         )
-        user = users_generator.generate_user(user_data)
+        user = users_generator.generate_users(user_data)[0]
         profile_completion = subscription_repository.get_completed_profile_check(user, user.eligibility)
         assert profile_completion.resultContent["address"] == user.address
         assert profile_completion.resultContent["city"] == user.city
@@ -192,7 +192,7 @@ class UserGeneratorTest:
             age=users_constants.ELIGIBILITY_AGE_18,
             step=users_generator.GeneratedSubscriptionStep.IDENTITY_CHECK,
         )
-        user = users_generator.generate_user(user_data)
+        user = users_generator.generate_users(user_data)[0]
         identity_check = subscription_repository.get_relevant_identity_fraud_check(user, user.eligibility)
         assert identity_check.resultContent["first_name"] == user.firstName
         assert identity_check.resultContent["last_name"] == user.lastName
@@ -206,7 +206,7 @@ class UserGeneratorTest:
             birth_date=eighteen_years_ago,
             date_created=year_when_user_was_seventeen,
         )
-        user = users_generator.generate_user(user_data)
+        user = users_generator.generate_users(user_data)[0]
         assert user.age == users_constants.ELIGIBILITY_AGE_18
         assert user.has_underage_beneficiary_role
         assert user.deposit.type == finance_models.DepositType.GRANT_17_18
@@ -220,7 +220,7 @@ class UserGeneratorTest:
             step=users_generator.GeneratedSubscriptionStep.BENEFICIARY, date_created=date_in_the_past
         )
 
-        user = users_generator.generate_user(user_data)
+        user = users_generator.generate_users(user_data)[0]
 
         profile_completion_check = next(
             fraud_check
@@ -243,7 +243,7 @@ class UserGeneratorTest:
             age=age, step=users_generator.GeneratedSubscriptionStep.BENEFICIARY
         )
 
-        user = users_generator.generate_user(user_data)
+        user = users_generator.generate_users(user_data)[0]
 
         assert user.has_free_beneficiary_role
         assert user.deposit.type == finance_models.DepositType.GRANT_FREE
@@ -259,7 +259,7 @@ class UserGeneratorTest:
             date_created=year_when_user_is_sixteen,
         )
 
-        user = users_generator.generate_user(user_data)
+        user = users_generator.generate_users(user_data)[0]
 
         assert user.has_underage_beneficiary_role
         assert user.deposit.type == finance_models.DepositType.GRANT_15_17
@@ -271,7 +271,7 @@ class UserGeneratorTest:
             birth_date=birth_date,
             step=users_generator.GeneratedSubscriptionStep.BENEFICIARY,
         )
-        user = users_generator.generate_user(user_data)
+        user = users_generator.generate_users(user_data)[0]
 
         assert user.age == 19
         assert user.dateOfBirth.date() == birth_date
@@ -281,7 +281,7 @@ class UserGeneratorTest:
             credit=decimal.Decimal("134.6"),
             step=users_generator.GeneratedSubscriptionStep.BENEFICIARY,
         )
-        user = users_generator.generate_user(user_data)
+        user = users_generator.generate_users(user_data)[0]
 
         assert user.deposit.type == finance_models.DepositType.GRANT_17_18
         assert user.deposit.amount == decimal.Decimal("134.6")

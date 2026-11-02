@@ -383,7 +383,7 @@ def generate_user() -> response_utils.BackofficeResponse:
         return redirect(url_for("backoffice.dev.get_generated_user"), code=303)
 
     try:
-        user = users_generator.generate_user(user_data=user_data)
+        user = users_generator.generate_users(user_data=user_data)[0]
     except users_exceptions.UserGenerationForbiddenException:
         raise NotFound()
 
