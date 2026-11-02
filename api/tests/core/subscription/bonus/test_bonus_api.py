@@ -640,8 +640,9 @@ class QuotientFamilialApplicationTest:
         assert not bonus_fraud_checks
 
     @patch("pcapi.connectors.api_particulier.get_quotient_familial")
+    @time_machine.travel(settings.EXTENDED_BIRTHDAY_BONUS_CUTOFF_DATETIME + relativedelta(months=10))
     def test_calls_quotient_familial_after_cutoff(self, mocked_get_quotient_familial):
-        almost_20_years_ago = date_utils.get_naive_utc_now() - relativedelta(years=19, months=10)
+        almost_20_years_ago = date_utils.get_naive_utc_now() - relativedelta(years=19, months=10, days=0)
         user = users_factories.BeneficiaryFactory(validatedBirthDate=almost_20_years_ago.date())
         fraud_check = subscription_factories.QFBonusCreditFraudCheckFactory(
             user=user,
