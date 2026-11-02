@@ -13,16 +13,21 @@ from pcapi.routes.backoffice.dev.blueprint import create_disabled_child_educatio
 from pcapi.routes.backoffice.dev.blueprint import create_qf_fraud_check_mock
 from pcapi.routes.backoffice.dev.blueprint import create_ubble_fraud_check
 from pcapi.routes.backoffice.dev.blueprint import get_token_expiration_timestamp
+from pcapi.routes.backoffice.forms import fields
 from pcapi.routes.internal.auth import api_key_required
 from pcapi.routes.internal.blueprint import testing_blueprint
 from pcapi.utils import transaction_manager
 
 
+class _MultipleUsersGeneratorForm(dev_forms.UserGeneratorForm):
+    count = fields.PCOptIntegerField("Nombre de comptes à créer", default=1)
+
+
 @testing_blueprint.route("/e2e/account", methods=["POST"])
 @transaction_manager.atomic()
 @api_key_required
-def generate_account() -> tuple[dict, int]:
-    form = dev_forms.UserGeneratorForm()
+def generate_account() -> tuple[dict | list[dict], int]:
+    form = _MultipleUsersGeneratorForm()
 
     if not form.validate():
         transaction_manager.mark_transaction_as_invalid()
@@ -38,17 +43,28 @@ def generate_account() -> tuple[dict, int]:
         date_created=datetime.datetime(raw_date_created.year, raw_date_created.month, raw_date_created.day),
         postal_code=form.postal_code.data,
     )
-    user = users_generator.generate_user(user_data)
+    users = users_generator.generate_users(user_data, users_count=form.count.data)
 
-    token = token_utils.Token.create(
-        token_utils.TokenType.SIGNUP_EMAIL_CONFIRMATION, users_constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME, user.id
-    )
-    return {
-        "id": user.id,
-        "email": user.email,
-        "access_token": token.encoded_token,
-        "expiration_timestamp": get_token_expiration_timestamp(token),
-    }, 200
+    response_body = []
+    for user in users:
+        token = token_utils.Token.create(
+            token_utils.TokenType.SIGNUP_EMAIL_CONFIRMATION,
+            users_constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME,
+            user.id,
+        )
+        response_body.append(
+            {
+                "id": user.id,
+                "email": user.email,
+                "access_token": token.encoded_token,
+                "expiration_timestamp": get_token_expiration_timestamp(token),
+            }
+        )
+
+    if len(response_body) == 1:
+        return response_body[0], 200  # return user object
+
+    return response_body, 200  # return a list of user objects
 
 
 @testing_blueprint.route("/e2e/account/<user_id>/ubble", methods=["POST"])

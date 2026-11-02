@@ -62,7 +62,7 @@ class GenerateUserData:
         return users_models.ActivityEnum.APPRENTICE_STUDENT  # 20
 
 
-def generate_user(user_data: GenerateUserData) -> users_models.User:
+def generate_users(user_data: GenerateUserData, users_count: int = 1) -> list[users_models.User]:
     if not settings.ENABLE_TEST_USER_GENERATION:
         generation_exception = exceptions.UserGenerationForbiddenException()
         generation_exception.add_error(
@@ -84,7 +84,8 @@ def generate_user(user_data: GenerateUserData) -> users_models.User:
             factory_kwargs["dateOfBirth"] = user_data.birth_date
             if users_factories.IdentityValidatedUserFactory in Factory.mro():
                 factory_kwargs["validatedBirthDate"] = user_data.birth_date
-        return Factory.create(
+        return Factory.create_batch(
+            users_count,
             age=user_data.get_age(),
             beneficiaryFraudChecks__type=user_data.id_provider.value,
             activity=user_data.get_activity().value,
