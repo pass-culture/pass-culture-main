@@ -4825,6 +4825,26 @@ class ReopenVenueTest:
         db.session.refresh(venue)
         assert venue.state == offerers_models.VenueState.CLOSED
 
+    def test_old_pricing_point_venue_has_its_siret_shift_tag_removed(self):
+        author = users_factories.BaseUserFactory()
+
+        venue = offerers_factories.VenueFactory(state=offerers_models.VenueState.CLOSED)
+        venue.criteria = [criteria_api.get_closure_request_tag()]
+
+        history_factories.ActionHistoryFactory(
+            actionType=history_constants.ActionType.VENUE_CLOSED,
+            authorUser=author,
+            venue=venue,
+        )
+
+        with atomic():
+            offerers_api.reopen_venue(venue, author)
+
+        db.session.refresh(venue)
+
+        assert venue.state is None
+        assert not venue.criteria
+
     @pytest.mark.features(WIP_CLOSE_VENUE=True)
     @patch("pcapi.core.search.async_index_venue_ids")
     def test_reopen_venue_reindexes_venue(self, reindex_venue):

@@ -3745,6 +3745,9 @@ def reopen_venue(venue: models.Venue, author: users_models.User, comment: str | 
     history_api.add_action(history_constants.ActionType.VENUE_REOPENED, author=author, venue=venue, comment=comment)
     _update_external_venue(venue, index_with_reason=IndexationReason.VENUE_REOPENED)
 
+    closure_request_tag = criteria_api.get_closure_request_tag()
+    criteria_api.unlink_criterion_from_venue(criterion=closure_request_tag, venue=venue)
+
     original_action = history_repository.get_latest_venue_closure_event(venue.id)
     if original_action and original_action.authorUser:
         transactional_mails.send_venue_reopened_email(venue, original_action.authorUser)
