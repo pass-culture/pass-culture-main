@@ -3,6 +3,8 @@ import urllib.parse
 
 import pytest
 
+import pcapi.core.artist.factories as artist_factories
+import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.connectors import recommendation
 from pcapi.utils import requests
@@ -139,3 +141,63 @@ class GetPlaylistTest:
         with pytest.raises(recommendation.RecommendationApiException) as err:
             recommendation.get_playlist(user)
         assert str(err.value) == "too many requests"
+
+
+@pytest.mark.usefixtures("db_session")
+@pytest.mark.settings(RECOMMENDATION_BACKEND="pcapi.connectors.recommendation.LocalBackend")
+class LocalBackendTest:
+    def test_get_similar_offers(self):
+        offer_ids = {str(offer.id) for offer in offers_factories.OfferFactory.create_batch(5)}
+
+        response = json.loads(recommendation.get_similar_offers(offer_id=1))
+
+        assert len(response["results"]) == 3
+        assert len(set(response["results"])) == 3
+        assert set(response["results"]) <= offer_ids
+
+    def test_get_offer_page_playlists(self):
+        offer_ids = {str(offer.id) for offer in offers_factories.OfferFactory.create_batch(12)}
+
+        response = json.loads(recommendation.get_offer_page_playlists(offer_id=42))
+
+        assert response["offer_id"] == "42"
+        assert len(response["playlists"]) == 2
+        for playlist in response["playlists"]:
+            assert len(playlist["results"]) == 10
+            assert set(playlist["results"]) <= offer_ids
+
+    def test_get_playlist(self):
+        user = users_factories.UserFactory()
+        offer_ids = {str(offer.id) for offer in offers_factories.OfferFactory.create_batch(5)}
+
+        response = json.loads(recommendation.get_playlist(user))
+
+        assert len(response["playlist_recommended_offers"]) == 3
+        assert set(response["playlist_recommended_offers"]) <= offer_ids
+
+    def test_get_similar_artists(self):
+        artist_ids = {artist.id for artist in artist_factories.ArtistFactory.create_batch(5)}
+
+        response = json.loads(recommendation.get_similar_artists(artist_id="some-artist-id"))
+
+        # the route reads `artist_id_match` from each item
+        assert len(response["similar_artists"]) == 3
+        assert {item["artist_id_match"] for item in response["similar_artists"]} <= artist_ids
+        assert response["params"]["artist_id"] == "some-artist-id"
+
+    def test_get_top_artists_playlist(self):
+        artist_ids = {artist.id for artist in artist_factories.ArtistFactory.create_batch(5)}
+
+        response = json.loads(recommendation.get_top_artists_playlist("musique"))
+
+        assert len(response["playlist_artists"]) == 3
+        assert set(response["playlist_artists"]) <= artist_ids
+        assert response["params"]["search_group_name"] == "musique"
+
+    def test_get_top_artists_playlist_unknown_category(self):
+        with pytest.raises(recommendation.RecommendationApiValidationException):
+            recommendation.get_top_artists_playlist("unknown")
+
+    def test_empty_database(self):
+        assert json.loads(recommendation.get_similar_offers(offer_id=1))["results"] == []
+        assert json.loads(recommendation.get_similar_artists(artist_id="some-artist-id"))["similar_artists"] == []
