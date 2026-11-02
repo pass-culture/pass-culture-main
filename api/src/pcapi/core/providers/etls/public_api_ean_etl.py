@@ -4,7 +4,9 @@ import typing
 
 import sqlalchemy as sa
 
+from pcapi.core import search
 from pcapi.core.categories import subcategories
+from pcapi.core.finance import utils as finance_utils
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import schemas as offerers_schemas
@@ -13,14 +15,29 @@ from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import schemas as offers_schemas
 from pcapi.core.providers import models as providers_models
+from pcapi.core.search.models import IndexationReason
 from pcapi.models import db
 from pcapi.models import offer_mixin
+from pcapi.routes.provider.individual_offers.v1 import serialization as individual_offers_v1_serialization
 from pcapi.routes.provider.individual_offers.v1 import utils as individual_offers_v1_utils
 from pcapi.utils import date as utils_date
 from pcapi.utils.transaction_manager import atomic
 
 
 logger = logging.getLogger(__name__)
+
+
+def batch_create_or_update_ean_offers(
+    request_payload: offers_schemas.CreateOrUpdateEANOffersRequest,
+) -> None:
+    extract_result = _extract(request_payload)
+    transform_result = _transform(request_payload, extract_result)
+    with atomic():
+        _load(
+            request_payload,
+            extract_result,
+            transform_result,
+        )
 
 
 class _ExtractResult(typing.TypedDict):
@@ -134,6 +151,70 @@ def _transform(
     }
 
 
+def _load(
+    request_payload: offers_schemas.CreateOrUpdateEANOffersRequest,
+    extract_result: _ExtractResult,
+    result: _TransformResult,
+) -> None:
+    for offer_to_create in result["offers_to_create"]:
+        db.session.flush()
+        try:
+            with atomic():
+                ean = offer_to_create.ean
+                assert ean  # to make mypy happy
+                stock_data = request_payload.serialized_products_stocks[ean]
+                # FIXME (mageoffray, 2023-05-26): stock saving optimisation
+                # Stocks are inserted one by one for now, we need to improve create_stock to remove the repository.session.add()
+                # It will be done before the release of this API
+                offers_api.create_stock(
+                    offer=offer_to_create,
+                    price=finance_utils.cents_to_full_unit(stock_data["price"]),
+                    quantity=individual_offers_v1_serialization.deserialize_quantity(stock_data["quantity"]),
+                    booking_limit_datetime=stock_data["booking_limit_datetime"],
+                    creating_provider=extract_result["provider"],
+                )
+        except offers_exceptions.OfferException as exc:
+            logger.warning(
+                "Error while creating offer by ean",
+                extra={
+                    "ean": ean,
+                    "venue_id": extract_result["venue"].id,
+                    "provider_id": extract_result["provider"].id,
+                    "exc": exc.__class__.__name__,
+                },
+            )
+
+    offers_to_index = []
+    for offer in result["offers_to_update"]:
+        try:
+            with atomic():
+                ean = offer.ean
+                assert ean  # to make mypy happy
+                has_been_updated, offer = _update_offer_and_related_stock(
+                    offer=offer,
+                    stock_data=request_payload.serialized_products_stocks[ean],
+                    provider=extract_result["provider"],
+                    offerer_address=extract_result["offerer_address"],
+                )
+                if has_been_updated:
+                    offers_to_index.append(offer.id)
+        except offers_exceptions.OfferException as exc:
+            logger.warning(
+                "Error while updating offer by ean",
+                extra={
+                    "ean": ean,
+                    "venue_id": extract_result["venue"].id,
+                    "provider_id": extract_result["provider"].id,
+                    "exc": exc.__class__.__name__,
+                },
+            )
+    search.async_index_offer_ids(
+        offers_to_index,
+        reason=IndexationReason.OFFER_UPDATE,
+        log_extra={"venue_id": extract_result["venue"].id, "source": "offers_public_api"},
+    )
+
+
 # Extract helpers
 
 ALLOWED_PRODUCT_SUBCATEGORIES = [
@@ -240,3 +321,87 @@ def _ensure_timezone_exists(dt: datetime.datetime | None) -> datetime.datetime |
     if dt is not None and dt.tzinfo is None:
         return dt.replace(tzinfo=datetime.UTC)
     return dt
+
+
+def _update_offer_and_related_stock(
+    offer: offers_models.Offer,
+    stock_data: offers_schemas.SerializedProductsStock,
+    provider: providers_models.Provider,
+    offerer_address: offerers_models.OffererAddress,
+) -> tuple[bool, offers_models.Offer]:
+    """
+    Update offer and its stock only when necessary
+
+    :return: (bool, Offer) bool is equal to `True` if the offer or its stock has been updated.
+    """
+    # Part 1 - Offer update
+    now = datetime.datetime.now(datetime.UTC)
+    should_update_offer = (
+        offer.lastProviderId != provider.id  # provider has changed
+        or (offer.offererAddress != offerer_address)  # address has changed
+        or (
+            # offer should be published
+            (offer.publicationDatetime is None and stock_data["publication_datetime"])
+            # offer should be unpublished
+            or (offer.publicationDatetime and stock_data["publication_datetime"] is None)
+            # offer should be published in the future
+            or (stock_data["publication_datetime"] and stock_data["publication_datetime"] > now)
+            # offer was planned to be published in the future but should be published now
+            or (offer.publicationDatetime and offer.publicationDatetime > now)
+        )
+        or (offer.bookingAllowedDatetime != stock_data["booking_allowed_datetime"])
+        or (offer.externalTicketOfficeUrl != stock_data["external_ticket_office_url"])
+    )
+
+    if should_update_offer:
+        offer.lastProvider = provider
+        offer.offererAddress = offerer_address
+        offer.publicationDatetime = stock_data["publication_datetime"]
+        offer.bookingAllowedDatetime = stock_data["booking_allowed_datetime"]
+        offer.externalTicketOfficeUrl = (
+            str(stock_data["external_ticket_office_url"]) if stock_data["external_ticket_office_url"] else None
+        )
+
+    # Part 2 - Stock create or update
+    current_stock = next((stock for stock in offer.activeStocks), None)
+    target_stock_price = finance_utils.cents_to_full_unit(stock_data["price"])
+    remaining_quantity = individual_offers_v1_serialization.deserialize_quantity(stock_data["quantity"])
+
+    if not current_stock:
+        offers_api.create_stock(
+            offer=offer,
+            price=target_stock_price,
+            quantity=remaining_quantity,
+            booking_limit_datetime=stock_data["booking_limit_datetime"],
+            creating_provider=provider,
+        )
+        return True, offer
+
+    should_update_stock = (
+        # booking_limit_datetime has changed
+        (current_stock.bookingLimitDatetime != stock_data["booking_limit_datetime"])
+        # price has changed
+        or (current_stock.price != target_stock_price)
+        # available quantity should be updated
+        or (
+            isinstance(remaining_quantity, int)
+            and remaining_quantity + current_stock.dnBookedQuantity != current_stock.quantity
+        )
+        # quantity should be set to unlimited
+        or (current_stock.quantity and remaining_quantity is None)
+    )
+
+    if should_update_stock:
+        target_quantity = None  # i.e unlimited
+        if isinstance(remaining_quantity, int):
+            target_quantity = remaining_quantity + current_stock.dnBookedQuantity
+
+        offers_api.edit_stock(
+            current_stock,
+            quantity=target_quantity,
+            price=target_stock_price,
+            booking_limit_datetime=stock_data["booking_limit_datetime"],
+            editing_provider=provider,
+        )
+
+    return bool(should_update_offer or should_update_stock), offer
