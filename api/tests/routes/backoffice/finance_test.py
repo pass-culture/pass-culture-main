@@ -2646,7 +2646,6 @@ class CancelDebitNoteTest(PostEndpointHelper):
         assert finance_incident.forceDebitNote == original_finance_incident.forceDebitNote
 
 
-@pytest.mark.features(WIP_ENABLE_FINANCE_SETTLEMENTS=True)
 class ListSettlementBatchesTest(GetEndpointHelper):
     endpoint = "backoffice.settlements.list_settlement_batches"
     needed_permission = perm_models.Permissions.READ_SETTLEMENTS
@@ -2685,7 +2684,6 @@ class ListSettlementBatchesTest(GetEndpointHelper):
         assert rows[1]["Date de validation"] == "18/01/2026 à 13h34"
 
 
-@pytest.mark.features(WIP_ENABLE_FINANCE_SETTLEMENTS=True)
 class GetValidateSettlementBatchFormTest(GetEndpointHelper):
     endpoint = "backoffice.settlements.get_validate_settlement_batch_form"
     endpoint_kwargs = {"batch_id": 1}
@@ -2720,7 +2718,6 @@ class GetValidateSettlementBatchFormTest(GetEndpointHelper):
             assert response.status_code == 404
 
 
-@pytest.mark.features(WIP_ENABLE_FINANCE_SETTLEMENTS=True)
 class ValidateSettlementBatchTest(PostEndpointHelper):
     endpoint = "backoffice.settlements.validate_settlement_batch"
     endpoint_kwargs = {"batch_id": 1}

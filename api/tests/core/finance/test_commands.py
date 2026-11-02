@@ -174,7 +174,6 @@ class ImportDsBankInformationApplicationsTest:
         }
 
 
-@pytest.mark.features(WIP_ENABLE_FINANCE_SETTLEMENTS=True)
 class SyncSettlementsTest:
     @patch("pcapi.core.finance.external.sync_settlements")
     def test_sync_settlements(self, mock_sync_settlements, run_command):

@@ -11,7 +11,6 @@ from pcapi.core.bookings import models as bookings_models
 from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import models as finance_models
 from pcapi.models import db
-from pcapi.models.feature import FeatureToggle
 
 
 INVOICE_LINE_INDIV_DICT = {
@@ -255,13 +254,10 @@ class BaseFinanceBackend:
         return invoice_lines
 
     def _get_indiv_data(self, invoice_id: int, query: sa_orm.Query) -> list[dict]:
-        filters = [finance_models.Invoice.id == invoice_id]
-        if not FeatureToggle.WIP_ENABLE_FINANCE_SETTLEMENTS.is_active():
-            filters.append(finance_models.Pricing.status == finance_models.PricingStatus.PROCESSED)
         res = []
         data = (
             query.join(bookings_models.Booking.deposit)
-            .filter(*filters)
+            .filter(finance_models.Invoice.id == invoice_id)
             .group_by(
                 finance_models.PricingLine.category,
                 bookings_models.Booking.usedRecreditType,
@@ -289,14 +285,10 @@ class BaseFinanceBackend:
         return res
 
     def _get_collective_data(self, invoice_id: int, query: sa_orm.Query) -> list[dict]:
-        filters = [finance_models.Invoice.id == invoice_id]
-        if not FeatureToggle.WIP_ENABLE_FINANCE_SETTLEMENTS.is_active():
-            filters.append(finance_models.Pricing.status == finance_models.PricingStatus.PROCESSED)
-
         res = []
         data = (
             query.join(educational_models.CollectiveBooking.collectiveStock)
-            .filter(*filters)
+            .filter(finance_models.Invoice.id == invoice_id)
             .join(educational_models.CollectiveBooking.educationalInstitution)
             .join(educational_models.CollectiveBooking.educationalDeposit)
             # max 1 program because of unique constraint on EducationalInstitutionProgramAssociation.institutionId

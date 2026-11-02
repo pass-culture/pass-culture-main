@@ -239,7 +239,6 @@ def push_invoices(count: int, override_work_hours_check: bool = False) -> None:
     type=str,
 )
 @cron_decorators.log_cron
-@cron_decorators.cron_require_feature(FeatureToggle.WIP_ENABLE_FINANCE_SETTLEMENTS)
 def sync_settlements(since: str | None = None) -> None:
     yesterday = datetime.date.today() - datetime.timedelta(days=1)
     if since:
@@ -261,6 +260,5 @@ def sync_settlements(since: str | None = None) -> None:
 
 @blueprint.cli.command("transfer_debt_after_rejected_settlements")
 @cron_decorators.log_cron
-@cron_decorators.cron_require_feature(FeatureToggle.WIP_ENABLE_FINANCE_SETTLEMENTS)
 def transfer_debt_after_rejected_settlements() -> None:
     finance_external.transfer_debt_after_rejected_settlements()
