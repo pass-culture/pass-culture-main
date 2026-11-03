@@ -1860,9 +1860,10 @@ class CloseOffererTest:
 
         assert offerer.isClosed
 
-    def test_offerer_was_validated(self):
+    @pytest.mark.parametrize("is_active", [True, False])
+    def test_offerer_was_validated(self, is_active):
         admin = users_factories.AdminFactory()
-        user_offerer = offerers_factories.UserOffererFactory()
+        user_offerer = offerers_factories.UserOffererFactory(offerer__isActive=is_active)
         offerer = user_offerer.offerer
 
         offerers_api.close_offerer(offerer, closure_date=datetime.date(2025, 3, 7), author_user=admin)

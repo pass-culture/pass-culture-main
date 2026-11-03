@@ -22,7 +22,7 @@ class CheckActiveOfferersTest:
         offerers_factories.OffererFactory(id=23 + 27)  # not checked today
         offerer = offerers_factories.OffererFactory(id=23 + 28)
         offerers_factories.OffererFactory(id=23 + 29)  # not checked today
-        offerers_factories.OffererFactory(id=23 + 28 * 2, isActive=False)  # not checked because inactive
+        inactive_offerer = offerers_factories.OffererFactory(id=23 + 28 * 2, isActive=False)  # checked even if inactive
         offerers_factories.ClosedOffererFactory(id=23 + 28 * 3)  # not checked because closed
         offerers_factories.RejectedOffererFactory(id=23 + 28 * 4, isActive=True)  # not checked because rejected
         offerers_factories.OffererFactory(
@@ -34,7 +34,12 @@ class CheckActiveOfferersTest:
             run_command(app, "check_active_offerers", "--apply")
 
         # Only check that the task is called; its behavior is tested in offerers/test_task.py
-        mock_get_siren.assert_called_once_with(offerer.siren, with_address=False)
+        mock_get_siren.assert_called()
+        assert mock_get_siren.call_count == 2
+        assert mock_get_siren.call_args_list[0].args == (offerer.siren,)
+        assert mock_get_siren.call_args_list[0].kwargs == {"with_address": False}
+        assert mock_get_siren.call_args_list[1].args == (inactive_offerer.siren,)
+        assert mock_get_siren.call_args_list[1].kwargs == {"with_address": False}
 
 
 class CheckClosedOfferersTest:
