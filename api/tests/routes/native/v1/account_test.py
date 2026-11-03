@@ -2147,7 +2147,7 @@ class SuspendAccountForSuspiciousLoginTest:
     def test_error_when_token_has_invalid_signature(self, client):
         token = jwt.encode(
             {"userId": 1},
-            "wrong_jwt_secret_key",
+            "wrong_jwt_secret_key_with_at_least_32_bytes",
             algorithm=ALGORITHM_HS_256,
         )
         response = client.post("/native/v1/account/suspend_for_suspicious_login", {"token": token})
