@@ -870,6 +870,7 @@ def create_pro_user(pro_user: users_serialization.ProUserCreationBodyV2Model) ->
         # Add the user here to ensure the flush inside the upsert_deposit
         # will not break the user - deposit relation
         db.session.add(new_pro_user)
+        db.session.flush()
         deposit = deposit_api.upsert_deposit(new_pro_user, "integration_signup", models.EligibilityType.AGE18)
         new_pro_user.deposits = [deposit]
 
