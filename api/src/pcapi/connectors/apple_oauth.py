@@ -1,6 +1,7 @@
 import logging
 import time
 import typing
+from functools import lru_cache
 from uuid import uuid4
 
 import jwt
@@ -87,12 +88,10 @@ def revoke_apple_user(refresh_token: str, is_web: bool) -> None:
 
 
 def _decrypt_token(token: str, client_id: str) -> dict[str, typing.Any]:
-    jwks_client = PyJWKClient(settings.APPLE_KEYS_URL)
-
     try:
-        signing_key = jwks_client.get_signing_key_from_jwt(token)
+        signing_key = _get_jwks_client().get_signing_key_from_jwt(token)
     except (jwt.PyJWTError, Exception) as e:
-        logger.error("Apple JWKS fetch failed", extra={"error": str(e)})
+        logger.error("Apple JWKS fetch failed", extra={"error": str(e), "apple_keys_url": settings.APPLE_KEYS_URL})
         raise AppleSignInException("Failed to verify Apple signing keys") from e
 
     try:
@@ -109,6 +108,26 @@ def _decrypt_token(token: str, client_id: str) -> dict[str, typing.Any]:
         raise AppleSignInException("Invalid identity token") from e
 
     return token_payload
+
+
+@lru_cache(maxsize=1)
+def _get_jwks_client() -> PyJWKClient:
+    """Reuse one pod-local PyJWKClient instance for Apple JWKS lookups.
+
+    Apple JWKS rotates rarely, and PyJWKClient caching is instance-scoped:
+    - `cache_jwk_set` (enabled by default) caches the JWKS payload with TTL
+    - `cache_keys` (optional) caches resolved signing keys by `kid`
+
+    This wrapper-level `@lru_cache(maxsize=1)` keeps one client instance per pod so
+    those internal caches survive across requests. Without it, recreating the client
+    on each call would reset PyJWKClient caches and remove most of their benefit.
+
+    This keeps auth independent from Redis on the critical path while remaining
+    sufficient per replica.
+    This does not directly fix HTTP 501 responses, but it mitigates their impact by
+    reducing repeated JWKS fetch attempts per pod.
+    """
+    return PyJWKClient(settings.APPLE_KEYS_URL)
 
 
 def _generate_client_secret(is_web: bool) -> tuple[str, str]:
