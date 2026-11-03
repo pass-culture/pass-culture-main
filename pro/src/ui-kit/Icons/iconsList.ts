@@ -275,7 +275,7 @@ export const strokeIcons: IconListItem[] = [
   { src: strokePageNotFoundIcon },
   { src: strokeVisualArtIcon },
   { src: strokeAddCalendarIcon },
-  { src: strokePictureIcon, viewBox: '0 0 58 58' },
+  { src: strokePictureIcon },
   { src: strokeNoImageIcon },
   { src: strokeVideoIcon },
 ]

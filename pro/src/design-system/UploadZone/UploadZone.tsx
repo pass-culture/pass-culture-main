@@ -249,13 +249,7 @@ export const UploadZone = ({
           [styles['zone-error']]: hasError,
         })}
       >
-        <SvgIcon
-          src={icon}
-          alt=""
-          width="58"
-          viewBox="0 0 58 58"
-          className={styles['zone-icon']}
-        />
+        <SvgIcon src={icon} alt="" className={styles['zone-icon']} />
         <div className={styles['zone-texts']}>
           <p
             id={instructionId}
