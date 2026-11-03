@@ -14,6 +14,7 @@ import pcapi.core.users.factories as users_factories
 from pcapi.core.categories import subcategories
 from pcapi.core.external_bookings.factories import ExternalBookingFactory
 from pcapi.core.testing import assert_num_queries
+from pcapi.routes.serialization.bookings_recap_serialize import BookingRecapStatus
 from pcapi.utils.date import utc_datetime_to_department_timezone
 
 
@@ -262,6 +263,65 @@ class Returns200Test:
         assert response.json["page"] == 1
         assert response.json["pages"] == 1
         assert response.json["total"] == 2
+
+    @pytest.mark.parametrize(
+        "case",
+        [
+            {
+                "status": bookings_models.BookingStatus.REIMBURSED,
+                "recap": BookingRecapStatus.reimbursed,
+                "withCancellation": False,
+            },
+            {
+                "status": bookings_models.BookingStatus.CANCELLED,
+                "recap": BookingRecapStatus.cancelled,
+                "withCancellation": False,
+            },
+            {
+                "status": bookings_models.BookingStatus.USED,
+                "recap": BookingRecapStatus.validated,
+                "withCancellation": False,
+            },
+            {
+                "status": bookings_models.BookingStatus.PENDING_REIMBURSEMENT,
+                "recap": BookingRecapStatus.pending_reimbursement,
+                "withCancellation": False,
+            },
+            {
+                "status": bookings_models.BookingStatus.CONFIRMED,
+                "recap": BookingRecapStatus.booked,
+                "withCancellation": False,
+            },
+            {
+                "status": bookings_models.BookingStatus.CONFIRMED,
+                "recap": BookingRecapStatus.confirmed,
+                "withCancellation": True,
+            },
+        ],
+    )
+    def test_booking_status(self, client: Any, case):
+        offerer = offerers_factories.OffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        pro_user = users_factories.ProFactory(email="pro@example.com")
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+
+        booking = bookings_factories.BookingFactory(
+            dateCreated=datetime(2020, 8, 11, 12, 0, 0),
+            dateUsed=datetime(2020, 8, 13, 12, 0, 0),
+            status=case["status"],
+            stock=offers_factories.StockFactory(offer__venue=venue),
+        )
+        if case["withCancellation"]:
+            booking.cancellationLimitDate = datetime(2020, 8, 5, 12, 0, 0)
+
+        client = client.with_session_auth(pro_user.email)
+
+        response = client.get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&venueId={venue.id}")
+        assert response.status_code == 200
+
+        assert response.status_code == 200
+        assert len(response.json["bookingsRecap"]) == 1
+        assert response.json["bookingsRecap"][0]["bookingStatus"] == case["recap"].value
 
     def test_should_return_duo_booking_twice(self, client: Any):
         duo_booking = bookings_factories.UsedBookingFactory(

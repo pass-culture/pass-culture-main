@@ -41,6 +41,13 @@ export const INDIVIDUAL_BOOKING_STATUS_DISPLAY_INFORMATIONS = [
     dateFormat: FORMAT_DD_MM_YYYY_HH_mm,
     variant: TagVariant.SUCCESS,
   },
+  {
+    value: BOOKING_STATUS.PENDING_REIMBURSEMENT,
+    title: 'En attente de remboursement',
+    label: 'Réservation en attente de remboursement',
+    dateFormat: FORMAT_DD_MM_YYYY_HH_mm,
+    variant: TagVariant.DEFAULT,
+  },
 ]
 
 export const getBookingStatusDisplayInformations = (bookingStatus: string) =>

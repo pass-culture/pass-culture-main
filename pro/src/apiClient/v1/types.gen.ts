@@ -384,7 +384,7 @@ export enum BookingRecapStatus {
     CANCELLED = 'cancelled',
     REIMBURSED = 'reimbursed',
     CONFIRMED = 'confirmed',
-    PENDING = 'pending'
+    PENDING_REIMBURSEMENT = 'pending_reimbursement'
 }
 
 /**

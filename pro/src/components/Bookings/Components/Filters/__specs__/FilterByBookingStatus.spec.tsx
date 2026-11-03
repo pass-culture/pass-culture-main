@@ -82,11 +82,14 @@ describe('components | FilterByBookingStatus', () => {
       await userEvent.click(screen.getByRole('button', { name: 'Statut' }))
 
       const checkbox = screen.getAllByRole('checkbox')
-      expect(checkbox).toHaveLength(5)
+      expect(checkbox).toHaveLength(6)
       expect(checkbox[0]).toHaveAttribute('checked')
       expect(checkbox[1]).toHaveAttribute('checked')
       expect(screen.getByText('Réservée')).toBeInTheDocument()
       expect(screen.getByText('Validée')).toBeInTheDocument()
+      expect(
+        screen.getByText('En attente de remboursement')
+      ).toBeInTheDocument()
     })
 
     it('should add value to filters when unchecking on a checkbox', async () => {

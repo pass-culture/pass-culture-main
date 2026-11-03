@@ -24,7 +24,7 @@ class BookingRecapStatus(Enum):
     cancelled = "cancelled"
     reimbursed = "reimbursed"
     confirmed = "confirmed"
-    pending = "pending"
+    pending_reimbursement = "pending_reimbursement"
 
 
 class BookingsExportStatusFilter(Enum):
@@ -228,6 +228,8 @@ def _build_booking_status(booking: schemas.GetBookingsQueryResult) -> BookingRec
         return BookingRecapStatus.reimbursed
     if booking.status == BookingStatus.CANCELLED:
         return BookingRecapStatus.cancelled
+    if booking.status == BookingStatus.PENDING_REIMBURSEMENT:
+        return BookingRecapStatus.pending_reimbursement
     if booking.status == BookingStatus.USED:
         return BookingRecapStatus.validated
     if booking.isConfirmed:
