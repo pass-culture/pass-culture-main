@@ -5,6 +5,7 @@ from flask_login import current_user
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import fraud_check_api as fraud_api
 from pcapi.core.subscription import messages as subscription_messages
+from pcapi.core.subscription import repository as subscription_repository
 from pcapi.routes.native import blueprint
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.routes.native.v3.serialization import subscription as serializers
@@ -48,4 +49,7 @@ def get_subscription_stepper() -> serializers.SubscriptionStepperResponseV3:
         subscription_message=serializers.SubscriptionMessageV3.model_validate(subscription_message)
         if subscription_message
         else None,
+        seventeen_year_old_identity_check_method=subscription_repository.get_underage_ok_identity_check_method(
+            current_user
+        ),
     )

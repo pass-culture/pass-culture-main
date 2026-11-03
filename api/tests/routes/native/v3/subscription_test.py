@@ -65,6 +65,7 @@ class SubscriptionStepperTest:
             "title": f"C'est très rapide{u_nbsp}!",
             "subtitle": f"Pour débloquer tes 50€ tu dois suivre les étapes suivantes{u_nbsp}:",
             "subscriptionMessage": None,
+            "seventeenYearOldIdentityCheckMethod": None,
         }
 
     def test_subscription_stepper_for_18yo_with_just_email_validated(self, client):
@@ -92,6 +93,7 @@ class SubscriptionStepperTest:
             "title": f"C'est très rapide{u_nbsp}!",
             "subtitle": f"Pour débloquer tes 150€ tu dois suivre les étapes suivantes{u_nbsp}:",
             "subscriptionMessage": None,
+            "seventeenYearOldIdentityCheckMethod": None,
         }
 
     def test_subscription_stepper_for_18yo_with_profile_completed(self, client):
@@ -120,6 +122,7 @@ class SubscriptionStepperTest:
             "title": f"C'est très rapide{u_nbsp}!",
             "subtitle": f"Pour débloquer tes 150€ tu dois suivre les étapes suivantes{u_nbsp}:",
             "subscriptionMessage": None,
+            "seventeenYearOldIdentityCheckMethod": None,
         }
 
     def test_subscription_stepper_for_18yo_with_identity_check_pending(self, client):
@@ -154,6 +157,7 @@ class SubscriptionStepperTest:
             "title": f"C'est très rapide{u_nbsp}!",
             "subtitle": f"Pour débloquer tes 150€ tu dois suivre les étapes suivantes{u_nbsp}:",
             "subscriptionMessage": None,
+            "seventeenYearOldIdentityCheckMethod": None,
         }
 
     @time_machine.travel("2026-03-27", tick=False)
@@ -195,6 +199,7 @@ class SubscriptionStepperTest:
                 "updatedAt": "2026-03-27T00:00:00Z",
                 "userMessage": "Ton dossier déposé sur le site demarche.numerique.gouv.fr a été refusé.",
             },
+            "seventeenYearOldIdentityCheckMethod": None,
         }
 
     @time_machine.travel("2026-03-27", tick=False)
@@ -240,6 +245,7 @@ class SubscriptionStepperTest:
                 "updatedAt": "2026-03-27T00:00:00Z",
                 "userMessage": "La vérification de ton identité a échoué. Tu peux réessayer.",
             },
+            "seventeenYearOldIdentityCheckMethod": None,
         }
 
     @time_machine.travel("2026-03-27", tick=False)
@@ -291,6 +297,7 @@ class SubscriptionStepperTest:
                 "updatedAt": "2026-03-27T00:00:00Z",
                 "userMessage": "Ton document d'identité est expiré. Réessaie avec un passeport ou une carte d'identité française en cours de validité.",
             },
+            "seventeenYearOldIdentityCheckMethod": None,
         }
 
     def test_subscription_stepper_for_18yo_with_identity_check_completed(self, client):
@@ -319,6 +326,7 @@ class SubscriptionStepperTest:
             "title": f"C'est très rapide{u_nbsp}!",
             "subtitle": f"Pour débloquer tes 150€ tu dois suivre les étapes suivantes{u_nbsp}:",
             "subscriptionMessage": None,
+            "seventeenYearOldIdentityCheckMethod": None,
         }
 
     def test_subscription_stepper_for_18yo_with_honor_statement_completed(self, client):
@@ -347,6 +355,7 @@ class SubscriptionStepperTest:
             "title": f"C'est très rapide{u_nbsp}!",
             "subtitle": f"Pour débloquer tes 150€ tu dois suivre les étapes suivantes{u_nbsp}:",
             "subscriptionMessage": None,
+            "seventeenYearOldIdentityCheckMethod": None,
         }
 
     def test_subscription_stepper_for_transition1718_beneficiary(self, client):
@@ -380,6 +389,7 @@ class SubscriptionStepperTest:
             "title": f"C'est très rapide{u_nbsp}!",
             "subtitle": f"Pour débloquer tes 150€ tu dois suivre les étapes suivantes{u_nbsp}:",
             "subscriptionMessage": None,
+            "seventeenYearOldIdentityCheckMethod": "ubble",
         }
 
     def test_subscription_stepper_for_18yo_beneficiary(self, client):
@@ -408,4 +418,5 @@ class SubscriptionStepperTest:
             "title": f"C'est très rapide{u_nbsp}!",
             "subtitle": f"Pour débloquer tes 150€ tu dois suivre les étapes suivantes{u_nbsp}:",
             "subscriptionMessage": None,
+            "seventeenYearOldIdentityCheckMethod": None,
         }

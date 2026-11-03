@@ -4435,7 +4435,8 @@
             "IdentityCheckMethod": {
                 "enum": [
                     "educonnect",
-                    "ubble"
+                    "ubble",
+                    "dms"
                 ],
                 "title": "IdentityCheckMethod",
                 "type": "string"
@@ -9892,6 +9893,17 @@
                         "anyOf": [
                             {
                                 "$ref": "#/components/schemas/SubscriptionStep"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null
+                    },
+                    "seventeenYearOldIdentityCheckMethod": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/IdentityCheckMethod"
                             },
                             {
                                 "type": "null"
