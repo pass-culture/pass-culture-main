@@ -11,7 +11,7 @@ export const BOOKING_STATUS = {
   CONFIRMED: 'confirmed',
   REIMBURSED: 'reimbursed',
   VALIDATED: 'validated',
-  PENDING: 'pending',
+  PENDING_REIMBURSEMENT: 'pending_reimbursement',
 }
 
 const ALL_DATES = 'all'

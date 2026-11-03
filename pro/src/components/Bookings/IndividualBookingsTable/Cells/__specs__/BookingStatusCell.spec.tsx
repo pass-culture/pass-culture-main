@@ -46,4 +46,36 @@ describe('IndividualBookingsStatusCell', () => {
     const title = screen.getByText('validée', { selector: 'p' })
     expect(title).toBeInTheDocument()
   })
+
+  it.each([
+    [BookingRecapStatus.BOOKED, 'réservée'],
+    [BookingRecapStatus.VALIDATED, 'validée'],
+    [BookingRecapStatus.CANCELLED, 'annulée'],
+    [BookingRecapStatus.REIMBURSED, 'remboursée'],
+    [BookingRecapStatus.CONFIRMED, 'confirmée'],
+    [BookingRecapStatus.PENDING_REIMBURSEMENT, 'en attente de remboursement'],
+  ])('should display the right status', (bookingStatus, expectedLabel) => {
+    const props = {
+      booking: bookingRecapFactory({
+        stock: bookingRecapStockFactory({
+          eventBeginningDatetime: '2020-06-05T16:31:59.102163+02:00',
+          offerName: 'Matrix',
+        }),
+        bookingIsDuo: true,
+        beneficiary: {
+          email: 'loulou.duck@example.com',
+          firstname: 'Loulou',
+          lastname: 'Duck',
+        },
+        bookingDate: '2020-01-04T20:31:12+01:00',
+        bookingToken: '5U7M6U',
+        bookingStatus: bookingStatus as BookingRecapStatus,
+      }),
+    }
+
+    renderIndividualBookingStatusCell(props)
+
+    const title = screen.getByText(expectedLabel, { selector: 'p' })
+    expect(title).toBeInTheDocument()
+  })
 })
