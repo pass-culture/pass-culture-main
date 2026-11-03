@@ -3703,22 +3703,25 @@ def _is_a_pricing_point_to_an_opened_venue(venue: models.Venue) -> bool:
 
 def close_venue(
     venue: models.Venue,
-    author: users_models.User,
+    author: users_models.User | None = None,
     comment: str | None = None,
     send_mail: bool = True,
 ) -> None:
+    author_id = author.id if author else None
     logger.info(
-        "close_venue called on venue %s by user %s with mail sent=%s",
-        venue.id,
-        author.id,
-        send_mail,
-        extra={"venue_id": venue.id, "user_id": author.id},
+        "close_venue called",
+        extra={
+            "venue_id": venue.id,
+            "author_id": author_id,
+            "mail_sent": send_mail,
+        },
     )
     siret_shift_pending_tag = criteria_api.get_siret_shift_pending_tag()
     if venue.is_closed and siret_shift_pending_tag in venue.criteria and not venue.is_pricing_point:
         criteria_api.unlink_criterion_from_venue(criterion=siret_shift_pending_tag, venue=venue)
         if send_mail:
             transactional_mails.send_venue_closed_email(venue.id)
+        return
 
     venue.state = models.VenueState.CLOSED
     history_api.add_action(history_constants.ActionType.VENUE_CLOSED, author=author, venue=venue, comment=comment)
@@ -3729,14 +3732,14 @@ def close_venue(
     criteria_api.unlink_criterion_from_venue(closure_request_tag, venue)
 
     _update_external_venue(venue, index_with_reason=IndexationReason.VENUE_CLOSED)
-    cancel_individual_bookings_on_venue_closure(venue.id, author.id)
-    cancel_collective_bookings_on_venue_closure(venue.id, author.id)
+    cancel_individual_bookings_on_venue_closure(venue.id, author_id)
+    cancel_collective_bookings_on_venue_closure(venue.id, author_id)
     offers_api.batch_delete_draft_offers(
         db.session.query(offers_models.Offer)
         .filter(offers_models.Offer.venueId == venue.id)
         .filter(offers_models.Offer.validation == offers_models.OfferValidationStatus.DRAFT)
     )
-    delete_venue_pivots_and_providers(venue.id, author.id)
+    delete_venue_pivots_and_providers(venue.id, author_id)
     db.session.flush()
 
     if _is_a_pricing_point_to_an_opened_venue(venue):
@@ -3935,3 +3938,12 @@ def notify_tagged_venues_still_closed(days_count: int) -> None:
                 },
             ),
         )
+
+
+def force_close_venue_after_closure_tag(days_count: int, apply: bool) -> None:
+    events = history_repository.get_events_regarding_venue_closure_before(days_count)
+    venues = [event.venue for event in events]
+
+    with atomic(apply=apply):
+        for venue in venues:
+            close_venue(venue, comment=f"Fermé automatiquement après {days_count} jours")

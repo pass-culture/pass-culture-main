@@ -217,3 +217,11 @@ def detect_unexpected_venue_status(days_count: int, apply: bool = False) -> None
 def notify_tagged_venues_still_closed(days_count: int, apply: bool = False) -> None:
     offerers_api.notify_tagged_venues_still_closed(days_count)
     logger.info("notify_tagged_venues_still_closed... done. days count: %d", days_count)
+
+
+@blueprint.cli.command("force_close_venue_after_closure_tag")
+@click.option("--days-count", type=int, default=90, help="Venues tagged since at least N days will be closed")
+@click.option("--apply", is_flag=True)
+def force_close_venue_after_closure_tag(days_count: int, apply: bool = False) -> None:
+    offerers_api.force_close_venue_after_closure_tag(days_count, apply)
+    logger.info("force_close_venue_after_closure_tag... done. days count: %d", days_count)
