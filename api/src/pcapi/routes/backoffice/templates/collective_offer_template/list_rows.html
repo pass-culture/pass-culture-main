@@ -10,7 +10,7 @@
              data-id="{{ collective_offer_template.id }}" />
     </td>
     <td class="text-center">
-      {% if has_permission("PRO_FRAUD_ACTIONS") and collective_offer_template.validation.value == "PENDING" %}
+      {% if collective_offer_template.validation.value == "PENDING" %}
         <div class="dropdown">
           <button type="button"
                   data-bs-toggle="dropdown"
@@ -19,16 +19,25 @@
             <i class="bi bi-three-dots-vertical"></i>
           </button>
           <ul class="dropdown-menu">
-            <li class="dropdown-item">
-              <a class="btn btn-sm d-block w-100 text-start px-3"
-                 data-bs-toggle="modal"
-                 data-bs-target="#validate-collective-offer-template-modal-{{ collective_offer_template.id }}">Valider l'offre vitrine</a>
-            </li>
-            <li class="dropdown-item">
-              <a class="btn btn-sm d-block w-100 text-start px-3"
-                 data-bs-toggle="modal"
-                 data-bs-target="#reject-collective-offer-template-modal-{{ collective_offer_template.id }}">Rejeter l'offre vitrine</a>
-            </li>
+            {% if has_permission("PRO_FRAUD_ACTIONS") %}
+              <li class="dropdown-item">
+                <a class="btn btn-sm d-block w-100 text-start px-3"
+                   data-bs-toggle="modal"
+                   data-bs-target="#validate-collective-offer-template-modal-{{ collective_offer_template.id }}">Valider l'offre vitrine</a>
+              </li>
+              <li class="dropdown-item">
+                <a class="btn btn-sm d-block w-100 text-start px-3"
+                   data-bs-toggle="modal"
+                   data-bs-target="#reject-collective-offer-template-modal-{{ collective_offer_template.id }}">Rejeter l'offre vitrine</a>
+              </li>
+            {% endif %}
+            {% if has_permission("MANAGE_OFFER_INSTRUCTOR") %}
+              <li class="dropdown-item">
+                <a class="btn btn-sm d-block w-100 text-start px-3"
+                   data-bs-toggle="modal"
+                   data-bs-target="#set-instructor-modal-{{ collective_offer_template.id }}">Attribuer un responsable</a>
+              </li>
+            {% endif %}
           </ul>
         </div>
       {% endif %}
@@ -38,6 +47,9 @@
     <td>{{ collective_offer_template.formats | format_collective_offer_formats }}</td>
     {% if has_permission("PRO_FRAUD_ACTIONS") %}
       <td>{{ collective_offer_template.flaggingValidationRules | format_offer_validation_rule_list }}</td>
+    {% endif %}
+    {% if has_permission("MANAGE_OFFER_INSTRUCTOR") %}
+      <td>{% if collective_offer_template.instructors %}{{ collective_offer_template.instructors[0].full_name }}{% endif %}</td>
     {% endif %}
     <td>
       {{ collective_offer_template.validation | format_offer_validation_status(with_badge=True) }}

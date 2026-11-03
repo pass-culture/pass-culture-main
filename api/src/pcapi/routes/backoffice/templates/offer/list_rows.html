@@ -56,6 +56,13 @@
               </li>
             {% endif %}
           {% endif %}
+          {% if has_permission("MANAGE_OFFER_INSTRUCTOR") %}
+            <li class="dropdown-item">
+              <a class="btn btn-sm d-block w-100 text-start px-3"
+                 data-bs-toggle="modal"
+                 data-bs-target="#set-instructor-modal-{{ offer.id }}">Attribuer un responsable</a>
+            </li>
+          {% endif %}
           {% if has_permission("MANAGE_CULTURAL_OUTREACH") %}
             <li class="dropdown-item">
               <a class="btn btn-sm d-block w-100 text-start px-3"
@@ -180,6 +187,9 @@
       {% endif %}
     </td>
     <td>{{ links.build_pro_user_name_to_details_link(offer.author.id, offer.author.full_name) }}</td>
+    {% if has_permission("MANAGE_OFFER_INSTRUCTOR") %}
+      <td>{% if offer.instructors %}{{ offer.instructors[0].full_name }}{% endif %}</td>
+    {% endif %}
     {% if has_permission("MANAGE_OFFERS_AND_VENUES_TAGS") %}<td>{{ offer.rankingWeight | empty_string_if_null }}</td>{% endif %}
     <td>{{ offer.validation | format_offer_validation_status(with_badge=True) }}</td>
     <td data-pc-sort-table-value="{{ offer.dateCreated.timestamp() }}">{{ offer.dateCreated | format_date }}</td>
