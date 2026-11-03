@@ -2,6 +2,7 @@ from datetime import timedelta
 from decimal import Decimal
 
 import pytest
+import sqlalchemy.exc as sa_exc
 from dateutil.relativedelta import relativedelta
 
 import pcapi.core.reactions.factories as reactions_factories
@@ -293,3 +294,20 @@ class BookingCancellationReasonsTest:
     )
     def test_is_from_backoffice(self, reason: models.BookingCancellationReasons, expected: bool):
         assert BookingCancellationReasons.is_from_backoffice(reason) is expected
+
+
+class BookingDeviceConstraintsTest:
+    @pytest.mark.parametrize("ip_address", ["82.65.58.211", "2001:db8::1", None])
+    def test_accept_single_ip_address(self, ip_address):
+        booking_device = models.BookingDevice(booking=factories.BookingFactory(), ipAddress=ip_address)
+        db.session.add(booking_device)
+        db.session.flush()
+
+        assert booking_device.ipAddress == ip_address
+
+    @pytest.mark.parametrize("ip_address", ["82.65.58.0/24", "2001:db8::/32"])
+    def test_reject_ip_address_range(self, ip_address):
+        db.session.add(models.BookingDevice(booking=factories.BookingFactory(), ipAddress=ip_address))
+
+        with pytest.raises(sa_exc.IntegrityError):
+            db.session.flush()
