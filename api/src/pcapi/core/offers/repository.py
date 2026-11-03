@@ -823,7 +823,13 @@ class ThingOffersCursor:
 
 
 @dataclasses.dataclass(frozen=True)
-class PaginatedOfferIds[CursorT: ThingOffersCursor]:
+class EventOffersCursor:
+    first_beginning_datetime: datetime.datetime | None
+    id: int
+
+
+@dataclasses.dataclass(frozen=True)
+class PaginatedOfferIds[CursorT: (ThingOffersCursor, EventOffersCursor)]:
     offer_ids: list[int]
     next_cursor: CursorT | None
     total: int
@@ -881,6 +887,90 @@ def get_paginated_thing_offer_ids(
     if len(rows) > per_page:
         rows = rows[:per_page]
         next_cursor = ThingOffersCursor(name=rows[-1].name, id=rows[-1].id)
+
+    return PaginatedOfferIds(
+        offer_ids=[row.id for row in rows],
+        next_cursor=next_cursor,
+        total=total,
+    )
+
+
+def get_paginated_event_offer_ids(
+    *,
+    venue_id: int,
+    per_page: int,
+    cursor: EventOffersCursor | None = None,
+    status: offer_mixin.OfferStatus | None = None,
+    name_keywords_or_ean: str | None = None,
+    creation_mode: str | None = None,
+    is_digital: bool | None = None,
+    order_by_desc: bool = True,
+) -> PaginatedOfferIds[EventOffersCursor]:
+    filters = _get_offers_filters(
+        venue_id=venue_id,
+        subcategory_ids=subcategories.EVENT_SUBCATEGORIES,
+        is_digital=is_digital,
+        status=status,
+        name_keywords_or_ean=name_keywords_or_ean,
+        creation_mode=creation_mode,
+    )
+
+    total = _get_capped_total(filters)
+
+    first_beginning_datetime_query = (
+        sa.select(sa.func.min(models.Stock.beginningDatetime).label("first_beginning_datetime"))
+        .where(
+            models.Stock.offerId == models.Offer.id,
+            # IS NOT TRUE rather than IS FALSE
+            # otherwise PostgreSQL 18 vastly overestimates the cost of ix_stock_bookability
+            models.Stock.isSoftDeleted.is_not(True),
+        )
+        # lateral computes this date once per offer
+        .lateral()
+    )
+    first_beginning_datetime = first_beginning_datetime_query.c.first_beginning_datetime
+
+    if cursor is not None:
+        if cursor.first_beginning_datetime is None:
+            # offers without a dated stock come last ordered by id
+            if order_by_desc:
+                filters += [first_beginning_datetime.is_(None), models.Offer.id > cursor.id]
+            else:
+                filters += [first_beginning_datetime.is_(None), models.Offer.id < cursor.id]
+        elif order_by_desc:
+            filters.append(
+                sa.or_(
+                    first_beginning_datetime < cursor.first_beginning_datetime,
+                    sa.and_(first_beginning_datetime == cursor.first_beginning_datetime, models.Offer.id > cursor.id),
+                    first_beginning_datetime.is_(None),
+                )
+            )
+        else:
+            filters.append(
+                sa.or_(
+                    first_beginning_datetime > cursor.first_beginning_datetime,
+                    sa.and_(first_beginning_datetime == cursor.first_beginning_datetime, models.Offer.id < cursor.id),
+                    first_beginning_datetime.is_(None),
+                )
+            )
+
+    if order_by_desc:
+        order_by = (first_beginning_datetime.desc().nulls_last(), models.Offer.id.asc())
+    else:
+        order_by = (first_beginning_datetime.asc().nulls_last(), models.Offer.id.desc())
+
+    rows = db.session.execute(
+        sa.select(models.Offer.id, first_beginning_datetime)
+        .join(first_beginning_datetime_query, sa.true())
+        .where(*filters)
+        .order_by(*order_by)
+        .limit(per_page + 1)
+    ).all()
+
+    next_cursor = None
+    if len(rows) > per_page:
+        rows = rows[:per_page]
+        next_cursor = EventOffersCursor(first_beginning_datetime=rows[-1].first_beginning_datetime, id=rows[-1].id)
 
     return PaginatedOfferIds(
         offer_ids=[row.id for row in rows],
