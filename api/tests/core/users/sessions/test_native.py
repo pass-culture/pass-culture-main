@@ -3,6 +3,7 @@ from datetime import timedelta
 
 import flask
 import pytest
+import sqlalchemy.orm as sa_orm
 from flask_jwt_extended.utils import create_access_token
 from flask_jwt_extended.utils import decode_token
 
@@ -12,6 +13,7 @@ from pcapi.core.users import models as users_models
 from pcapi.core.users.sessions import _native
 from pcapi.core.users.sessions import create_user_jwt_tokens
 from pcapi.core.users.sessions import disconnect_native_user_sessions
+from pcapi.core.users.sessions import get_current_native_user_session
 from pcapi.models import db
 from pcapi.routes.native.v1.serialization import common_models
 from pcapi.utils.date import get_naive_utc_now
@@ -84,6 +86,47 @@ class CreateUserJwtTokensTestTest:
         refresh_token_lifetime = token_expiration_date - token_issue_date
 
         assert refresh_token_lifetime == settings.JWT_REFRESH_TOKEN_EXTENDED_EXPIRES
+
+    def should_save_device_info_in_native_user_session(self):
+        user = users_factories.UserFactory()
+        device_info = common_models.DeviceInfo(deviceId="device-id", os="iOS", source="iPhone 13")
+
+        tokens = create_user_jwt_tokens(user=user, device_info=device_info)
+
+        native_user_session = (
+            db.session.query(users_models.NativeUserSession)
+            .filter(users_models.NativeUserSession.accessToken == decode_token(tokens.access)["jti"])
+            .one()
+        )
+        assert native_user_session.deviceId == "device-id"
+        assert native_user_session.deviceOs == "iOS"
+        assert native_user_session.deviceSource == "iPhone 13"
+
+
+class GetCurrentNativeUserSessionTest:
+    def test_get_session_of_current_access_token(self, app):
+        user = users_factories.BaseUserFactory()
+        access_token = create_access_token(identity=str(user.id))
+        current_session = users_factories.NativeUserSessionFactory(
+            user=user, accessToken=decode_token(access_token)["jti"]
+        )
+        users_factories.NativeUserSessionFactory(user=user)
+
+        with app.test_request_context(headers={"Authorization": f"Bearer {access_token}"}):
+            _native.load_jwt(flask.request, jwt_type=_native.JwtType.ACCESS)
+
+            assert get_current_native_user_session() == current_session
+
+    def test_raise_when_current_access_token_has_no_session(self, app):
+        user = users_factories.BaseUserFactory()
+        access_token = create_access_token(identity=str(user.id))
+        users_factories.NativeUserSessionFactory(user=user)
+
+        with app.test_request_context(headers={"Authorization": f"Bearer {access_token}"}):
+            _native.load_jwt(flask.request, jwt_type=_native.JwtType.ACCESS)
+
+            with pytest.raises(sa_orm.exc.NoResultFound):
+                get_current_native_user_session()
 
 
 class DeleteExpiredJwtTest:

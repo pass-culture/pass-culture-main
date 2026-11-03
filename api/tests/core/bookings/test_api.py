@@ -65,6 +65,7 @@ class BookOfferConcurrencyTest:
     @pytest.mark.usefixtures("clean_database")
     def test_create_booking(self, app):
         beneficiary = users_factories.BeneficiaryGrant18Factory()
+        native_user_session = users_factories.NativeUserSessionFactory(user=beneficiary)
         stock = offers_factories.StockFactory(price=10, dnBookedQuantity=5)
         assert db.session.query(models.Booking).count() == 0
 
@@ -76,7 +77,13 @@ class BookOfferConcurrencyTest:
             )
 
             with pytest.raises(sqlalchemy.exc.OperationalError):
-                api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
+                api.book_offer(
+                    beneficiary=beneficiary,
+                    stock_id=stock.id,
+                    quantity=1,
+                    native_user_session=native_user_session,
+                    ip_address=None,
+                )
 
         with engine.connect() as connection:
             connection.execute(
@@ -84,7 +91,13 @@ class BookOfferConcurrencyTest:
             )
 
             with pytest.raises(sqlalchemy.exc.OperationalError):
-                api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
+                api.book_offer(
+                    beneficiary=beneficiary,
+                    stock_id=stock.id,
+                    quantity=1,
+                    native_user_session=native_user_session,
+                    ip_address=None,
+                )
 
         assert db.session.query(models.Booking).count() == 0
         assert db.session.query(offers_models.Stock).filter_by(id=stock.id, dnBookedQuantity=5).count() == 1
@@ -154,13 +167,20 @@ class BookOfferTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_create_booking(self, mocked_async_index_offer_ids, app):
         beneficiary = users_factories.BeneficiaryGrant18Factory()
+        native_user_session = users_factories.NativeUserSessionFactory(user=beneficiary)
         stock = offers_factories.StockFactory(price=10, dnBookedQuantity=5, offer__bookingEmail="offerer@example.com")
         stock_id = stock.id
 
         # There is a different email for the first venue booking
         bookings_factories.BookingFactory(stock=stock)
 
-        booking = api.book_offer(beneficiary=beneficiary, stock_id=stock_id, quantity=1)
+        booking = api.book_offer(
+            beneficiary=beneficiary,
+            stock_id=stock_id,
+            quantity=1,
+            native_user_session=native_user_session,
+            ip_address=None,
+        )
 
         # One request should have been sent to Batch to trigger the event
         # HAS_BOOKED_OFFER, and another one with the user's
@@ -202,11 +222,60 @@ class BookOfferTest:
             TransactionalEmail.BOOKING_CONFIRMATION_BY_BENEFICIARY.value
         )  # to beneficiary
 
+    def test_create_booking_device(self):
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        native_user_session = users_factories.NativeUserSessionFactory(
+            user=beneficiary, deviceId="device-id", deviceOs="iOS", deviceSource="iPhone 13"
+        )
+        stock = offers_factories.StockFactory()
+
+        booking = api.book_offer(
+            beneficiary=beneficiary,
+            stock_id=stock.id,
+            quantity=1,
+            native_user_session=native_user_session,
+            ip_address="82.65.58.211",
+        )
+
+        booking_device = db.session.query(models.BookingDevice).one()
+        assert booking_device.bookingId == booking.id
+        assert booking_device.deviceId == "device-id"
+        assert booking_device.os == "iOS"
+        assert booking_device.source == "iPhone 13"
+        assert booking_device.ipAddress == "82.65.58.211"
+
+    def test_create_booking_device_without_device_info(self):
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        native_user_session = users_factories.NativeUserSessionFactory(user=beneficiary, deviceId="")
+        stock = offers_factories.StockFactory()
+
+        booking = api.book_offer(
+            beneficiary=beneficiary,
+            stock_id=stock.id,
+            quantity=1,
+            native_user_session=native_user_session,
+            ip_address=None,
+        )
+
+        booking_device = db.session.query(models.BookingDevice).one()
+        assert booking_device.bookingId == booking.id
+        assert booking_device.deviceId is None
+        assert booking_device.os is None
+        assert booking_device.source is None
+        assert booking_device.ipAddress is None
+
     def test_if_it_is_first_venue_booking_to_send_specific_email(self):
         beneficiary = users_factories.BeneficiaryGrant18Factory()
+        native_user_session = users_factories.NativeUserSessionFactory(user=beneficiary)
         stock = offers_factories.StockFactory(price=10, dnBookedQuantity=5, offer__bookingEmail="offerer@example.com")
 
-        api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
+        api.book_offer(
+            beneficiary=beneficiary,
+            stock_id=stock.id,
+            quantity=1,
+            native_user_session=native_user_session,
+            ip_address=None,
+        )
         assert len(mails_testing.outbox) == 2
         email_data1 = mails_testing.outbox[0]
         assert email_data1["template"] == dataclasses.asdict(
@@ -222,9 +291,16 @@ class BookOfferTest:
         ex_beneficiary = users_factories.BeneficiaryGrant18Factory(
             deposit__expirationDate=date_utils.get_naive_utc_now() - timedelta(days=1000)  # ~ 2 years and a half
         )
+        native_user_session = users_factories.NativeUserSessionFactory(user=ex_beneficiary)
         stock = offers_factories.StockFactory(price=0, dnBookedQuantity=5, offer__bookingEmail="offerer@example.com")
 
-        booking = api.book_offer(beneficiary=ex_beneficiary, stock_id=stock.id, quantity=1)
+        booking = api.book_offer(
+            beneficiary=ex_beneficiary,
+            stock_id=stock.id,
+            quantity=1,
+            native_user_session=native_user_session,
+            ip_address=None,
+        )
 
         assert not booking.deposit
 
@@ -253,8 +329,15 @@ class BookOfferTest:
             deposit__type=deposit_type,
             deposit__amount=500,
         )
+        native_user_session = users_factories.NativeUserSessionFactory(user=beneficiary)
 
-        booking = api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
+        booking = api.book_offer(
+            beneficiary=beneficiary,
+            stock_id=stock.id,
+            quantity=1,
+            native_user_session=native_user_session,
+            ip_address=None,
+        )
 
         assert booking.userId == beneficiary.id
         assert booking.depositId == beneficiary.deposit.id
@@ -270,10 +353,17 @@ class BookOfferTest:
         stock2 = offers_factories.StockFactory(price=10, dnBookedQuantity=5, offer=offer2)
 
         beneficiary = users_factories.BeneficiaryGrant18Factory()
+        native_user_session = users_factories.NativeUserSessionFactory(user=beneficiary)
         date_created = date_utils.get_naive_utc_now() - timedelta(days=5)
         bookings_factories.BookingFactory.create_batch(3, user=beneficiary, dateCreated=date_created, stock=stock2)
 
-        booking = api.book_offer(beneficiary=beneficiary, stock_id=stock1.id, quantity=1)
+        booking = api.book_offer(
+            beneficiary=beneficiary,
+            stock_id=stock1.id,
+            quantity=1,
+            native_user_session=native_user_session,
+            ip_address=None,
+        )
 
         # One request should have been sent to Batch to trigger the event
         # HAS_BOOKED_OFFER, and another one with the user's
@@ -290,8 +380,15 @@ class BookOfferTest:
     def test_booking_on_digital_offer_with_activation_stock(self):
         stock = offers_factories.StockWithActivationCodesFactory(price=10, dnBookedQuantity=3)
         beneficiary = users_factories.BeneficiaryGrant18Factory()
+        native_user_session = users_factories.NativeUserSessionFactory(user=beneficiary)
 
-        booking = api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
+        booking = api.book_offer(
+            beneficiary=beneficiary,
+            stock_id=stock.id,
+            quantity=1,
+            native_user_session=native_user_session,
+            ip_address=None,
+        )
 
         assert booking.status is BookingStatus.USED
         assert booking.validationAuthorType == models.BookingValidationAuthorType.AUTO
@@ -302,8 +399,15 @@ class BookOfferTest:
         offer = offers_factories.DigitalOfferFactory()
         stock = offers_factories.StockFactory(price=10, dnBookedQuantity=5, offer=offer)
         beneficiary = users_factories.BeneficiaryGrant18Factory()
+        native_user_session = users_factories.NativeUserSessionFactory(user=beneficiary)
 
-        booking = api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
+        booking = api.book_offer(
+            beneficiary=beneficiary,
+            stock_id=stock.id,
+            quantity=1,
+            native_user_session=native_user_session,
+            ip_address=None,
+        )
 
         assert booking.status is not BookingStatus.USED
         event = db.session.query(finance_models.FinanceEvent).filter_by(booking=booking).first()
@@ -313,8 +417,15 @@ class BookOfferTest:
         ten_days_from_now = date_utils.get_naive_utc_now() + timedelta(days=10)
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         stock = offers_factories.EventStockFactory(price=10, beginningDatetime=ten_days_from_now, dnBookedQuantity=5)
+        native_user_session = users_factories.NativeUserSessionFactory(user=beneficiary)
 
-        booking = api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
+        booking = api.book_offer(
+            beneficiary=beneficiary,
+            stock_id=stock.id,
+            quantity=1,
+            native_user_session=native_user_session,
+            ip_address=None,
+        )
 
         # One request should have been sent to Batch to trigger the event
         # HAS_BOOKED_OFFER, and another one with the user's
@@ -339,69 +450,116 @@ class BookOfferTest:
 
     def test_book_stock_with_unlimited_quantity(self):
         beneficiary = users_factories.BeneficiaryGrant18Factory()
+        native_user_session = users_factories.NativeUserSessionFactory(user=beneficiary)
         stock = offers_factories.StockFactory(price=10, quantity=None)
 
-        booking = api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
+        booking = api.book_offer(
+            beneficiary=beneficiary,
+            stock_id=stock.id,
+            quantity=1,
+            native_user_session=native_user_session,
+            ip_address=None,
+        )
 
         assert booking.quantity == 1
         assert stock.quantity is None
 
     def test_raise_if_is_admin(self):
         user = users_factories.AdminFactory()
+        native_user_session = users_factories.NativeUserSessionFactory(user=user)
         stock = offers_factories.StockFactory()
 
         with pytest.raises(exceptions.UserHasInsufficientFunds):
-            api.book_offer(beneficiary=user, stock_id=stock.id, quantity=1)
+            api.book_offer(
+                beneficiary=user,
+                stock_id=stock.id,
+                quantity=1,
+                native_user_session=native_user_session,
+                ip_address=None,
+            )
 
     def test_raise_if_pro_user(self):
         pro = users_factories.ProFactory()
+        native_user_session = users_factories.NativeUserSessionFactory(user=pro)
         stock = offers_factories.StockFactory()
 
         with pytest.raises(exceptions.UserHasInsufficientFunds):
-            api.book_offer(beneficiary=pro, stock_id=stock.id, quantity=1)
+            api.book_offer(
+                beneficiary=pro,
+                stock_id=stock.id,
+                quantity=1,
+                native_user_session=native_user_session,
+                ip_address=None,
+            )
 
     def test_raise_if_no_more_stock(self):
         booking = bookings_factories.BookingFactory(stock__quantity=1)
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        native_user_session = users_factories.NativeUserSessionFactory(user=beneficiary)
+
         with pytest.raises(exceptions.StockIsNotBookable):
             api.book_offer(
-                beneficiary=users_factories.BeneficiaryGrant18Factory(),
+                beneficiary=beneficiary,
                 stock_id=booking.stock.id,
                 quantity=1,
+                native_user_session=native_user_session,
+                ip_address=None,
             )
 
     def test_raise_if_user_has_already_booked(self):
         booking = bookings_factories.BookingFactory()
+        native_user_session = users_factories.NativeUserSessionFactory(user=booking.user)
+
         with pytest.raises(exceptions.OfferIsAlreadyBooked):
             api.book_offer(
                 beneficiary=booking.user,
                 stock_id=booking.stock.id,
                 quantity=1,
+                native_user_session=native_user_session,
+                ip_address=None,
             )
 
     def test_raise_if_user_has_no_more_money(self):
         stock = offers_factories.StockFactory(price=800)
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        native_user_session = users_factories.NativeUserSessionFactory(user=beneficiary)
+
         with pytest.raises(exceptions.UserHasInsufficientFunds):
             api.book_offer(
-                beneficiary=users_factories.BeneficiaryGrant18Factory(),
+                beneficiary=beneficiary,
                 stock_id=stock.id,
                 quantity=1,
+                native_user_session=native_user_session,
+                ip_address=None,
             )
 
     def test_raise_if_invalid_quantity(self):
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        native_user_session = users_factories.NativeUserSessionFactory(user=beneficiary)
+
         with pytest.raises(exceptions.QuantityIsInvalid):
             api.book_offer(
-                beneficiary=users_factories.BeneficiaryGrant18Factory(),
+                beneficiary=beneficiary,
                 stock_id=offers_factories.StockFactory().id,
                 quantity=2,
+                native_user_session=native_user_session,
+                ip_address=None,
             )
 
     def test_logs_event_to_batch(self):
         # Given
         stock = offers_factories.StockFactory(price=10)
         beneficiary = users_factories.BeneficiaryGrant18Factory()
+        native_user_session = users_factories.NativeUserSessionFactory(user=beneficiary)
 
         # When
-        api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
+        api.book_offer(
+            beneficiary=beneficiary,
+            stock_id=stock.id,
+            quantity=1,
+            native_user_session=native_user_session,
+            ip_address=None,
+        )
 
         # Then
         assert push_testing.requests[0] == {
@@ -420,8 +578,15 @@ class BookOfferTest:
 
     def test_caledonian_offer_is_bookable(self):
         stock = offers_factories.StockFactory(offer__venue=offerers_factories.CaledonianVenueFactory())
-
-        booking = api.book_offer(beneficiary=users_factories.BeneficiaryGrant18Factory(), stock_id=stock.id, quantity=1)
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        native_user_session = users_factories.NativeUserSessionFactory(user=beneficiary)
+        booking = api.book_offer(
+            beneficiary=beneficiary,
+            stock_id=stock.id,
+            quantity=1,
+            native_user_session=native_user_session,
+            ip_address=None,
+        )
 
         assert booking.status is BookingStatus.CONFIRMED
 
@@ -429,11 +594,18 @@ class BookOfferTest:
         def test_book_offer_with_first_activation_code_available(self):
             # Given
             beneficiary = users_factories.BeneficiaryGrant18Factory()
+            native_user_session = users_factories.NativeUserSessionFactory(user=beneficiary)
             stock = offers_factories.StockWithActivationCodesFactory()
             first_activation_code = stock.activationCodes[0]
 
             # When
-            booking = api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
+            booking = api.book_offer(
+                beneficiary=beneficiary,
+                stock_id=stock.id,
+                quantity=1,
+                native_user_session=native_user_session,
+                ip_address=None,
+            )
 
             # Then
             assert booking.activationCode == first_activation_code
@@ -441,6 +613,7 @@ class BookOfferTest:
         def test_ignore_activation_that_is_already_used_for_booking(self):
             # Given
             beneficiary = users_factories.BeneficiaryGrant18Factory()
+            native_user_session = users_factories.NativeUserSessionFactory(user=beneficiary)
             booking = bookings_factories.UsedBookingFactory(token="ABCDEF")
             stock = offers_factories.StockWithActivationCodesFactory(
                 activationCodes=["code-vgya451afvyux", "code-bha45k15fuz"]
@@ -448,7 +621,13 @@ class BookOfferTest:
             stock.activationCodes[0].booking = booking
 
             # When
-            booking = api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
+            booking = api.book_offer(
+                beneficiary=beneficiary,
+                stock_id=stock.id,
+                quantity=1,
+                native_user_session=native_user_session,
+                ip_address=None,
+            )
 
             # Then
             assert booking.activationCode.code == "code-bha45k15fuz"
@@ -456,13 +635,20 @@ class BookOfferTest:
         def test_raise_when_no_activation_code_available(self):
             # Given
             beneficiary = users_factories.BeneficiaryGrant18Factory()
+            native_user_session = users_factories.NativeUserSessionFactory(user=beneficiary)
             booking = bookings_factories.UsedBookingFactory(token="ABCDEF")
             stock = offers_factories.StockWithActivationCodesFactory(activationCodes=["code-vgya451afvyux"])
             stock.activationCodes[0].booking = booking
 
             # When
             with pytest.raises(exceptions.NoActivationCodeAvailable) as error:
-                api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
+                api.book_offer(
+                    beneficiary=beneficiary,
+                    stock_id=stock.id,
+                    quantity=1,
+                    native_user_session=native_user_session,
+                    ip_address=None,
+                )
 
             # Then
             assert db.session.query(Booking).count() == 1
@@ -473,13 +659,20 @@ class BookOfferTest:
         def test_raise_when_activation_codes_are_expired(self):
             # Given
             beneficiary = users_factories.BeneficiaryGrant18Factory()
+            native_user_session = users_factories.NativeUserSessionFactory(user=beneficiary)
             stock = offers_factories.StockWithActivationCodesFactory(
                 activationCodes__expirationDate=datetime(2000, 1, 1)
             )
 
             # When
             with pytest.raises(exceptions.NoActivationCodeAvailable) as error:
-                api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
+                api.book_offer(
+                    beneficiary=beneficiary,
+                    stock_id=stock.id,
+                    quantity=1,
+                    native_user_session=native_user_session,
+                    ip_address=None,
+                )
 
             # Then
             assert error.value.errors == {
@@ -504,6 +697,7 @@ class BookOfferTest:
             ]
 
             beneficiary = users_factories.BeneficiaryGrant18Factory()
+            native_user_session = users_factories.NativeUserSessionFactory(user=beneficiary)
             ems_provider = get_provider_by_local_class("EMSStocks")
             venue_provider = providers_factories.VenueProviderFactory(provider=ems_provider)
             cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(venue=venue_provider.venue)
@@ -515,7 +709,13 @@ class BookOfferTest:
             )
             stock = offers_factories.EventStockFactory(offer=offer, idAtProviders="1111%2222%EMS#3333")
 
-            booking = api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
+            booking = api.book_offer(
+                beneficiary=beneficiary,
+                stock_id=stock.id,
+                quantity=1,
+                native_user_session=native_user_session,
+                ip_address=None,
+            )
 
             assert len(booking.externalBookings) == 1
             assert booking.externalBookings[0].barcode == "111"
@@ -554,6 +754,7 @@ class BookOfferTest:
             ]
 
             beneficiary = users_factories.BeneficiaryGrant18Factory()
+            native_user_session = users_factories.NativeUserSessionFactory(user=beneficiary)
             ems_provider = get_provider_by_local_class("EMSStocks")
             venue_provider = providers_factories.VenueProviderFactory(provider=ems_provider)
             cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(venue=venue_provider.venue)
@@ -566,7 +767,13 @@ class BookOfferTest:
             )
             stock = offers_factories.EventStockFactory(offer=offer, idAtProviders="1111%2222%EMS#3333")
 
-            booking = api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=2)
+            booking = api.book_offer(
+                beneficiary=beneficiary,
+                stock_id=stock.id,
+                quantity=2,
+                native_user_session=native_user_session,
+                ip_address=None,
+            )
 
             assert len(booking.externalBookings) == 2
             assert booking.externalBookings[0].barcode == "111"
@@ -607,6 +814,7 @@ class BookOfferTest:
             mock_generate_booking_token.return_value = token
 
             beneficiary = users_factories.BeneficiaryGrant18Factory()
+            native_user_session = users_factories.NativeUserSessionFactory(user=beneficiary)
             ems_provider = get_provider_by_local_class("EMSStocks")
             venue_provider = providers_factories.VenueProviderFactory(
                 provider=ems_provider, venueIdAtOfferProvider="9997"
@@ -634,7 +842,13 @@ class BookOfferTest:
             booking_adapter = requests_mock.post(url=re.compile(rf"{url}"), exc=exception)
 
             with pytest.raises(external_bookings_exceptions.TimeoutException):
-                api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
+                api.book_offer(
+                    beneficiary=beneficiary,
+                    stock_id=stock.id,
+                    quantity=1,
+                    native_user_session=native_user_session,
+                    ip_address=None,
+                )
 
             assert not db.session.query(Booking).all()
             assert booking_adapter.call_count == 1
@@ -718,6 +932,7 @@ class BookOfferTest:
             mock_generate_booking_token.return_value = token
 
             beneficiary = users_factories.BeneficiaryGrant18Factory()
+            native_user_session = users_factories.NativeUserSessionFactory(user=beneficiary)
             ems_provider = get_provider_by_local_class("EMSStocks")
             venue_provider = providers_factories.VenueProviderFactory(
                 provider=ems_provider, venueIdAtOfferProvider="9997"
@@ -745,7 +960,13 @@ class BookOfferTest:
             booking_adapter = requests_mock.post(url=re.compile(rf"{url}"), exc=exception)
 
             with pytest.raises(external_bookings_exceptions.TimeoutException):
-                api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
+                api.book_offer(
+                    beneficiary=beneficiary,
+                    stock_id=stock.id,
+                    quantity=1,
+                    native_user_session=native_user_session,
+                    ip_address=None,
+                )
 
             assert not db.session.query(Booking).all()
             assert booking_adapter.call_count == 1
@@ -799,6 +1020,7 @@ class BookOfferTest:
             mock_generate_booking_token.return_value = token
 
             beneficiary = users_factories.BeneficiaryGrant18Factory()
+            native_user_session = users_factories.NativeUserSessionFactory(user=beneficiary)
             ems_provider = get_provider_by_local_class("EMSStocks")
             venue_provider = providers_factories.VenueProviderFactory(
                 provider=ems_provider, venueIdAtOfferProvider="9997"
@@ -826,7 +1048,13 @@ class BookOfferTest:
             booking_adapter = requests_mock.post(url=re.compile(rf"{url}"), exc=exception)
 
             with pytest.raises(external_bookings_exceptions.TimeoutException):
-                api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
+                api.book_offer(
+                    beneficiary=beneficiary,
+                    stock_id=stock.id,
+                    quantity=1,
+                    native_user_session=native_user_session,
+                    ip_address=None,
+                )
 
             assert not db.session.query(Booking).all()
             assert booking_adapter.call_count == 1
@@ -927,6 +1155,7 @@ class BookOfferTest:
             # Given
 
             beneficiary = users_factories.BeneficiaryGrant18Factory()
+            native_user_session = users_factories.NativeUserSessionFactory(user=beneficiary)
             cds_provider = get_provider_by_local_class("CDSStocks")
             venue_provider = providers_factories.VenueProviderFactory(provider=cds_provider)
             cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(venue=venue_provider.venue)
@@ -939,7 +1168,13 @@ class BookOfferTest:
             stock_solo = offers_factories.EventStockFactory(offer=offer_solo, idAtProviders="1111%4444#111")
 
             # When
-            booking = api.book_offer(beneficiary=beneficiary, stock_id=stock_solo.id, quantity=1)
+            booking = api.book_offer(
+                beneficiary=beneficiary,
+                stock_id=stock_solo.id,
+                quantity=1,
+                native_user_session=native_user_session,
+                ip_address=None,
+            )
 
             # Then
             assert len(booking.externalBookings) == 1
@@ -955,6 +1190,7 @@ class BookOfferTest:
             ]
             # Given
             beneficiary = users_factories.BeneficiaryGrant18Factory()
+            native_user_session = users_factories.NativeUserSessionFactory(user=beneficiary)
             cds_provider = get_provider_by_local_class("CDSStocks")
             venue_provider = providers_factories.VenueProviderFactory(provider=cds_provider)
             cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(venue=venue_provider.venue)
@@ -967,7 +1203,13 @@ class BookOfferTest:
             stock_duo = offers_factories.EventStockFactory(offer=offer_duo, idAtProviders="1111%4444#111")
 
             # When
-            booking = api.book_offer(beneficiary=beneficiary, stock_id=stock_duo.id, quantity=1)
+            booking = api.book_offer(
+                beneficiary=beneficiary,
+                stock_id=stock_duo.id,
+                quantity=1,
+                native_user_session=native_user_session,
+                ip_address=None,
+            )
 
             # Then
             assert len(booking.externalBookings) == 2
@@ -982,6 +1224,7 @@ class BookOfferTest:
             venue_provider = providers_factories.VenueProviderFactory(provider=cds_provider, isActive=False)
             providers_factories.CinemaProviderPivotFactory(venue=venue_provider.venue, provider=cds_provider)
             beneficiary = users_factories.BeneficiaryGrant18Factory()
+            native_user_session = users_factories.NativeUserSessionFactory(user=beneficiary)
 
             offer_solo = offers_factories.EventOfferFactory(
                 name="Séance ciné solo",
@@ -990,8 +1233,15 @@ class BookOfferTest:
                 lastProviderId=cds_provider.id,
             )
             stock_solo = offers_factories.EventStockFactory(offer=offer_solo, idAtProviders="1111%4444#111/datetime")
+
             with pytest.raises(providers_exceptions.InactiveProvider):
-                api.book_offer(beneficiary=beneficiary, stock_id=stock_solo.id, quantity=1)
+                api.book_offer(
+                    beneficiary=beneficiary,
+                    stock_id=stock_solo.id,
+                    quantity=1,
+                    native_user_session=native_user_session,
+                    ip_address=None,
+                )
 
             assert db.session.query(Booking).count() == 0
 
@@ -1007,6 +1257,7 @@ class BookOfferTest:
             venue_provider = providers_factories.VenueProviderFactory(provider=cds_provider)
             providers_factories.CinemaProviderPivotFactory(venue=venue_provider.venue, provider=cds_provider)
             beneficiary = users_factories.BeneficiaryGrant18Factory()
+            native_user_session = users_factories.NativeUserSessionFactory(user=beneficiary)
 
             offer_solo = offers_factories.EventOfferFactory(
                 name="Séance ciné solo",
@@ -1018,13 +1269,20 @@ class BookOfferTest:
 
             # When
             with pytest.raises(ValueError):
-                api.book_offer(beneficiary=beneficiary, stock_id=stock_solo.id, quantity=1)
+                api.book_offer(
+                    beneficiary=beneficiary,
+                    stock_id=stock_solo.id,
+                    quantity=1,
+                    native_user_session=native_user_session,
+                    ip_address=None,
+                )
 
             assert db.session.query(Booking).count() == 0
 
         @pytest.mark.features(ENABLE_CDS_IMPLEMENTATION=True)
         def test_book_manual_offer(self):
             beneficiary = users_factories.BeneficiaryGrant18Factory()
+            native_user_session = users_factories.NativeUserSessionFactory(user=beneficiary)
             cds_provider = get_provider_by_local_class("CDSStocks")
             venue_provider = providers_factories.VenueProviderFactory(provider=cds_provider)
             providers_factories.CinemaProviderPivotFactory(venue=venue_provider.venue)
@@ -1035,7 +1293,13 @@ class BookOfferTest:
             )
             stock = offers_factories.EventStockFactory(offer=non_synced_offer)
 
-            booking = api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
+            booking = api.book_offer(
+                beneficiary=beneficiary,
+                stock_id=stock.id,
+                quantity=1,
+                native_user_session=native_user_session,
+                ip_address=None,
+            )
 
             assert booking.token
             assert len(booking.externalBookings) == 0
@@ -1051,6 +1315,7 @@ class BookOfferTest:
         def test_not_enough_seats_or_sold_out_failure(self, json_body, expected_remaining_quantity, requests_mock):
             external_booking_url = "https://api.example.com/"
             beneficiary = users_factories.BeneficiaryGrant18Factory()
+            native_user_session = users_factories.NativeUserSessionFactory(user=beneficiary)
             provider = providers_factories.ProviderFactory(
                 bookingExternalUrl=external_booking_url,
                 cancelExternalUrl=external_booking_url,
@@ -1066,7 +1331,9 @@ class BookOfferTest:
             requests_mock.post(external_booking_url, json=json_body, status_code=409)
 
             with pytest.raises(external_bookings_exceptions.ShowSoldOutException):
-                api.book_offer(beneficiary, stock.id, quantity=2)
+                api.book_offer(
+                    beneficiary, stock.id, quantity=2, native_user_session=native_user_session, ip_address=None
+                )
 
             assert not db.session.query(models.Booking).count()
             assert stock.quantity == 10 + expected_remaining_quantity
@@ -1074,6 +1341,7 @@ class BookOfferTest:
         @pytest.mark.features(DISABLE_CDS_EXTERNAL_BOOKINGS=True)
         def test_should_raise_error_when_cds_external_bookings_are_disabled(self):
             beneficiary = users_factories.BeneficiaryGrant18Factory()
+            native_user_session = users_factories.NativeUserSessionFactory(user=beneficiary)
             cds_provider = get_provider_by_local_class("CDSStocks")
             venue_provider = providers_factories.VenueProviderFactory(provider=cds_provider)
             cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(venue=venue_provider.venue)
@@ -1087,7 +1355,13 @@ class BookOfferTest:
 
             # When
             with pytest.raises(feature.DisabledFeatureError) as exc:
-                api.book_offer(beneficiary=beneficiary, stock_id=stock_solo.id, quantity=1)
+                api.book_offer(
+                    beneficiary=beneficiary,
+                    stock_id=stock_solo.id,
+                    quantity=1,
+                    native_user_session=native_user_session,
+                    ip_address=None,
+                )
 
             assert db.session.query(Booking).count() == 0
             assert str(exc.value) == "DISABLE_CDS_EXTERNAL_BOOKINGS is active"
@@ -1095,6 +1369,7 @@ class BookOfferTest:
         @pytest.mark.features(DISABLE_BOOST_EXTERNAL_BOOKINGS=True)
         def test_should_raise_error_when_boost_external_bookings_are_disabled(self):
             beneficiary = users_factories.BeneficiaryGrant18Factory()
+            native_user_session = users_factories.NativeUserSessionFactory(user=beneficiary)
             boost_provider = get_provider_by_local_class("BoostStocks")
             venue_provider = providers_factories.VenueProviderFactory(provider=boost_provider)
             cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(venue=venue_provider.venue)
@@ -1108,7 +1383,13 @@ class BookOfferTest:
 
             # When
             with pytest.raises(feature.DisabledFeatureError) as exc:
-                api.book_offer(beneficiary=beneficiary, stock_id=stock_solo.id, quantity=1)
+                api.book_offer(
+                    beneficiary=beneficiary,
+                    stock_id=stock_solo.id,
+                    quantity=1,
+                    native_user_session=native_user_session,
+                    ip_address=None,
+                )
 
             assert db.session.query(Booking).count() == 0
             assert str(exc.value) == "DISABLE_BOOST_EXTERNAL_BOOKINGS is active"
@@ -1116,6 +1397,7 @@ class BookOfferTest:
         @pytest.mark.features(ENABLE_CGR_INTEGRATION=True, DISABLE_CGR_EXTERNAL_BOOKINGS=True)
         def test_should_raise_error_when_cgr_external_bookings_are_disabled(self):
             beneficiary = users_factories.BeneficiaryGrant18Factory()
+            native_user_session = users_factories.NativeUserSessionFactory(user=beneficiary)
             boost_provider = get_provider_by_local_class("CGRStocks")
             venue_provider = providers_factories.VenueProviderFactory(provider=boost_provider)
             cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(venue=venue_provider.venue)
@@ -1129,7 +1411,13 @@ class BookOfferTest:
 
             # When
             with pytest.raises(feature.DisabledFeatureError) as exc:
-                api.book_offer(beneficiary=beneficiary, stock_id=stock_solo.id, quantity=1)
+                api.book_offer(
+                    beneficiary=beneficiary,
+                    stock_id=stock_solo.id,
+                    quantity=1,
+                    native_user_session=native_user_session,
+                    ip_address=None,
+                )
 
             assert db.session.query(Booking).count() == 0
             assert str(exc.value) == "DISABLE_CGR_EXTERNAL_BOOKINGS is active"

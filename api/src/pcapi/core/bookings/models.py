@@ -226,6 +226,14 @@ class Booking(PcObject, Model):
         "FraudulentBookingTag", foreign_keys="FraudulentBookingTag.bookingId", back_populates="booking", uselist=False
     )
 
+    bookingDevice: sa_orm.Mapped["BookingDevice | None"] = sa_orm.relationship(
+        "BookingDevice",
+        foreign_keys="BookingDevice.bookingId",
+        back_populates="booking",
+        uselist=False,
+        passive_deletes=True,
+    )
+
     achievements: sa_orm.Mapped[list["Achievement"]] = sa_orm.relationship(
         "Achievement", foreign_keys="Achievement.bookingId", back_populates="booking"
     )
@@ -741,3 +749,23 @@ class FraudulentBookingTag(PcObject, Model):
     venue: sa_orm.Mapped["offerers_models.Venue"] = sa_orm.relationship("Venue", foreign_keys=[venueId])
 
     author: sa_orm.Mapped["users_models.User | None"] = sa_orm.relationship("User", foreign_keys=[authorId])
+
+
+class BookingDevice(PcObject, Model):
+    __tablename__ = "booking_device"
+
+    bookingId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("booking.id", ondelete="CASCADE"), nullable=False, unique=True
+    )
+    booking: sa_orm.Mapped["Booking"] = sa_orm.relationship(
+        "Booking", foreign_keys=[bookingId], back_populates="bookingDevice"
+    )
+
+    deviceId: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
+    os: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
+    source: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
+    ipAddress: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
+
+    dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
+        sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now
+    )
