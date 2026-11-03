@@ -9,7 +9,6 @@ import { axe } from 'vitest-axe'
 import { api } from '@/apiClient/api'
 import type { CollectiveOfferTemplateResponseModel } from '@/apiClient/v1'
 import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
-import * as createFromTemplateUtils from '@/commons/core/OfferEducational/utils/createOfferFromTemplate'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { collectiveOfferTemplateFactory } from '@/commons/utils/factories/collectiveApiFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
@@ -33,10 +32,12 @@ vi.mock('@/apiClient/api', () => ({
   },
 }))
 
+const createOfferFromTemplate = vi.hoisted(() => vi.fn())
+
 vi.mock(
   '@/commons/core/OfferEducational/utils/createOfferFromTemplate',
   () => ({
-    createOfferFromTemplate: vi.fn(),
+    useCreateOfferFromTemplate: () => createOfferFromTemplate,
   })
 )
 
@@ -120,8 +121,6 @@ describe('CollectiveOfferConfirmation', () => {
   it('should create a bookable offer after clicking a template offer an offer', async () => {
     renderCollectiveOfferSelectionDuplication()
 
-    vi.spyOn(createFromTemplateUtils, 'createOfferFromTemplate')
-
     expect(
       await screen.findByText('Les dernières offres vitrines créées')
     ).toBeInTheDocument()
@@ -133,7 +132,7 @@ describe('CollectiveOfferConfirmation', () => {
     })
     await userEvent.click(inputOffer)
 
-    expect(createFromTemplateUtils.createOfferFromTemplate).toHaveBeenCalled()
+    expect(createOfferFromTemplate).toHaveBeenCalled()
   })
 
   it('should display message when no offer', async () => {
