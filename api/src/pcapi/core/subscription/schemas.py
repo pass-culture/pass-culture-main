@@ -79,6 +79,7 @@ class SubscriptionItem:
 class IdentityCheckMethod(enum.Enum):
     EDUCONNECT = "educonnect"
     UBBLE = "ubble"
+    DMS = "dms"
 
 
 class MaintenancePageType(enum.Enum):
