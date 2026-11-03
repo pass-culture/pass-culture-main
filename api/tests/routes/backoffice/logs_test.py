@@ -6,6 +6,7 @@ import pytest
 from flask import url_for
 
 from pcapi.connectors.google_logs import Log
+from pcapi.connectors.google_logs import RateLimitExceeded
 from pcapi.connectors.google_logs import Severity
 from pcapi.core import token as token_utils
 from pcapi.core.permissions import models as perm_models
@@ -206,7 +207,7 @@ class GetListLogsRowsTest(GetEndpointHelper):
 
         token = token_utils.create_token(token_utils.TokenType.LOG_SEARCH, search_data, ttl=10)
 
-        with patch("pcapi.routes.backoffice.logs.blueprint.get_backend", return_value=backend_mock):
+        with patch("pcapi.routes.backoffice.logs.blueprint.google_logs.get_backend", return_value=backend_mock):
             with assert_num_queries(self.expected_num_queries):
                 response = authenticated_client.get(url_for(self.endpoint, search_token=token))
                 assert response.status_code == 200
@@ -224,7 +225,7 @@ class GetListLogsRowsTest(GetEndpointHelper):
         assert f'id="token-{token}"' in response.text
         backend_mock.get_logs.assert_called_with(
             filters='field1>"value1"\nfield2<"value2"\ntimestamp>"2026-09-21T14:11:40Z"\ntimestamp<"2026-09-21T14:13:20Z"\n',
-            limit=20,
+            limit=10,
         )
 
     def test_auto_update(self, authenticated_client, clear_redis):
@@ -234,7 +235,7 @@ class GetListLogsRowsTest(GetEndpointHelper):
                 insert_id="azert123",
                 timestamp=1789999902,
                 text="super important",
-                user_id=0,
+                user_id=123,
                 impersonator_id=0,
                 severity=Severity.INFO,
                 extra={
@@ -265,7 +266,7 @@ class GetListLogsRowsTest(GetEndpointHelper):
 
         token = token_utils.create_token(token_utils.TokenType.LOG_SEARCH, search_data, ttl=10)
 
-        with patch("pcapi.routes.backoffice.logs.blueprint.get_backend", return_value=backend_mock):
+        with patch("pcapi.routes.backoffice.logs.blueprint.google_logs.get_backend", return_value=backend_mock):
             with assert_num_queries(self.expected_num_queries):
                 response = authenticated_client.get(url_for(self.endpoint, search_token=token))
                 assert response.status_code == 200
@@ -283,5 +284,50 @@ class GetListLogsRowsTest(GetEndpointHelper):
         assert f'id="token-{token}"' in response.text
         backend_mock.get_logs.assert_called_with(
             filters='field1>"value1"\nfield2<"value2"\ntimestamp>"2026-09-21T02:13:20Z"\ntimestamp<"2026-09-21T14:13:20Z"\n',
-            limit=20,
+            limit=10,
+        )
+
+    def test_rate_limited(self, authenticated_client, clear_redis):
+        rate_limit_timeout = 5544332211
+        backend_mock = MagicMock()
+        backend_mock.get_logs.side_effect = RateLimitExceeded(wait_until=rate_limit_timeout)
+
+        search_data = {
+            "filters": [
+                {
+                    "field": "field1",
+                    "operator": ">",
+                    "value": "value1",
+                },
+                {
+                    "field": "field2",
+                    "operator": "<",
+                    "value": "value2",
+                },
+            ],
+            "end_date": 1790000000,
+            "start_date": 1780000000,
+            "original_start_date": 1780000000,
+            "last_insert_id": "",
+        }
+
+        token = token_utils.create_token(token_utils.TokenType.LOG_SEARCH, search_data, ttl=10)
+
+        with patch("pcapi.routes.backoffice.logs.blueprint.google_logs.get_backend", return_value=backend_mock):
+            with assert_num_queries(self.expected_num_queries - 1):  # no users query
+                response = authenticated_client.get(url_for(self.endpoint, search_token=token))
+                assert response.status_code == 200
+
+        new_token, final_search_data = self._get_search_data(response.text)
+        assert final_search_data
+        assert final_search_data["filters"] == search_data["filters"]
+        assert final_search_data["end_date"] == search_data["end_date"]
+        assert final_search_data["original_start_date"] == search_data["original_start_date"]
+        assert final_search_data["last_insert_id"] == ""
+        assert f'id="btn-{new_token}' not in response.text
+        assert f'id="token-{token}"' in response.text
+        assert "delay:" in response.text
+        backend_mock.get_logs.assert_called_with(
+            filters='field1>"value1"\nfield2<"value2"\ntimestamp>"2026-09-21T02:13:20Z"\ntimestamp<"2026-09-21T14:13:20Z"\n',
+            limit=10,
         )
