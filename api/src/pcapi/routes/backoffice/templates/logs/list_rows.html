@@ -71,7 +71,7 @@
       {% if auto_next %}
         <div id="spin-{{ next_page_token }}"
              hx-get="{{ url_for('backoffice.logs.list_logs_rows', search_token=next_page_token) }}"
-             hx-trigger="load">{{ build_loading_spinner() }}</div>
+             hx-trigger="load {%+ if delay %}delay:{{ delay }}s{% endif +%}  ">{{ build_loading_spinner() }}</div>
       {% else %}
         <button id="btn-{{ next_page_token }}"
                 class="btn py-2 px-3 btn-primary"

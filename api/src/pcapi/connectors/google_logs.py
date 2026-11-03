@@ -3,6 +3,7 @@ import time
 import typing
 from dataclasses import dataclass
 
+from google.api_core.exceptions import ResourceExhausted
 from google.cloud.logging_v2.services.logging_service_v2 import LoggingServiceV2Client
 from google.cloud.logging_v2.services.logging_service_v2.pagers import ListLogEntriesPager
 from google.cloud.logging_v2.types import ListLogEntriesRequest
@@ -32,6 +33,11 @@ class Log:
     impersonator_id: int | None
     severity: Severity
     extra: dict
+
+
+class RateLimitExceeded(Exception):
+    def __init__(self, wait_until: int):
+        self.wait_until = wait_until
 
 
 def get_backend(resource_name: str = settings.GCP_LOGVIEW_RESOURCE_NAME) -> "BaseBackend":
@@ -85,7 +91,7 @@ class GoogleLogsBackend(BaseBackend):
             self._client = LoggingServiceV2Client()
         return self._client
 
-    def _list_log_entries(self, filters: str, page_size: int = 50) -> ListLogEntriesPager:
+    def _list_log_entries(self, filters: str, page_size: int = 20) -> ListLogEntriesPager:
         return self.client.list_log_entries(
             ListLogEntriesRequest(
                 resource_names=[self.resource_name],
@@ -95,15 +101,19 @@ class GoogleLogsBackend(BaseBackend):
             )
         )
 
-    def get_logs(self, filters: str, limit: int = 50) -> typing.Generator[Log]:
-        for _, log in zip(range(limit), self._list_log_entries(filters, page_size=limit)):
-            payload = log.json_payload
-            yield Log(
-                insert_id=log.insert_id,
-                timestamp=log.timestamp.timestamp(),  # type: ignore [attr-defined]
-                text=payload.get("message", ""),  # type: ignore [attr-defined]
-                user_id=int(payload["user_id"]) if payload.get("user_id") else None,  # type: ignore [arg-type, attr-defined]
-                impersonator_id=int(payload["impersonator_id"]) if payload.get("impersonator_id") else None,  # type: ignore [arg-type, attr-defined]
-                severity=Severity(log.severity),
-                extra=dict(payload.get("extra", {})),  # type: ignore [attr-defined]
-            )
+    def get_logs(self, filters: str, limit: int = 20) -> typing.Generator[Log]:
+        try:
+            for _, log in zip(range(limit), self._list_log_entries(filters, page_size=limit)):
+                payload = log.json_payload
+                yield Log(
+                    insert_id=log.insert_id,
+                    timestamp=log.timestamp.timestamp(),  # type: ignore [attr-defined]
+                    text=payload.get("message", ""),  # type: ignore [attr-defined]
+                    user_id=int(payload["user_id"]) if payload.get("user_id") else None,  # type: ignore [arg-type, attr-defined]
+                    impersonator_id=int(payload["impersonator_id"]) if payload.get("impersonator_id") else None,  # type: ignore [arg-type, attr-defined]
+                    severity=Severity(log.severity),
+                    extra=dict(payload.get("extra", {})),  # type: ignore [attr-defined]
+                )
+        except ResourceExhausted as exp:
+            window_start_time = exp.metadata.get("window_start_time", str(int(time.time())))
+            raise RateLimitExceeded(wait_until=int(window_start_time) + 60)
