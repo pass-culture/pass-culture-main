@@ -179,6 +179,7 @@ class AuthenticateTest:
             "canPrebook": False,
         }
 
+    @pytest.mark.filterwarnings("ignore::jwt.warnings.InsecureKeyLengthWarning")
     def test_should_return_error_response_when_jwt_invalid(self, client):
         corrupted_token = self._create_adage_invalid_token()
 

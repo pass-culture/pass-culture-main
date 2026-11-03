@@ -86,6 +86,7 @@ class DecodeJWTPayloadRS256Test:
 
         assert decoded["data"] == "value"
 
+    @pytest.mark.filterwarnings("ignore::jwt.warnings.InsecureKeyLengthWarning")
     def test_decode_jwt_payload_rs256_algorithm_corrupted(self):
         payload = {"data": "value"}
         with open(INVALID_RSA_PRIVATE_KEY_PATH, "rb") as reader:
