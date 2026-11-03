@@ -5228,7 +5228,7 @@ class GetVenueOffersStatisticsV2Test:
 
 
 class DetectUnexpectedVenueStatusTest:
-    QUERY_PATH = "pcapi.connectors.big_query.queries.closed_venues_siren.ClosedVenuesSirenQuery.execute"
+    QUERY_PATH = "pcapi.connectors.big_query.queries.closed_venues_siret.ClosedVenuesSirenQuery.execute"
 
     @patch(QUERY_PATH)
     def test_add_closure_tag_if_siret_data_says_venue_should_be_closed(self, query):
