@@ -295,6 +295,7 @@ def _create_deposit(
         source=deposit_source,
         user=beneficiary,
         expirationDate=compute_deposit_expiration_date(beneficiary),
+        dateCreated=date_utils.get_naive_utc_now(),
     )
     db.session.add(deposit)
     db.session.flush()
@@ -334,6 +335,7 @@ def _create_pre_decree_deposit(
         source=deposit_source,
         user=beneficiary,
         expirationDate=granted_deposit.expiration_date,
+        dateCreated=date_utils.get_naive_utc_now(),
     )
     db.session.add(deposit)
     db.session.flush([deposit])
