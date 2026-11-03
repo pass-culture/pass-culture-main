@@ -28,7 +28,7 @@ class ClosedVenuesSirenQuery(BaseQuery):
         return f"""
             select
                 siret,
-                etatAdministratifUniteLegale as status,
+                etatAdministratifEtablissement as status,
             from
                 -- TODO: table name might not the right
                 `{settings.BIG_QUERY_CLEANED_TABLE_BASENAME}.siret_data`
