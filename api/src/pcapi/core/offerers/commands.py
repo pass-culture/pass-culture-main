@@ -42,7 +42,6 @@ def check_active_offerers(apply: bool = False, day: int | None = None) -> None:
         db.session.query(offerers_models.Offerer)
         .filter(
             offerers_models.Offerer.id % 28 == day - 1,
-            offerers_models.Offerer.isActive,
             sa.not_(offerers_models.Offerer.isRejected),
             sa.not_(offerers_models.Offerer.isClosed),
             offerers_models.Offerer.siren.is_not(None),
@@ -83,7 +82,6 @@ def check_closed_offerers(apply: bool = False, date_closed: str | None = None) -
         db.session.query(offerers_models.Offerer)
         .filter(
             offerers_models.Offerer.siren.in_([elem["siren"] for elem in siren_list]),
-            offerers_models.Offerer.isActive,
             sa.not_(offerers_models.Offerer.isRejected),
         )
         .options(
