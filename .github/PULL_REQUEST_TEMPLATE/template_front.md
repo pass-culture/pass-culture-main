@@ -9,6 +9,8 @@
 
 <!-- Describe the steps to test your changes. Include setup instructions, commands, and expected results. -->
 
+- [ ] L’accessibilité a été contrôlée (synthèse vocale, navigation au clavier, etc.)
+
 ## 🖼️ Before & After Images
 
 <!--
