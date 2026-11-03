@@ -5392,3 +5392,44 @@ class NotifyTaggedVenuesStillClosedTest:
             TransactionalEmail.VENUE_STILL_NOT_CLOSED_REMINDER.value
         )
         assert mails_testing.outbox[0]["To"] == venue.bookingEmail
+
+
+class ForceCloseVenueAfterClosureTagTest:
+    def test_venue_tagged_a_long_time_ago_is_closed(self):
+        six_months_ago = datetime.datetime.now(datetime.UTC) - datetime.timedelta(days=180)
+        venue = offerers_factories.VenueFactory(state=None, criteria=[criteria_api.get_closure_request_tag()])
+        history_factories.ActionHistoryFactory(
+            venueId=venue.id, actionType=history_constants.ActionType.VENUE_ADD_CLOSURE_TAG, actionDate=six_months_ago
+        )
+
+        author = users_factories.UserFactory()
+        offerers_api.force_close_venue_after_closure_tag(days_count=90, author=author, apply=True)
+
+        db.session.refresh(venue)
+        assert venue.is_closed
+        assert not venue.criteria
+
+    def test_venue_tagged_recently_is_ignored(self):
+        yesterday = datetime.datetime.now(datetime.UTC) - datetime.timedelta(days=1)
+        closure_request_tag = criteria_api.get_closure_request_tag()
+        venue = offerers_factories.VenueFactory(state=None, criteria=[closure_request_tag])
+        history_factories.ActionHistoryFactory(
+            venueId=venue.id, actionType=history_constants.ActionType.VENUE_ADD_CLOSURE_TAG, actionDate=yesterday
+        )
+
+        author = users_factories.UserFactory()
+        offerers_api.force_close_venue_after_closure_tag(days_count=90, author=author, apply=True)
+
+        db.session.refresh(venue)
+        assert not venue.is_closed
+        assert venue.criteria == [closure_request_tag]
+
+    def test_untagged_venue_is_ignored(self):
+        venue = offerers_factories.VenueFactory(state=None)
+
+        author = users_factories.UserFactory()
+        offerers_api.force_close_venue_after_closure_tag(days_count=90, author=author, apply=True)
+
+        db.session.refresh(venue)
+        assert not venue.is_closed
+        assert not venue.criteria

@@ -5,7 +5,12 @@ from unittest.mock import patch
 import pytest
 import time_machine
 
+from pcapi.core.criteria import api as criteria_api
+from pcapi.core.history import constants as history_constants
+from pcapi.core.history import factories as history_factories
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.users import factories as users_factories
+from pcapi.models import db
 from pcapi.utils import siren as siren_utils
 
 from tests.test_utils import run_command
@@ -109,3 +114,21 @@ class SynchronizeVenuesBannerWithGooglePlacesTest:
             caplog.records[0].message
             == "[gmaps_banner_synchro] synchronize_venues_banners_with_google_places command does not execute after 28th"
         )
+
+
+class ForceCloseVenueAfterClosureTagTest:
+    def test_does_run(self, app):
+        six_months_ago = datetime.datetime.now(datetime.UTC) - datetime.timedelta(days=180)
+        author = users_factories.UserFactory()
+        venue = offerers_factories.VenueFactory(state=None, criteria=[criteria_api.get_closure_request_tag()])
+        history_factories.ActionHistoryFactory(
+            venueId=venue.id, actionType=history_constants.ActionType.VENUE_ADD_CLOSURE_TAG, actionDate=six_months_ago
+        )
+
+        run_command(
+            app, "force_close_venue_after_closure_tag", "--apply", f"--author-id={author.id}", "--days-count=30"
+        )
+
+        db.session.refresh(venue)
+        assert venue.is_closed
+        assert not venue.criteria
