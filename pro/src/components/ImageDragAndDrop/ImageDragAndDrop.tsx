@@ -249,12 +249,7 @@ export const ImageDragAndDrop = forwardRef(
           {isDraggedOver ? (
             <SvgIcon src={fullValidateIcon} alt="" width="24" />
           ) : (
-            <SvgIcon
-              src={strokePicture}
-              alt=""
-              width="58"
-              viewBox="0 0 58 58"
-            />
+            <SvgIcon src={strokePicture} alt="" width="58" />
           )}
           <div className={styles['image-drag-and-drop-text']}>
             <p aria-hidden>
