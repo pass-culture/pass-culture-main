@@ -1192,7 +1192,7 @@ def save_trusted_device(device_info: "DeviceInfo | DeviceInfoV2", user: models.U
 
 
 def update_login_device_history(
-    device_info: "DeviceInfo | DeviceInfoV2", user: models.User
+    device_info: "DeviceInfo | DeviceInfoV2", user: models.User, *, ip_address: str | None
 ) -> models.LoginDeviceHistory | None:
     if not device_info.device_id:
         logger.info(
@@ -1213,6 +1213,7 @@ def update_login_device_history(
         source=device_info.source,
         user=user,
         location=location,
+        ipAddress=ip_address,
     )
     db.session.add(login_device)
     db.session.commit()
@@ -1305,13 +1306,15 @@ def create_suspicious_login_email_token(
     )
 
 
-def save_device_info_and_notify_user(user: models.User, device_info: "DeviceInfo | DeviceInfoV2 | None") -> None:
+def save_device_info_and_notify_user(
+    user: models.User, device_info: "DeviceInfo | DeviceInfoV2 | None", *, ip_address: str | None
+) -> None:
     login_history = None
     if device_info is not None:
         if should_save_login_device_as_trusted_device(device_info, user):
             save_trusted_device(device_info, user)
 
-        login_history = update_login_device_history(device_info, user)
+        login_history = update_login_device_history(device_info, user, ip_address=ip_address)
 
     should_send_suspicious_login_email = (
         (user.is_active or user.is_account_suspended_upon_user_request)

@@ -668,7 +668,11 @@ class TrustedDeviceFeatureTest:
             mocked_google_oauth.return_value = self.valid_sso_user
             users_factories.UserFactory(email="user@test.com", password=settings.TEST_DEFAULT_PASSWORD, isActive=True)
 
-            client.post(f"/native/v1/{signin_route}", json=data, headers=self.headers)
+            client.post(
+                f"/native/v1/{signin_route}",
+                json=data,
+                headers={**self.headers, "X-Forwarded-For": "82.65.58.211, load-balancer"},
+            )
 
             login_device = db.session.query(LoginDeviceHistory).one()
 
@@ -676,6 +680,7 @@ class TrustedDeviceFeatureTest:
             assert login_device.source == "iPhone 13"
             assert login_device.os == "iOS"
             assert login_device.location == "Paris, France"
+            assert login_device.ipAddress == "82.65.58.211"
 
         @patch("pcapi.core.token.UUIDToken.load_and_check")
         @patch("pcapi.connectors.google_oauth.get_google_user")

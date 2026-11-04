@@ -1361,6 +1361,7 @@ class LoginDeviceHistory(PcObject, Model):
     source = sa_orm.mapped_column(sa.Text, nullable=True)
     os = sa_orm.mapped_column(sa.Text, nullable=True)
     location = sa_orm.mapped_column(sa.Text, nullable=True)
+    ipAddress: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
     dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
         sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now
     )
