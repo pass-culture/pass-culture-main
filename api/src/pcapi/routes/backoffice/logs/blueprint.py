@@ -39,6 +39,10 @@ SEARCH_FIELD_TO_PYTHON: dict[str, dict[str, typing.Any]] = {
         "log_field_name": "timestamp",
         "special": lambda d: d.timestamp(),
     },
+    "BOOKING": {
+        "field": "integer",
+        "log_field_name": "jsonPayload.extra.booking_id",
+    },
     "OFFER": {
         "field": "integer",
         "log_field_name": "jsonPayload.extra.offer_id",
@@ -46,6 +50,26 @@ SEARCH_FIELD_TO_PYTHON: dict[str, dict[str, typing.Any]] = {
     "PRODUCT": {
         "field": "integer",
         "log_field_name": "jsonPayload.extra.product_id",
+    },
+    "PROVIDER": {
+        "field": "providers",
+        "log_field_name": "jsonPayload.extra.provider_id",
+        "special": lambda x: f'("{'" OR "'.join(x)}")',
+        "is_object": True,
+    },
+    "STOCK": {
+        "field": "integer",
+        "log_field_name": "jsonPayload.extra.stock_id",
+    },
+    "USER": {
+        "field": "integer",
+        "log_field_name": "jsonPayload.extra.user_id",
+    },
+    "VENUE": {
+        "field": "venues",
+        "log_field_name": "jsonPayload.extra.venue_id",
+        "special": lambda x: f'("{'" OR "'.join(x)}")',
+        "is_object": True,
     },
 }
 
