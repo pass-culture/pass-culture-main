@@ -48,6 +48,29 @@ class GetListLogsTest(GetEndpointHelper):
 
         assert not get_soup(response.text).find("tbody")
 
+    def test_search_create_offer(self, authenticated_client):
+        query_args = {
+            "search_type": "OFFER_CREATION",
+        }
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        search_data = self._get_search_data(response.text)
+        assert search_data
+        assert search_data["filters"] == [
+            {
+                "field": "jsonPayload.technical_origin.feature",
+                "operator": "=",
+                "value": "offer",
+            },
+            {
+                "field": "jsonPayload.technical_origin.action",
+                "operator": "=",
+                "value": "created",
+            },
+        ]
+
     def test_search_end_date(self, authenticated_client, clear_redis):
 
         query_args = {
