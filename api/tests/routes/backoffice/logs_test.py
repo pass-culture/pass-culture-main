@@ -48,9 +48,17 @@ class GetListLogsTest(GetEndpointHelper):
 
         assert not get_soup(response.text).find("tbody")
 
-    def test_search_create_offer(self, authenticated_client):
+    @pytest.mark.parametrize(
+        "search_type,feature,action",
+        [
+            ("OFFER_CREATION", "offer", "created"),
+            ("BOOKING", "bookings", "book"),
+            ("CANCEL_BOOKING", "bookings", "cancel"),
+        ],
+    )
+    def test_search_type(self, authenticated_client, clear_redis, search_type, feature, action):
         query_args = {
-            "search_type": "OFFER_CREATION",
+            "search_type": search_type,
         }
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
@@ -62,38 +70,13 @@ class GetListLogsTest(GetEndpointHelper):
             {
                 "field": "jsonPayload.technical_origin.feature",
                 "operator": "=",
-                "value": "offer",
+                "value": feature,
                 "is_object": False,
             },
             {
                 "field": "jsonPayload.technical_origin.action",
                 "operator": "=",
-                "value": "created",
-                "is_object": False,
-            },
-        ]
-
-    def test_search_book_offer(self, authenticated_client):
-        query_args = {
-            "search_type": "BOOKING",
-        }
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, **query_args))
-            assert response.status_code == 200
-
-        search_data = self._get_search_data(response.text)
-        assert search_data
-        assert search_data["filters"] == [
-            {
-                "field": "jsonPayload.technical_origin.feature",
-                "operator": "=",
-                "value": "bookings",
-                "is_object": False,
-            },
-            {
-                "field": "jsonPayload.technical_origin.action",
-                "operator": "=",
-                "value": "book",
+                "value": action,
                 "is_object": False,
             },
         ]

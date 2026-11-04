@@ -148,6 +148,18 @@ GCP_LOGS_SEARCH_TYPES: dict[str, typing.Iterable[FilterLog]] = {
             value="book",
         ),
     ),
+    "CANCEL_BOOKING": (
+        FilterLog(
+            field="jsonPayload.technical_origin.feature",
+            operator="=",
+            value="bookings",
+        ),
+        FilterLog(
+            field="jsonPayload.technical_origin.action",
+            operator="=",
+            value="cancel",
+        ),
+    ),
 }
 
 

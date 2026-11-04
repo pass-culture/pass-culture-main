@@ -25,6 +25,7 @@ class LogsSearchAttribute(enum.Enum):
 class LogSearchType(enum.StrEnum):
     OFFER_CREATION = "Création d'offres"
     BOOKING = "Création de réservation"
+    CANCEL_BOOKING = "Annulation de réservation"
 
 
 operator_no_require_value = ["NOT_EXIST"]
