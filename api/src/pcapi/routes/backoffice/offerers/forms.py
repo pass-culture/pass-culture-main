@@ -14,6 +14,7 @@ from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.forms import fields
 from pcapi.routes.backoffice.forms import utils
 from pcapi.routes.backoffice.utils.geography import get_regions_choices
+from pcapi.routes.backoffice.utils.tags import get_validation_tags_query
 from pcapi.utils import siren as siren_utils
 from pcapi.utils import string as string_utils
 
@@ -31,16 +32,6 @@ def _get_all_tags_query() -> sa_orm.Query:
                 offerers_models.OffererTag.id, offerers_models.OffererTag.name, offerers_models.OffererTag.label
             )
         )
-    )
-
-
-def _get_validation_tags_query() -> sa_orm.Query:
-    return (
-        db.session.query(offerers_models.OffererTag)
-        .join(offerers_models.OffererTagCategoryMapping)
-        .join(offerers_models.OffererTagCategory)
-        .filter(offerers_models.OffererTagCategory.name == "homologation")
-        .order_by(offerers_models.OffererTag.label)
     )
 
 
@@ -169,7 +160,7 @@ class UserOffererValidationListForm(utils.PCForm):
     regions = fields.PCSelectMultipleField("Régions", choices=get_regions_choices())
     tags = fields.PCQuerySelectMultipleField(
         "Tags",
-        query_factory=_get_validation_tags_query,
+        query_factory=get_validation_tags_query,
         get_pk=lambda tag: tag.id,
         get_label=lambda tag: tag.label or tag.name,
     )
@@ -289,7 +280,7 @@ class OffererClosureForm(FlaskForm):
 class CommentAndTagOffererForm(OptionalCommentForm):
     tags = fields.PCQuerySelectMultipleField(
         "Tags Homologation",
-        query_factory=_get_validation_tags_query,
+        query_factory=get_validation_tags_query,
         get_pk=lambda tag: tag.id,
         get_label=lambda tag: tag.label or tag.name,
     )

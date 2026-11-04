@@ -3904,3 +3904,34 @@ def notify_tagged_venues_still_closed(days_count: int) -> None:
                 },
             ),
         )
+
+
+# def tag_offerer(offerer: offerers_models.Offerer,    tags_to_add: typing.Iterable[offerers_models.OffererTag] | None = None,
+#     tags_to_remove: typing.Iterable[offerers_models.OffererTag] | None = None,
+#  ) -> None:
+#     pass  # TODO
+
+
+def set_venue_pending(
+    venue: offerers_models.Venue,
+    author_user: users_models.User,
+    comment: str | None = None,
+    tags_to_add: typing.Iterable[offerers_models.OffererTag] | None = None,
+    tags_to_remove: typing.Iterable[offerers_models.OffererTag] | None = None,
+) -> None:
+    pass  # TODO
+
+
+def validate_venue(
+    venue: offerers_models.Venue,
+    author_user: users_models.User,
+    review_all_offers: bool = False,
+    **action_args: typing.Any,
+) -> None:
+    pass  # TODO
+
+
+def reject_venue(
+    venue: offerers_models.Venue, author_user: users_models.User | None, **action_args: typing.Any
+) -> None:
+    pass  # TODO
