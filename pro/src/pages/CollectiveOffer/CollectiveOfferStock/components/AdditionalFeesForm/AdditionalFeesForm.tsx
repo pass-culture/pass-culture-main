@@ -159,79 +159,68 @@ export const AdditionalFeesForm = ({
       {hasAdditionalFees && (
         <>
           <div className={styles['additional-fees-container']}>
-            {fields.map((field, index) => {
-              const { ref: typeRef } = form.register(
-                `collectiveAdditionalFees.${index}.type`
-              )
-              const { ref: labelRef } = form.register(
-                `collectiveAdditionalFees.${index}.label`
-              )
-
-              return (
-                <FormLayout.Row
-                  key={field.id}
-                  inline
-                  className={styles['additional-fee-row']}
-                >
-                  <AdditionalFeeTypeInput
-                    collectiveAdditionalFee={field}
-                    disabled={!canEditDiscount}
-                    name={`collectiveAdditionalFees.${index}.type`}
-                    className={styles['additional-fee-type-select']}
-                    onChange={handleFeeTypeChange(index)}
-                    ref={(el) => {
-                      typeInputElements.current[index] = el
-                      typeRef(el)
-                      labelRef(el)
-                    }}
-                    error={
-                      rootErrorOnTypes ||
-                      form.formState.errors.collectiveAdditionalFees?.[index]
-                        ?.type?.message ||
-                      form.formState.errors.collectiveAdditionalFees?.[index]
-                        ?.label?.message
+            {fields.map((field, index) => (
+              <FormLayout.Row
+                key={field.id}
+                inline
+                className={styles['additional-fee-row']}
+              >
+                <AdditionalFeeTypeInput
+                  collectiveAdditionalFee={field}
+                  disabled={!canEditDiscount}
+                  name={`collectiveAdditionalFees.${index}.type`}
+                  className={styles['additional-fee-type-select']}
+                  onChange={handleFeeTypeChange(index)}
+                  ref={(el) => {
+                    typeInputElements.current[index] = el
+                  }}
+                  error={
+                    rootErrorOnTypes ||
+                    form.formState.errors.collectiveAdditionalFees?.[index]
+                      ?.type?.message ||
+                    form.formState.errors.collectiveAdditionalFees?.[index]
+                      ?.label?.message
+                  }
+                />
+                <TextInput
+                  {...form.register(
+                    `collectiveAdditionalFees.${index}.amount`,
+                    {
+                      valueAsNumber: true,
+                      onChange: () =>
+                        form.trigger([
+                          'collectiveAdditionalFees',
+                          'servicePrice',
+                        ]),
                     }
-                  />
-                  <TextInput
-                    {...form.register(
-                      `collectiveAdditionalFees.${index}.amount`,
-                      {
-                        valueAsNumber: true,
-                        onChange: () =>
-                          form.trigger([
-                            'collectiveAdditionalFees',
-                            'servicePrice',
-                          ]),
-                      }
-                    )}
-                    disabled={!canEditDiscount}
-                    error={
-                      rootErrorOnAmounts ||
-                      form.formState.errors.collectiveAdditionalFees?.[index]
-                        ?.amount?.message
-                    }
-                    label="Prix (en €)"
-                    min={0.01}
-                    required
-                    step={0.01}
-                    type="number"
-                  />
-
-                  {shouldShowRemoveFeeButton && (
-                    <div className={styles['remove-button-container']}>
-                      <Button
-                        variant={ButtonVariant.SECONDARY}
-                        color={ButtonColor.NEUTRAL}
-                        icon={fullTrashIcon}
-                        iconAlt={'Supprimer ce champ'}
-                        onClick={removeAdditionalFeesFieldEntry(index)}
-                        disabled={!canEditDiscount || fields.length === 1}
-                      />
-                    </div>
                   )}
-                </FormLayout.Row>
-              )
-            })}
+                  disabled={!canEditDiscount}
+                  error={
+                    rootErrorOnAmounts ||
+                    form.formState.errors.collectiveAdditionalFees?.[index]
+                      ?.amount?.message
+                  }
+                  label="Prix (en €)"
+                  min={0.01}
+                  required
+                  step={0.01}
+                  type="number"
+                />
+
+                {shouldShowRemoveFeeButton && (
+                  <div className={styles['remove-button-container']}>
+                    <Button
+                      variant={ButtonVariant.SECONDARY}
+                      color={ButtonColor.NEUTRAL}
+                      icon={fullTrashIcon}
+                      iconAlt={'Supprimer ce champ'}
+                      onClick={removeAdditionalFeesFieldEntry(index)}
+                      disabled={!canEditDiscount || fields.length === 1}
+                    />
+                  </div>
+                )}
+              </FormLayout.Row>
+            ))}
             {shouldShowAddFeeButton && (
               <Button
                 ref={addFeeButton}

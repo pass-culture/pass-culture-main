@@ -375,7 +375,7 @@ describe('AdditionalFeesForm', () => {
 
       await waitFor(() => {
         expect(scrollIntoView).toHaveBeenCalled()
-        expect(screen.getByLabelText(/Type de frais annexes/)).toHaveFocus()
+        expect(screen.getByLabelText(/Prix \(en €\)/)).toHaveFocus()
       })
     }
   )
