@@ -19,6 +19,7 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers import schemas as offers_schemas
 from pcapi.core.providers import models as providers_models
+from pcapi.core.providers.etls import public_api_ean_etl
 from pcapi.core.search.models import IndexationReason
 from pcapi.models import db
 from pcapi.models import offer_mixin
@@ -274,6 +275,14 @@ def create_or_update_ean_offers_celery(payload: offers_schemas.CreateOrUpdateEAN
         address_id=payload.address_id,
         address_label=payload.address_label,
     )
+
+
+@celery_async_task(
+    name="tasks.offers.default.create_or_update_ean_offers_etl",
+    model=offers_schemas.CreateOrUpdateEANOffersRequest,
+)
+def create_or_update_ean_offers_celery_etl(payload: offers_schemas.CreateOrUpdateEANOffersRequest) -> None:
+    public_api_ean_etl.batch_create_or_update_ean_offers(payload)
 
 
 def _update_offer_and_related_stock(
