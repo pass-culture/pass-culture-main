@@ -4495,23 +4495,28 @@ class CloseVenueTest:
 
     @patch("pcapi.core.mails.transactional.send_venue_closed_email_to_author")
     @patch("pcapi.core.mails.transactional.send_venue_closure_request_email")
+    @pytest.mark.parametrize("send_mail", (True, False))
     def test_open_venue_becomes_closed(
         self,
         mock_send_venue_closure_request_email,
         mock_send_venue_closed_email_to_author,
+        send_mail,
     ):
         # venue bank account link should not be changed
         venue = offerers_factories.VenueBankAccountLinkFactory(venue__state=None).venue
         author = users_factories.BaseUserFactory()
 
         with atomic():
-            offerers_api.close_venue(venue, author)
+            offerers_api.close_venue(venue, author, send_mail=send_mail)
 
         db.session.refresh(venue)
 
         assert venue.current_bank_account_link
         assert venue.state == offerers_models.VenueState.CLOSED
-        mock_send_venue_closed_email_to_author.assert_called()
+        if send_mail:
+            mock_send_venue_closed_email_to_author.assert_called()
+        else:
+            mock_send_venue_closed_email_to_author.assert_not_called()
         mock_send_venue_closure_request_email.assert_not_called()
 
     def test_close_venue_adds_immediate_close_action_with_comment(self):
