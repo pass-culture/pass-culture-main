@@ -1760,6 +1760,80 @@ class GetPaginatedEventOfferIdsTest:
 
         assert result.total == 3
 
+    @pytest.mark.parametrize(
+        "period_beginning_date,period_ending_date,expected_offer_names",
+        [
+            (datetime.date(2026, 4, 20), datetime.date(2026, 4, 21), ["in_period"]),
+            (datetime.date(2026, 4, 21), None, ["after_period", "in_period"]),
+            (None, datetime.date(2026, 4, 20), ["before_period"]),
+        ],
+    )
+    def test_filter_on_period(self, period_beginning_date, period_ending_date, expected_offer_names):
+        venue = offerers_factories.VenueFactory()  # Paris datetime
+        offers = {}
+        for name, beginning_datetime in [
+            ("before_period", datetime.datetime(2026, 4, 19, 21)),  # 19/04 at 23:00 in Paris (UTC+2)
+            ("in_period", datetime.datetime(2026, 4, 21, 10)),
+            ("after_period", datetime.datetime(2026, 4, 21, 22, 30)),  # 22/04 at 00:30 in Paris (UTC+2)
+        ]:
+            offers[name] = factories.EventOfferFactory(venue=venue)
+            factories.EventStockFactory(offer=offers[name], beginningDatetime=beginning_datetime)
+        deleted_stock_in_period = factories.EventOfferFactory(venue=venue)
+        factories.EventStockFactory(
+            offer=deleted_stock_in_period, beginningDatetime=datetime.datetime(2026, 4, 20, 10), isSoftDeleted=True
+        )
+
+        result = repository.get_paginated_event_offer_ids(
+            venue_id=venue.id,
+            per_page=10,
+            period_beginning_date=period_beginning_date,
+            period_ending_date=period_ending_date,
+        )
+
+        assert result.offer_ids == [offers[name].id for name in expected_offer_names]
+
+    def test_filter_on_period_uses_the_local_date_of_the_offer_location(self):
+        venue = offerers_factories.VenueFactory()  # Paris datetime
+        cayenne_location = offerers_factories.OfferLocationFactory(venue=venue, address__timezone="America/Cayenne")
+        # 21/04 at 23:00 in Cayenne (UTC-3)
+        offer_in_cayenne = factories.EventOfferFactory(venue=venue, offererAddress=cayenne_location)
+        factories.EventStockFactory(offer=offer_in_cayenne, beginningDatetime=datetime.datetime(2026, 4, 22, 2))
+        # 22/04 at 00:30 in Paris (UTC+2)
+        offer_in_paris = factories.EventOfferFactory(venue=venue)
+        factories.EventStockFactory(offer=offer_in_paris, beginningDatetime=datetime.datetime(2026, 4, 21, 22, 30))
+
+        result = repository.get_paginated_event_offer_ids(
+            venue_id=venue.id,
+            per_page=10,
+            period_beginning_date=datetime.date(2026, 4, 21),
+            period_ending_date=datetime.date(2026, 4, 21),
+        )
+
+        assert result.offer_ids == [offer_in_cayenne.id]
+
+    @pytest.mark.parametrize("with_offer_location_in_another_timezone", [False, True])
+    def test_filter_on_period_uses_the_venue_timezone_for_offers_without_location(
+        self, with_offer_location_in_another_timezone
+    ):
+        venue = offerers_factories.VenueFactory()  # Paris datetime
+        if with_offer_location_in_another_timezone:
+            offerers_factories.OfferLocationFactory(venue=venue, address__timezone="America/Cayenne")
+        # 21/04 at 12:00 in Paris (UTC+2)
+        in_period = factories.EventOfferFactory(venue=venue, offererAddress=None)
+        factories.EventStockFactory(offer=in_period, beginningDatetime=datetime.datetime(2026, 4, 21, 10))
+        # 22/04 at 00:30 in Paris, but 21/04 in Cayenne (UTC-3)
+        after_period = factories.EventOfferFactory(venue=venue, offererAddress=None)
+        factories.EventStockFactory(offer=after_period, beginningDatetime=datetime.datetime(2026, 4, 21, 22, 30))
+
+        result = repository.get_paginated_event_offer_ids(
+            venue_id=venue.id,
+            per_page=10,
+            period_beginning_date=datetime.date(2026, 4, 21),
+            period_ending_date=datetime.date(2026, 4, 21),
+        )
+
+        assert result.offer_ids == [in_period.id]
+
 
 @pytest.mark.usefixtures("db_session")
 class ExcludeOffersFromInactiveVenueProviderTest:
