@@ -121,12 +121,17 @@ class FilterLogContainer:
         return cls(filters=filters, **d)
 
 
-GCP_LOGS_SEARCH_TYPES: dict[str, tuple[FilterLog]] = {
+GCP_LOGS_SEARCH_TYPES: dict[str, typing.Iterable[FilterLog]] = {
     "OFFER_CREATION": (
-        FilterLog(  # TODO use new syntaxe after alpha
-            field="jsonPayload.technical_message_id",
+        FilterLog(
+            field="jsonPayload.technical_origin.feature",
             operator="=",
-            value="offer.created",
+            value="offer",
+        ),
+        FilterLog(
+            field="jsonPayload.technical_origin.action",
+            operator="=",
+            value="created",
         ),
     )
 }
