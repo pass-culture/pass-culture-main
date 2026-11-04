@@ -5,6 +5,7 @@ from unittest.mock import patch
 import pytest
 import time_machine
 
+from pcapi.connectors.big_query import queries as big_query
 from pcapi.core.criteria import api as criteria_api
 from pcapi.core.history import constants as history_constants
 from pcapi.core.history import factories as history_factories
@@ -128,3 +129,27 @@ class ForceCloseVenueAfterClosureTagTest:
         db.session.refresh(venue)
         assert venue.is_closed
         assert not venue.criteria
+
+
+class DetectUnexpectedVenueStatusTest:
+    QUERY_PATH = "pcapi.connectors.big_query.queries.closed_venues_siret.ClosedVenuesSirenQuery.execute"
+
+    @patch(QUERY_PATH)
+    @pytest.mark.parametrize("apply", [True, False])
+    def test_parameters_are_set_and_core_function_is_called_with_parameters(self, query, apply, caplog, app):
+        venue = offerers_factories.VenueFactory(state=None, criteria=[])
+        query.return_value = [
+            big_query.ClosedVenueSirenModel(siret=venue.siret, status=big_query.ClosedVenueStatusEnum.F)
+        ]
+
+        with caplog.at_level(logging.INFO):
+            run_command(app, "detect_unexpected_venue_status", "--days-count=25", "--apply" if apply else "")
+
+        final_log_msg = "detect_unexpected_venue_status... done"
+
+        if apply:
+            final_log = next(record for record in caplog.records if record.message == final_log_msg)
+            assert final_log.extra == {"days_count": 25, "apply": True}
+        else:
+            # no apply -> no final log message written on commit
+            assert not any(record for record in caplog.records if record.message == final_log_msg)
