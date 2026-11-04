@@ -160,6 +160,18 @@ GCP_LOGS_SEARCH_TYPES: dict[str, typing.Iterable[FilterLog]] = {
             value="cancel",
         ),
     ),
+    "USER_LOGIN": (
+        FilterLog(
+            field="jsonPayload.technical_origin.feature",
+            operator="=",
+            value="users",
+        ),
+        FilterLog(
+            field="jsonPayload.technical_origin.action",
+            operator="=",
+            value="login",
+        ),
+    ),
 }
 
 

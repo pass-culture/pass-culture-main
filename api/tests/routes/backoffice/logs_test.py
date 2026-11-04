@@ -54,6 +54,7 @@ class GetListLogsTest(GetEndpointHelper):
             ("OFFER_CREATION", "offer", "created"),
             ("BOOKING", "bookings", "book"),
             ("CANCEL_BOOKING", "bookings", "cancel"),
+            ("USER_LOGIN", "users", "login"),
         ],
     )
     def test_search_type(self, authenticated_client, clear_redis, search_type, feature, action):

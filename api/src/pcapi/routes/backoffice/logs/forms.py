@@ -26,10 +26,10 @@ class LogSearchType(enum.StrEnum):
     OFFER_CREATION = "Création d'offres"
     BOOKING = "Création de réservation"
     CANCEL_BOOKING = "Annulation de réservation"
+    USER_LOGIN = "Connexion d'un utilisateur"
 
 
 operator_no_require_value = ["NOT_EXIST"]
-
 form_field_configuration = {
     "LOG_DATE": {"field": "datetime", "operator": ["GREATER_THAN_OR_EQUAL_TO", "LESS_THAN"]},
     "BOOKING": {"field": "integer", "operator": ["EQUALS"]},
