@@ -27,6 +27,11 @@ from . import blueprint
 def get_settlements(query: finance_serialize.SettlementListQueryModel) -> finance_serialize.SettlementListResponseModel:
     rest.check_user_has_access_to_offerer(current_user, offerer_id=query.offerer_id)
 
+    offerer_has_settlement = repository.has_settlement(offerer_id=query.offerer_id)
+
+    if not offerer_has_settlement:
+        return finance_serialize.SettlementListResponseModel(has_settlement=offerer_has_settlement, settlements=[])
+
     settlements_query = repository.get_settlements_query(
         offerer_id=query.offerer_id,
         bank_account_id=query.bank_account_id,
@@ -36,20 +41,9 @@ def get_settlements(query: finance_serialize.SettlementListQueryModel) -> financ
     )
 
     return finance_serialize.SettlementListResponseModel(
-        [finance_serialize.SettlementResponseModel.build(settlement) for settlement in settlements_query]
+        has_settlement=offerer_has_settlement,
+        settlements=[finance_serialize.SettlementResponseModel.build(settlement) for settlement in settlements_query],
     )
-
-
-@pro_blueprint.route("/finance/has-settlement", methods=["GET"])
-@atomic()
-@login_required
-@spectree_serialize(response_model=finance_serialize.HasSettlementResponseModel, api=blueprint.pro_schema)
-def has_settlement(query: finance_serialize.HasSettlementQueryModel) -> finance_serialize.HasSettlementResponseModel:
-    rest.check_user_has_access_to_offerer(current_user, offerer_id=query.offerer_id)
-
-    offerer_has_settlement = repository.has_settlement(offerer_id=query.offerer_id)
-
-    return finance_serialize.HasSettlementResponseModel(has_settlement=offerer_has_settlement)
 
 
 @pro_blueprint.route("/finance/invoices", methods=["GET"])
