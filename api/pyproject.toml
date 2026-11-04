@@ -274,7 +274,6 @@ profile="jinja"
 
 [tool.uv]
 exclude-newer = "7 days"
-exclude-newer-package = { certifi = "2 days", brotli = false, brotlicffi = false, uv_build = "4 days" }
 override-dependencies = [
     "pyopenssl>=26.0.0",
 ]
