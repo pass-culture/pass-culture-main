@@ -160,6 +160,18 @@ GCP_LOGS_SEARCH_TYPES: dict[str, typing.Iterable[FilterLog]] = {
             value="cancel",
         ),
     ),
+    "USER_LOGIN": (
+        FilterLog(
+            field="jsonPayload.technical_origin.feature",
+            operator="=",
+            value="users",
+        ),
+        FilterLog(
+            field="jsonPayload.technical_origin.action",
+            operator="=",
+            value="login",
+        ),
+    ),
 }
 
 
@@ -477,5 +489,4 @@ def generate_gcp_search_string_from_list(gcp_search: FilterLogContainer) -> str:
             search += f'{filter_field.field}{filter_field.operator}"{filter_field.value}"\n'
     search += f'timestamp>"{datetime.datetime.fromtimestamp(gcp_search.start_date).isoformat()}Z"\n'
     search += f'timestamp<"{datetime.datetime.fromtimestamp(gcp_search.end_date).isoformat()}Z"\n'
-    print(search)
     return search
