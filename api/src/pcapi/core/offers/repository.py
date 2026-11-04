@@ -891,6 +891,8 @@ def get_paginated_event_offer_ids(
     status: offer_mixin.OfferStatus | None = None,
     name_keywords_or_ean: str | None = None,
     creation_mode: str | None = None,
+    period_beginning_date: datetime.date | None = None,
+    period_ending_date: datetime.date | None = None,
 ) -> PaginatedOfferIds[EventOffersCursor]:
     filters: list[sa.ColumnElement[bool]] = [
         models.Offer.venueId == venue_id,
@@ -899,6 +901,14 @@ def get_paginated_event_offer_ids(
     filters += _get_offers_filters(
         status=status, name_keywords_or_ean=name_keywords_or_ean, creation_mode=creation_mode
     )
+    if period_beginning_date is not None or period_ending_date is not None:
+        filters.append(
+            _get_event_offers_period_filter(
+                venue_id=venue_id,
+                period_beginning_date=period_beginning_date,
+                period_ending_date=period_ending_date,
+            )
+        )
 
     total = _get_capped_total(filters)
 
@@ -973,6 +983,102 @@ def _get_offers_filters(
 def _get_capped_total(filters: list[sa.ColumnElement[bool]]) -> int:
     offer_ids = sa.select(models.Offer.id).where(*filters).limit(offers_constants.OFFERS_RECAP_LIMIT).subquery()
     return db.session.execute(sa.select(sa.func.count()).select_from(offer_ids)).scalar_one()
+
+
+def _get_venue_timezones(venue_id: int) -> set[str]:
+    return set(
+        db.session.scalars(
+            sa.select(geography_models.Address.timezone)
+            .join(
+                offerers_models.OffererAddress,
+                offerers_models.OffererAddress.addressId == geography_models.Address.id,
+            )
+            .where(offerers_models.OffererAddress.venueId == venue_id)
+            .distinct()
+        )
+    )
+
+
+def _get_beginning_datetime_range_filter(
+    start: datetime.datetime | None, end: datetime.datetime | None
+) -> sa.ColumnElement[bool]:
+    filters = []
+    if start is not None:
+        filters.append(models.Stock.beginningDatetime >= start)
+    if end is not None:
+        filters.append(models.Stock.beginningDatetime <= end)
+    return sa.and_(*filters)
+
+
+def _get_event_offers_period_filter(
+    *,
+    venue_id: int,
+    period_beginning_date: datetime.date | None,
+    period_ending_date: datetime.date | None,
+) -> sa.ColumnElement[bool]:
+    utc_periods_by_timezone: dict[str, tuple[datetime.datetime | None, datetime.datetime | None]] = {}
+    for timezone in _get_venue_timezones(venue_id):
+        utc_start, utc_end = date_utils.convert_date_period_to_utc_datetime_period(
+            (period_beginning_date, period_ending_date),  # type: ignore[arg-type]
+            timezone,
+        )
+        # stock.beginningDatetime is stored as a naive UTC datetime
+        utc_periods_by_timezone[timezone] = (
+            utc_start.replace(tzinfo=None) if utc_start else None,
+            utc_end.replace(tzinfo=None) if utc_end else None,
+        )
+
+    if not utc_periods_by_timezone:
+        return sa.false()
+
+    stock_filters: list[sa.ColumnElement[bool]] = [
+        models.Stock.offerId == models.Offer.id,
+        models.Stock.isSoftDeleted.is_not(True),
+    ]
+
+    if len(utc_periods_by_timezone) == 1:
+        [(start, end)] = utc_periods_by_timezone.values()
+        stock_filters.append(_get_beginning_datetime_range_filter(start, end))
+    else:
+        starts = [start for start, _ in utc_periods_by_timezone.values() if start is not None]
+        ends = [end for _, end in utc_periods_by_timezone.values() if end is not None]
+        # add a wide condition that lets the index skip stocks outside every timezone's period
+        stock_filters.append(
+            _get_beginning_datetime_range_filter(min(starts) if starts else None, max(ends) if ends else None)
+        )
+
+        offer_timezone = (
+            sa.select(geography_models.Address.timezone)
+            .join(
+                offerers_models.OffererAddress,
+                offerers_models.OffererAddress.addressId == geography_models.Address.id,
+            )
+            .where(offerers_models.OffererAddress.id == models.Offer.offererAddressId)
+            .correlate(models.Offer)
+            .scalar_subquery()
+        )
+        venue_timezone = (
+            sa.select(geography_models.Address.timezone)
+            .join(
+                offerers_models.OffererAddress,
+                offerers_models.OffererAddress.addressId == geography_models.Address.id,
+            )
+            .where(
+                offerers_models.OffererAddress.venueId == venue_id,
+                offerers_models.OffererAddress.type == offerers_models.LocationType.VENUE_LOCATION,
+            )
+            .scalar_subquery()
+        )
+        target_timezone = sa.func.coalesce(offer_timezone, venue_timezone)
+
+        # each offer must match the period converted to its own timezone
+        period_filter_by_timezone = [
+            sa.and_(target_timezone == timezone, _get_beginning_datetime_range_filter(start, end))
+            for timezone, (start, end) in utc_periods_by_timezone.items()
+        ]
+        stock_filters.append(sa.or_(*period_filter_by_timezone))
+
+    return sa.select(1).select_from(models.Stock).where(*stock_filters).correlate(models.Offer).exists()
 
 
 def venue_already_has_validated_offer(venue_id: int) -> bool:
