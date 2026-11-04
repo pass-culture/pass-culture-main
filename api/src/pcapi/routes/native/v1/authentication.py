@@ -72,7 +72,7 @@ def signin(body: authentication.SigninRequest) -> authentication.SigninResponse:
     if user.account_state == user_models.AccountState.ANONYMIZED:
         raise ApiErrors({"code": "ACCOUNT_ANONYMIZED", "general": ["Le compte a été anonymisé"]})
 
-    users_api.save_device_info_and_notify_user(user, body.device_info)
+    users_api.save_device_info_and_notify_user(user, body.device_info, ip_address=request.remote_addr)
 
     users_api.update_last_connection_date(user)
     tokens = create_user_jwt_tokens(user=user, device_info=body.device_info)
@@ -324,7 +324,7 @@ def sso_authorize(sso_provider: str, body: authentication.OAuthSigninRequest) ->
                 sso_extra_data,
             )
 
-    users_api.save_device_info_and_notify_user(user, body.device_info)
+    users_api.save_device_info_and_notify_user(user, body.device_info, ip_address=request.remote_addr)
 
     users_api.update_last_connection_date(user)
     logger.info(
