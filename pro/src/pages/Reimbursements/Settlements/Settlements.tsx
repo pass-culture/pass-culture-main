@@ -5,7 +5,6 @@ import useSWR from 'swr'
 import { api } from '@/apiClient/api'
 import type { getFinanceSettlementsData } from '@/apiClient/v1'
 import {
-  GET_HAS_SETTLEMENT_QUERY_KEY,
   GET_OFFERER_BANK_ACCOUNTS_AND_ATTACHED_VENUES_QUERY_KEY,
   GET_SETTLEMENTS_QUERY_KEY,
 } from '@/commons/config/swrQueryKeys'
@@ -78,33 +77,25 @@ export const Settlements = (): JSX.Element => {
     }
   )
 
-  const hasSettlementQuery = useSWR(
-    offererId ? [GET_HAS_SETTLEMENT_QUERY_KEY, offererId] : null,
-    ([, offererId]) => api.hasSettlement({ query: { offererId: offererId } }),
-    { fallbackData: { hasSettlement: false } }
-  )
-
-  const hasSettlement = Boolean(hasSettlementQuery.data?.hasSettlement)
-
-  const { isLoading, data: settlements } = useSWR(
-    offererId && hasSettlement
+  const {
+    isLoading,
+    data: { settlements, hasSettlement },
+  } = useSWR(
+    offererId && searchParams.size > 0
       ? [GET_SETTLEMENTS_QUERY_KEY, offererId, searchParams]
       : null,
     async () => {
-      const settlements = await api.getSettlements({
+      const result = await api.getSettlements({
         query: { offererId, ...extractFilters(searchParams) },
       })
-      return settlements
+      return result
     },
     {
-      fallbackData: [],
+      fallbackData: { settlements: [], hasSettlement: false },
     }
   )
-  if (
-    getOffererBankAccountsAndAttachedVenuesQuery.isLoading ||
-    hasSettlementQuery.isLoading ||
-    isLoading
-  ) {
+
+  if (getOffererBankAccountsAndAttachedVenuesQuery.isLoading || isLoading) {
     return <Spinner />
   }
 

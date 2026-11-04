@@ -32,10 +32,6 @@ class HasInvoiceQueryModel(HttpQueryParamsModel):
     offerer_id: int
 
 
-class HasSettlementQueryModel(HttpQueryParamsModel):
-    offerer_id: int
-
-
 class GetCombinedInvoicesQueryModel(HttpQueryParamsModel):
     invoice_references: list[str]
 
@@ -215,8 +211,9 @@ class SettlementResponseModel(HttpBodyModel):
         )
 
 
-class SettlementListResponseModel(RootModel):
-    root: list[SettlementResponseModel]
+class SettlementListResponseModel(HttpBodyModel):
+    has_settlement: bool
+    settlements: list[SettlementResponseModel]
 
 
 class LinkedVenue(HttpBodyModel):
@@ -291,7 +288,3 @@ class RejectedBankAccountsResponseModel(RootModel):
 
 class HasInvoiceResponseModel(HttpBodyModel):
     has_invoice: bool
-
-
-class HasSettlementResponseModel(HttpBodyModel):
-    has_settlement: bool

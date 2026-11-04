@@ -4,7 +4,6 @@ import { useState } from 'react'
 
 import {
   SettlementDisplayedStatus,
-  type SettlementListResponseModel,
   type SettlementResponseModel,
 } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
@@ -44,7 +43,7 @@ import { SETTLEMENT_STATUS_LABELS } from './constants'
 import styles from './SettlementTable.module.scss'
 
 type SettlementTableProps = {
-  settlements: SettlementListResponseModel
+  settlements: SettlementResponseModel[]
   isLoading: boolean
   hasSettlement: boolean
   hasBankAccount: boolean

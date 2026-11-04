@@ -3656,26 +3656,6 @@ export type HasInvoiceResponseModel = {
 };
 
 /**
- * HasSettlementQueryModel
- */
-export type HasSettlementQueryModel = {
-    /**
-     * Offererid
-     */
-    offererId: number;
-};
-
-/**
- * HasSettlementResponseModel
- */
-export type HasSettlementResponseModel = {
-    /**
-     * Hassettlement
-     */
-    hasSettlement: boolean;
-};
-
-/**
  * HeadLineOfferResponseModel
  */
 export type HeadLineOfferResponseModel = {
@@ -6025,7 +6005,16 @@ export type SettlementListQueryModel = {
 /**
  * SettlementListResponseModel
  */
-export type SettlementListResponseModel = Array<SettlementResponseModel>;
+export type SettlementListResponseModel = {
+    /**
+     * Hassettlement
+     */
+    hasSettlement: boolean;
+    /**
+     * Settlements
+     */
+    settlements: Array<SettlementResponseModel>;
+};
 
 /**
  * SettlementResponseModel
@@ -8958,40 +8947,6 @@ export type getFinanceHasInvoiceResponses = {
 };
 
 export type getFinanceHasInvoiceResponse = getFinanceHasInvoiceResponses[keyof getFinanceHasInvoiceResponses];
-
-export type getFinanceHasSettlementData = {
-    body?: never;
-    path?: never;
-    query: {
-        /**
-         * Offererid
-         */
-        offererId: number;
-    };
-    url: '/finance/has-settlement';
-};
-
-export type getFinanceHasSettlementErrors = {
-    /**
-     * Forbidden
-     */
-    403: unknown;
-    /**
-     * Unprocessable Content
-     */
-    422: ValidationError;
-};
-
-export type getFinanceHasSettlementError = getFinanceHasSettlementErrors[keyof getFinanceHasSettlementErrors];
-
-export type getFinanceHasSettlementResponses = {
-    /**
-     * OK
-     */
-    200: HasSettlementResponseModel;
-};
-
-export type getFinanceHasSettlementResponse = getFinanceHasSettlementResponses[keyof getFinanceHasSettlementResponses];
 
 export type getFinanceInvoicesData = {
     body?: never;
