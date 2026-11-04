@@ -109,8 +109,16 @@ def bookings_fixture() -> tuple:
         stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id,
         dateCreated=date_utils.get_naive_utc_now(),
     )
+    pending_reimbursement = bookings_factories.PendingReimbursementBookingFactory(
+        id=1000006,
+        user=user3,
+        token="PNDRMB",
+        stock__offer__subcategoryId=subcategories.ATELIER_PRATIQUE_ART.id,
+        stock__beginningDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=60),
+        dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=70),
+    )
 
-    return used, cancelled, confirmed, reimbursed, booked
+    return used, cancelled, confirmed, reimbursed, booked, pending_reimbursement
 
 
 class ListIndividualBookingsTest(GetEndpointHelper):
@@ -409,6 +417,7 @@ class ListIndividualBookingsTest(GetEndpointHelper):
             ([forms.BookingStatus.CONFIRMED.name], {"ELBEIT"}),
             ([forms.BookingStatus.USED.name], {"WTRL00"}),
             ([forms.BookingStatus.CANCELLED.name], {"CNCL02"}),
+            ([forms.BookingStatus.PENDING_REIMBURSEMENT.name], {"PNDRMB"}),
             ([forms.BookingStatus.REIMBURSED.name], {"REIMB3"}),
             ([forms.BookingStatus.BOOKED.name], {"ADFTH9"}),
             (
@@ -466,7 +475,7 @@ class ListIndividualBookingsTest(GetEndpointHelper):
         "from_date, to_date, expected_tokens",
         [
             ((datetime.date.today() + datetime.timedelta(days=12)).isoformat(), None, {"REIMB3"}),
-            (None, (datetime.date.today() + datetime.timedelta(days=12)).isoformat(), {"CNCL02", "REIMB3"}),
+            (None, (datetime.date.today() + datetime.timedelta(days=12)).isoformat(), {"CNCL02", "REIMB3", "PNDRMB"}),
             (
                 (datetime.date.today() + datetime.timedelta(days=12)).isoformat(),
                 (datetime.date.today() + datetime.timedelta(days=12)).isoformat(),
@@ -594,7 +603,7 @@ class ListIndividualBookingsTest(GetEndpointHelper):
 
         rows = html_parser.extract_table_rows(response.data)
         # booked J not used, booked J-2 not used, event J+12, event J+11, used J
-        assert [row["Contremarque"] for row in rows] == ["ADFTH9", "ELBEIT", "REIMB3", "CNCL02", "WTRL00"]
+        assert [row["Contremarque"] for row in rows] == ["ADFTH9", "ELBEIT", "REIMB3", "CNCL02", "WTRL00", "PNDRMB"]
 
     @pytest.mark.parametrize(
         "cancellation_reason, expected_text",
