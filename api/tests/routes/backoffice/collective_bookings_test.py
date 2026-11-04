@@ -363,6 +363,7 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
             ([educational_models.CollectiveBookingStatus.CONFIRMED.name], (1,)),
             ([educational_models.CollectiveBookingStatus.CANCELLED.name], (2,)),
             ([educational_models.CollectiveBookingStatus.USED.name], (3,)),
+            ([educational_models.CollectiveBookingStatus.PENDING_REIMBURSEMENT.name], (5,)),
             ([educational_models.CollectiveBookingStatus.REIMBURSED.name], (4,)),
             (
                 [

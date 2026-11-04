@@ -23,6 +23,7 @@ class BookingStatus(enum.Enum):
     CONFIRMED = "Confirmée"
     USED = "Validée"
     CANCELLED = "Annulée"
+    PENDING_REIMBURSEMENT = "En cours de remboursement"
     REIMBURSED = "Remboursée"
 
 
@@ -32,6 +33,7 @@ class CollectiveBookingStatus(enum.Enum):
     CONFIRMED = "Confirmée"
     USED = "Validée"
     CANCELLED = "Annulée"
+    PENDING_REIMBURSEMENT = "En cours de remboursement"
     REIMBURSED = "Remboursée"
 
 
