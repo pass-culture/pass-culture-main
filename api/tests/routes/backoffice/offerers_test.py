@@ -3175,7 +3175,9 @@ class SetOffererPendingTest(DeactivateOffererHelper):
     def test_set_offerer_pending(self, legit_user, authenticated_client, offerer_tags):
         non_homologation_tag = offerers_factories.OffererTagFactory(name="Tag conservé")
         offerer = offerers_factories.NewOffererFactory(tags=[non_homologation_tag, offerer_tags[0], offerer_tags[1]])
-        venue = offerers_factories.VenueFactory(managingOfferer=offerer, validationStatus=None)
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=offerer, validationStatus=offerers_models.VenueValidationStatus.REJECTED
+        )
 
         response = self.post_to_endpoint(
             authenticated_client,
