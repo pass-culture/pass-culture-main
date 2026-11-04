@@ -4474,25 +4474,30 @@ class CloseVenueTest:
             stock__offer__lastProviderId=boost_pivot.providerId,
         )
 
-    @patch("pcapi.core.mails.transactional.send_venue_closed_email_to_author")
+    @patch("pcapi.core.mails.transactional.send_venue_closed_email")
     @patch("pcapi.core.mails.transactional.send_venue_closure_request_email")
+    @pytest.mark.parametrize("send_mail", (True, False))
     def test_open_venue_becomes_closed(
         self,
         mock_send_venue_closure_request_email,
-        mock_send_venue_closed_email_to_author,
+        mock_send_venue_closed_email,
+        send_mail,
     ):
         # venue bank account link should not be changed
         venue = offerers_factories.VenueBankAccountLinkFactory(venue__state=None).venue
         author = users_factories.BaseUserFactory()
 
         with atomic():
-            offerers_api.close_venue(venue, author)
+            offerers_api.close_venue(venue, author, send_mail=send_mail)
 
         db.session.refresh(venue)
 
         assert venue.current_bank_account_link
         assert venue.state == offerers_models.VenueState.CLOSED
-        mock_send_venue_closed_email_to_author.assert_called()
+        if send_mail:
+            mock_send_venue_closed_email.assert_called_with(venue.id)
+        else:
+            mock_send_venue_closed_email.assert_not_called()
         mock_send_venue_closure_request_email.assert_not_called()
 
     def test_close_venue_adds_immediate_close_action_with_comment(self):
@@ -4610,12 +4615,12 @@ class CloseVenueTest:
             key=lambda m: m["id_prod"],
         )
 
-    @patch("pcapi.core.mails.transactional.send_venue_closed_email_to_author")
+    @patch("pcapi.core.mails.transactional.send_venue_closed_email")
     @patch("pcapi.core.mails.transactional.send_venue_closure_request_email")
     def test_pricing_point_venue(
         self,
         mock_send_venue_closure_request_email,
-        mock_send_venue_closed_email_to_author,
+        mock_send_venue_closed_email,
     ):
         venue = offerers_factories.VenuePricingPointLinkFactory(venue__state=None).venue
         offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer, pricing_point=venue)
@@ -4633,7 +4638,7 @@ class CloseVenueTest:
         assert venue.criteria == [tag]
         assert venue.is_pricing_point
         mock_send_venue_closure_request_email.assert_called_once()
-        mock_send_venue_closed_email_to_author.assert_not_called()
+        mock_send_venue_closed_email.assert_not_called()
 
         # Let's remove the pricing point.
         for pp_link in db.session.query(offerers_models.VenuePricingPointLink).all():
@@ -4646,10 +4651,10 @@ class CloseVenueTest:
         db.session.refresh(venue)
         assert not venue.is_pricing_point
         mock_send_venue_closure_request_email.assert_called_once()
-        mock_send_venue_closed_email_to_author.assert_called_once()
+        mock_send_venue_closed_email.assert_called_once()
 
-    @patch("pcapi.core.mails.transactional.send_venue_closed_email_to_author")
-    def test_pricing_point_venue_with_only_closed_linked_venues(self, mock_send_venue_closed_email_to_author):
+    @patch("pcapi.core.mails.transactional.send_venue_closed_email")
+    def test_pricing_point_venue_with_only_closed_linked_venues(self, mock_send_venue_closed_email):
         venue = offerers_factories.VenuePricingPointLinkFactory(venue__state=None).venue
         offerers_factories.VenueFactory(
             managingOfferer=venue.managingOfferer, pricing_point=venue, state=offerers_models.VenueState.CLOSED
@@ -4664,7 +4669,7 @@ class CloseVenueTest:
         db.session.refresh(venue)
         assert venue.is_pricing_point
         assert not venue.criteria
-        mock_send_venue_closed_email_to_author.assert_called_once()
+        mock_send_venue_closed_email.assert_called_once()
 
     @pytest.mark.features(WIP_CLOSE_VENUE=True)
     @patch("pcapi.core.search.async_index_venue_ids")
