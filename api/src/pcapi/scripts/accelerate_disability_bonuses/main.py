@@ -80,6 +80,7 @@ def accelerate_disability_bonuses(apply: bool, page_size: int = PAGE_SIZE, max_p
                 )
 
             last_id = started_fraud_checks[-1].id
+            logger.info("accelerated fraud checks up to id %s", last_id)
 
             if apply:
                 logger.info("committing")
