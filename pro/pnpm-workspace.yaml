@@ -16,3 +16,7 @@ overrides:
   js-yaml: '>=4.3.2'
   handlebars: '>=4.7.10'
   undici: '>=8.12.2'
+  fast-uri: '>=3.1.9'
+  minimatch: '>=11.0.1'
+  brace-expansion: '>=2.1.7'
+  '@vitest/mocker': ^4.1.12
