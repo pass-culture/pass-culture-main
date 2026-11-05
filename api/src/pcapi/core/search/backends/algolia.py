@@ -150,9 +150,10 @@ class AlgoliaBackend(
             try:
                 results = self.search(settings.ALGOLIA_OFFERS_INDEX_NAME, query, params)
             except Exception as exp:
-                logger.exception(
+                logger.warning(
                     "Failed to search in algolia: %s",
                     exp,
+                    exc_info=True,
                     extra={
                         "query": query,
                         "params": params,
