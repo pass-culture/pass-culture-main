@@ -765,7 +765,7 @@ def get_offers_by_filters(
             if len(datetime_period_by_timezones) == 1:  # ie. all bookings are on a single timezone
                 [(period_start, _)] = datetime_period_by_timezones.values()
                 stock_query = stock_query.filter(models.Stock.beginningDatetime >= period_start)
-            else:  # ie. bookings are dispatched on several timezones
+            elif len(datetime_period_by_timezones) > 1:  # ie. bookings are dispatched on several timezones
                 stock_query = stock_query.filter(
                     sa.or_(
                         *[
@@ -781,7 +781,7 @@ def get_offers_by_filters(
             if len(datetime_period_by_timezones) == 1:  # ie. all bookings are on a single timezone
                 [(_, period_end)] = datetime_period_by_timezones.values()
                 stock_query = stock_query.filter(models.Stock.beginningDatetime <= period_end)
-            else:  # ie. bookings are dispatched on several timezones
+            elif len(datetime_period_by_timezones) > 1:  # ie. bookings are dispatched on several timezones
                 stock_query = stock_query.filter(
                     sa.or_(
                         *[
