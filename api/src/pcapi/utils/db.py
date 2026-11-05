@@ -18,9 +18,9 @@ import pcapi.utils.cron as cron_decorators
 from pcapi import settings
 from pcapi.connectors import googledrive
 from pcapi.core.internal_notifications.transactional import notify_invalid_indexes
-from pcapi.core.logging import log_elapsed
 from pcapi.models import db
 from pcapi.utils.blueprint import Blueprint
+from pcapi.utils.logging import log_elapsed
 
 
 blueprint = Blueprint(__name__, __name__)
