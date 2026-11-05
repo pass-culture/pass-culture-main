@@ -75,8 +75,8 @@ describe('CancelledBanner', () => {
 
     vi.spyOn(
       duplicateBookableOffer,
-      'duplicateBookableOffer'
-    ).mockImplementation(mockDuplicateBookableOffer)
+      'useDuplicateBookableOffer'
+    ).mockReturnValue(mockDuplicateBookableOffer)
   })
 
   it.each(

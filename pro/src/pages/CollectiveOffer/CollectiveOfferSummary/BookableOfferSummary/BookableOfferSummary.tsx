@@ -13,7 +13,7 @@ import { useAnalytics } from '@/app/App/analytics/firebase'
 import { ContentLayout } from '@/app/App/layouts/ContentLayout/ContentLayout'
 import { GET_COLLECTIVE_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
-import { duplicateBookableOffer } from '@/commons/core/OfferEducational/utils/duplicateBookableOffer'
+import { useDuplicateBookableOffer } from '@/commons/core/OfferEducational/utils/duplicateBookableOffer'
 import { getCollectiveOfferLink } from '@/commons/core/OfferEducational/utils/getCollectiveOfferLink'
 import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeCollectiveOffersUrl'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
@@ -70,6 +70,7 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
   const { logEvent } = useAnalytics()
   const snackBar = useSnackBar()
   const navigate = useNavigate()
+  const duplicateBookableOffer = useDuplicateBookableOffer()
 
   const archiveButtonRef = useRef<HTMLButtonElement>(null)
   const duplicateButtonRef = useRef<HTMLButtonElement>(null)

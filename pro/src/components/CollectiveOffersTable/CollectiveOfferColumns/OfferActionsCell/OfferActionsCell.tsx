@@ -16,8 +16,8 @@ import {
   isCollectiveOfferBookable,
 } from '@/commons/core/OfferEducational/types'
 import { computeURLCollectiveOfferId } from '@/commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
-import { createOfferFromTemplate } from '@/commons/core/OfferEducational/utils/createOfferFromTemplate'
-import { duplicateBookableOffer } from '@/commons/core/OfferEducational/utils/duplicateBookableOffer'
+import { useCreateOfferFromTemplate } from '@/commons/core/OfferEducational/utils/createOfferFromTemplate'
+import { useDuplicateBookableOffer } from '@/commons/core/OfferEducational/utils/duplicateBookableOffer'
 import { getCollectiveOfferLink } from '@/commons/core/OfferEducational/utils/getCollectiveOfferLink'
 import { useCollectiveOffersSwrKeys } from '@/commons/core/Offers/hooks/useCollectiveOffersSwrKeys'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
@@ -67,6 +67,8 @@ export const OfferActionsCell = ({ offer }: OfferActionsCellProps) => {
 
   const navigate = useNavigate()
   const snackBar = useSnackBar()
+  const createOfferFromTemplate = useCreateOfferFromTemplate()
+  const duplicateBookableOffer = useDuplicateBookableOffer()
   const { logEvent } = useAnalytics()
 
   const [isModalOpen, setIsModalOpen] = useState(false)
