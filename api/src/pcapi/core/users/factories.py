@@ -512,7 +512,9 @@ class DiscordUserFactory(BaseFactory):
 
 class AnonymizedUserFactory(UserFactory):
     roles = [models.UserRole.ANONYMIZED]
-    email = factory.Sequence("anonymous_{}@anonymized.passculture".format)
+    email = factory.Sequence(
+        lambda n: f"{users_constants.ANONYMIZED_USER_EMAIL_PREFIX}_{n}{users_constants.ANONYMIZED_USER_EMAIL}"
+    )
     address = None
     city = None
     postalCode = None
@@ -1271,6 +1273,7 @@ class GdprUserDataExtractBeneficiaryFactory(BaseFactory):
     dateCreated = LazyAttribute(lambda _: date_utils.get_naive_utc_now() - timedelta(days=1))
     user = factory.SubFactory(BeneficiaryFactory)
     authorUser = factory.SubFactory(AdminFactory)
+    scope = models.GdprUserDataExtractScope.PUBLIC
 
 
 class GdprUserAnonymizationFactory(BaseFactory):
