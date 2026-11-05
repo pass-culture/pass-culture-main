@@ -27,7 +27,11 @@ class SendinblueBackend(BaseBackend):
         super().__init__()
         api_key = settings.SENDINBLUE_PRO_API_KEY if use_pro_subaccount else settings.SENDINBLUE_API_KEY
         # send_mail does not use this client instance, but creates one in an asynchronous task
-        self.client = Brevo(api_key=api_key, timeout=settings.BREVO_CONTACTS_REQUEST_TIMEOUT)
+        self.client = Brevo(
+            base_url=settings.EMAIL_BACKEND_URL,
+            api_key=api_key,
+            timeout=settings.BREVO_CONTACTS_REQUEST_TIMEOUT,
+        )
 
     def send_mail(
         self,
