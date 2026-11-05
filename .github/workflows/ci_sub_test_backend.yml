@@ -270,7 +270,7 @@ jobs:
         id: restore-test-durations
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
-          path: /tests/.test_durations
+          path: ${{ runner.temp }}/.test_durations
           key: tests-durations-${{ steps.get-date.outputs.date }}
           restore-keys: |
             tests-durations-${{ steps.get-date.outputs.date }}-
@@ -285,7 +285,20 @@ jobs:
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: test-durations-before
-          path: /tests/.test_durations
+          path: ${{ runner.temp }}/.test_durations
+          if-no-files-found: error
+          include-hidden-files: true
+
+      - name: Report test durations cache
+        working-directory: /
+        env:
+          CACHE_HIT: ${{ steps.restore-test-durations.outputs.cache-hit }}
+        run: |
+          if [ -n "$CACHE_HIT" ]; then
+            echo "Pytest: historical test durations restored for all eight groups." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Pytest: no historical durations cache found; this run will populate it." >> "$GITHUB_STEP_SUMMARY"
+          fi
 
   pytest:
     needs: restore-test-durations

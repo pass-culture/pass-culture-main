@@ -202,6 +202,13 @@ Pour ça, via Docker:
 Une fois le le backend lancé, les tests peuvent être exécutés avec ou sans docker compose, et ce indépendamment de la manière
 de lancer le backend.
 
+En CI, les tests sont répartis en huit groupes avec `pytest-split`. Le workflow
+restaure les durées historiques depuis le cache, puis transmet le même fichier
+`.test_durations` à tous les groupes via l'artefact `test-durations-before`.
+Les relances des groupes réutilisent cet artefact pour conserver la répartition.
+Le résumé GitHub Actions indique si le cache a été trouvé. En son absence, les
+tests s'exécutent quand même et leurs durées alimentent le cache des prochains runs.
+
 ### 1. Lancement des tests depuis la ligne de commande dans l'environnement uv
 
 ```shell
