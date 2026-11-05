@@ -12,10 +12,15 @@ export const getInitialPartnerVenueId = (
   newOffererId?: number | undefined
 ): number | null => {
   // ---------------------------------------------------------------------------
-  // Priority 1: If available, get the venue ID from URL params (Back Office switcher).
+  // Priority 1: If available, get the venue ID from URL params
+  //    - venue : Back Office switcher
+  //    - id-structure : optional Pro param to ease venue selection
 
   const urlSearchParams = new URLSearchParams(globalThis.location.search)
-  const selectedVenueIdFromUrl = Number(urlSearchParams.get('venue'))
+  let selectedVenueIdFromUrl = Number(urlSearchParams.get('venue'))
+  if (!selectedVenueIdFromUrl) {
+    selectedVenueIdFromUrl = Number(urlSearchParams.get('id-structure'))
+  }
   const selectedVenue = venues.filter(
     (venue) => venue.id === selectedVenueIdFromUrl
   )
