@@ -22,9 +22,9 @@ from pcapi import settings
 from pcapi.connectors.entreprise import exceptions
 from pcapi.connectors.entreprise import models
 from pcapi.connectors.entreprise.backends.base import BaseBackend
-from pcapi.core import logging as pcapi_logging
 from pcapi.utils import cache as cache_utils
 from pcapi.utils import date as date_utils
+from pcapi.utils import logging as pcapi_logging
 from pcapi.utils import requests
 from pcapi.utils import siren as siren_utils
 from pcapi.utils.redis import get_redis_client

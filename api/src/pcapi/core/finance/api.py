@@ -61,7 +61,6 @@ from pcapi.core.educational.api import booking as educational_api_booking
 from pcapi.core.finance import deposit_api
 from pcapi.core.finance import reimbursement_rules
 from pcapi.core.history import api as history_api
-from pcapi.core.logging import log_elapsed
 from pcapi.core.mails.transactional import send_booking_cancellation_by_pro_to_beneficiary_email
 from pcapi.core.mails.transactional.finance_incidents.finance_incident_notification import send_commercial_gesture_email
 from pcapi.core.mails.transactional.finance_incidents.finance_incident_notification import send_finance_incident_emails
@@ -73,6 +72,7 @@ from pcapi.routes.serialization.reimbursement_csv_serialize import Reimbursement
 from pcapi.routes.serialization.reimbursement_csv_serialize import find_reimbursement_details_by_invoices
 from pcapi.utils import human_ids
 from pcapi.utils.chunks import get_chunks
+from pcapi.utils.logging import log_elapsed
 from pcapi.utils.redis import get_redis_client
 from pcapi.utils.repository import transaction
 from pcapi.utils.transaction_manager import atomic

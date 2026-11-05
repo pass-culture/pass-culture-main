@@ -6,9 +6,9 @@ import sqlalchemy.exc as sa_exc
 import sqlalchemy.orm as sa_orm
 
 from pcapi import settings
-from pcapi.core.logging import log_elapsed
 from pcapi.models import Model
 from pcapi.models import db
+from pcapi.utils.logging import log_elapsed
 
 from . import exceptions
 
