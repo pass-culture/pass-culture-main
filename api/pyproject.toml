@@ -81,7 +81,7 @@ dependencies = [
   # from our private fork
   "sqlalchemy-easy-softdelete",
   "sqlalchemy[mypy]==2.0.54",
-  "time-machine==3.5.1",
+  "time-machine==3.6.0",
   "transitions ==0.9.3",
   "urllib3==2.8.0",
   "weasyprint==70.0",
