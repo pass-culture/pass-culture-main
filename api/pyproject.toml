@@ -40,7 +40,7 @@ dependencies = [
   "google-cloud-logging==3.17.0",
   "google-cloud-secret-manager>=2.30.0",
   "google-cloud-storage==3.17.1",
-  "googleapis-common-protos==1.75.5",
+  "googleapis-common-protos==1.76.0",
   "googlemaps ==4.10.0",
   "gql[requests]==4.4.0",
   "gunicorn[gevent]==26.2.0",
