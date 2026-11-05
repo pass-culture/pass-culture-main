@@ -185,7 +185,9 @@ def anonymize_user(
 
     if external_email_anonymized:
         user.replace_roles_by_anonymized_role()
-        email_prefix = constants.ANONYMIZED_BACKOFFICE_USER_EMAIL_PREFIX if was_bo_user else "anonymous"
+        email_prefix = (
+            constants.ANONYMIZED_BACKOFFICE_USER_EMAIL_PREFIX if was_bo_user else constants.ANONYMIZED_USER_EMAIL_PREFIX
+        )
         user.email = f"{email_prefix}_{user.id}{constants.ANONYMIZED_USER_EMAIL}"
         db.session.add(
             history_models.ActionHistory(
