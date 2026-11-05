@@ -88,7 +88,7 @@ dependencies = [
   "werkzeug==3.1.9",
   "wtforms==3.3.1",
   "wtforms-sqlalchemy ==0.4.2",
-  "xlsxwriter==3.3.0",
+  "xlsxwriter==3.3.1",
   "zeep==4.3.3",
 ]
 
