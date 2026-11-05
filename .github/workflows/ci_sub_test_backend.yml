@@ -369,21 +369,6 @@ jobs:
           NETWORK: ${{ job.container.network }}
           IMAGE_NAME: ${{ steps.load-docker-image.outputs.image-name }}
 
-      - name: "Mount a Volume with pcapi rights"
-        run: |
-          docker run \
-            --volume "$WORKSPACE/pass-culture-main/api/tests/:/tests" \
-            --user 0 \
-            --entrypoint bash \
-            "$IMAGE_NAME" \
-            -c '
-              echo "Changing owner and group fort directory test"
-              chown -R pcapi:pcapi /tests
-            '
-        env:
-          WORKSPACE: ${{ runner.workspace }}
-          IMAGE_NAME: ${{ steps.load-docker-image.outputs.image-name }}
-
       # These two steps will be executed only when there IS a cache hit (exact match or not).
       # When a matrix job is retried, it will reuse the same artifact to execute the exact same split.
       - name: Download test durations
@@ -399,6 +384,21 @@ jobs:
         env:
           DURATIONS_DIR: ${{ runner.temp }}/pytest-durations
           WORKSPACE: ${{ runner.workspace }}
+
+      - name: "Mount a Volume with pcapi rights"
+        run: |
+          docker run \
+            --volume "$WORKSPACE/pass-culture-main/api/tests/:/tests" \
+            --user 0 \
+            --entrypoint bash \
+            "$IMAGE_NAME" \
+            -c '
+              echo "Changing owner and group fort directory test"
+              chown -R pcapi:pcapi /tests
+            '
+        env:
+          WORKSPACE: ${{ runner.workspace }}
+          IMAGE_NAME: ${{ steps.load-docker-image.outputs.image-name }}
 
         # When running pytest, we write the new test durations using options `--store-durations --clean-durations`.
         # Option `--clean-durations` is undocumented but you can check its implementation here:
@@ -433,7 +433,7 @@ jobs:
         with:
           name: "test-durations-after-partial-${{ matrix.pytest_args.description }}-${{ matrix.group }}"
           path: "${{ runner.workspace }}/pass-culture-main/api/tests/.test_durations"
-          if-no-files-found: warn
+          if-no-files-found: error
           include-hidden-files: true
 
       - name: "Publish Test Report"
@@ -448,24 +448,39 @@ jobs:
   cache-test-durations:
     name: Cache test durations
     needs: pytest
-    if: github.run_attempt == 1 && (success() || failure())
+    if: github.run_attempt == 1 && success()
     runs-on: ubuntu-latest
     steps:
       - name: Download all partial test durations
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           pattern: test-durations-after-partial-*
-          path: ${{ runner.temp }}
+          path: ${{ runner.temp }}/pytest-partial-durations
+          merge-multiple: false
 
       # This step regroups the 8 partial files and sorts keys alphabetically
       - name: Merge all partial test durations
         # overrides workflow default
         working-directory: /
+        shell: bash
         run: |
-          # shellcheck disable=SC2086
-          jq -s 'add' $TEMP/test-durations-after-partial-*/.test_durations \
-          | jq 'to_entries | sort_by(.key) | from_entries' \
-          > "$TEMP/.test_durations"
+          set -euo pipefail
+          files=()
+          while IFS= read -r -d '' file; do
+            files+=("$file")
+          done < <(find "$TEMP/pytest-partial-durations" -type f -name .test_durations -print0)
+
+          if [ "${#files[@]}" -ne 8 ]; then
+            echo "::error::Expected 8 pytest duration files, found ${#files[@]}. Check the partial duration artifact uploads."
+            exit 1
+          fi
+
+          for file in "${files[@]}"; do
+            jq -e 'type == "object" and length > 0 and all(.[]; type == "number" and . >= 0)' "$file" > /dev/null
+          done
+
+          jq -s 'add | to_entries | sort_by(.key) | from_entries' "${files[@]}" \
+            > "$TEMP/.test_durations"
         env:
           TEMP: ${{ runner.temp }}
 
@@ -476,7 +491,7 @@ jobs:
         with:
           name: test-durations-after
           path: ${{ runner.temp }}/.test_durations
-          if-no-files-found: warn
+          if-no-files-found: error
           include-hidden-files: true
 
       - name: Get Date

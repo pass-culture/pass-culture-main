@@ -208,6 +208,8 @@ restaure les durées historiques depuis le cache, puis transmet le même fichier
 Les relances des groupes réutilisent cet artefact pour conserver la répartition.
 Le résumé GitHub Actions indique si le cache a été trouvé. En son absence, les
 tests s'exécutent quand même et leurs durées alimentent le cache des prochains runs.
+Le cache n'est renouvelé qu'après la réussite des huit groupes et la validation
+de leurs huit fichiers de durées ; un run incomplet ne remplace pas l'historique.
 
 ### 1. Lancement des tests depuis la ligne de commande dans l'environnement uv
 
