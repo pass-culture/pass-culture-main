@@ -600,6 +600,7 @@
                 "type": "object"
             },
             "Banner": {
+                "additionalProperties": false,
                 "properties": {
                     "name": {
                         "$ref": "#/components/schemas/BannerName"
@@ -714,6 +715,7 @@
                 "type": "object"
             },
             "BookSubType": {
+                "additionalProperties": false,
                 "properties": {
                     "gtls": {
                         "items": {
@@ -740,6 +742,7 @@
                 "type": "object"
             },
             "BookType": {
+                "additionalProperties": false,
                 "properties": {
                     "children": {
                         "items": {
@@ -3098,6 +3101,7 @@
                 "type": "object"
             },
             "CulturalSurveyAnswer": {
+                "additionalProperties": false,
                 "properties": {
                     "id": {
                         "$ref": "#/components/schemas/CulturalSurveyAnswerEnum"
@@ -3221,6 +3225,7 @@
                 "type": "object"
             },
             "CulturalSurveyQuestion": {
+                "additionalProperties": false,
                 "properties": {
                     "answers": {
                         "items": {
@@ -4106,6 +4111,7 @@
                 "type": "object"
             },
             "GTL": {
+                "additionalProperties": false,
                 "properties": {
                     "code": {
                         "title": "Code",
@@ -4848,6 +4854,7 @@
                 "type": "object"
             },
             "MovieType": {
+                "additionalProperties": false,
                 "properties": {
                     "label": {
                         "title": "Label",
@@ -4866,6 +4873,7 @@
                 "type": "object"
             },
             "MusicType": {
+                "additionalProperties": false,
                 "properties": {
                     "label": {
                         "title": "Label",
@@ -8911,6 +8919,7 @@
                 "type": "object"
             },
             "ShowSubType": {
+                "additionalProperties": false,
                 "properties": {
                     "code": {
                         "title": "Code",
@@ -8934,6 +8943,7 @@
                 "type": "object"
             },
             "ShowType": {
+                "additionalProperties": false,
                 "properties": {
                     "children": {
                         "items": {
