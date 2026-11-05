@@ -36,6 +36,7 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import factories as perm_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers import factories as providers_factories
+from pcapi.core.search.backends.algolia import SearchError
 from pcapi.core.search.models import IndexationReason
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
@@ -2208,6 +2209,18 @@ class ListAlgoliaOffersTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 1
         assert rows[0]["ID"] == str(offer_to_display.id)
+
+    @patch("pcapi.routes.backoffice.offers.blueprint.search_offer_ids", side_effect=SearchError())
+    def test_algolia_connection_failed(self, mock_search_offer_ids, authenticated_client, offers):
+        with assert_num_queries(self.expected_num_queries_with_no_result - 1):
+            response = authenticated_client.get(url_for(self.endpoint))
+            assert response.status_code == 200
+
+        assert html_parser.count_table_rows(response.data) == 0
+        assert (
+            html_parser.extract_alert(response.data)
+            == "La recherche sur Algolia a échoué. Contactez l'équipe technique si le problème persiste."
+        )
 
 
 class ListLlmOffersTest(GetEndpointHelper):

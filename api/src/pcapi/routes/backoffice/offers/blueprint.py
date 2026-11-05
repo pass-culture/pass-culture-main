@@ -48,6 +48,7 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers import models as providers_models
 from pcapi.core.search import search_offer_ids
+from pcapi.core.search.backends.algolia import SearchError
 from pcapi.core.search.models import IndexationReason
 from pcapi.core.users import models as users_models
 from pcapi.models import db
@@ -898,15 +899,18 @@ def list_algolia_offers() -> response_utils.BackofficeResponse:
             is_form_empty=True,
         )
 
-    offer_ids = _get_offer_ids_algolia(form)
     offers = []
-    if offer_ids:
-        offers = _get_offers_by_ids(
-            offer_ids=offer_ids,
-            sort=form.sort.data,
-            order=form.order.data,
-        )
-        offers = search_utils.limit_rows(offers, form.limit.data)
+
+    try:
+        if offer_ids := _get_offer_ids_algolia(form):
+            offers = _get_offers_by_ids(
+                offer_ids=offer_ids,
+                sort=form.sort.data,
+                order=form.order.data,
+            )
+            offers = search_utils.limit_rows(offers, form.limit.data)
+    except SearchError:
+        flash("La recherche sur Algolia a échoué. Contactez l'équipe technique si le problème persiste.", "warning")
 
     return _render_offer_list(
         rows=offers,
