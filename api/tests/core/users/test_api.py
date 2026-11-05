@@ -1712,7 +1712,7 @@ class UpdateLoginDeviceHistoryTest:
             os="iOS",
         )
 
-        users_api.update_login_device_history(device_info=device_info, user=user)
+        users_api.update_login_device_history(device_info=device_info, user=user, ip_address=None)
 
         assert db.session.query(users_models.LoginDeviceHistory).count() == 0
 
@@ -1724,7 +1724,7 @@ class UpdateLoginDeviceHistoryTest:
             os="iOS",
         )
 
-        users_api.update_login_device_history(device_info=device_info, user=user)
+        users_api.update_login_device_history(device_info=device_info, user=user, ip_address=None)
 
         login_device = db.session.query(users_models.LoginDeviceHistory).one()
 
@@ -1732,6 +1732,19 @@ class UpdateLoginDeviceHistoryTest:
         assert login_device.source == "iPhone 13"
         assert login_device.os == "iOS"
         assert login_device.location is None
+
+    def test_save_login_device_ip_address(self):
+        user = users_factories.UserFactory()
+        device_info = common_models.DeviceInfo(
+            deviceId="2E429592-2446-425F-9A62-D6983F375B3B",
+            source="iPhone 13",
+            os="iOS",
+        )
+
+        users_api.update_login_device_history(device_info=device_info, user=user, ip_address="82.65.58.211")
+
+        login_device = db.session.query(users_models.LoginDeviceHistory).one()
+        assert login_device.ipAddress == "82.65.58.211"
 
     def should_return_login_history(self):
         user = users_factories.UserFactory()
@@ -1741,7 +1754,7 @@ class UpdateLoginDeviceHistoryTest:
             os="iOS",
         )
 
-        login_history = users_api.update_login_device_history(device_info=device_info, user=user)
+        login_history = users_api.update_login_device_history(device_info=device_info, user=user, ip_address=None)
 
         login_device = db.session.query(users_models.LoginDeviceHistory).one()
 
@@ -1755,7 +1768,7 @@ class UpdateLoginDeviceHistoryTest:
             os="iOS",
         )
 
-        users_api.update_login_device_history(device_info=device_info, user=user)
+        users_api.update_login_device_history(device_info=device_info, user=user, ip_address=None)
 
         login_device = db.session.query(users_models.LoginDeviceHistory).one()
 
@@ -1770,7 +1783,7 @@ class UpdateLoginDeviceHistoryTest:
         )
 
         with caplog.at_level(logging.INFO):
-            users_api.update_login_device_history(device_info=device_info, user=user)
+            users_api.update_login_device_history(device_info=device_info, user=user, ip_address=None)
 
         assert caplog.messages == ["Invalid deviceId was provided for login device"]
         assert caplog.records[0].extra == {

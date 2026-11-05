@@ -15,6 +15,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 def test_offer_indexation_on_booking_cycle(app, clear_redis):
     beneficiary = users_factories.BeneficiaryGrant18Factory()
+    native_user_session = users_factories.NativeUserSessionFactory(user=beneficiary)
     stock = offers_factories.StockFactory(quantity=1)
     offer = stock.offer
     assert search_testing.search_store["offers"] == {}
@@ -25,7 +26,9 @@ def test_offer_indexation_on_booking_cycle(app, clear_redis):
     search.index_offers_in_queue()
     assert offer.id in search_testing.search_store["offers"]
 
-    booking = bookings_api.book_offer(beneficiary, stock.id, quantity=1)
+    booking = bookings_api.book_offer(
+        beneficiary, stock.id, quantity=1, native_user_session=native_user_session, ip_address=None
+    )
     search.index_offers_in_queue()
     assert offer.id not in search_testing.search_store["offers"]
 
@@ -98,6 +101,7 @@ def test_offer_indexation_on_venue_cycle(app, clear_redis):
 
 def test_artist_indexation_on_offer_cycle(app, clear_redis):
     beneficiary = users_factories.BeneficiaryGrant18Factory()
+    native_user_session = users_factories.NativeUserSessionFactory(user=beneficiary)
     artist = artist_factories.ArtistFactory()
     product = offers_factories.ProductFactory()
     artist_factories.ArtistProductLinkFactory(artist_id=artist.id, product_id=product.id)
@@ -111,7 +115,7 @@ def test_artist_indexation_on_offer_cycle(app, clear_redis):
 
     assert artist.id in search_testing.search_store["artists"]
 
-    bookings_api.book_offer(beneficiary, stock.id, quantity=1)
+    bookings_api.book_offer(beneficiary, stock.id, quantity=1, native_user_session=native_user_session, ip_address=None)
     search.index_offers_in_queue()
     search.index_artists_in_queue()
 

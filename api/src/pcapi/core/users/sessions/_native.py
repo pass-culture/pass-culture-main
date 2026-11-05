@@ -163,6 +163,8 @@ def create_user_jwt_tokens(
         access_token=access_token,
         refresh_token=refresh_token,
         device_id=device_info.device_id if device_info else "",
+        device_os=device_info.os if device_info else None,
+        device_source=device_info.source if device_info else None,
     )
     return TokensContainer(access=access_token, refresh=refresh_token)
 
@@ -183,11 +185,15 @@ def refresh_user_jwt_tokens(user: users_models.User, device_info: "DeviceInfo | 
         access_token=access_token,
         refresh_token=refresh_token,
         device_id=device_info.device_id,
+        device_os=device_info.os,
+        device_source=device_info.source,
     )
     return TokensContainer(access=access_token, refresh=refresh_token)
 
 
-def _register_tokens(access_token: str, refresh_token: str, device_id: str) -> None:
+def _register_tokens(
+    access_token: str, refresh_token: str, device_id: str, device_os: str | None, device_source: str | None
+) -> None:
     decoded_refresh_token = decode_token(refresh_token)
     decoded_access_token = decode_token(access_token)
     db.session.add(
@@ -197,6 +203,8 @@ def _register_tokens(access_token: str, refresh_token: str, device_id: str) -> N
             accessToken=decoded_access_token["jti"],
             userId=decoded_access_token["sub"],
             deviceId=device_id,
+            deviceOs=device_os,
+            deviceSource=device_source,
         )
     )
     if is_managed_transaction():
@@ -216,4 +224,12 @@ def disconnect_native_user_sessions(user_id: int) -> int:
         db.session.query(users_models.NativeUserSession)
         .filter(users_models.NativeUserSession.userId == user_id)
         .delete(synchronize_session=False)
+    )
+
+
+def get_current_native_user_session() -> users_models.NativeUserSession:
+    return (
+        db.session.query(users_models.NativeUserSession)
+        .filter(users_models.NativeUserSession.accessToken == flask.g.jwt.data.jti)
+        .one()
     )

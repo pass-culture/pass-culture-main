@@ -56,7 +56,7 @@ def signin(body: authentication.SigninRequestV2) -> authentication.SigninRespons
     if user.account_state.is_deleted or user.account_state == user_models.AccountState.ANONYMIZED:
         raise ApiErrors({"general": ["Identifiant ou Mot de passe incorrect"]})
 
-    users_api.save_device_info_and_notify_user(user, body.device_info)
+    users_api.save_device_info_and_notify_user(user, body.device_info, ip_address=request.remote_addr)
 
     users_api.update_last_connection_date(user)
     tokens = create_user_jwt_tokens(
@@ -236,7 +236,7 @@ def sso_authorize(sso_provider: str, body: authentication.OAuthSigninRequestV2) 
                 sso_extra_data,
             )
 
-    users_api.save_device_info_and_notify_user(user, body.device_info)
+    users_api.save_device_info_and_notify_user(user, body.device_info, ip_address=request.remote_addr)
 
     users_api.update_last_connection_date(user)
     logger.info(

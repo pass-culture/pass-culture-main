@@ -10,6 +10,7 @@ from ._native import JwtType
 from ._native import create_user_jwt_tokens
 from ._native import delete_expired_jwt
 from ._native import disconnect_native_user_sessions
+from ._native import get_current_native_user_session
 from ._native import load_jwt
 from ._native import refresh_user_jwt_tokens
 from ._router import install_login as install_routed_login
@@ -22,6 +23,7 @@ __all__ = [
     "delete_expired_sessions",
     "disconnect_native_user_sessions",
     "disconnect_user_session",
+    "get_current_native_user_session",
     "install_backoffice_login",
     "install_routed_login",
     "load_jwt",

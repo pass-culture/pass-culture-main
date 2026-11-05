@@ -39,6 +39,7 @@ from pcapi.core.reactions.factories import ReactionFactory
 from pcapi.core.reactions.models import ReactionTypeEnum
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
+from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.utils import date as date_utils
@@ -68,6 +69,29 @@ class PostBookingTest:
         assert booking.userId == user.id
         assert response.json["bookingId"] == booking.id
         assert booking.status == BookingStatus.CONFIRMED
+
+    def test_post_bookings_saves_booking_device(self, client):
+        stock = offers_factories.StockFactory()
+        user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
+
+        client = client.with_token(user)
+        native_user_session = db.session.query(users_models.NativeUserSession).filter_by(userId=user.id).one()
+        native_user_session.deviceOs = "iOS"
+        native_user_session.deviceSource = "iPhone 13"
+        db.session.flush()
+
+        response = client.post(
+            "/native/v1/bookings",
+            json={"stockId": stock.id, "quantity": 1},
+            headers={"X-Forwarded-For": "82.65.58.211, front"},
+        )
+
+        assert response.status_code == 200
+        booking = db.session.query(Booking).filter(Booking.stockId == stock.id).one()
+        assert booking.bookingDevice.deviceId == native_user_session.deviceId
+        assert booking.bookingDevice.os == "iOS"
+        assert booking.bookingDevice.source == "iPhone 13"
+        assert booking.bookingDevice.ipAddress == "82.65.58.211"
 
     def test_no_stock_found(self, client):
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)

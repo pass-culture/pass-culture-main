@@ -298,6 +298,9 @@ def _book_offer(
     beneficiary: users_models.User,
     stock_id: int,
     quantity: int,
+    *,
+    native_user_session: users_models.NativeUserSession,
+    ip_address: str | None,
 ) -> models.Booking:
     """
     Return a booking or raise an exception if it's not possible.
@@ -468,7 +471,15 @@ def _book_offer(
             },
         )
 
-        db.session.add_all((booking, stock))
+        booking_device = models.BookingDevice(
+            booking=booking,
+            deviceId=native_user_session.deviceId or None,  # NativeUserSession.deviceId can be an empty string
+            os=native_user_session.deviceOs,
+            source=native_user_session.deviceSource,
+            ipAddress=ip_address,
+        )
+
+        db.session.add_all((booking, stock, booking_device))
         db.session.flush()  # to setup relations on `booking` for `add_event()` below.
 
         if booking.status == models.BookingStatus.USED:
@@ -484,6 +495,9 @@ def book_offer(
     beneficiary: users_models.User,
     stock_id: int,
     quantity: int,
+    *,
+    native_user_session: users_models.NativeUserSession,
+    ip_address: str | None,
 ) -> models.Booking:
     """
     Return a booking or raise an exception if it's not possible.
@@ -511,7 +525,9 @@ def book_offer(
     ).scalar()
 
     try:
-        booking = _book_offer(beneficiary, stock_id, quantity)
+        booking = _book_offer(
+            beneficiary, stock_id, quantity, native_user_session=native_user_session, ip_address=ip_address
+        )
     except external_bookings_exceptions.ShowSoldOutException as error:
         offers_api.edit_stock(
             stock,

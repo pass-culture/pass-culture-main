@@ -1,6 +1,7 @@
 import logging
 
 import sqlalchemy.orm as sa_orm
+from flask import request
 from flask_login import current_user
 
 import pcapi.core.bookings.api as bookings_api
@@ -12,6 +13,7 @@ from pcapi.core.external_bookings import exceptions as external_bookings_excepti
 from pcapi.core.offers.exceptions import UnexpectedCinemaProvider
 from pcapi.core.offers.models import Stock
 from pcapi.core.providers.exceptions import InactiveProvider
+from pcapi.core.users.sessions import get_current_native_user_session
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.utils import first_or_404
@@ -76,6 +78,8 @@ def book_offer(body: BookOfferRequest) -> BookOfferResponse:
             beneficiary=current_user,
             stock_id=body.stock_id,
             quantity=body.quantity,
+            native_user_session=get_current_native_user_session(),
+            ip_address=request.remote_addr,
         )
         logger.info(
             "Offer successfully booked",

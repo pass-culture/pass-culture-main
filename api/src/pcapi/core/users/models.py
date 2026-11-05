@@ -1361,6 +1361,7 @@ class LoginDeviceHistory(PcObject, Model):
     source = sa_orm.mapped_column(sa.Text, nullable=True)
     os = sa_orm.mapped_column(sa.Text, nullable=True)
     location = sa_orm.mapped_column(sa.Text, nullable=True)
+    ipAddress: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
     dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
         sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now
     )
@@ -1538,3 +1539,5 @@ class NativeUserSession(PcObject, Model):
     # no fk  here to avoid useless lock on both tables. A corrupted userId is not a problem here
     userId: sa_orm.Mapped[int] = sa_orm.mapped_column(sa.BigInteger, nullable=False, index=True)
     deviceId: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False, index=True)
+    deviceOs: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
+    deviceSource: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)

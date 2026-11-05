@@ -354,13 +354,14 @@ class InsufficientFundsSQLCheckTest:
 
         booking = factories.BookingFactory()
         user = booking.user
+        native_user_session = users_factories.NativeUserSessionFactory(user=user)
 
         # But now their deposit expired.
         self._expire_deposit(user)
 
         # They should be able to book free offers
         stock = offers_factories.StockFactory(price=0)
-        api.book_offer(user, stock.id, quantity=1)
+        api.book_offer(user, stock.id, quantity=1, native_user_session=native_user_session, ip_address=None)
         assert db.session.query(models.Booking).filter(Booking.userId == user.id).count() == 2
 
     def test_cannot_change_quantity_with_expired_deposit(self):
