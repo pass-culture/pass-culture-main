@@ -50,7 +50,7 @@
     "@firebase/remote-config": "0.9.3",
     "@hookform/resolvers": "5.9.2",
     "@pass-culture/design-system": "0.13.0",
-    "@radix-ui/react-dropdown-menu": "2.1.25",
+    "@radix-ui/react-dropdown-menu": "2.2.1",
     "@reduxjs/toolkit": "2.13.0",
     "@sentry/browser": "11.10.0",
     "@sentry/react": "11.10.0",
