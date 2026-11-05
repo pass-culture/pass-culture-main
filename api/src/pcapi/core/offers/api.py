@@ -490,7 +490,10 @@ def batch_update_offers(
     chunk_size: int = settings.BATCH_UPDATE_OFFERS_CHUNK_SIZE,
     apply: bool = True,
 ) -> set[int]:
-    results = query.with_entities(models.Offer.id, models.Offer.venueId).yield_per(2_500).tuples()
+    results = (
+        (offer_id, venue_id)
+        for offer_id, venue_id in query.with_entities(models.Offer.id, models.Offer.venueId).yield_per(2_500)
+    )
 
     updated_offer_ids: set[int] = set()
     found_venue_ids: set[int] = set()
