@@ -5,7 +5,7 @@ import useSWR, { type SWRResponse } from 'swr'
 import { api } from '@/apiClient/api'
 import type { CancelablePromise } from '@/apiClient/compat'
 import type {
-  GetIndividualOfferResponseModel,
+  GetIndividualOfferResponseModelV2,
   HighlightResponseModel,
   ShortHighlightResponseModel,
 } from '@/apiClient/v1'
@@ -381,7 +381,7 @@ describe('OfferHighlightForm', () => {
     postHighlightRequestOfferMock.mockReturnValue(
       new Promise(
         () => {}
-      ) as unknown as CancelablePromise<GetIndividualOfferResponseModel>
+      ) as unknown as CancelablePromise<GetIndividualOfferResponseModelV2>
     )
 
     renderOfferHighlightForm({ offerId: 1 })

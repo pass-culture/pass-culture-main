@@ -1,4 +1,4 @@
-import type { GetIndividualOfferResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferResponseModelV2 } from '@/apiClient/v1'
 
-export const isOfferSynchronized = (offer: GetIndividualOfferResponseModel) =>
+export const isOfferSynchronized = (offer: GetIndividualOfferResponseModelV2) =>
   !!offer.lastProvider

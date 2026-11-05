@@ -1,5 +1,5 @@
 import {
-  type GetIndividualOfferResponseModel,
+  type GetIndividualOfferResponseModelV2,
   type SubcategoryResponseModel,
   WithdrawalTypeEnum,
 } from '@/apiClient/v1'
@@ -7,7 +7,7 @@ import {
 import type { IndividualOfferPracticalInfosFormValues } from './types'
 
 export function getInitialValuesFromOffer(
-  offer: GetIndividualOfferResponseModel,
+  offer: GetIndividualOfferResponseModelV2,
   offerSubcategory?: SubcategoryResponseModel
 ): IndividualOfferPracticalInfosFormValues {
   return {
