@@ -2544,26 +2544,51 @@ class Returns400Test:
         assert expected_error_key in response.json
 
     @pytest.mark.parametrize(
-        "location",
+        "location,expected_error",
         [
             # city is missing
-            {"street": "1 rue de la paix", "postalCode": "75102", "latitude": 48.8566, "longitude": 2.3522},
+            (
+                {
+                    "isVenueLocation": False,
+                    "street": "1 rue de la paix",
+                    "postalCode": "75102",
+                    "latitude": 48.8566,
+                    "longitude": 2.3522,
+                },
+                {"location.0.city": ["Ce champ est obligatoire"]},
+            ),
             # postal code is not a french one
-            {
-                "street": "1 rue de la paix",
-                "city": "Paris",
-                "postalCode": "AB",
-                "latitude": 48.8566,
-                "longitude": 2.3522,
-            },
+            (
+                {
+                    "isVenueLocation": False,
+                    "street": "1 rue de la paix",
+                    "city": "Paris",
+                    "postalCode": "7501",
+                    "latitude": 48.8566,
+                    "longitude": 2.3522,
+                },
+                {"location.0.postalCode": ["Cette chaîne de caractères doit avoir une taille minimum de 5 caractères"]},
+            ),
+            (
+                {
+                    "isVenueLocation": False,
+                    "street": "1 rue de la paix",
+                    "city": "Paris",
+                    "postalCode": "7501è",
+                    "latitude": 48.8566,
+                    "longitude": 2.3522,
+                },
+                {"location.0.postalCode": ["String should match pattern '^\\d+$'"]},
+            ),
         ],
     )
-    def when_the_location_is_invalid(self, location, client, venue, auth_client):
+    def when_the_location_is_invalid(self, location, expected_error, client, venue, auth_client):
         offer = offers_factories.OfferFactory(subcategoryId=subcategories.ESCAPE_GAME.id, venue=venue)
 
         response = auth_client.patch(self.endpoint.format(offer_id=offer.id), json={"location": location})
 
         assert response.status_code == 400
+        assert response.json == expected_error
 
     def when_removing_the_url_of_an_offer_that_has_no_address(self, client, venue, auth_client):
         offer = offers_factories.OfferFactory(

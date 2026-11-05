@@ -28,7 +28,7 @@ class CoreLocationModelV2(BaseModelV2):
     label: str | None = None
     latitude: common_models.LatitudeDecimal
     longitude: common_models.LongitudeDecimal
-    postalCode: str = pydantic_v2.Field(min_length=5, max_length=5)
+    postalCode: str = pydantic_v2.Field(pattern=r"^\d+$", min_length=5, max_length=5)
     street: str = pydantic_v2.Field(min_length=1, max_length=200)
 
     @pydantic_v2.field_validator("city")
