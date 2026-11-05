@@ -11,8 +11,6 @@ from pcapi.utils import requests
 logger = logging.getLogger(__name__)
 
 
-API_URL = "https://api.batch.com"
-
 # Increase timeout instead of default 10s for DELETE operations which sometimes fail (Read timeout)
 DELETE_TIMEOUT = 30
 
@@ -85,7 +83,7 @@ class BatchBackend:
         def make_post_request(api: BatchAPI) -> None:
             self.handle_request(
                 "POST",
-                f"{API_URL}/1.0/{api.value}/data/users/{user_id}",
+                f"{settings.PUSH_NOTIFICATION_BACKEND_URL}/1.0/{api.value}/data/users/{user_id}",
                 api_name="update_user_attributes",
                 can_be_asynchronously_retried=can_be_asynchronously_retried,
                 payload={"overwrite": False, "values": attribute_values},
@@ -106,7 +104,7 @@ class BatchBackend:
         def make_post_request(api: BatchAPI) -> None:
             self.handle_request(
                 "POST",
-                f"{API_URL}/1.0/{api.value}/data/users/",
+                f"{settings.PUSH_NOTIFICATION_BACKEND_URL}/1.0/{api.value}/data/users/",
                 api_name="update_userS_attributes",
                 can_be_asynchronously_retried=can_be_asynchronously_retried,
                 payload=[payload_template(user) for user in users_data],
@@ -123,7 +121,7 @@ class BatchBackend:
         def make_post_request(api: BatchAPI) -> None:
             self.handle_request(
                 "POST",
-                f"{API_URL}/1.1/{api.value}/transactional/send",
+                f"{settings.PUSH_NOTIFICATION_BACKEND_URL}/1.1/{api.value}/transactional/send",
                 api_name="transactional_notification",
                 can_be_asynchronously_retried=can_be_asynchronously_retried,
                 payload={
@@ -146,7 +144,7 @@ class BatchBackend:
         accept DELETE http methods.
         """
         for api in (BatchAPI.IOS, BatchAPI.ANDROID):
-            url = f"{API_URL}/1.0/{api.value}/data/users/{user_id}"
+            url = f"{settings.PUSH_NOTIFICATION_BACKEND_URL}/1.0/{api.value}/data/users/{user_id}"
             self.handle_request(
                 "DELETE",
                 url,
@@ -163,7 +161,7 @@ class BatchBackend:
         def make_post_request(api: BatchAPI) -> None:
             self.handle_request(
                 "POST",
-                f"{API_URL}/1.0/{api.value}/events/users/{user_id}",
+                f"{settings.PUSH_NOTIFICATION_BACKEND_URL}/1.0/{api.value}/events/users/{user_id}",
                 api_name="track_event",
                 payload={
                     "events": [
@@ -202,7 +200,7 @@ class BatchBackend:
         def make_post_request(api: BatchAPI) -> None:
             self.handle_request(
                 "POST",
-                f"{API_URL}/1.0/{api.value}/events/users",
+                f"{settings.PUSH_NOTIFICATION_BACKEND_URL}/1.0/{api.value}/events/users",
                 api_name="track_event",
                 payload=payload,
                 can_be_asynchronously_retried=can_be_asynchronously_retried,

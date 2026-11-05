@@ -159,6 +159,8 @@ END_TO_END_TESTS_EMAIL_ADDRESS = os.environ.get("END_TO_END_TESTS_EMAIL_ADDRESS"
 # When load testing, override `EMAIL_BACKEND` to avoid going over Brevo quota:
 # EMAIL_BACKEND="pcapi.core.mails.backends.logger.LoggerBackend"
 EMAIL_BACKEND = os.environ.get("EMAIL_BACKEND")
+# to wire calls to a mock instance in perf mode
+EMAIL_BACKEND_URL = os.environ.get("EMAIL_BACKEND_URL")
 
 SUPPORT_EMAIL_ADDRESS = os.environ.get("SUPPORT_EMAIL_ADDRESS", "")
 SUPPORT_PRO_EMAIL_ADDRESS = os.environ.get("SUPPORT_PRO_EMAIL_ADDRESS", "")
@@ -201,6 +203,7 @@ BATCH_MAX_USERS_PER_TRANSACTIONAL_NOTIFICATION = int(
     os.environ.get("BATCH_MAX_USERS_PER_TRANSACTIONAL_NOTIFICATION", "1000")
 )
 PUSH_NOTIFICATION_BACKEND = os.environ.get("PUSH_NOTIFICATION_BACKEND", "LoggerBackend")
+PUSH_NOTIFICATION_BACKEND_URL = os.environ.get("PUSH_NOTIFICATION_BACKEND_URL", "https://api.batch.com")
 
 # BEAMER
 BEAMER_API_KEY = secrets_utils.get("BEAMER_API_KEY", "")
