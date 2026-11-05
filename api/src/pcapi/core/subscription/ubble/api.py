@@ -235,7 +235,7 @@ def _reattempt_identity_verification(
         identification_id = ubble_content.identification_id
 
     identification_url = ubble.create_identity_verification_attempt(identification_id, redirect_url)
-    ubble_content.identification_url = identification_url
+    ubble_content.identification_url = HttpUrl(identification_url)
 
     return ubble_content
 
