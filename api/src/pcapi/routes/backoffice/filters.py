@@ -741,7 +741,7 @@ def format_booking_status(
         bookings_models.BookingStatus.PENDING_REIMBURSEMENT,
         educational_models.CollectiveBookingStatus.PENDING_REIMBURSEMENT,
     ):
-        return format_badge("En cours de remboursement", "success") if with_badge else "En cours de remboursement"
+        return format_badge("En attente de remboursement", "success") if with_badge else "En attente de remboursement"
     if booking.status in (
         bookings_models.BookingStatus.REIMBURSED,
         educational_models.CollectiveBookingStatus.REIMBURSED,
