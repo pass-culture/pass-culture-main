@@ -1400,6 +1400,12 @@ class GetPaginatedOfferIdsByVenueIdTest:
             factories.ThingStockFactory,
             id="things",
         ),
+        pytest.param(
+            repository.get_paginated_event_offer_ids,
+            factories.EventOfferFactory,
+            factories.EventStockFactory,
+            id="events",
+        ),
     ],
 )
 class GetPaginatedOfferIdsFiltersTest:
@@ -1589,6 +1595,168 @@ class GetPaginatedThingOfferIdsTest:
         factories.ThingOfferFactory.create_batch(5, venue=venue)
 
         result = repository.get_paginated_thing_offer_ids(venue_id=venue.id, per_page=2)
+
+        assert result.total == 3
+
+
+@pytest.mark.usefixtures("db_session")
+class GetPaginatedEventOfferIdsTest:
+    def _create_offers_in_expected_order(self, venue):
+        now = date_utils.get_naive_utc_now().replace(second=0, microsecond=0)
+
+        past = factories.EventOfferFactory(venue=venue)
+        factories.EventStockFactory(offer=past, beginningDatetime=now - datetime.timedelta(days=10))
+
+        same_datetime_1 = factories.EventOfferFactory(venue=venue)
+        factories.EventStockFactory(offer=same_datetime_1, beginningDatetime=now + datetime.timedelta(days=1))
+        same_datetime_2 = factories.EventOfferFactory(venue=venue)
+        factories.EventStockFactory(offer=same_datetime_2, beginningDatetime=now + datetime.timedelta(days=1))
+
+        several_stocks = factories.EventOfferFactory(venue=venue)
+        factories.EventStockFactory(offer=several_stocks, beginningDatetime=now + datetime.timedelta(days=5))
+        factories.EventStockFactory(offer=several_stocks, beginningDatetime=now + datetime.timedelta(days=2))
+
+        earliest_stock_deleted = factories.EventOfferFactory(venue=venue)
+        factories.EventStockFactory(
+            offer=earliest_stock_deleted, beginningDatetime=now - datetime.timedelta(days=20), isSoftDeleted=True
+        )
+        factories.EventStockFactory(offer=earliest_stock_deleted, beginningDatetime=now + datetime.timedelta(days=3))
+
+        without_stock_1 = factories.EventOfferFactory(venue=venue)
+        without_stock_2 = factories.EventOfferFactory(venue=venue)
+
+        return [
+            earliest_stock_deleted,
+            several_stocks,
+            same_datetime_1,
+            same_datetime_2,
+            past,
+            without_stock_1,
+            without_stock_2,
+        ]
+
+    def test_returns_only_event_offers_of_the_venue(self):
+        venue = offerers_factories.VenueFactory()
+        offer = factories.EventOfferFactory(venue=venue)
+        factories.ThingOfferFactory(venue=venue)
+        factories.EventOfferFactory()
+        venue_id = venue.id
+
+        with assert_num_queries(2):  # total + page
+            result = repository.get_paginated_event_offer_ids(venue_id=venue_id, per_page=10)
+
+        assert result.offer_ids == [offer.id]
+        assert result.next_cursor is None
+        assert result.total == 1
+
+    def test_orders_by_first_beginning_datetime_desc_then_by_id_asc(self):
+        venue = offerers_factories.VenueFactory()
+        offers = self._create_offers_in_expected_order(venue)
+
+        result = repository.get_paginated_event_offer_ids(venue_id=venue.id, per_page=10)
+
+        assert result.offer_ids == [offer.id for offer in offers]
+
+    def test_paginates_with_cursor_in_desc_order(self):
+        venue = offerers_factories.VenueFactory()
+        (
+            earliest_stock_deleted,
+            several_stocks,
+            same_datetime_1,
+            same_datetime_2,
+            past,
+            without_stock_1,
+            without_stock_2,
+        ) = self._create_offers_in_expected_order(venue)
+
+        first_page = repository.get_paginated_event_offer_ids(venue_id=venue.id, per_page=3)
+        assert first_page.offer_ids == [earliest_stock_deleted.id, several_stocks.id, same_datetime_1.id]
+        assert first_page.next_cursor == repository.EventOffersCursor(
+            first_beginning_datetime=same_datetime_1.stocks[0].beginningDatetime, id=same_datetime_1.id
+        )
+
+        second_page = repository.get_paginated_event_offer_ids(
+            venue_id=venue.id, per_page=3, cursor=first_page.next_cursor
+        )
+        assert second_page.offer_ids == [same_datetime_2.id, past.id, without_stock_1.id]
+        assert second_page.next_cursor == repository.EventOffersCursor(
+            first_beginning_datetime=None, id=without_stock_1.id
+        )
+
+        last_page = repository.get_paginated_event_offer_ids(
+            venue_id=venue.id, per_page=3, cursor=second_page.next_cursor
+        )
+        assert last_page.offer_ids == [without_stock_2.id]
+        assert last_page.next_cursor is None
+
+    def test_orders_by_first_beginning_datetime_asc_then_by_id_desc(self):
+        venue = offerers_factories.VenueFactory()
+        (
+            earliest_stock_deleted,
+            several_stocks,
+            same_datetime_1,
+            same_datetime_2,
+            past,
+            without_stock_1,
+            without_stock_2,
+        ) = self._create_offers_in_expected_order(venue)
+
+        result = repository.get_paginated_event_offer_ids(venue_id=venue.id, per_page=10, order_by_desc=False)
+
+        # offers without a dated stock stay last
+        assert result.offer_ids == [
+            past.id,
+            same_datetime_2.id,
+            same_datetime_1.id,
+            several_stocks.id,
+            earliest_stock_deleted.id,
+            without_stock_2.id,
+            without_stock_1.id,
+        ]
+
+    def test_paginates_with_cursor_in_asc_order(self):
+        venue = offerers_factories.VenueFactory()
+        (
+            earliest_stock_deleted,
+            several_stocks,
+            same_datetime_1,
+            same_datetime_2,
+            past,
+            without_stock_1,
+            without_stock_2,
+        ) = self._create_offers_in_expected_order(venue)
+
+        first_page = repository.get_paginated_event_offer_ids(venue_id=venue.id, per_page=2, order_by_desc=False)
+        assert first_page.offer_ids == [past.id, same_datetime_2.id]
+        assert first_page.next_cursor == repository.EventOffersCursor(
+            first_beginning_datetime=same_datetime_2.stocks[0].beginningDatetime, id=same_datetime_2.id
+        )
+
+        second_page = repository.get_paginated_event_offer_ids(
+            venue_id=venue.id, per_page=2, cursor=first_page.next_cursor, order_by_desc=False
+        )
+        assert second_page.offer_ids == [same_datetime_1.id, several_stocks.id]
+
+        third_page = repository.get_paginated_event_offer_ids(
+            venue_id=venue.id, per_page=2, cursor=second_page.next_cursor, order_by_desc=False
+        )
+        assert third_page.offer_ids == [earliest_stock_deleted.id, without_stock_2.id]
+        assert third_page.next_cursor == repository.EventOffersCursor(
+            first_beginning_datetime=None, id=without_stock_2.id
+        )
+
+        last_page = repository.get_paginated_event_offer_ids(
+            venue_id=venue.id, per_page=2, cursor=third_page.next_cursor, order_by_desc=False
+        )
+        assert last_page.offer_ids == [without_stock_1.id]
+        assert last_page.next_cursor is None
+
+    @patch("pcapi.core.offers.constants.OFFERS_RECAP_LIMIT", 3)
+    def test_total_is_counted_up_to_recap_limit(self):
+        venue = offerers_factories.VenueFactory()
+        factories.EventOfferFactory.create_batch(5, venue=venue)
+
+        result = repository.get_paginated_event_offer_ids(venue_id=venue.id, per_page=2)
 
         assert result.total == 3
 
