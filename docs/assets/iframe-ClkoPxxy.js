@@ -1,0 +1,1 @@
+import{t as e}from"./iframe-JZINZB-v.js";e();
