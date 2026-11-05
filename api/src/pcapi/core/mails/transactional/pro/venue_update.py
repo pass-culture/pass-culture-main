@@ -7,9 +7,10 @@ from pcapi.models import db
 
 def get_siret_updated_email_data(venue: offerers_models.Venue) -> models.TransactionalEmailData:
     return models.TransactionalEmailData(
-        template=TransactionalEmail.VENUE_CLOSED_CONFIRMATION.value,
+        template=TransactionalEmail.VENUE_SIRET_UPDATED.value,
         params={
             "SIRET": venue.siret,
+            "ADRESS": venue.offererAddress.address.fullAddress,
             "ADDRESS": venue.offererAddress.address.fullAddress,
         },
     )

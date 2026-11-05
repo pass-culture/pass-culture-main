@@ -868,7 +868,7 @@ class Returns200Test:
 
             assert len(mails_testing.outbox) == 1
             assert mails_testing.outbox[0]["To"] == user.email
-            assert mails_testing.outbox[0]["template"] == asdict(TransactionalEmail.VENUE_CLOSED_CONFIRMATION.value)
+            assert mails_testing.outbox[0]["template"] == asdict(TransactionalEmail.VENUE_SIRET_UPDATED.value)
 
     def test_accessibility_fields_are_updated(self, app, client) -> None:
         user = users_factories.UserFactory()
