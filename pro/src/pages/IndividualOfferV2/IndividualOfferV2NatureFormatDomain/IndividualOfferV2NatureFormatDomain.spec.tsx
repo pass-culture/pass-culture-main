@@ -6,6 +6,7 @@ import { api } from '@/apiClient/api'
 import { FormatEnum, NatureEnum } from '@/apiClient/v1'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
+import { IndividualOfferV2 } from '../IndividualOfferV2'
 import { Component as IndividualOfferV2NatureFormatDomain } from './IndividualOfferV2NatureFormatDomain'
 
 const natures = [
@@ -24,15 +25,35 @@ const natures = [
   },
 ]
 
+const renderIndividualOfferV2NatureFormatDomain = () =>
+  renderWithProviders(null, {
+    initialRouterEntries: [
+      '/offre/individuelle/v2/creation/nature-format-domaine',
+    ],
+    routes: [
+      { path: '/accueil', element: <h2>Accueil</h2> },
+      {
+        path: '/offre/individuelle/v2/creation',
+        element: <IndividualOfferV2 />,
+        children: [
+          {
+            path: 'nature-format-domaine',
+            element: <IndividualOfferV2NatureFormatDomain />,
+          },
+          { path: 'description', element: <h2>Description</h2> },
+        ],
+      },
+    ],
+  })
+
 describe('<IndividualOfferV2NatureFormatDomain />', () => {
   beforeEach(() => {
+    sessionStorage.clear()
     vi.spyOn(api, 'getNatureFormatDomain').mockResolvedValue(natures)
   })
 
   it('should have no accessibility violations', async () => {
-    const { container } = renderWithProviders(
-      <IndividualOfferV2NatureFormatDomain />
-    )
+    const { container } = renderIndividualOfferV2NatureFormatDomain()
     await screen.findByRole('heading', { name: 'Nature et format' })
 
     expect(await axe(container)).toHaveNoViolations()
@@ -43,7 +64,7 @@ describe('<IndividualOfferV2NatureFormatDomain />', () => {
       () => new Promise(() => {})
     )
 
-    renderWithProviders(<IndividualOfferV2NatureFormatDomain />)
+    renderIndividualOfferV2NatureFormatDomain()
 
     expect(screen.getByRole('status')).toHaveTextContent('Chargement en cours')
   })
@@ -51,7 +72,7 @@ describe('<IndividualOfferV2NatureFormatDomain />', () => {
   it('should display formats for the selected nature', async () => {
     const user = userEvent.setup()
 
-    renderWithProviders(<IndividualOfferV2NatureFormatDomain />)
+    renderIndividualOfferV2NatureFormatDomain()
 
     expect(
       await screen.findByRole('group', { name: 'Sélectionnez la nature' })
@@ -86,9 +107,7 @@ describe('<IndividualOfferV2NatureFormatDomain />', () => {
 
   it('should navigate to the home page when cancelling', async () => {
     const user = userEvent.setup()
-    const { router } = renderWithProviders(
-      <IndividualOfferV2NatureFormatDomain />
-    )
+    const { router } = renderIndividualOfferV2NatureFormatDomain()
 
     await user.click(
       await screen.findByRole('link', { name: 'Annuler et quitter' })
@@ -99,13 +118,14 @@ describe('<IndividualOfferV2NatureFormatDomain />', () => {
 
   it('should navigate to the description step when submitting', async () => {
     const user = userEvent.setup()
-    const { router } = renderWithProviders(
-      <IndividualOfferV2NatureFormatDomain />
-    )
+    const { router } = renderIndividualOfferV2NatureFormatDomain()
 
     await user.click(
-      await screen.findByRole('button', { name: 'Étape suivante' })
+      await screen.findByRole('radio', { name: 'Bien culturel' })
     )
+    await user.click(screen.getByRole('radio', { name: 'Livre papier' }))
+
+    await user.click(screen.getByRole('button', { name: 'Étape suivante' }))
 
     expect(router.state.location.pathname).toBe(
       '/offre/individuelle/v2/creation/description'
