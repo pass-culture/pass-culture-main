@@ -9,7 +9,7 @@ Structure du dossier `pro/src/` (Schéma généré avec [cet utilitaire](<https:
 │
 └── 📁 src
     │
-    ├── 📁 apiClient    ===> CONFIG ET SERVICES POUR LES APIS (CLIENT PRO, ADRESSE, ADAGE)
+    ├── 📁 apiClient    ===> CONFIG ET SERVICES POUR LES APIS (CLIENT PRO, ADRESSE, ADAGE, SCHÉMAS ZOD)
     │
     ├── 📁 commons      ===> ÉLÉMENTS PARTAGÉS DANS TOUTE L’APP (HOOKS, STORE REDUX, TYPES, …)
     │   ├── 📁 config

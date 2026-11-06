@@ -46,7 +46,8 @@
   "openapi-ts": {
     "config": [
       "config/openapi-ts.v1.config.ts",
-      "config/openapi-ts.adage.config.ts"
+      "config/openapi-ts.adage.config.ts",
+      "config/openapi-ts.zod.config.ts"
     ]
   }
 }

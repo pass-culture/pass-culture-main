@@ -58,6 +58,7 @@
       "!src/apiClient/adage",
       "!src/index.html",
       "!src/apiClient/v1",
+      "!src/apiClient/zod",
       "!**/*.stories.tsx",
       "!docs-build",
       "!bundleStats.html"
