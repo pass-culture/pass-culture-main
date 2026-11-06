@@ -3719,6 +3719,12 @@ def close_venue(venue: models.Venue, author: users_models.User, comment: str | N
 
     venue.state = models.VenueState.CLOSED
     history_api.add_action(history_constants.ActionType.VENUE_CLOSED, author=author, venue=venue, comment=comment)
+
+    # might have been set if the venue has been identified as one that
+    # should be closed but was not at the time
+    closure_request_tag = criteria_api.get_closure_request_tag()
+    criteria_api.unlink_criterion_from_venue(closure_request_tag, venue)
+
     _update_external_venue(venue, index_with_reason=IndexationReason.VENUE_CLOSED)
     cancel_individual_bookings_on_venue_closure(venue.id, author.id)
     cancel_collective_bookings_on_venue_closure(venue.id, author.id)
