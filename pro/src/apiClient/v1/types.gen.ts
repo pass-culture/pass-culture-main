@@ -3617,26 +3617,6 @@ export type GetVenuesOfOffererFromSiretResponseModel = {
 };
 
 /**
- * HasInvoiceQueryModel
- */
-export type HasInvoiceQueryModel = {
-    /**
-     * Offererid
-     */
-    offererId: number;
-};
-
-/**
- * HasInvoiceResponseModel
- */
-export type HasInvoiceResponseModel = {
-    /**
-     * Hasinvoice
-     */
-    hasInvoice: boolean;
-};
-
-/**
  * HeadLineOfferResponseModel
  */
 export type HeadLineOfferResponseModel = {
@@ -3764,7 +3744,7 @@ export type InvoiceListQueryModel = {
     /**
      * Offererid
      */
-    offererId?: number | null;
+    offererId: number;
     /**
      * Periodbeginningdate
      */
@@ -3778,7 +3758,16 @@ export type InvoiceListQueryModel = {
 /**
  * InvoiceListResponseModel
  */
-export type InvoiceListResponseModel = Array<InvoiceResponseModel>;
+export type InvoiceListResponseModel = {
+    /**
+     * Hasinvoice
+     */
+    hasInvoice: boolean;
+    /**
+     * Invoices
+     */
+    invoices: Array<InvoiceResponseModel>;
+};
 
 /**
  * InvoiceResponseModel
@@ -8895,7 +8884,7 @@ export type getFinanceCombinedInvoicesResponses = {
     200: unknown;
 };
 
-export type getFinanceHasInvoiceData = {
+export type getFinanceInvoicesData = {
     body?: never;
     path?: never;
     query: {
@@ -8903,36 +8892,6 @@ export type getFinanceHasInvoiceData = {
          * Offererid
          */
         offererId: number;
-    };
-    url: '/finance/has-invoice';
-};
-
-export type getFinanceHasInvoiceErrors = {
-    /**
-     * Forbidden
-     */
-    403: unknown;
-    /**
-     * Unprocessable Content
-     */
-    422: ValidationError;
-};
-
-export type getFinanceHasInvoiceError = getFinanceHasInvoiceErrors[keyof getFinanceHasInvoiceErrors];
-
-export type getFinanceHasInvoiceResponses = {
-    /**
-     * OK
-     */
-    200: HasInvoiceResponseModel;
-};
-
-export type getFinanceHasInvoiceResponse = getFinanceHasInvoiceResponses[keyof getFinanceHasInvoiceResponses];
-
-export type getFinanceInvoicesData = {
-    body?: never;
-    path?: never;
-    query?: {
         /**
          * Periodbeginningdate
          */
@@ -8945,10 +8904,6 @@ export type getFinanceInvoicesData = {
          * Bankaccountid
          */
         bankAccountId?: number | null;
-        /**
-         * Offererid
-         */
-        offererId?: number | null;
         /**
          * Amountpositiveonly
          */

@@ -640,7 +640,7 @@ def has_invoice(offerer_id: int) -> bool:
     return db.session.query(
         db.session.query(models.Invoice)
         .join(models.Invoice.bankAccount)
-        .filter(models.BankAccount.offererId == offerer_id)
+        .filter(models.BankAccount.offererId == offerer_id, models.Invoice.status == models.InvoiceStatus.PAID)
         .exists()
     ).scalar()
 

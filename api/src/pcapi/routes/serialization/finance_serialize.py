@@ -20,16 +20,12 @@ logger = logging.getLogger(__name__)
 
 # Query models
 class InvoiceListQueryModel(HttpQueryParamsModel):
+    offerer_id: int
     period_beginning_date: datetime.date | None = None
     period_ending_date: datetime.date | None = None
     bank_account_id: int | None = None
-    offerer_id: int | None = None
     amount_positive_only: bool | None = None
     amount_negative_only: bool | None = None
-
-
-class HasInvoiceQueryModel(HttpQueryParamsModel):
-    offerer_id: int
 
 
 class GetCombinedInvoicesQueryModel(HttpQueryParamsModel):
@@ -74,8 +70,9 @@ class InvoiceResponseModel(HttpBodyModel):
         )
 
 
-class InvoiceListResponseModel(RootModel):
-    root: list[InvoiceResponseModel]
+class InvoiceListResponseModel(HttpBodyModel):
+    hasInvoice: bool
+    invoices: list[InvoiceResponseModel]
 
 
 class SettlementDisplayedStatus(enum.Enum):
@@ -284,7 +281,3 @@ class RejectedBankAccountResponseModel(HttpBodyModel):
 
 class RejectedBankAccountsResponseModel(RootModel):
     root: list[RejectedBankAccountResponseModel]
-
-
-class HasInvoiceResponseModel(HttpBodyModel):
-    has_invoice: bool

@@ -171,8 +171,11 @@ class GetInvoicesQueryTest:
     def test_has_no_invoices(self):
         offerer = offerers_factories.OffererFactory()
         offerer_2 = offerers_factories.OffererFactory()
-        bank_account = factories.BankAccountFactory(offerer=offerer_2)
-        factories.InvoiceFactory(bankAccount=bank_account)
+        bank_account_1 = factories.BankAccountFactory(offerer=offerer_2)
+        bank_account_2 = factories.BankAccountFactory(offerer=offerer_2)
+        factories.InvoiceFactory(bankAccount=bank_account_2)
+        factories.InvoiceFactory(bankAccount=bank_account_1, status=models.InvoiceStatus.PENDING)
+        factories.InvoiceFactory(bankAccount=bank_account_1, status=models.InvoiceStatus.PENDING_PAYMENT)
 
         assert not repository.has_invoice(offerer.id)
 
