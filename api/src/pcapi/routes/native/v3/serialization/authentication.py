@@ -29,7 +29,7 @@ class SigninResponseV3(HttpBodyModel):
 class OtpChallengeV3(HttpBodyModel):
     new_email_sent: bool
     expiration: int
-    renewal_email: int
+    next_email_at: int
     retry_left: int
     char_count: int
     response_endpoint: str
@@ -47,7 +47,7 @@ class UserAuthenticatedV3(HttpBodyModel):
 
 class OtpResponseV3(HttpBodyModel):
     expiration: int
-    renewal_email: int
+    next_email_at: int
     char_count: int
     retry_left: int
     response_endpoint: str | None

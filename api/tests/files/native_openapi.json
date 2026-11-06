@@ -7797,8 +7797,8 @@
                         "title": "Newemailsent",
                         "type": "boolean"
                     },
-                    "renewalEmail": {
-                        "title": "Renewalemail",
+                    "nextEmailAt": {
+                        "title": "Nextemailat",
                         "type": "integer"
                     },
                     "responseEndpoint": {
@@ -7813,7 +7813,7 @@
                 "required": [
                     "newEmailSent",
                     "expiration",
-                    "renewalEmail",
+                    "nextEmailAt",
                     "retryLeft",
                     "charCount",
                     "responseEndpoint"
@@ -7846,8 +7846,8 @@
                         "title": "Expiration",
                         "type": "integer"
                     },
-                    "renewalEmail": {
-                        "title": "Renewalemail",
+                    "nextEmailAt": {
+                        "title": "Nextemailat",
                         "type": "integer"
                     },
                     "responseEndpoint": {
@@ -7878,7 +7878,7 @@
                 },
                 "required": [
                     "expiration",
-                    "renewalEmail",
+                    "nextEmailAt",
                     "charCount",
                     "retryLeft",
                     "responseEndpoint",
