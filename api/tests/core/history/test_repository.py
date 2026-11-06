@@ -9,6 +9,7 @@ import pcapi.core.history.factories as history_factories
 import pcapi.core.history.repository as history_repository
 import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offerers.models as offerers_models
 import pcapi.core.users.factories as users_factories
 
 
@@ -97,3 +98,14 @@ class GetEventsRegardingVenueClosureBeforeTest:
 
         assert len(res) == 3
         assert {found.id for found in res} == {event.id for event in events}
+
+    def test_closed_venues_are_ignored(self):
+        two_months_ago = datetime.now(UTC) - timedelta(days=60)
+        venue = offerers_factories.VenueFactory(state=offerers_models.VenueState.CLOSED)
+        history_factories.ActionHistoryFactory(
+            venueId=venue.id,
+            actionType=history_constants.ActionType.VENUE_ADD_CLOSURE_TAG,
+            actionDate=two_months_ago,
+        )
+
+        assert history_repository.get_events_regarding_venue_closure_before(30).count() == 0

@@ -6,6 +6,7 @@ import sqlalchemy.orm as sa_orm
 from sqlalchemy.orm import Query
 
 from pcapi.core.history import constants as history_constants
+from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
 
 from . import constants
@@ -29,7 +30,9 @@ def get_events_regarding_venue_closure_before(days_count: int) -> Query:
     before = datetime.now(UTC).replace(tzinfo=None) - timedelta(days=days_count)
     return (
         db.session.query(models.ActionHistory)
+        .join(models.ActionHistory.venue)
         .filter(models.ActionHistory.actionType == constants.ActionType.VENUE_ADD_CLOSURE_TAG)
         .filter(models.ActionHistory.actionDate <= before)
+        .filter(offerers_models.Venue.is_open)
         .options(sa_orm.selectinload(models.ActionHistory.venue))
     )
