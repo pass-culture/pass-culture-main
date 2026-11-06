@@ -3,7 +3,8 @@ from pcapi.routes.serialization import HttpBodyModel
 
 
 class GetCapabilitiesResponseModel(HttpBodyModel):
-    capabilities: list[str]
+    capabilities: list[nature_format_domain.FieldEnum]
+    mandatory_fields: list[nature_format_domain.FieldEnum]
 
 
 class GetCapabilitiesQueryModel(HttpBodyModel):

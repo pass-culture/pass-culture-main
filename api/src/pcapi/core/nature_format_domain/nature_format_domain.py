@@ -1,4 +1,5 @@
 import enum
+import typing
 
 
 class NatureEnum(enum.Enum):
@@ -14,6 +15,17 @@ class FormatEnum(enum.Enum):
     INSTRUMENT_DE_MUSIQUE = "INSTRUMENT_DE_MUSIQUE"
     LIVRE_PAPIER = "LIVRE_PAPIER"
     MATERIEL_ARTS_CREATIFS = "MATERIEL_ARTS_CREATIFS"
+
+
+class FieldEnum(enum.Enum):
+    TITLE = "TITLE"
+    DESCRIPTION = "DESCRIPTION"
+    IMAGE = "IMAGE"
+    GENRE_MUSIC = "GENRE_MUSIC"
+    PERFORMER = "PERFORMER"
+    EAN = "EAN"
+    AUTHOR = "AUTHOR"
+    ACCESSIBILITY_ATTRIBUTE_LARGE_PRINT = "ACCESSIBILITY_ATTRIBUTE_LARGE_PRINT"
 
 
 # Nature Format Domain
@@ -62,16 +74,56 @@ NFD = [
 ]
 
 
-def get_capabilities(nature: NatureEnum, format: FormatEnum) -> list[str]:
+class FormatFields(typing.TypedDict):
+    capabilities: list[FieldEnum]
+    mandatory_fields: list[FieldEnum]
+
+
+FIELDS_BIEN: typing.Final[dict[FormatEnum, FormatFields]] = {
+    FormatEnum.CD_VINYLE: {
+        "capabilities": [
+            FieldEnum.TITLE,
+            FieldEnum.DESCRIPTION,
+            FieldEnum.IMAGE,
+            FieldEnum.GENRE_MUSIC,
+            FieldEnum.PERFORMER,
+            FieldEnum.EAN,
+        ],
+        "mandatory_fields": [FieldEnum.TITLE, FieldEnum.GENRE_MUSIC],
+    },
+    FormatEnum.DVD_BLU_RAY: {
+        "capabilities": [FieldEnum.TITLE, FieldEnum.DESCRIPTION, FieldEnum.IMAGE, FieldEnum.EAN],
+        "mandatory_fields": [FieldEnum.TITLE],
+    },
+    FormatEnum.INSTRUMENT_DE_MUSIQUE: {
+        "capabilities": [FieldEnum.TITLE, FieldEnum.DESCRIPTION, FieldEnum.IMAGE, FieldEnum.EAN],
+        "mandatory_fields": [FieldEnum.TITLE],
+    },
+    FormatEnum.LIVRE_PAPIER: {
+        "capabilities": [
+            FieldEnum.TITLE,
+            FieldEnum.DESCRIPTION,
+            FieldEnum.IMAGE,
+            FieldEnum.EAN,
+            FieldEnum.AUTHOR,
+            FieldEnum.ACCESSIBILITY_ATTRIBUTE_LARGE_PRINT,
+        ],
+        "mandatory_fields": [FieldEnum.TITLE],
+    },
+    FormatEnum.MATERIEL_ARTS_CREATIFS: {
+        "capabilities": [FieldEnum.TITLE, FieldEnum.DESCRIPTION, FieldEnum.IMAGE, FieldEnum.EAN],
+        "mandatory_fields": [FieldEnum.TITLE],
+    },
+}
+
+
+def get_capabilities(nature: NatureEnum, format: FormatEnum) -> list[FieldEnum]:
     if nature == NatureEnum.BIEN:
-        if format == FormatEnum.CD_VINYLE:
-            return ["TITLE", "DESCRIPTION", "IMAGE", "GTL_ID", "EAN", "PERFORMER"]
-        if format == FormatEnum.DVD_BLU_RAY:
-            return ["TITLE", "DESCRIPTION", "IMAGE", "GTL_ID", "EAN"]
-        if format == FormatEnum.INSTRUMENT_DE_MUSIQUE:
-            return ["TITLE", "DESCRIPTION", "IMAGE", "EAN"]
-        if format == FormatEnum.LIVRE_PAPIER:
-            return ["TITLE", "DESCRIPTION", "IMAGE", "EAN", "GTL_ID", "AUTHOR", "ACCESSIBILITY_ATTRIBUTE_LARGE_PRINT"]
-        if format == FormatEnum.MATERIEL_ARTS_CREATIFS:
-            return ["TITLE", "DESCRIPTION", "IMAGE", "EAN"]
+        return FIELDS_BIEN[format]["capabilities"]
+    return []
+
+
+def get_mandatory_fields(nature: NatureEnum, format: FormatEnum) -> list[FieldEnum]:
+    if nature == NatureEnum.BIEN:
+        return FIELDS_BIEN[format]["mandatory_fields"]
     return []

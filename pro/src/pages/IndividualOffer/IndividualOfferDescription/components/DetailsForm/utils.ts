@@ -257,3 +257,47 @@ export function getFormReadOnlyFields(
 
   return ['categoryId', 'subcategoryId', 'venueId']
 }
+
+export function getFormV2ReadOnlyFields(
+  offer: GetIndividualOfferResponseModel | null,
+  venue: GetVenueResponseModel
+): string[] {
+  const isClosed = withVenueHelpers(venue).isClosed
+  const isNewOfferDraft = offer === null
+
+  const allFieldsExceptAccessibility: string[] = Object.keys(
+    DEFAULT_DETAILS_FORM_VALUES
+  )
+
+  if (isClosed) {
+    return [...allFieldsExceptAccessibility, 'accessibility']
+  }
+
+  if (isNewOfferDraft) {
+    return []
+  }
+
+  if (offer && isOfferDisabled(offer)) {
+    return [...allFieldsExceptAccessibility, 'accessibility']
+  }
+
+  if (isOfferSynchronized(offer)) {
+    // (tcoudray-pass, 10/02/26)
+    // To unblock the synchronization of EPNs we, for now,
+    // authorize the edition of synchronized offers' name and description
+    // when the venue is a MUSEUM
+    if (venue.activity === DisplayableActivity.MUSEUM) {
+      return allFieldsExceptAccessibility.filter(
+        (field) =>
+          field !== 'name' &&
+          field !== 'description' &&
+          field !== 'hasCulturalOutreachClaim'
+      )
+    }
+    return allFieldsExceptAccessibility.filter(
+      (field) => field !== 'hasCulturalOutreachClaim'
+    )
+  }
+
+  return []
+}

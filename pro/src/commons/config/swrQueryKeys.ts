@@ -1,6 +1,7 @@
 // Store all the query keys used in the application here
 // by using the same query keys we benefit from SWR's cache
 export const GET_BOOKINGS_QUERY_KEY = 'getBookings'
+export const GET_CAPABILITIES_QUERY_KEY = 'getCapabilities'
 export const GET_CATEGORIES_QUERY_KEY = 'getCategories'
 export const GET_CLASSROOM_PLAYLIST_QUERY_KEY = 'getClassroomPlaylist'
 export const GET_COLLECTIVE_ACADEMIES = 'getCollectiveAcademies'

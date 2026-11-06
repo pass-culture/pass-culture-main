@@ -233,6 +233,7 @@ export {
   ExposureEventType,
   type ExternalAccessibilityDataModel,
   type FeatureResponseModel,
+  FieldEnum,
   FormatEnum,
   type FormatResponseModel,
   type GetActiveEANOfferResponseModel,
