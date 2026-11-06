@@ -7,6 +7,7 @@ import { withUserPermissions } from '@/commons/auth/withUserPermissions'
 
 import type { CustomRouteGroup } from './types'
 import { mustBeOnboardedWithSelectedPartnerVenue } from './utils'
+import { mustHaveSelectedNatureAndFormat } from './utils/mustHaveSelectedNatureAndFormat'
 
 export const routesIndividualOfferV2: CustomRouteGroup['children'] = [
   {
@@ -25,14 +26,17 @@ export const routesIndividualOfferV2: CustomRouteGroup['children'] = [
     loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
   },
   {
+    path: 'creation/description',
     lazy: () =>
       import(
         '@/pages/IndividualOfferV2/IndividualOfferV2Description/IndividualOfferV2Description'
       ),
-    path: 'creation/description',
     handle: {
       title: 'Créer une offre - Description',
     },
-    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+    loader: withUserPermissions(
+      mustBeOnboardedWithSelectedPartnerVenue,
+      mustHaveSelectedNatureAndFormat
+    ),
   },
 ]
