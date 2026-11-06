@@ -4,9 +4,9 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational.adage.backends.adage import AdageHttpClient
 from pcapi.core.educational.exceptions import AdageException
 from pcapi.core.educational.exceptions import AdageInvalidEmailException
+from pcapi.core.educational.schemas import AdageCollectiveOffer
 from pcapi.core.educational.schemas import AdageCollectiveRequest
 from pcapi.core.educational.serialization.collective_booking import serialize_collective_booking
-from pcapi.core.educational.serialization.collective_offer import serialize_collective_offer
 from pcapi.utils import requests
 
 
@@ -118,7 +118,7 @@ class AdageHttpClientTest:
             institution=educational_factories.EducationalInstitutionFactory(),
             collectiveStock=educational_factories.CollectiveStockFactory(),
         )
-        offer_data = serialize_collective_offer(offer)
+        offer_data = AdageCollectiveOffer.build(offer)
 
         endpoint = requests_mock.post(f"{MOCK_API_URL}/v1/offre-assoc", status_code=201)
         adage_client.notify_institution_association(offer_data)
@@ -132,7 +132,7 @@ class AdageHttpClientTest:
             institution=educational_factories.EducationalInstitutionFactory(),
             collectiveStock=educational_factories.CollectiveStockFactory(),
         )
-        offer_data = serialize_collective_offer(offer)
+        offer_data = AdageCollectiveOffer.build(offer)
 
         endpoint = requests_mock.post(
             f"{MOCK_API_URL}/v1/offre-assoc",
@@ -149,7 +149,7 @@ class AdageHttpClientTest:
             institution=educational_factories.EducationalInstitutionFactory(),
             collectiveStock=educational_factories.CollectiveStockFactory(),
         )
-        offer_data = serialize_collective_offer(offer)
+        offer_data = AdageCollectiveOffer.build(offer)
 
         endpoint = requests_mock.post(
             f"{MOCK_API_URL}/v1/offre-assoc", status_code=450, json=ADAGE_RESPONSE_FOR_INSTITUTION_WITH_INVALID_EMAIL
@@ -170,7 +170,7 @@ class AdageHttpClientTest:
             institution=educational_factories.EducationalInstitutionFactory(),
             collectiveStock=educational_factories.CollectiveStockFactory(),
         )
-        offer_data = serialize_collective_offer(offer)
+        offer_data = AdageCollectiveOffer.build(offer)
 
         requests_mock.post(f"{MOCK_API_URL}/v1/offre-assoc", status_code=500, json=ADAGE_RESPONSE_FOR_ERROR)
         with pytest.raises(AdageException) as ex:
@@ -184,7 +184,7 @@ class AdageHttpClientTest:
             institution=educational_factories.EducationalInstitutionFactory(),
             collectiveStock=educational_factories.CollectiveStockFactory(),
         )
-        offer_data = serialize_collective_offer(offer)
+        offer_data = AdageCollectiveOffer.build(offer)
 
         requests_mock.post(f"{MOCK_API_URL}/v1/offre-assoc", status_code=500, json=None)
         with pytest.raises(AdageException) as ex:

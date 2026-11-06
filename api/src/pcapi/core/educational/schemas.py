@@ -169,21 +169,6 @@ class EducationalDepositPeriodResponseV2(HttpBodyModel):
     end: datetime.datetime
 
 
-@dataclasses.dataclass(kw_only=True, slots=True, frozen=True)
-class CollectiveOffersFilter:
-    user_id: int
-    offerer_id: int | None = None
-    statuses: list[models.CollectiveOfferDisplayedStatus] | None = None
-    venue_id: int | None = None
-    provider_id: int | None = None
-    name_keywords: str | None = None
-    period_beginning_date: datetime.date | None = None
-    period_ending_date: datetime.date | None = None
-    formats: list[EacFormat] | None = None
-    location_type: models.CollectiveLocationType | None = None
-    offerer_address_id: int | None = None
-
-
 class AdageEducationalInstitution(pydantic_v2.BaseModel):
     uai: str
     sigle: str
@@ -196,19 +181,34 @@ class AdageEducationalInstitution(pydantic_v2.BaseModel):
     longitude: decimal.Decimal | None = None
 
 
-class AdageCollectiveOfferContact(AdageBaseResponseModel):
+class AdageCollectiveOfferContact(pydantic_v2.BaseModel):
     email: str | None
     phone: str | None
 
 
-class AdageRedactor(AdageBaseResponseModel):
+class AdageRedactor(pydantic_v2.BaseModel):
     email: str | None
     redactorCivility: str | None
     redactorFirstName: str | None
     redactorLastName: str | None
 
 
-class AdageCollectiveOffer(AdageBaseResponseModel):
+def get_adage_collective_offer_address(offer: models.CollectiveOffer) -> str:
+    match offer.locationType:
+        case models.CollectiveLocationType.SCHOOL:
+            return "Dans l'établissement scolaire"
+
+        case models.CollectiveLocationType.ADDRESS:
+            if offer.offererAddress is None:
+                return ""
+
+            return offer.offererAddress.address.fullAddress
+
+        case models.CollectiveLocationType.TO_BE_DEFINED:
+            return offer.locationComment or ""
+
+
+class AdageCollectiveOffer(pydantic_v2.BaseModel):
     UAICode: str
     address: str
     startDatetime: datetime.datetime
@@ -224,11 +224,59 @@ class AdageCollectiveOffer(AdageBaseResponseModel):
     participants: list[models.StudentLevels]
     price: decimal.Decimal
     servicePrice: decimal.Decimal
-    additionalFees: list[AdditionalFeeResponse]
+    additionalFees: list[AdditionalFeeResponseV2]
     priceDetail: str | None
     venueName: str
     venueTimezone: str
     redactor: AdageRedactor | None
+
+    model_config = pydantic_v2.ConfigDict(
+        json_encoders={datetime.datetime: format_into_utc_date},
+    )
+
+    @classmethod
+    def build(cls, collective_offer: models.CollectiveOffer) -> typing.Self:
+        stock = collective_offer.collectiveStock
+        venue = collective_offer.venue
+        institution = collective_offer.institution
+
+        # this model is used by notify_institution_association, which is called after an institution has been set
+        assert institution is not None
+
+        if collective_offer.teacher is None:
+            redactor = AdageRedactor(email=None, redactorCivility=None, redactorFirstName=None, redactorLastName=None)
+        else:
+            redactor = AdageRedactor(
+                email=collective_offer.teacher.email,
+                redactorCivility=collective_offer.teacher.civility,
+                redactorFirstName=collective_offer.teacher.firstName,
+                redactorLastName=collective_offer.teacher.lastName,
+            )
+
+        return cls(
+            UAICode=institution.institutionId,
+            address=get_adage_collective_offer_address(collective_offer),
+            startDatetime=stock.startDatetime,
+            endDatetime=stock.endDatetime,
+            contact=AdageCollectiveOfferContact(
+                phone=collective_offer.contactPhone, email=collective_offer.contactEmail
+            ),
+            description=collective_offer.description,
+            additionalDetails=collective_offer.additionalDetails,
+            durationMinutes=collective_offer.durationMinutes,
+            id=collective_offer.id,
+            name=collective_offer.name,
+            numberOfTickets=stock.numberOfTickets,
+            numberOfTeachers=stock.numberOfTeachers,
+            participants=collective_offer.students,
+            price=stock.price,
+            servicePrice=stock.servicePrice,
+            additionalFees=[AdditionalFeeResponseV2.build(fee) for fee in stock.collectiveAdditionalFees],
+            priceDetail=stock.priceDetail,
+            venueName=venue.name,
+            venueTimezone=venue.offererAddress.address.timezone,
+            redactor=redactor,
+        )
 
 
 class AdageCollectiveRequest(pydantic_v2.BaseModel):
@@ -259,3 +307,18 @@ class AdageCollectiveRequest(pydantic_v2.BaseModel):
             venueName=request.collectiveOfferTemplate.venue.name,
             offerName=request.collectiveOfferTemplate.name,
         )
+
+
+@dataclasses.dataclass(kw_only=True, slots=True, frozen=True)
+class CollectiveOffersFilter:
+    user_id: int
+    offerer_id: int | None = None
+    statuses: list[models.CollectiveOfferDisplayedStatus] | None = None
+    venue_id: int | None = None
+    provider_id: int | None = None
+    name_keywords: str | None = None
+    period_beginning_date: datetime.date | None = None
+    period_ending_date: datetime.date | None = None
+    formats: list[EacFormat] | None = None
+    location_type: models.CollectiveLocationType | None = None
+    offerer_address_id: int | None = None
