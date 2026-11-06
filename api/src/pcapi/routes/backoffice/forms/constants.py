@@ -1,14 +1,16 @@
+from wtforms import fields as wtforms_fields
+
 from pcapi.utils.postal_code import DEPARTMENTS_NAMES
 
 
-def _generate_area_choices_from_department_codes() -> list[tuple[str, str]]:
+def _generate_area_choices_from_department_codes() -> list[wtforms_fields.SelectChoice]:
     areas = []
     for code, name in DEPARTMENTS_NAMES.items():
         if code == "20":
             # 20 in database, keep also 2A/2B in the label for autocomplete
-            areas.append((code, f"{code} - {name} (2A/2B)"))
+            areas.append(wtforms_fields.SelectChoice(code, f"{code} - {name} (2A/2B)"))
         else:
-            areas.append((code, f"{code} - {name}"))
+            areas.append(wtforms_fields.SelectChoice(code, f"{code} - {name}"))
     return areas
 
 

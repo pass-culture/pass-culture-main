@@ -2,6 +2,7 @@ import flask
 import wtforms
 from flask import flash
 from flask_wtf import FlaskForm
+from wtforms import fields as wtforms_fields
 
 from pcapi.routes.backoffice.forms import fields
 from pcapi.routes.backoffice.forms import utils
@@ -17,10 +18,10 @@ class SearchHighlightForm(utils.PCForm):
     limit = fields.PCLimitField(
         "Nombre maximum de résultats",
         choices=(
-            (10, "Afficher 10 résultats maximum"),
-            (25, "Afficher 25 résultats maximum"),
-            (50, "Afficher 50 résultats maximum"),
-            (100, "Afficher 100 résultats maximum"),
+            wtforms_fields.SelectChoice(10, "Afficher 10 résultats maximum"),
+            wtforms_fields.SelectChoice(25, "Afficher 25 résultats maximum"),
+            wtforms_fields.SelectChoice(50, "Afficher 50 résultats maximum"),
+            wtforms_fields.SelectChoice(100, "Afficher 100 résultats maximum"),
         ),
         default="100",
         coerce=int,
