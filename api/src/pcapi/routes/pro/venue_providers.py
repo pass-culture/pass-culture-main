@@ -73,6 +73,7 @@ def list_venue_providers(venue_id: int) -> venue_provider_serialize.ListVenuePro
 )
 def get_providers_by_venue(venue_id: int) -> venue_provider_serialize.ListProviderResponse:
     venue = _get_venue_or_404(venue_id)
+    rest.check_user_has_access_to_venues(current_user, [venue_id])
     providers = providers_repository.get_available_providers(venue)
     return venue_provider_serialize.ListProviderResponse(
         [venue_provider_serialize.ProviderResponse.model_validate(provider) for provider in providers]
