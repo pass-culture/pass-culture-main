@@ -91,6 +91,7 @@ export default defineConfig(({ mode }) => {
           'src/apiClient/adage/*',
           'src/apiClient/adresse/*',
           'src/apiClient/v1/*',
+          'src/apiClient/zod/**',
           'src/vitest.*.ts',
           'docs-build/**',
           'storybook-static/**',

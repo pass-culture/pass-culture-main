@@ -9,6 +9,9 @@ echo "Generating v1 (Pro) API client from http://${PCAPI_HOST}/pro/openapi.json.
 echo "Generating adage API client from http://${PCAPI_HOST}/adage-iframe/openapi.json..."
 ./node_modules/.bin/openapi-ts -f config/openapi-ts.adage.config.ts
 
+echo "Generating zod schemas from http://${PCAPI_HOST}/pro/openapi.json..."
+./node_modules/.bin/openapi-ts -f config/openapi-ts.zod.config.ts
+
 echo "Sanitizing enum keys..."
 node scripts/sanitize_enum_keys.js src/apiClient/v1/types.gen.ts src/apiClient/adage/types.gen.ts
 
