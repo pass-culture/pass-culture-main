@@ -8,6 +8,7 @@ import wtforms
 from flask import flash
 from flask import url_for
 from flask_wtf import FlaskForm
+from wtforms import fields as wtforms_fields
 
 from pcapi.core.artist import models as artist_models
 from pcapi.routes.backoffice.forms import fields
@@ -44,9 +45,9 @@ class GetArtistsBaseFields(forms_utils.PCForm):
     limit = fields.PCLimitField(
         "Nombre maximum de résultats",
         choices=(
-            (100, "Afficher 100 résultats maximum"),
-            (500, "Afficher 500 résultats maximum"),
-            (1000, "Afficher 1000 résultats maximum"),
+            wtforms_fields.SelectChoice(100, "Afficher 100 résultats maximum"),
+            wtforms_fields.SelectChoice(500, "Afficher 500 résultats maximum"),
+            wtforms_fields.SelectChoice(1000, "Afficher 1000 résultats maximum"),
         ),
         default="100",
         coerce=int,
@@ -99,7 +100,10 @@ class ArtistAdvancedSearchSubForm(forms_utils.PCForm):
     )
     boolean = fields.PCSelectField(
         "Booléen",
-        choices=(("true", "Oui"), ("false", "Non")),
+        choices=(
+            wtforms_fields.SelectChoice("true", "Oui"),
+            wtforms_fields.SelectChoice("false", "Non"),
+        ),
         default="true",
         validators=[
             wtforms.validators.Optional(""),

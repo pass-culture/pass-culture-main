@@ -1,6 +1,7 @@
 import enum
 
 from flask_wtf import FlaskForm
+from wtforms import fields as wtforms_fields
 from wtforms.validators import DataRequired
 from wtforms.validators import NumberRange
 from wtforms.validators import Optional
@@ -112,14 +113,17 @@ class GetIncidentsSearchForm(forms_utils.PCForm):
     incident_type = fields.PCSelectMultipleField(
         "Type d'incident",
         choices=(
-            (finance_models.IncidentType.OVERPAYMENT.name, "Trop perçu"),
-            (finance_models.IncidentType.COMMERCIAL_GESTURE.name, "Geste commercial"),
+            wtforms_fields.SelectChoice(finance_models.IncidentType.OVERPAYMENT.name, "Trop perçu"),
+            wtforms_fields.SelectChoice(finance_models.IncidentType.COMMERCIAL_GESTURE.name, "Geste commercial"),
         ),
     )
 
     is_collective = fields.PCSelectMultipleField(
         "Type de réservation",
-        choices=(("true", "Collective"), ("false", "Individuelle")),
+        choices=(
+            wtforms_fields.SelectChoice("true", "Collective"),
+            wtforms_fields.SelectChoice("false", "Individuelle"),
+        ),
     )
 
     offerer = fields.PCTomSelectField(
@@ -146,10 +150,10 @@ class GetIncidentsSearchForm(forms_utils.PCForm):
     limit = fields.PCLimitField(
         "Nombre maximum de résultats",
         choices=(
-            (100, "Afficher 100 résultats maximum"),
-            (500, "Afficher 500 résultats maximum"),
-            (1000, "Afficher 1000 résultats maximum"),
-            (3000, "Afficher 3000 résultats maximum"),
+            wtforms_fields.SelectChoice(100, "Afficher 100 résultats maximum"),
+            wtforms_fields.SelectChoice(500, "Afficher 500 résultats maximum"),
+            wtforms_fields.SelectChoice(1000, "Afficher 1000 résultats maximum"),
+            wtforms_fields.SelectChoice(3000, "Afficher 3000 résultats maximum"),
         ),
         default="100",
         coerce=int,

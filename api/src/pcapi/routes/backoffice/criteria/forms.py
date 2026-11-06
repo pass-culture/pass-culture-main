@@ -1,5 +1,6 @@
 import wtforms
 from flask_wtf import FlaskForm
+from wtforms import fields as wtforms_fields
 
 from pcapi.core.criteria import constants
 from pcapi.routes.backoffice.forms import fields
@@ -84,7 +85,12 @@ class SearchTagForm(utils.PCForm):
     page = wtforms.HiddenField("page", default="1", validators=(wtforms.validators.Optional(),))
     per_page = fields.PCSelectField(
         "Par page",
-        choices=(("10", "10"), ("25", "25"), ("50", "50"), ("100", "100")),
+        choices=(
+            wtforms_fields.SelectChoice("10", "10"),
+            wtforms_fields.SelectChoice("25", "25"),
+            wtforms_fields.SelectChoice("50", "50"),
+            wtforms_fields.SelectChoice("100", "100"),
+        ),
         default="100",
         validators=(wtforms.validators.Optional(),),
     )
