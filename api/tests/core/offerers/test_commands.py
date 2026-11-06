@@ -5,6 +5,7 @@ from unittest.mock import patch
 import pytest
 import time_machine
 
+from pcapi.connectors.big_query import queries as big_query
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.utils import siren as siren_utils
 
@@ -109,3 +110,36 @@ class SynchronizeVenuesBannerWithGooglePlacesTest:
             caplog.records[0].message
             == "[gmaps_banner_synchro] synchronize_venues_banners_with_google_places command does not execute after 28th"
         )
+
+
+class DetectUnexpectedVenueStatusTest:
+    QUERY_PATH = "pcapi.connectors.big_query.queries.closed_venues_siret.ClosedVenuesSirenQuery.execute"
+
+    @patch(QUERY_PATH)
+    def test_parameters_are_set_and_core_function_is_called_with_apply_set(self, query, caplog, app):
+        venue = offerers_factories.VenueFactory(state=None, criteria=[])
+        query.return_value = [
+            big_query.ClosedVenueSirenModel(siret=venue.siret, status=big_query.ClosedVenueStatusEnum.F)
+        ]
+
+        with caplog.at_level(logging.INFO):
+            run_command(app, "detect_unexpected_venue_status", "--days-count=25", "--apply")
+
+        final_log_msg = "detect_unexpected_venue_status... done"
+        final_log = next(record for record in caplog.records if record.message == final_log_msg)
+
+        assert final_log.extra == {"days_count": 25, "apply": True}
+
+    @patch(QUERY_PATH)
+    def test_parameters_are_set_and_core_function_is_called_with_apply_not_set(self, query, caplog, app):
+        venue = offerers_factories.VenueFactory(state=None, criteria=[])
+        query.return_value = [
+            big_query.ClosedVenueSirenModel(siret=venue.siret, status=big_query.ClosedVenueStatusEnum.F)
+        ]
+
+        with caplog.at_level(logging.INFO):
+            run_command(app, "detect_unexpected_venue_status", "--days-count=25")
+
+        # no apply -> no final log message written on commit
+        final_log_msg = "detect_unexpected_venue_status... done"
+        assert not any(record for record in caplog.records if record.message == final_log_msg)
