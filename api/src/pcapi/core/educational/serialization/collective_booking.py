@@ -2,7 +2,6 @@ import decimal
 
 from pcapi.core.educational import models
 from pcapi.core.educational import schemas
-from pcapi.core.educational.serialization.collective_offer import get_collective_offer_address
 
 
 def serialize_collective_booking(
@@ -16,7 +15,7 @@ def serialize_collective_booking(
 
     return schemas.EducationalBookingResponse(
         accessibility=_get_educational_offer_accessibility(offer),
-        address=get_collective_offer_address(offer),
+        address=schemas.get_adage_collective_offer_address(offer),
         startDatetime=stock.startDatetime,
         endDatetime=stock.endDatetime,
         cancellationDate=collective_booking.cancellationDate,

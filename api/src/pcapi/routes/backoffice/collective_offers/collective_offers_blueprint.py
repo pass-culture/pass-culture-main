@@ -21,7 +21,7 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational.adage import client as adage_client
 from pcapi.core.educational.api import offer as educational_offer_api
-from pcapi.core.educational.serialization.collective_offer import serialize_collective_offer
+from pcapi.core.educational.schemas import AdageCollectiveOffer
 from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import exceptions as finance_exceptions
 from pcapi.core.finance import models as finance_models
@@ -738,7 +738,7 @@ def _batch_validate_or_reject_collective_offers(
 
             if validation is offer_mixin.OfferValidationStatus.APPROVED and collective_offer.institutionId is not None:
                 try:
-                    adage_client.notify_institution_association(serialize_collective_offer(collective_offer))
+                    adage_client.notify_institution_association(AdageCollectiveOffer.build(collective_offer))
                 except educational_exceptions.AdageException as exc:
                     # when the call to Adage fails, we log an error and warn the user but we still validate the offer
                     logger.exception(

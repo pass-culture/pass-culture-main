@@ -161,7 +161,7 @@ class AdageHttpClient(AdageClient):
         return TypeAdapter(list[schemas.AdageCulturalPartner]).validate_python(api_response.json())
 
     def notify_institution_association(self, data: schemas.AdageCollectiveOffer) -> None:
-        api_response = self._make_post_request(url=f"{self.base_url}/v1/offre-assoc", data=data.json())
+        api_response = self._make_post_request(url=f"{self.base_url}/v1/offre-assoc", data=data.model_dump_json())
 
         if api_response.status_code != 201:
             if is_adage_institution_email_invalid(api_response):

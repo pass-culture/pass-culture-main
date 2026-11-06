@@ -20,7 +20,6 @@ from pcapi.core.educational.adage import client as adage_client
 from pcapi.core.educational.api import adage as api_adage
 from pcapi.core.educational.api import shared as api_shared
 from pcapi.core.educational.serialization.collective_booking import serialize_collective_booking
-from pcapi.core.educational.serialization.collective_offer import serialize_collective_offer
 from pcapi.core.educational.utils import get_image_from_url
 from pcapi.core.external.attributes.api import update_external_pro
 from pcapi.core.finance import api as finance_api
@@ -332,7 +331,7 @@ def update_collective_offer_educational_institution(
     db.session.flush()
 
     if offer.validation == offer_mixin.OfferValidationStatus.APPROVED:
-        on_commit(partial(adage_client.notify_institution_association, serialize_collective_offer(offer)))
+        on_commit(partial(adage_client.notify_institution_association, schemas.AdageCollectiveOffer.build(offer)))
 
     return offer
 
