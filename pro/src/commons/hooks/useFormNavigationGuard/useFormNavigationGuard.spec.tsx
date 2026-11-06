@@ -398,11 +398,10 @@ describe('useFormNavigationGuard', () => {
             )
 
             expect(result.result.current.location.pathname).toBe('/form-page')
-            expect(
-              await screen.findByRole('dialog', {
-                name: EXPECTATIONS.DIALOG_TITLE,
-              })
-            ).toBeVisible()
+            const dialog = await screen.findByRole('dialog', {
+              name: EXPECTATIONS.DIALOG_TITLE,
+            })
+            expect(dialog).toBeVisible()
 
             await user.click(
               await screen.findByRole('button', {
@@ -414,11 +413,9 @@ describe('useFormNavigationGuard', () => {
             expect(
               await screen.findByText('A Field is required.')
             ).toBeVisible()
-            expect(
-              screen.queryByRole('dialog', {
-                name: EXPECTATIONS.DIALOG_TITLE,
-              })
-            ).not.toBeInTheDocument()
+            await waitFor(() => {
+              expect(dialog).not.toBeVisible()
+            })
             expect(onSubmitMock).not.toHaveBeenCalled()
           })
         })
