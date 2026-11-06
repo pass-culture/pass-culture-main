@@ -6,6 +6,7 @@ import { userReducer } from '@/commons/store/user/reducer'
 
 import { adageFilterReducer } from './adageFilter/reducer'
 import { navReducer } from './nav/reducer'
+import { NFDReducer } from './nfd/reducer'
 import { musicTypesReducer } from './staticData/reducer'
 
 export const rootReducer = combineReducers({
@@ -15,4 +16,5 @@ export const rootReducer = combineReducers({
   nav: navReducer,
   adageFilter: adageFilterReducer,
   staticData: musicTypesReducer,
+  nfd: NFDReducer,
 })
