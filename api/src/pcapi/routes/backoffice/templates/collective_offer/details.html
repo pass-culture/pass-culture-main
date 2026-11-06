@@ -36,7 +36,7 @@
     {{ action_bar_button("exclamation-triangle", "Créer un geste commercial", modal_id="#commercial-gesture-creation-modal-" + collective_booking.id|string) }}
   {% endif %}
   {% if allowed_actions.actions.CREATE_OVERPAYMENT in allowed_actions.inline_actions %}
-    {{ action_bar_button("pencil-square", "Créer un incident", modal_id="#erpayment-creation-modal-" + collective_booking.id|string) }}
+    {{ action_bar_button("pencil-square", "Créer un incident", modal_id="#overpayment-creation-modal-" + collective_booking.id|string) }}
   {% endif %}
   {% if allowed_actions.actions.ADJUST_PRICE in allowed_actions.inline_actions %}
     {{ action_bar_button("pencil-square", "Ajuster le prix", modal_id="#update-collective-offer-price") }}
@@ -67,7 +67,7 @@
         {{ action_bar_button("exclamation-triangle", "Créer un geste commercial", modal_id="#commercial-gesture-creation-modal-" + collective_booking.id|string) }}
       {% endif %}
       {% if allowed_actions.actions.CREATE_OVERPAYMENT in allowed_actions.additional_actions %}
-        {{ action_bar_button("pencil-square", "Créer un incident", modal_id="#erpayment-creation-modal-" + collective_booking.id|string) }}
+        {{ action_bar_button("pencil-square", "Créer un incident", modal_id="#overpayment-creation-modal-" + collective_booking.id|string) }}
       {% endif %}
       {% if allowed_actions.actions.ADJUST_PRICE in allowed_actions.additional_actions %}
         {{ action_bar_additional_button("pencil-square", "Ajuster le prix", modal_id="#update-collective-offer-price") }}
