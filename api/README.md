@@ -169,6 +169,23 @@ flask sandbox -n industrial  # setup sans docker
 pc sandbox -n industrial     # setup avec docker
 ```
 
+Elle est restaurée en quelques secondes depuis un dump de ses données (`src/pcapi/sandboxes/industrial.dump`),
+tant que le code de `src/pcapi/sandboxes/` n'a pas changé depuis sa génération. `pg_dump` et `pg_restore` sont ceux du
+conteneur PostgreSQL local, appelés via `docker exec` : rien à installer. Le conteneur est `pc-postgres` par défaut,
+modifiable avec `SANDBOX_POSTGRES_CONTAINER` dans `.env.local.secret`. Si le conteneur est injoignable ou si la
+restauration échoue, les scripts sont exécutés comme avant. Pour les exécuter quand même :
+
+```bash
+flask sandbox -n industrial --no-dump true
+```
+
+Après une modification du code de la sandbox, la CI demande de regénérer le dump (en exécutant les scripts) puis de
+commiter le dump et son hash (`industrial.dump.sha256`) :
+
+```bash
+flask sandbox -n industrial --update-dump true
+```
+
 ## Métriques prometheus
 
 Notre backend expose des métriques prometheus. Pour pouvoir travailler avec ces métriques en local il faut deux conditions :

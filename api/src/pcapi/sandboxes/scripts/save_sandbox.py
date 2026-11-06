@@ -1,12 +1,20 @@
 import logging
+import time
 import typing
 
+import sqlalchemy as sa
+from sqlalchemy import exc as sa_exc
+
+from pcapi import settings
 from pcapi.core import search
 from pcapi.core.artist import models as artists_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
+from pcapi.core.permissions import models as perm_models
 from pcapi.db_utils import clean_all_database
 from pcapi.models import db
+from pcapi.models.feature import install_feature_flags
+from pcapi.sandboxes import dump
 from pcapi.sandboxes import scripts
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_mediations import clean_industrial_mediations_bucket
 from pcapi.sandboxes.scripts.utils import helpers
@@ -50,13 +58,48 @@ def save_sandbox(
 
     logger.info("Sandbox %s saved", name)
     if with_indexing:
-        _index_all_offers()
-        _index_all_collective_offer_templates()
-        _index_all_venues()
-        _index_all_artists()
-        logger.info("Indexing finished")
+        index_sandbox()
     else:
         logger.info("Indexing finished (skipped)")
+
+
+def restore_industrial_sandbox(with_clean_bucket: bool, with_indexing: bool) -> bool:
+    """Restore the industrial sandbox from its tracked dump, and return whether it could.
+
+    The tables of the dump are emptied first: when the restore fails, the sandbox scripts clean the database anyway.
+    """
+    started_at = time.monotonic()
+    try:
+        quoted_tables = ", ".join(
+            f'public."{table}"' for table in dump.list_dumped_tables(settings.SANDBOX_POSTGRES_CONTAINER)
+        )
+        db.session.execute(sa.text(f"TRUNCATE TABLE {quoted_tables}"))
+        db.session.commit()
+        dump.restore_dump(settings.SANDBOX_POSTGRES_CONTAINER, db.engine.url.render_as_string())
+    except (dump.DumpError, sa_exc.SQLAlchemyError) as error:
+        db.session.rollback()
+        reason = str(error).splitlines()[0]
+        print(f"Could not restore the industrial sandbox dump ({reason}): running the sandbox scripts")
+        return False
+    logger.info("Sandbox dump restored in %.1fs", time.monotonic() - started_at)
+
+    install_feature_flags()
+    perm_models.sync_db_permissions(db.session)
+    perm_models.sync_db_roles(db.session)
+    if with_clean_bucket:
+        clean_industrial_mediations_bucket()
+    if with_indexing:
+        index_sandbox()
+    print(f"Sandbox industrial restored from its dump in {time.monotonic() - started_at:.1f}s")
+    return True
+
+
+def index_sandbox() -> None:
+    _index_all_offers()
+    _index_all_collective_offer_templates()
+    _index_all_venues()
+    _index_all_artists()
+    logger.info("Indexing finished")
 
 
 # The following functions are rather naive
