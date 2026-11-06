@@ -42,8 +42,8 @@ class SendExpiredBookingsRecapEmailToOffererTest:
     def test_should_send_two_emails_to_offerer_when_expired_books_bookings_and_other_bookings_cancelled(
         self, has_offerer_address
     ):
-        offerer = offerers_factories.OffererFactory()
-        oa = offerers_factories.OfferLocationFactory(offerer=offerer)
+        venue = offerers_factories.VenueFactory()
+        oa = offerers_factories.OfferLocationFactory(venue=venue)
         expired_today_dvd_booking = bookings_factories.BookingFactory(
             stock__offer__name="Intouchables",
             stock__offer__bookingEmail="offerer.booking@example.com",

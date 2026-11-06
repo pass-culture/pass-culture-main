@@ -124,7 +124,7 @@ class CollectiveOfferTemplateTest:
             priceDetail="détail du prix",
             students=[models.StudentLevels.GENERAL2],
             locationType=models.CollectiveLocationType.ADDRESS,
-            offererAddress=offerers_factories.OfferLocationFactory(venue=venue, label=venue.publicName),
+            offererAddress=offerers_factories.OfferLocationFactory(venue=venue),
             nationalProgramId=factories.NationalProgramFactory().id,
         )
 
@@ -193,7 +193,7 @@ class CollectiveOfferTemplateTest:
             locationType=models.CollectiveLocationType.ADDRESS,
             locationComment=None,
             offererAddress=offerers_factories.OfferLocationFactory(
-                address=venue.offererAddress.address, offerer=venue.managingOfferer, label=venue.publicName
+                address=venue.offererAddress.address, venue=venue, label=None
             ),
             interventionArea=None,
         )
@@ -271,7 +271,7 @@ class GetCollectiveOfferTemplatesTest:
             offer = factories.CollectiveOfferTemplateFactory(
                 locationType=models.CollectiveLocationType.ADDRESS,
                 offererAddress=offerers_factories.OfferLocationFactory(
-                    address=venue.offererAddress.address, offerer=venue.managingOfferer, label=venue.publicName
+                    address=venue.offererAddress.address, venue=venue
                 ),
             )
 
@@ -374,7 +374,7 @@ class GetCollectiveOfferTemplatesTest:
             locationType=models.CollectiveLocationType.ADDRESS,
             locationComment=None,
             offererAddress=offerers_factories.OfferLocationFactory(
-                address=venue.offererAddress.address, venue=venue, label=venue.publicName
+                address=venue.offererAddress.address, venue=venue, label=None
             ),
             interventionArea=None,
         )
@@ -413,7 +413,7 @@ class GetCollectiveOfferTemplatesTest:
 
     def test_location_address(self, eac_client, redactor):
         venue = offerers_factories.VenueFactory()
-        oa = offerers_factories.OfferLocationFactory(offerer=venue.managingOfferer)
+        oa = offerers_factories.OfferLocationFactory(venue=venue)
         offer = factories.CollectiveOfferTemplateFactory(
             locationType=models.CollectiveLocationType.ADDRESS,
             locationComment=None,

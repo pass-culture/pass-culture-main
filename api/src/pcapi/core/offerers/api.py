@@ -355,7 +355,6 @@ def _update_venue_location(
     if not offerer_address:
         # In case of missing OA, backoffice user should be able to set an address
         offerer_address = offerers_models.OffererAddress(
-            offererId=venue.managingOffererId,
             venueId=venue.id,
             type=offerers_models.LocationType.VENUE_LOCATION,
             address=geography_models.Address(),  # not saved, only used for comparison
@@ -539,7 +538,6 @@ def create_venue(
     db.session.flush()
 
     offerer_address = offerers_models.OffererAddress(
-        offererId=venue_data.managing_offerer_id,
         addressId=address.id,
         type=offerers_models.LocationType.VENUE_LOCATION,
         label=None,  # venue location always gets an empty label
@@ -3310,7 +3308,6 @@ def get_or_create_address(location_data: LocationData, is_manual_edition: bool =
 
 
 def get_or_create_offer_location(
-    offerer_id: int,
     address_id: int,
     venue_id: int,
     label: str | None = None,
@@ -3330,7 +3327,6 @@ def get_or_create_offer_location(
 
     if not offerer_address:
         offerer_address = models.OffererAddress(
-            offererId=offerer_id,
             addressId=address_id,
             label=label,
             type=models.LocationType.OFFER_LOCATION,
@@ -3378,14 +3374,11 @@ def create_offerer_address_from_address_api(
 
 
 def get_offer_location_from_address(
-    offerer_id: int,
     address: offerers_schemas.LocationModel | offerers_schemas.CoreLocationModelV2,
     venue_id: int,
 ) -> offerers_models.OffererAddress:
-    assert offerer_id
     address_from_api = create_offerer_address_from_address_api(address)
     return get_or_create_offer_location(
-        offerer_id=offerer_id,
         venue_id=venue_id,
         address_id=address_from_api.id,
         label=address.label or None,

@@ -254,7 +254,6 @@ def create_offerer_and_venue(data: dict, counters: ImportCounters, comment: str)
         address = create_or_get_address(data)
 
         offerer_address = offerers_models.OffererAddress(
-            offererId=offerer.id,
             addressId=address.id,
             type=offerers_models.LocationType.VENUE_LOCATION,
             label=None,
