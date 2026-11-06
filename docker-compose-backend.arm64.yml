@@ -1,0 +1,12 @@
+# Temporary override (consumption evaluation): native arm64 Postgres on Apple Silicon instead of emulated amd64.
+# `postgis/postgis` is only published for amd64; `imresamu/postgis` is the same build (maintained by a
+# docker-postgis maintainer), published for amd64 + arm64, same Postgres/PostGIS versions.
+#
+#   docker compose -f docker-compose-backend.yml -f docker-compose-backend.arm64.yml up postgres redis
+services:
+  postgres:
+    platform: linux/arm64
+    image: imresamu/postgis:18-3.6-alpine
+  postgres-test:
+    platform: linux/arm64
+    image: imresamu/postgis:18-3.6-alpine
