@@ -3,6 +3,7 @@ import logging
 import secrets
 import time
 
+import flask
 import pydantic
 from flask import url_for
 
@@ -18,7 +19,9 @@ from pcapi.core.users.sessions import disconnect_native_user_sessions
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
+from pcapi.routes.error_handlers.utils import generate_error_response
 from pcapi.routes.native.v3.serialization import authentication
+from pcapi.routes.serialization import HttpBodyModel
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.redis import get_redis_client
 from pcapi.utils.transaction_manager import atomic
@@ -29,18 +32,33 @@ from .. import blueprint
 logger = logging.getLogger(__name__)
 
 
-USER_BAN_REDIS_KEY = "native:user:authantication_forbidden:%s"
+USER_BAN_REDIS_KEY = "native:user:authentication_forbidden:%s"
 
 
 class SecondFactor(enum.StrEnum):
     OTP_MAIL = "OTP_MAIL"
 
 
+class AuthenticationViolation(Exception):
+    """The user broke the authentication workflow and must be blocked, see `_block_user_connection`"""
+
+    def __init__(self, user_id: int, errors: dict) -> None:
+        super().__init__()
+        self.user_id = user_id
+        self.errors = errors
+
+
+class OtpMailStep(pydantic.BaseModel):
+    otp: str
+    renewal_email: int
+    retry_left: int
+
+
 class MfaAuthSession(pydantic.BaseModel):
     user_id: int
     expiration: int
-    available_second_factor: list[SecondFactor]
-    current_step: dict | None
+    available_second_factors: list[SecondFactor]
+    current_step: OtpMailStep | None
     device_info: authentication.DeviceInfoV3
 
 
@@ -51,18 +69,21 @@ def _get_mfa_offer(factor: SecondFactor, token: str) -> authentication.MfaOfferV
                 type=factor.value,
                 endpoint=url_for(".otp_mail", token=token),
             )
-    raise ValueError("unknown second factor %s" % factor)
+    raise ValueError(f"unknown second factor {factor}")
 
 
-def _get_available_mfa(user: user_models.User) -> list[SecondFactor]:
+def _get_available_mfas(user: user_models.User) -> list[SecondFactor]:
     return [SecondFactor.OTP_MAIL]
 
 
 def _save_auth_session(session: MfaAuthSession) -> str:
+    if session.expiration < time.time():
+        raise ApiErrors({"session": ["Session déjà expirée"]}, status_code=422)
+
     return token_utils.create_token(
         token_type=token_utils.TokenType.NATIVE_AUTH_SESSION,
         at=session.expiration,
-        data=session.model_dump(),
+        data=session.model_dump(mode="json"),
     )
 
 
@@ -79,11 +100,10 @@ def _load_auth_session(token: str, second_factor: SecondFactor) -> MfaAuthSessio
     _check_user_banned(session.user_id)
 
     # check if this factor is available for this session
-    if second_factor not in session.available_second_factor:
-        _block_user_connection(session.user_id, settings.NATIVE_APP_AUTHENTICATION_BAN_DURATION)
-        raise ApiErrors({"token": ["Méthode d'authentification invalide"]}, status_code=403)
+    if second_factor not in session.available_second_factors:
+        raise AuthenticationViolation(session.user_id, {"token": ["Méthode d'authentification invalide"]})
     # once a factor has been selected, it is the only one available
-    session.available_second_factor = [second_factor]
+    session.available_second_factors = [second_factor]
 
     return session
 
@@ -111,7 +131,19 @@ def _conclude_authentication(user: user_models.User, device_info: authentication
     return tokens.access, tokens.refresh
 
 
-def _block_user_connection(user_id: int, duration: int) -> None:
+def _json_response(content: HttpBodyModel) -> flask.Response:
+    response = flask.make_response(content.model_dump_json(by_alias=True), 200)
+    response.mimetype = "application/json"
+    return response
+
+
+def _block_user_connection(user_id: int, duration: int, errors: dict) -> flask.Response:
+    """
+    Block the user and return the error response.
+
+    The response must be returned by the route instead of raising an `ApiErrors`: an exception
+    would make `atomic` roll back the sessions disconnection.
+    """
     get_redis_client().set(USER_BAN_REDIS_KEY % user_id, 1, ex=duration)
     disconnect_native_user_sessions(user_id=user_id)
 
@@ -123,6 +155,10 @@ def _block_user_connection(user_id: int, duration: int) -> None:
         technical_message_id="users.login",
     )
 
+    response = generate_error_response(errors)
+    response.status_code = 403
+    return response
+
 
 def _check_user_banned(user_id: int) -> None:
     ban_expiration = get_redis_client().ttl(USER_BAN_REDIS_KEY % user_id)
@@ -130,7 +166,7 @@ def _check_user_banned(user_id: int) -> None:
         # a banned user cannot continue an authentication process
         raise ApiErrors(
             {
-                "ban_expiration": max(ban_expiration, 0),
+                "ban_expiration": max(int(time.time()) + ban_expiration, 0),
             },
             status_code=403,
         )
@@ -162,11 +198,11 @@ def signin(body: authentication.SigninRequestV3) -> authentication.SigninRespons
 
     _check_user_banned(user.id)
 
-    available_mfa = _get_available_mfa(user)
+    available_mfas = _get_available_mfas(user)
     session = MfaAuthSession(
         user_id=user.id,
         expiration=int(time.time()) + settings.NATIVE_APP_AUTHENTICATION_SESSION_MAX_DURATION,
-        available_second_factor=available_mfa,
+        available_second_factors=available_mfas,
         current_step=None,
         device_info=body.device_info,
     )
@@ -174,7 +210,7 @@ def signin(body: authentication.SigninRequestV3) -> authentication.SigninRespons
     token = _save_auth_session(session)
 
     return authentication.SigninResponseV3(
-        mfa_offers=[_get_mfa_offer(mfa, token) for mfa in available_mfa],
+        mfa_offers=[_get_mfa_offer(mfa, token) for mfa in available_mfas],
         expiration=session.expiration,
     )
 
@@ -186,13 +222,17 @@ def signin(body: authentication.SigninRequestV3) -> authentication.SigninRespons
     on_success_status=200,
     on_error_statuses=[403],
     api=blueprint.api,
+    raw_response=True,
 )
-def otp_mail(token: str) -> authentication.OtpChallengeV3:
-    session = _load_auth_session(token, SecondFactor.OTP_MAIL)
+def otp_mail(token: str) -> flask.Response:
+    try:
+        session = _load_auth_session(token, SecondFactor.OTP_MAIL)
+    except AuthenticationViolation as exc:
+        return _block_user_connection(exc.user_id, settings.NATIVE_APP_AUTHENTICATION_BAN_DURATION, exc.errors)
 
-    if session.current_step and session.current_step["renewal_email"] > time.time():
+    if session.current_step and session.current_step.renewal_email > time.time():
         new_email_sent = False
-        otp = session.current_step["otp"]
+        otp = session.current_step.otp
     else:
         otp_characters: list[str] = []
         for i in range(settings.NATIVE_APP_AUTHENTICATION_OTP_LENGTH):
@@ -201,27 +241,29 @@ def otp_mail(token: str) -> authentication.OtpChallengeV3:
 
         # TODO: send otp
 
-        if session.current_step and "retry_left" in session.current_step:
-            retry_left = session.current_step["retry_left"]
+        if session.current_step:
+            retry_left = session.current_step.retry_left
         else:
             retry_left = settings.NATIVE_APP_AUTHENTICATION_OTP_RETRY
 
-        session.current_step = {
-            "otp": otp,
-            "renewal_email": int(time.time()) + settings.NATIVE_APP_AUTHENTICATION_OTP_RENEWAL_EMAIL,
-            "retry_left": retry_left,
-        }
+        session.current_step = OtpMailStep(
+            otp=otp,
+            renewal_email=int(time.time()) + settings.NATIVE_APP_AUTHENTICATION_OTP_RENEWAL_EMAIL,
+            retry_left=retry_left,
+        )
         new_email_sent = True
 
     token = _save_auth_session(session)
 
-    return authentication.OtpChallengeV3(
-        new_email_sent=new_email_sent,
-        expiration=session.expiration,
-        renewal_email=session.current_step["renewal_email"],
-        retry_left=session.current_step["retry_left"],
-        char_count=len(otp),
-        response_endpoint=url_for(".submit_otp_mail", token=token),
+    return _json_response(
+        authentication.OtpChallengeV3(
+            new_email_sent=new_email_sent,
+            expiration=session.expiration,
+            renewal_email=session.current_step.renewal_email,
+            retry_left=session.current_step.retry_left,
+            char_count=len(otp),
+            response_endpoint=url_for(".submit_otp_mail", token=token),
+        )
     )
 
 
@@ -232,27 +274,39 @@ def otp_mail(token: str) -> authentication.OtpChallengeV3:
     on_success_status=200,
     on_error_statuses=[401],
     api=blueprint.api,
+    raw_response=True,
 )
-def submit_otp_mail(body: authentication.OtpRequestV3, token: str) -> authentication.OtpResponseV3:
-    session = _load_auth_session(token, SecondFactor.OTP_MAIL)
+def submit_otp_mail(body: authentication.OtpRequestV3, token: str) -> flask.Response:
+    try:
+        session = _load_auth_session(token, SecondFactor.OTP_MAIL)
+    except AuthenticationViolation as exc:
+        return _block_user_connection(exc.user_id, settings.NATIVE_APP_AUTHENTICATION_BAN_DURATION, exc.errors)
 
     if not session.current_step:
-        _block_user_connection(session.user_id, settings.NATIVE_APP_AUTHENTICATION_BAN_DURATION)
-        raise ApiErrors({"general": ["Workflow violation"]}, status_code=403)
+        return _block_user_connection(
+            session.user_id,
+            settings.NATIVE_APP_AUTHENTICATION_BAN_DURATION,
+            {"general": ["Workflow violation"]},
+        )
 
-    if body.response != session.current_step["otp"]:
-        session.current_step["retry_left"] -= 1
-        if session.current_step["retry_left"] <= 0:
-            _block_user_connection(session.user_id, settings.NATIVE_APP_AUTHENTICATION_BAN_DURATION)
-            raise ApiErrors({"ban_expiration": int(time.time()) + settings.NATIVE_APP_AUTHENTICATION_BAN_DURATION}, 403)
+    if body.response != session.current_step.otp:
+        session.current_step.retry_left -= 1
+        if session.current_step.retry_left <= 0:
+            return _block_user_connection(
+                session.user_id,
+                settings.NATIVE_APP_AUTHENTICATION_BAN_DURATION,
+                {"ban_expiration": int(time.time()) + settings.NATIVE_APP_AUTHENTICATION_BAN_DURATION},
+            )
         token = _save_auth_session(session)
-        return authentication.OtpResponseV3(
-            expiration=session.expiration,
-            renewal_email=session.current_step["renewal_email"],
-            retry_left=session.current_step["retry_left"],
-            char_count=len(session.current_step["otp"]),
-            response_endpoint=url_for(".submit_otp_mail", token=token),
-            session_tokens=None,
+        return _json_response(
+            authentication.OtpResponseV3(
+                expiration=session.expiration,
+                renewal_email=session.current_step.renewal_email,
+                retry_left=session.current_step.retry_left,
+                char_count=len(session.current_step.otp),
+                response_endpoint=url_for(".submit_otp_mail", token=token),
+                session_tokens=None,
+            )
         )
 
     user = db.session.query(user_models.User).filter_by(id=session.user_id).one_or_none()
@@ -260,17 +314,22 @@ def submit_otp_mail(body: authentication.OtpRequestV3, token: str) -> authentica
         # this should not be possible but let's be defensive
         raise ApiErrors({"general": ["L'utilisateur n'existe plus"]}, status_code=403)
 
+    if user.account_state.is_deleted or user.account_state == user_models.AccountState.ANONYMIZED:
+        raise ApiErrors({"general": ["Identifiant ou Mot de passe incorrect"]})
+
     access, refresh = _conclude_authentication(user, session.device_info)
 
-    return authentication.OtpResponseV3(
-        expiration=0,
-        renewal_email=0,
-        retry_left=0,
-        char_count=0,
-        response_endpoint="",
-        session_tokens=authentication.UserAuthenticatedV3(
-            refresh_token=refresh,
-            access_token=access,
-            account_state=user.account_state,
-        ),
+    return _json_response(
+        authentication.OtpResponseV3(
+            expiration=0,
+            renewal_email=0,
+            retry_left=0,
+            char_count=0,
+            response_endpoint="",
+            session_tokens=authentication.UserAuthenticatedV3(
+                refresh_token=refresh,
+                access_token=access,
+                account_state=user.account_state,
+            ),
+        )
     )

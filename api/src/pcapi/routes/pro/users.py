@@ -257,6 +257,20 @@ def signin(body: users_serializers.LoginUserBodyModel) -> users_serializers.Shar
     login_user(user)
     users_api.update_last_connection_date(user)
 
+    logger.info(
+        "Successful authentication attempt",
+        extra={
+            "identifier": user.email,
+            "user": user.id,
+            "avoid_current_user": True,
+            "success": True,
+            "api_version": "v3",
+            "feature": "users",
+            "action": "login",
+        },
+        technical_message_id="users.login",
+    )
+
     return users_serializers.SharedLoginUserResponseModel.model_validate(user)
 
 

@@ -62,7 +62,7 @@ if typing.TYPE_CHECKING:
     from pcapi.routes.native.v1.serialization import account as account_serialization_v1
     from pcapi.routes.native.v1.serialization.common_models import DeviceInfo
     from pcapi.routes.native.v2.serialization.common_models import DeviceInfoV2
-    from pcapi.routes.native.v3.serialization.common_models import DeviceInfoV3
+    from pcapi.routes.native.v3.serialization.authentication import DeviceInfoV3
 
 
 class T_UNCHANGED(enum.Enum):
