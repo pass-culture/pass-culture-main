@@ -48,3 +48,4 @@ class SubscriptionStepperResponseV3(HttpBodyModel):
     title: str
     subtitle: str | None = None
     subscription_message: SubscriptionMessageV3 | None = None
+    underage_ok_identity_check_method: subscription_schemas.IdentityCheckMethod | None = None

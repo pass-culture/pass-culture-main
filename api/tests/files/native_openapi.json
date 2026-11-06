@@ -4441,7 +4441,8 @@
             "IdentityCheckMethod": {
                 "enum": [
                     "educonnect",
-                    "ubble"
+                    "ubble",
+                    "dms"
                 ],
                 "title": "IdentityCheckMethod",
                 "type": "string"
@@ -9942,6 +9943,17 @@
                     "title": {
                         "title": "Title",
                         "type": "string"
+                    },
+                    "underageOkIdentityCheckMethod": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/IdentityCheckMethod"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null
                     }
                 },
                 "required": [

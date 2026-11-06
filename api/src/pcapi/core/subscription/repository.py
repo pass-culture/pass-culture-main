@@ -1,4 +1,7 @@
+import math
+
 from pcapi.core.subscription import models as subscription_models
+from pcapi.core.subscription import schemas as subscription_schemas
 from pcapi.core.subscription.dms import schemas as dms_schemas
 from pcapi.core.users import eligibility_api
 from pcapi.core.users import models as users_models
@@ -260,3 +263,26 @@ def _get_age_at_fraud_check(fraud_check: subscription_models.BeneficiaryFraudChe
         known_birthdate_at_fraud_check = user.birth_date
 
     return users_utils.get_age_at_date(known_birthdate_at_fraud_check, fraud_check.dateCreated, user.departementCode)
+
+
+def get_underage_ok_identity_check_method(user: users_models.User) -> subscription_schemas.IdentityCheckMethod | None:
+    identity_fraud_check = next(
+        (
+            fraud_check
+            for fraud_check in user.beneficiaryFraudChecks
+            if fraud_check.type in subscription_models.IDENTITY_CHECK_TYPES
+            and fraud_check.status == subscription_models.FraudCheckStatus.OK
+            and (_get_age_at_fraud_check(fraud_check) or math.inf) < 18
+        ),
+        None,
+    )
+
+    if not identity_fraud_check:
+        return None
+
+    id_check_method_by_fraud_check_type = {
+        subscription_models.FraudCheckType.EDUCONNECT: subscription_schemas.IdentityCheckMethod.EDUCONNECT,
+        subscription_models.FraudCheckType.DMS: subscription_schemas.IdentityCheckMethod.DMS,
+        subscription_models.FraudCheckType.UBBLE: subscription_schemas.IdentityCheckMethod.UBBLE,
+    }
+    return id_check_method_by_fraud_check_type.get(identity_fraud_check.type)
