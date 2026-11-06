@@ -37,6 +37,11 @@ def get_capabilities(query: GetCapabilitiesQueryModel) -> GetCapabilitiesRespons
         nature=query.nature,
         format=query.format,
     )
+    mandatory_fields = nature_format_domain.get_mandatory_fields(
+        nature=query.nature,
+        format=query.format,
+    )
     return GetCapabilitiesResponseModel(
         capabilities=capabilities,
+        mandatory_fields=mandatory_fields,
     )
