@@ -63,7 +63,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         response = self.make_request(plain_api_key, json_body=payload)
         assert response.status_code == 404
 
-    @mock.patch("pcapi.core.offers.tasks.create_or_update_ean_offers_celery.delay")
+    @mock.patch("pcapi.core.offers.tasks.create_or_update_ean_offers_celery_etl.delay")
     def test_create_or_update_offer_is_asynchronous(self, mock_delay):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         venue = venue_provider.venue
@@ -498,18 +498,12 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
 
         cd_stock = db.session.query(offers_models.Stock).filter_by(id=cd_stock_id).one()
         book_stock = db.session.query(offers_models.Stock).filter_by(id=book_stock_id).one()
-        book_product = db.session.query(offers_models.Product).filter_by(ean=book_ean).one()
+        db.session.query(offers_models.Product).filter_by(ean=book_ean).one()
         venue = db.session.query(offerers_models.Venue).one()
-        venue_provider = db.session.query(providers_models.VenueProvider).one()
 
-        log = next(record for record in caplog.records if "Error while creating offer by ean" == record.message)
+        log = next(record for record in caplog.records if "Product with ean not found" == record.message)
 
-        assert log.extra == {
-            "ean": book_product.ean,
-            "venue_id": venue.id,
-            "exc": "OfferException",
-            "provider_id": venue_provider.provider.id,
-        }
+        assert log.extra == {"action": "not_found", "ean": cd_product.ean, "venue": venue.id, "feature": "ean"}
         assert response.status_code == 204
         assert cd_stock.quantity == 0
         assert cd_stock.price == decimal.Decimal("12.34")
