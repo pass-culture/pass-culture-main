@@ -218,6 +218,17 @@ pnpm test:unit
 # Lance "vitest" avec la bonne configuration
 ```
 
+**Aide pour le debug**
+
+Pour avoir le rendu HTML complet d'un test cassé, on peut utiliser la variable `DEBUG_PRINT_LIMIT`:
+```
+DEBUG_PRINT_LIMIT=100000 pnpm test:unit
+```
+
+Pour enregistrer le contenu d'un snapshot dans un fichier `__snapshots__/Component.test.tsx.snap`
+, il faut mettre en début du test en échec:
+expect(render(<Component/>)).toMatchSnapShot()
+
 **Tests end-to-end :**
 
 Nous utilisons **Playwright** pour Les tests E2E. Ils sont disponibles dans le sous-dossier `/pro/e2e`.
