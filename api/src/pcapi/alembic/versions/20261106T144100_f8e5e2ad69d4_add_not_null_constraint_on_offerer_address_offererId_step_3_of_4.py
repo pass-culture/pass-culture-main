@@ -5,8 +5,8 @@ from alembic import op
 
 # pre/post deployment: post
 # revision identifiers, used by Alembic.
-revision = 'f8e5e2ad69d4'
-down_revision = '2b8c01f25441'
+revision = "f8e5e2ad69d4"
+down_revision = "2b8c01f25441"
 branch_labels: tuple[str] | None = None
 depends_on: list[str] | None = None
 
