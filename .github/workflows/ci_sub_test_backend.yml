@@ -271,10 +271,10 @@ jobs:
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ${{ runner.temp }}/.test_durations
-          key: tests-durations-${{ steps.get-date.outputs.date }}
+          key: tests-durations-v2-${{ steps.get-date.outputs.date }}
           restore-keys: |
-            tests-durations-${{ steps.get-date.outputs.date }}-
-            tests-durations-
+            tests-durations-v2-${{ steps.get-date.outputs.date }}-
+            tests-durations-v2-
           fail-on-cache-miss: false
 
       # Then we upload the restored test durations as an artifact. This way, each matrix job will download
@@ -312,7 +312,7 @@ jobs:
       fail-fast: false
       matrix:
         pytest_args:
-          - collection: "--ignore=tests/routes/backoffice"
+          - collection: "tests --ignore=tests/routes/backoffice"
             description: "(without BO)"
           - collection: "tests/routes/backoffice"
             description: "(only BO)"
@@ -414,7 +414,7 @@ jobs:
             --env RUN_ENV --env DATABASE_URL_TEST --env REDIS_URL --env COLLECTION --env GROUP \
             "$IMAGE_NAME" \
             -c '
-              pytest $COLLECTION \
+              pytest -c /usr/src/app/pyproject.toml --rootdir=/usr/src/app $COLLECTION \
               --splits 4 --group $GROUP \
               --store-durations --durations-path /tests/.test_durations --clean-durations \
               --durations=10 --junitxml="/tests/junit.xml" \
@@ -507,4 +507,4 @@ jobs:
         uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ${{ runner.temp }}/.test_durations
-          key: tests-durations-${{ steps.get-date.outputs.date }}-${{ github.run_id }}
+          key: tests-durations-v2-${{ steps.get-date.outputs.date }}-${{ github.run_id }}
