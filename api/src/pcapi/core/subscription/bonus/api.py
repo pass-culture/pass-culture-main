@@ -1,6 +1,7 @@
 import datetime
 import logging
 import typing
+from functools import partial
 
 from dateutil.relativedelta import relativedelta
 from pydantic import BaseModel
@@ -21,10 +22,12 @@ from pcapi.core.subscription.bonus import schemas as bonus_schemas
 from pcapi.core.subscription.bonus import staging_api
 from pcapi.core.subscription.bonus import statistics_api
 from pcapi.core.users import models as users_models
+from pcapi.models.feature import FeatureToggle
 from pcapi.utils import date as date_utils
 from pcapi.utils import string as string_utils
 from pcapi.utils.redis import get_redis_client
 from pcapi.utils.transaction_manager import atomic
+from pcapi.utils.transaction_manager import on_commit
 
 
 logger = logging.getLogger(__name__)
@@ -605,7 +608,7 @@ def get_user_qf_bonification_status(user: users_models.User) -> bonus_schemas.QF
         return bonus_schemas.QFBonificationStatus.NOT_ELIGIBLE
 
     qf_bonus_credit_fraud_checks = bonus_fraud_api.get_bonus_credit_fraud_checks(
-        user, subscription_models.FraudCheckType.QF_BONUS_CREDIT
+        user, subscription_models.FraudCheckType.QF_BONUS_CREDIT, excluded_origin=bonus_constants.AUTOMATIC_ORIGIN
     )
     bonus_fraud_check = qf_bonus_credit_fraud_checks[-1] if qf_bonus_credit_fraud_checks else None
     bonus_fraud_check_status = bonus_fraud_check.status if bonus_fraud_check is not None else None
@@ -781,3 +784,35 @@ def get_user_remaining_bonus_attempts(user: users_models.User) -> int:
         if not (fraud_check.reason and fraud_check.reason.startswith(bonus_constants.BACKOFFICE_ORIGIN_START))
     ]
     return bonus_constants.MAX_QF_BONUS_RETRIES - len(ko_qf_bonus_credit_fraud_checks)
+
+
+def create_and_start_automatic_bonus_credit_applications(user: users_models.User, origin: str) -> None:
+    from pcapi.core.subscription.bonus import tasks as bonus_tasks
+
+    if not deposit_api.can_receive_bonus_credit(user):
+        return
+
+    qf_fraud_check = bonus_fraud_api.create_qf_bonus_credit_fraud_check(
+        user, origin=f"{bonus_constants.AUTOMATIC_ORIGIN} through beneficiary activation"
+    )
+    aah_fraud_check, aeeh_fraud_check = bonus_fraud_api.create_disability_bonus_credit_fraud_checks(
+        user, origin=f"{bonus_constants.AUTOMATIC_ORIGIN} through beneficiary activation"
+    )
+
+    if not FeatureToggle.ENABLE_BONUS_CREDIT.is_active():
+        return
+
+    payload = bonus_tasks.BonusTaskPayload(fraud_check_id=qf_fraud_check.id).model_dump()
+    on_commit(partial(bonus_tasks.apply_for_quotient_familial_bonus_task.delay, payload))
+
+    aah_payload = bonus_tasks.BonusTaskPayload(fraud_check_id=aah_fraud_check.id).model_dump()
+    on_commit(partial(bonus_tasks.apply_for_adult_disability_bonus_task.apply_async, (aah_payload,), countdown=0))
+
+    aeeh_payload = bonus_tasks.BonusTaskPayload(fraud_check_id=aeeh_fraud_check.id).model_dump()
+    on_commit(
+        partial(
+            bonus_tasks.apply_for_disabled_child_education_bonus_task.apply_async,
+            (aeeh_payload,),
+            countdown=bonus_constants.DISABILITY_COUNTDOWN,
+        )
+    )

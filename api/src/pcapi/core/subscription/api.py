@@ -21,8 +21,8 @@ from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription import repository as subscription_repository
 from pcapi.core.subscription import schemas as subscription_schemas
+from pcapi.core.subscription.bonus import api as bonus_api
 from pcapi.core.subscription.bonus import constants as bonus_constants
-from pcapi.core.subscription.bonus import fraud_check_api as bonus_fraud_check_api
 from pcapi.core.subscription.dms import schemas as dms_schemas
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
@@ -115,7 +115,7 @@ def activate_beneficiary_for_eligibility(
     logger.info("Activated beneficiary and created deposit", extra={"user": user.id, "source": deposit.source})
 
     if deposit_api.can_receive_bonus_credit(user):
-        bonus_fraud_check_api.create_disability_bonus_credit_fraud_checks(
+        bonus_api.create_and_start_automatic_bonus_credit_applications(
             user, origin=f"{bonus_constants.AUTOMATIC_ORIGIN} through beneficiary activation"
         )
 
