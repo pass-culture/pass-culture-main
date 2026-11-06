@@ -48,7 +48,6 @@ const renderIndividualOfferV2NatureFormatDomain = () =>
 
 describe('<IndividualOfferV2NatureFormatDomain />', () => {
   beforeEach(() => {
-    sessionStorage.clear()
     vi.spyOn(api, 'getNatureFormatDomain').mockResolvedValue(natures)
   })
 
@@ -118,7 +117,7 @@ describe('<IndividualOfferV2NatureFormatDomain />', () => {
 
   it('should navigate to the description step when submitting', async () => {
     const user = userEvent.setup()
-    const { router } = renderIndividualOfferV2NatureFormatDomain()
+    const { router, store } = renderIndividualOfferV2NatureFormatDomain()
 
     await user.click(
       await screen.findByRole('radio', { name: 'Bien culturel' })
@@ -129,6 +128,65 @@ describe('<IndividualOfferV2NatureFormatDomain />', () => {
 
     expect(router.state.location.pathname).toBe(
       '/offre/individuelle/v2/creation/description'
+    )
+    expect(store.getState().nfd).toEqual({
+      nature: NatureEnum.BIEN,
+      format: FormatEnum.LIVRE_PAPIER,
+    })
+  })
+
+  it('should show an error when submitting without a nature', async () => {
+    const user = userEvent.setup()
+    const { router } = renderIndividualOfferV2NatureFormatDomain()
+
+    await user.click(
+      await screen.findByRole('button', { name: 'Étape suivante' })
+    )
+
+    expect(
+      await screen.findByText('Veuillez sélectionner une nature')
+    ).toBeInTheDocument()
+    expect(router.state.location.pathname).toBe(
+      '/offre/individuelle/v2/creation/nature-format-domaine'
+    )
+  })
+
+  it('should show an error when submitting without a format and clear it after selecting one', async () => {
+    const user = userEvent.setup()
+    renderIndividualOfferV2NatureFormatDomain()
+
+    await user.click(
+      await screen.findByRole('radio', { name: 'Bien culturel' })
+    )
+    await user.click(screen.getByRole('button', { name: 'Étape suivante' }))
+
+    expect(
+      await screen.findByText('Veuillez sélectionner un format')
+    ).toBeInTheDocument()
+
+    await user.click(screen.getByRole('radio', { name: 'Livre papier' }))
+
+    expect(
+      screen.queryByText('Veuillez sélectionner un format')
+    ).not.toBeInTheDocument()
+  })
+
+  it('should require a new format after changing nature', async () => {
+    const user = userEvent.setup()
+    const { router } = renderIndividualOfferV2NatureFormatDomain()
+
+    await user.click(
+      await screen.findByRole('radio', { name: 'Bien culturel' })
+    )
+    await user.click(screen.getByRole('radio', { name: 'Livre papier' }))
+    await user.click(screen.getByRole('radio', { name: 'Événement' }))
+    await user.click(screen.getByRole('button', { name: 'Étape suivante' }))
+
+    expect(
+      await screen.findByText('Veuillez sélectionner un format')
+    ).toBeInTheDocument()
+    expect(router.state.location.pathname).toBe(
+      '/offre/individuelle/v2/creation/nature-format-domaine'
     )
   })
 })
