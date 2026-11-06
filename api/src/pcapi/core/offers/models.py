@@ -32,6 +32,7 @@ from pcapi.core.geography import models as geography_models
 from pcapi.core.highlights.models import HighlightRequest
 from pcapi.core.history.constants import ACTION_HISTORY_ORDER_BY
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offers import constants
 from pcapi.core.providers.models import Provider
 from pcapi.models import Model
 from pcapi.models import db
@@ -412,6 +413,9 @@ class Stock(PcObject, Model, SoftDeletableMixin):
     bookings: sa_orm.Mapped[list["Booking"]] = sa_orm.relationship(
         "Booking", foreign_keys="Booking.stockId", back_populates="stock"
     )
+    screening: sa_orm.Mapped["Screening"] = sa_orm.relationship(
+        "Screening", foreign_keys="Screening.stockId", back_populates="stock"
+    )
 
     __table_args__ = (
         sa.Index(
@@ -612,6 +616,60 @@ trigger_stock_update_modification_date_ddl = sa.DDL("""
     FOR EACH ROW
     EXECUTE PROCEDURE save_stock_modification_date()
     """)
+
+
+def merge_enum_values_in_list(enum_list: list[enum.Enum]) -> list[tuple[str, str]]:
+    result = []
+    for single_enum in enum_list:
+        result += [(item.name, item.value) for item in single_enum]  # type: ignore[attr-defined]
+    return result
+
+
+AccessibilityFeatures: (
+    constants.AudioAccessbilityFeatures
+    | constants.MentalAccessbilityFeatures
+    | constants.MotorAccessbilityFeatures
+    | constants.VisualAccessbilityFeatures
+) = enum.Enum(  # type: ignore[misc]
+    "AccessibilityFeatures",
+    merge_enum_values_in_list(
+        [
+            constants.AudioAccessbilityFeatures,
+            constants.MentalAccessbilityFeatures,
+            constants.MotorAccessbilityFeatures,
+            constants.VisualAccessbilityFeatures,
+        ]
+    ),
+)
+
+
+class Screening(PcObject, Model):
+    __tablename__ = "screening"
+
+    stockId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger,
+        sa.ForeignKey("stock.id", ondelete="CASCADE"),
+        nullable=False,
+        unique=True,
+        index=True,
+    )
+    stock: sa_orm.Mapped[Stock] = sa_orm.relationship("Stock", foreign_keys=[stockId], back_populates="screening")
+
+    language: sa_orm.Mapped[constants.LanguageFeatures | None] = sa_orm.mapped_column(
+        db_utils.MagicEnum(constants.LanguageFeatures), nullable=True
+    )
+    videoFormat: sa_orm.Mapped[constants.VideoFeatures | None] = sa_orm.mapped_column(
+        db_utils.MagicEnum(constants.VideoFeatures), nullable=True
+    )
+    accessibility: sa_orm.Mapped[list[AccessibilityFeatures]] = sa_orm.mapped_column(
+        sa_mutable.MutableList.as_mutable(postgresql.ARRAY(db_utils.MagicEnum(AccessibilityFeatures))),
+        nullable=False,
+        default=[],
+    )
+    specialEventType: sa_orm.Mapped[constants.SpecialEventFeatures | None] = sa_orm.mapped_column(
+        db_utils.MagicEnum(constants.SpecialEventFeatures),
+        nullable=True,
+    )
 
 
 @dataclass
