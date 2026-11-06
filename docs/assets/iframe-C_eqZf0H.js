@@ -1,1 +1,0 @@
-import{t as e}from"./iframe-DnIOt-uU.js";e();
