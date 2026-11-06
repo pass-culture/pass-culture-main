@@ -51,6 +51,13 @@ def get_settlements(query: finance_serialize.SettlementListQueryModel) -> financ
 @login_required
 @spectree_serialize(response_model=finance_serialize.InvoiceListResponseModel, api=blueprint.pro_schema)
 def get_invoices(query: finance_serialize.InvoiceListQueryModel) -> finance_serialize.InvoiceListResponseModel:
+    rest.check_user_has_access_to_offerer(current_user, offerer_id=query.offerer_id)
+
+    offerer_has_invoice = repository.has_invoice(query.offerer_id)
+
+    if not offerer_has_invoice:
+        return finance_serialize.InvoiceListResponseModel(hasInvoice=offerer_has_invoice, invoices=[])
+
     invoices = repository.get_paid_invoices_query(
         current_user,
         bank_account_id=query.bank_account_id,
@@ -63,20 +70,9 @@ def get_invoices(query: finance_serialize.InvoiceListQueryModel) -> finance_seri
     )
 
     return finance_serialize.InvoiceListResponseModel(
-        [finance_serialize.InvoiceResponseModel.build(invoice) for invoice in invoices]
+        hasInvoice=offerer_has_invoice,
+        invoices=[finance_serialize.InvoiceResponseModel.build(invoice) for invoice in invoices],
     )
-
-
-@pro_blueprint.route("/finance/has-invoice", methods=["GET"])
-@atomic()
-@login_required
-@spectree_serialize(response_model=finance_serialize.HasInvoiceResponseModel, api=blueprint.pro_schema)
-def has_invoice(query: finance_serialize.HasInvoiceQueryModel) -> finance_serialize.HasInvoiceResponseModel:
-    rest.check_user_has_access_to_offerer(current_user, offerer_id=query.offerer_id)
-
-    offerer_has_invoice = repository.has_invoice(query.offerer_id)
-
-    return finance_serialize.HasInvoiceResponseModel(has_invoice=offerer_has_invoice)
 
 
 @pro_blueprint.route("/finance/combined-invoices", methods=["GET"])

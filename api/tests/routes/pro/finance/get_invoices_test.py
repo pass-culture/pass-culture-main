@@ -4,6 +4,7 @@ import pytest
 
 from pcapi.core import testing
 from pcapi.core.finance import factories as finance_factories
+from pcapi.core.finance.models import InvoiceStatus
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.users import factories as users_factories
 from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
@@ -15,15 +16,19 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 URL = "/finance/invoices"
 
-HAS_INVOICE_URL = "/finance/has-invoice"
-
 
 class GetInvoicesTest:
+    num_queries = testing.AUTHENTICATION_QUERIES
+    num_queries += 1  # check if user_offerer exists
+    num_queries += 1  # check if offerer has invoices
+    num_queries += 1  # get invoices
+
     @pytest.mark.parametrize(
         "offerer_factory", [offerers_factories.OffererFactory, offerers_factories.ClosedOffererFactory]
     )
     def test_get_invoices(self, client: TestClient, offerer_factory):
         offerer = offerer_factory()
+        offerer_id = offerer.id
         pro = users_factories.ProFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
         bank_account = finance_factories.BankAccountFactory(offerer=offerer)
@@ -41,25 +46,33 @@ class GetInvoicesTest:
         _other_invoice = finance_factories.InvoiceFactory(bankAccount=_other_bank_account)
 
         client = client.with_session_auth(pro.email)
-        queries = testing.AUTHENTICATION_QUERIES
-        queries += 1  # select invoice
-        with testing.assert_num_queries(queries):
-            response = client.get(URL)
-            assert response.status_code == 200
+        with testing.assert_num_queries(self.num_queries):
+            response = client.get(URL, params={"offererId": offerer_id})
 
-        invoices = response.json
-        assert len(invoices) == 2
-        assert invoices[0] == {
-            "reference": invoice2.reference,
-            "date": invoice2.date.date().isoformat(),
-            "amount": 15.00,
-            "url": invoice2.url,
-            "status": "paid",
+        assert response.status_code == 200
+        assert response.json == {
+            "hasInvoice": True,
+            "invoices": [
+                {
+                    "reference": invoice2.reference,
+                    "date": invoice2.date.date().isoformat(),
+                    "amount": 15.0,
+                    "url": invoice2.url,
+                    "status": "paid",
+                },
+                {
+                    "reference": invoice1.reference,
+                    "date": invoice1.date.date().isoformat(),
+                    "amount": 10.0,
+                    "url": invoice1.url,
+                    "status": "paid",
+                },
+            ],
         }
-        assert invoices[1]["reference"] == invoice1.reference
 
     def test_get_invoices_only_return_visible_invoices(self, client: TestClient):
         offerer1 = offerers_factories.OffererFactory()
+        offerer_id = offerer1.id
         pro = users_factories.ProFactory()
         bank_account1 = finance_factories.BankAccountFactory(offerer=offerer1)
         dt1 = datetime.datetime(2021, 1, 1)
@@ -79,27 +92,28 @@ class GetInvoicesTest:
         offerers_factories.NewUserOffererFactory(user=pro, offerer=offerer2)
 
         client = client.with_session_auth(pro.email)
-        queries = testing.AUTHENTICATION_QUERIES
-        queries += 1  # select invoice
-        with testing.assert_num_queries(queries):
-            response = client.get(URL)
-            assert response.status_code == 200
+        with testing.assert_num_queries(self.num_queries):
+            response = client.get(URL, params={"offererId": offerer_id})
 
-        invoices = response.json
-        assert len(invoices) == 2
-        assert invoices[0] == {
-            "reference": invoice2.reference,
-            "date": invoice2.date.date().isoformat(),
-            "amount": 15.0,
-            "url": invoice2.url,
-            "status": "paid",
-        }
-        assert invoices[1] == {
-            "reference": invoice1.reference,
-            "date": invoice1.date.date().isoformat(),
-            "amount": 10.0,
-            "url": invoice1.url,
-            "status": "paid",
+        assert response.status_code == 200
+        assert response.json == {
+            "hasInvoice": True,
+            "invoices": [
+                {
+                    "reference": invoice2.reference,
+                    "date": invoice2.date.date().isoformat(),
+                    "amount": 15.0,
+                    "url": invoice2.url,
+                    "status": "paid",
+                },
+                {
+                    "reference": invoice1.reference,
+                    "date": invoice1.date.date().isoformat(),
+                    "amount": 10.0,
+                    "url": invoice1.url,
+                    "status": "paid",
+                },
+            ],
         }
 
     def test_get_invoices_specify_bank_account(self, client: TestClient):
@@ -113,14 +127,13 @@ class GetInvoicesTest:
         _invoice2 = finance_factories.InvoiceFactory(bankAccount=bank_account2, amount=-1500)
 
         client = client.with_session_auth(pro.email)
-        params = {"bankAccountId": bank_account1.id}
-        queries = testing.AUTHENTICATION_QUERIES
-        queries += 1  # select invoice
-        with testing.assert_num_queries(queries):
+        params = {"offererId": offerer.id, "bankAccountId": bank_account1.id}
+        with testing.assert_num_queries(self.num_queries):
             response = client.get(URL, params=params)
-            assert response.status_code == 200
 
-        invoices = response.json
+        assert response.status_code == 200
+        assert response.json["hasInvoice"] is True
+        invoices = response.json["invoices"]
         assert len(invoices) == 1
         assert invoices[0]["reference"] == invoice1.reference
 
@@ -151,16 +164,15 @@ class GetInvoicesTest:
         )
 
         client = client.with_session_auth(pro.email)
-        queries = testing.AUTHENTICATION_QUERIES
-        queries += 1  # select invoice
-        params = {"periodBeginningDate": "2021-07-01", "periodEndingDate": "2021-07-31"}
-        with testing.assert_num_queries(queries):
+        params = {"offererId": offerer.id, "periodBeginningDate": "2021-07-01", "periodEndingDate": "2021-07-31"}
+        with testing.assert_num_queries(self.num_queries):
             response = client.get(URL, params=params)
-            assert response.status_code == 200
 
-        invoices = response.json
+        assert response.status_code == 200
+        assert response.json["hasInvoice"] is True
+        invoices = response.json["invoices"]
         assert len(invoices) == 3
-        assert {result["reference"] for result in response.json} == {
+        assert {result["reference"] for result in invoices} == {
             invoice_lower_bound.reference,
             invoice_within.reference,
             invoice_upper_bound.reference,
@@ -183,14 +195,13 @@ class GetInvoicesTest:
         )
 
         client = client.with_session_auth(pro.email)
-        queries = testing.AUTHENTICATION_QUERIES
-        queries += 1  # select invoice
-        params = {"amountPositiveOnly": True}
-        with testing.assert_num_queries(queries):
+        params = {"offererId": offerer.id, "amountPositiveOnly": True}
+        with testing.assert_num_queries(self.num_queries):
             response = client.get(URL, params=params)
-            assert response.status_code == 200
 
-        invoices = response.json
+        assert response.status_code == 200
+        assert response.json["hasInvoice"] is True
+        invoices = response.json["invoices"]
         assert len(invoices) == 1
         assert invoices[0]["reference"] == invoice_positive.reference
 
@@ -211,14 +222,13 @@ class GetInvoicesTest:
         )
 
         client = client.with_session_auth(pro.email)
-        queries = testing.AUTHENTICATION_QUERIES
-        queries += 1  # select invoice
-        params = {"amountNegativeOnly": True}
-        with testing.assert_num_queries(queries):
+        params = {"offererId": offerer.id, "amountNegativeOnly": True}
+        with testing.assert_num_queries(self.num_queries):
             response = client.get(URL, params=params)
-            assert response.status_code == 200
 
-        invoices = response.json
+        assert response.status_code == 200
+        assert response.json["hasInvoice"] is True
+        invoices = response.json["invoices"]
         assert len(invoices) == 1
         assert invoices[0]["reference"] == invoice_negative.reference
 
@@ -227,83 +237,69 @@ class GetInvoicesTest:
         pro = users_factories.ProFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
         other_bank_account = finance_factories.BankAccountFactory()
+        finance_factories.InvoiceFactory(bankAccount=other_bank_account)
 
         client = client.with_session_auth(pro.email)
-        queries = testing.AUTHENTICATION_QUERIES
-        queries += 1  # select invoice
-        params = {"bankAccountId": other_bank_account.id}
-        with testing.assert_num_queries(queries):
+        params = {"offererId": offerer.id, "bankAccountId": other_bank_account.id}
+        num_queries = self.num_queries - 1  # no query to fetch invoices
+        with testing.assert_num_queries(num_queries):
             response = client.get(URL, params=params)
-            assert response.status_code == 200
 
-        invoices = response.json
-        assert invoices == []
+        assert response.status_code == 200
+        assert response.json == {"hasInvoice": False, "invoices": []}
 
-    def test_filter_both_on_bank_account_and_offerer_should_consider_bank_account(self, client: TestClient):
-        offerer = offerers_factories.OffererFactory()
-        pro = users_factories.ProFactory()
-
-        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
-        bank_account1 = finance_factories.BankAccountFactory(offerer=offerer)
-        invoice1 = finance_factories.InvoiceFactory(bankAccount=bank_account1, amount=-1000)
-        bank_account2 = finance_factories.BankAccountFactory(offerer=offerer)
-        finance_factories.InvoiceFactory(bankAccount=bank_account2, amount=-1500)
-
-        client = client.with_session_auth(pro.email)
-        params = {"offererId": offerer.id, "bankAccountId": bank_account1.id}
-        queries = testing.AUTHENTICATION_QUERIES
-        queries += 1  # select invoice
-        with testing.assert_num_queries(queries):
-            response = client.get(URL, params=params)
-            assert response.status_code == 200
-
-        invoices = response.json
-        assert len(invoices) == 1
-        assert invoices[0]["reference"] == invoice1.reference
-
-    def test_has_invoices_returns_true_if_offerer_has_invoices(self, client: TestClient):
+    def test_with_no_invoice(self, client: TestClient):
         user_offerer = offerers_factories.UserOffererFactory()
         bank_account = finance_factories.BankAccountFactory(offerer=user_offerer.offerer)
-        offerer_id = user_offerer.offerer.id
-        finance_factories.InvoiceFactory(bankAccount=bank_account)
-
-        client = client.with_session_auth(user_offerer.user.email)
-        queries = testing.AUTHENTICATION_QUERIES
-        queries += 1  # check user_offerer exists
-        queries += 1  # check offerer has invoice
-        with testing.assert_num_queries(queries):
-            response = client.get(HAS_INVOICE_URL, params={"offererId": offerer_id})
-            assert response.status_code == 200
-
-        assert response.json == {"hasInvoice": True}
-
-    def test_has_invoices_returns_false_if_offerer_has_no_invoices(self, client: TestClient):
-        user_offerer = offerers_factories.UserOffererFactory()
-        finance_factories.BankAccountFactory(offerer=user_offerer.offerer)
+        finance_factories.InvoiceFactory(status=InvoiceStatus.PENDING, bankAccount=bank_account)
+        finance_factories.InvoiceFactory(status=InvoiceStatus.PENDING_PAYMENT, bankAccount=bank_account)
 
         client = client.with_session_auth(user_offerer.user.email)
         params = {"offererId": user_offerer.offerer.id}
-        queries = testing.AUTHENTICATION_QUERIES
-        queries += 1  # check user_offerer exists
-        queries += 1  # check offerer has invoice
-        with testing.assert_num_queries(queries):
-            response = client.get(HAS_INVOICE_URL, params=params)
-            assert response.status_code == 200
+        num_queries = self.num_queries - 1  # no query to fetch invoices
+        with testing.assert_num_queries(num_queries):
+            response = client.get(URL, params=params)
 
-        assert response.json == {"hasInvoice": False}
+        assert response.status_code == 200
+        assert response.json == {"hasInvoice": False, "invoices": []}
 
-    def test_has_invoices_when_user_has_no_access_to_offerer(self, client: TestClient):
+    def test_with_invoices_filtered_out(self, client: TestClient):
         user_offerer = offerers_factories.UserOffererFactory()
-        user_offerer_2 = offerers_factories.UserOffererFactory()
-        finance_factories.BankAccountFactory(offerer=user_offerer.offerer)
+        bank_account = finance_factories.BankAccountFactory(offerer=user_offerer.offerer)
+        other_bank_account = finance_factories.BankAccountFactory(offerer=user_offerer.offerer)
+        finance_factories.InvoiceFactory(bankAccount=bank_account)
 
         client = client.with_session_auth(user_offerer.user.email)
-        params = {"offererId": user_offerer_2.offerer.id}
-        queries = testing.AUTHENTICATION_QUERIES
-        queries += 1  # check user_offerer exists
-        queries += 1  # rollback
-        queries += 1  # rollback
-        with testing.assert_num_queries(queries):
-            response = client.get(HAS_INVOICE_URL, params=params)
-            assert response.status_code == 404
-            assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
+        params = {"offererId": user_offerer.offerer.id, "bankAccountId": other_bank_account.id}
+        with testing.assert_num_queries(self.num_queries):
+            response = client.get(URL, params=params)
+
+        assert response.status_code == 200
+        assert response.json == {"hasInvoice": True, "invoices": []}
+
+    def test_no_access_to_offerer(self, client: TestClient):
+        user = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory()
+        bank_account = finance_factories.BankAccountFactory(offerer=offerer)
+        finance_factories.InvoiceFactory(bankAccount=bank_account)
+
+        client = client.with_session_auth(user.email)
+        params = {"offererId": offerer.id}
+
+        with testing.assert_num_queries(self.num_queries):
+            response = client.get(URL, params=params)
+
+        assert response.status_code == 404
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
+
+    def test_no_offerer_id(self, client: TestClient):
+        user = users_factories.ProFactory()
+
+        client = client.with_session_auth(user.email)
+        num_queries = testing.AUTHENTICATION_QUERIES
+        num_queries += 1  # rollback
+        with testing.assert_num_queries(num_queries):
+            response = client.get(URL, params={})
+
+        assert response.status_code == 400
+        assert response.json == {"offererId": ["Ce champ est obligatoire"]}
