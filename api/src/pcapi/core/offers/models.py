@@ -32,6 +32,7 @@ from pcapi.core.geography import models as geography_models
 from pcapi.core.highlights.models import HighlightRequest
 from pcapi.core.history.constants import ACTION_HISTORY_ORDER_BY
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offers import constants
 from pcapi.core.providers.models import Provider
 from pcapi.models import Model
 from pcapi.models import db
@@ -412,6 +413,9 @@ class Stock(PcObject, Model, SoftDeletableMixin):
     bookings: sa_orm.Mapped[list["Booking"]] = sa_orm.relationship(
         "Booking", foreign_keys="Booking.stockId", back_populates="stock"
     )
+    _metadata: sa_orm.Mapped["StockMetadata"] = sa_orm.relationship(
+        "StockMetadata", foreign_keys="StockMetadata.stockId", back_populates="stock"
+    )
 
     __table_args__ = (
         sa.Index(
@@ -612,6 +616,35 @@ trigger_stock_update_modification_date_ddl = sa.DDL("""
     FOR EACH ROW
     EXECUTE PROCEDURE save_stock_modification_date()
     """)
+
+
+AccessibilityFeatures = (
+    constants.AudioAccessbilityFeatures
+    | constants.MentalAccessbilityFeatures
+    | constants.MotorAccessbilityFeatures
+    | constants.VisualAccessbilityFeatures
+)
+
+
+class StockMetadata(PcObject, Model):
+    __tablename__ = "stock_metadata"
+
+    stockId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger,
+        sa.ForeignKey("stock.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    stock: sa_orm.Mapped[Stock] = sa_orm.relationship("Stock", foreign_keys=[stockId], back_populates="_metadata")
+
+    language: sa_orm.Mapped[constants.LanguageFeatures | None] = sa_orm.mapped_column(sa.Text, nullable=True)
+    videoFormat: sa_orm.Mapped[constants.VideoFeatures | None] = sa_orm.mapped_column(sa.Text, nullable=True)
+    accessibility: sa_orm.Mapped[list[AccessibilityFeatures]] = sa_orm.mapped_column(
+        postgresql.ARRAY(sa.Text), nullable=False, default=[]
+    )
+    seanceSpeciale: sa_orm.Mapped[list[constants.SpecialEventFeatures]] = sa_orm.mapped_column(
+        postgresql.ARRAY(sa.Text), nullable=False, default=[]
+    )
 
 
 @dataclass
