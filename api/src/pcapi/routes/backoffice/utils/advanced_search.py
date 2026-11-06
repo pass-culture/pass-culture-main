@@ -78,23 +78,25 @@ LLM_OPERATOR_DICT: dict[str, str] = {
 
 GCP_LOGS_OPERATOR_DICT: dict[str, str] = {
     "EQUALS": "=",
+    "IN": "=",
     "GREATER_THAN_OR_EQUAL_TO": ">=",
     "LESS_THAN": "<",
 }
 
 
-# TODO maybe use pydantic instead
 @dataclass(slots=True, frozen=True, kw_only=True)
 class FilterLog:
     field: str
     operator: str
     value: str
+    is_object: bool = False
 
     def dict(self) -> dict:
         return {
             "field": self.field,
             "operator": self.operator,
             "value": self.value,
+            "is_object": self.is_object,
         }
 
 
@@ -121,14 +123,55 @@ class FilterLogContainer:
         return cls(filters=filters, **d)
 
 
-GCP_LOGS_SEARCH_TYPES: dict[str, tuple[FilterLog]] = {
+GCP_LOGS_SEARCH_TYPES: dict[str, typing.Iterable[FilterLog]] = {
     "OFFER_CREATION": (
-        FilterLog(  # TODO use new syntaxe after alpha
-            field="jsonPayload.technical_message_id",
+        FilterLog(
+            field="jsonPayload.technical_origin.feature",
             operator="=",
-            value="offer.created",
+            value="offer",
         ),
-    )
+        FilterLog(
+            field="jsonPayload.technical_origin.action",
+            operator="=",
+            value="created",
+        ),
+    ),
+    "BOOKING": (
+        FilterLog(
+            field="jsonPayload.technical_origin.feature",
+            operator="=",
+            value="bookings",
+        ),
+        FilterLog(
+            field="jsonPayload.technical_origin.action",
+            operator="=",
+            value="book",
+        ),
+    ),
+    "CANCEL_BOOKING": (
+        FilterLog(
+            field="jsonPayload.technical_origin.feature",
+            operator="=",
+            value="bookings",
+        ),
+        FilterLog(
+            field="jsonPayload.technical_origin.action",
+            operator="=",
+            value="cancel",
+        ),
+    ),
+    "USER_LOGIN": (
+        FilterLog(
+            field="jsonPayload.technical_origin.feature",
+            operator="=",
+            value="users",
+        ),
+        FilterLog(
+            field="jsonPayload.technical_origin.action",
+            operator="=",
+            value="login",
+        ),
+    ),
 }
 
 
@@ -423,6 +466,7 @@ def generate_gcp_search_dict(
                 field=field_name,
                 operator=operator_string,
                 value=field_value,
+                is_object=meta_field.get("is_object", False),
             )
         )
 
@@ -439,7 +483,11 @@ def generate_gcp_search_dict(
 def generate_gcp_search_string_from_list(gcp_search: FilterLogContainer) -> str:
     search = ""
     for filter_field in gcp_search.filters:
-        search += f'{filter_field.field}{filter_field.operator}"{filter_field.value}"\n'
+        if filter_field.is_object:
+            search += f"{filter_field.field}{filter_field.operator}{filter_field.value}\n"
+        else:
+            search += f'{filter_field.field}{filter_field.operator}"{filter_field.value}"\n'
     search += f'timestamp>"{datetime.datetime.fromtimestamp(gcp_search.start_date).isoformat()}Z"\n'
     search += f'timestamp<"{datetime.datetime.fromtimestamp(gcp_search.end_date).isoformat()}Z"\n'
+    print(search)
     return search

@@ -48,6 +48,40 @@ class GetListLogsTest(GetEndpointHelper):
 
         assert not get_soup(response.text).find("tbody")
 
+    @pytest.mark.parametrize(
+        "search_type,feature,action",
+        [
+            ("OFFER_CREATION", "offer", "created"),
+            ("BOOKING", "bookings", "book"),
+            ("CANCEL_BOOKING", "bookings", "cancel"),
+            ("USER_LOGIN", "users", "login"),
+        ],
+    )
+    def test_search_type(self, authenticated_client, clear_redis, search_type, feature, action):
+        query_args = {
+            "search_type": search_type,
+        }
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        search_data = self._get_search_data(response.text)
+        assert search_data
+        assert search_data["filters"] == [
+            {
+                "field": "jsonPayload.technical_origin.feature",
+                "operator": "=",
+                "value": feature,
+                "is_object": False,
+            },
+            {
+                "field": "jsonPayload.technical_origin.action",
+                "operator": "=",
+                "value": action,
+                "is_object": False,
+            },
+        ]
+
     def test_search_end_date(self, authenticated_client, clear_redis):
 
         query_args = {
@@ -91,61 +125,81 @@ class GetListLogsTest(GetEndpointHelper):
         assert search_data["original_start_date"] == search_data["start_date"]
         assert "last_insert_id" in search_data
 
-    def test_search_offer_id(self, authenticated_client, clear_redis):
+    @pytest.mark.parametrize(
+        "requested_field,expected_field",
+        [
+            ("BOOKING", "jsonPayload.extra.booking_id"),
+            ("OFFER", "jsonPayload.extra.offer_id"),
+            ("PRODUCT", "jsonPayload.extra.product_id"),
+            ("STOCK", "jsonPayload.extra.stock_id"),
+            ("USER", "jsonPayload.extra.user_id"),
+        ],
+    )
+    def test_search_integer(self, authenticated_client, clear_redis, requested_field, expected_field):
         expected_search = {
-            "field": "jsonPayload.extra.offer_id",
+            "field": expected_field,
             "operator": "=",
             "value": 12,
+            "is_object": False,
         }
         query_args = {
             "search_type": "OFFER_CREATION",
-            "search-0-search_field": "OFFER",
+            "search-0-search_field": requested_field,
             "search-0-operator": "EQUALS",
             "search-0-integer": 12,
         }
-
-        before = time.time()
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
 
-        after = time.time()
         search_data = self._get_search_data(response.text)
         assert search_data
         assert expected_search in search_data["filters"]
-        assert before < search_data["end_date"] < after
-        assert search_data["start_date"] == search_data["end_date"] - DEFAULT_INTERVAL
-        assert search_data["original_start_date"] == search_data["start_date"]
-        assert "last_insert_id" in search_data
 
-    def test_search_product_id(self, authenticated_client, clear_redis):
+    def test_search_provider(self, authenticated_client, clear_redis):
         expected_search = {
-            "field": "jsonPayload.extra.product_id",
+            "field": "jsonPayload.extra.provider_id",
             "operator": "=",
-            "value": 12,
+            "value": '("12")',
+            "is_object": True,
         }
         query_args = {
             "search_type": "OFFER_CREATION",
-            "search-0-search_field": "PRODUCT",
-            "search-0-operator": "EQUALS",
-            "search-0-integer": 12,
+            "search-0-search_field": "PROVIDER",
+            "search-0-operator": "IN",
+            "search-0-providers": 12,
         }
 
-        before = time.time()
-
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries + 1):  # check provider exists
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
 
-        after = time.time()
         search_data = self._get_search_data(response.text)
         assert search_data
         assert expected_search in search_data["filters"]
-        assert before < search_data["end_date"] < after
-        assert search_data["start_date"] == search_data["end_date"] - DEFAULT_INTERVAL
-        assert search_data["original_start_date"] == search_data["start_date"]
-        assert "last_insert_id" in search_data
+
+    def test_search_venue(self, authenticated_client, clear_redis):
+        expected_search = {
+            "field": "jsonPayload.extra.venue_id",
+            "operator": "=",
+            "value": '("12")',
+            "is_object": True,
+        }
+        query_args = {
+            "search_type": "OFFER_CREATION",
+            "search-0-search_field": "VENUE",
+            "search-0-operator": "IN",
+            "search-0-venues": 12,
+        }
+
+        with assert_num_queries(self.expected_num_queries + 1):  # check provider exists
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        search_data = self._get_search_data(response.text)
+        assert search_data
+        assert expected_search in search_data["filters"]
 
 
 class GetListLogsRowsTest(GetEndpointHelper):
@@ -192,11 +246,13 @@ class GetListLogsRowsTest(GetEndpointHelper):
                     "field": "field1",
                     "operator": ">",
                     "value": "value1",
+                    "is_object": False,
                 },
                 {
                     "field": "field2",
-                    "operator": "<",
+                    "operator": "=",
                     "value": "value2",
+                    "is_object": True,
                 },
             ],
             "end_date": 1790000000,
@@ -224,7 +280,7 @@ class GetListLogsRowsTest(GetEndpointHelper):
         assert f'id="btn-{new_token}' in response.text, "pagination should be in manual"
         assert f'id="token-{token}"' in response.text
         backend_mock.get_logs.assert_called_with(
-            filters='field1>"value1"\nfield2<"value2"\ntimestamp>"2026-09-21T14:11:40Z"\ntimestamp<"2026-09-21T14:13:20Z"\n',
+            filters='field1>"value1"\nfield2=value2\ntimestamp>"2026-09-21T14:11:40Z"\ntimestamp<"2026-09-21T14:13:20Z"\n',
             limit=10,
         )
 
@@ -251,11 +307,13 @@ class GetListLogsRowsTest(GetEndpointHelper):
                     "field": "field1",
                     "operator": ">",
                     "value": "value1",
+                    "is_object": False,
                 },
                 {
                     "field": "field2",
                     "operator": "<",
                     "value": "value2",
+                    "is_object": False,
                 },
             ],
             "end_date": 1790000000,
@@ -298,11 +356,13 @@ class GetListLogsRowsTest(GetEndpointHelper):
                     "field": "field1",
                     "operator": ">",
                     "value": "value1",
+                    "is_object": False,
                 },
                 {
                     "field": "field2",
                     "operator": "<",
                     "value": "value2",
+                    "is_object": False,
                 },
             ],
             "end_date": 1790000000,

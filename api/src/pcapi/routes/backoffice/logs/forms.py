@@ -5,6 +5,7 @@ import typing
 import wtforms
 from flask import flash
 
+from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice.forms import fields
 from pcapi.routes.backoffice.forms import utils as forms_utils
 from pcapi.routes.backoffice.utils import advanced_search
@@ -12,20 +13,32 @@ from pcapi.routes.backoffice.utils import advanced_search
 
 class LogsSearchAttribute(enum.Enum):
     LOG_DATE = "Date du log"
+    BOOKING = "ID de la réservation"
     OFFER = "ID de l'offre"
     PRODUCT = "ID du produit"
+    PROVIDER = "Partenaire technique"
+    STOCK = "ID du stock"
+    USER = "ID de l'utilisateur"
+    VENUE = "Partenaire culturel"
 
 
 class LogSearchType(enum.StrEnum):
     OFFER_CREATION = "Création d'offres"
+    BOOKING = "Création de réservation"
+    CANCEL_BOOKING = "Annulation de réservation"
+    USER_LOGIN = "Connexion d'un utilisateur"
 
 
 operator_no_require_value = ["NOT_EXIST"]
-
 form_field_configuration = {
     "LOG_DATE": {"field": "datetime", "operator": ["GREATER_THAN_OR_EQUAL_TO", "LESS_THAN"]},
+    "BOOKING": {"field": "integer", "operator": ["EQUALS"]},
     "OFFER": {"field": "integer", "operator": ["EQUALS"]},
     "PRODUCT": {"field": "integer", "operator": ["EQUALS"]},
+    "PROVIDER": {"field": "providers", "operator": ["IN"]},
+    "STOCK": {"field": "integer", "operator": ["EQUALS"]},
+    "USER": {"field": "integer", "operator": ["EQUALS"]},
+    "VENUE": {"field": "venues", "operator": ["IN"]},
 }
 
 
@@ -39,6 +52,8 @@ class LogsAdvancedSearchSubForm(forms_utils.PCForm):
             "all_available_fields": [
                 "datetime",
                 "integer",
+                "providers",
+                "venues",
             ],
             "sub_rule_type_field_name": "search_field",
             "operator_field_name": "operator",
@@ -47,6 +62,8 @@ class LogsAdvancedSearchSubForm(forms_utils.PCForm):
 
     def __init__(self, *args: list, **kwargs: dict):
         super().__init__(*args, **kwargs)
+        autocomplete.prefill_providers_choices(self.providers)
+        autocomplete.prefill_venues_choices(self.venues)
 
     search_field = fields.PCSelectWithPlaceholderValueField(
         "Champ de recherche",
@@ -78,6 +95,26 @@ class LogsAdvancedSearchSubForm(forms_utils.PCForm):
         validators=[
             wtforms.validators.Optional(""),
         ],
+    )
+
+    providers = fields.PCTomSelectField(
+        "Partenaires techniques",
+        multiple=True,
+        choices=[],
+        validate_choice=False,
+        endpoint="backoffice.autocomplete_providers",
+        search_inline=True,
+        field_list_compatibility=True,
+    )
+
+    venues = fields.PCTomSelectField(
+        "Partenaires culturels",
+        multiple=True,
+        choices=[],
+        validate_choice=False,
+        endpoint="backoffice.autocomplete_venues",
+        search_inline=True,
+        field_list_compatibility=True,
     )
 
 
