@@ -4,6 +4,7 @@ from datetime import timedelta
 import wtforms
 from flask import flash
 from flask_wtf import FlaskForm
+from wtforms import fields as wtforms_fields
 
 from pcapi.core.categories import pro_categories
 from pcapi.core.categories import subcategories
@@ -33,10 +34,10 @@ class GetCustomReimbursementRulesListForm(FlaskForm):
     limit = fields.PCLimitField(
         "Nombre maximum de résultats",
         choices=(
-            (10, "Afficher 10 résultats maximum"),
-            (25, "Afficher 25 résultats maximum"),
-            (50, "Afficher 50 résultats maximum"),
-            (100, "Afficher 100 résultats maximum"),
+            wtforms_fields.SelectChoice(10, "Afficher 10 résultats maximum"),
+            wtforms_fields.SelectChoice(25, "Afficher 25 résultats maximum"),
+            wtforms_fields.SelectChoice(50, "Afficher 50 résultats maximum"),
+            wtforms_fields.SelectChoice(100, "Afficher 100 résultats maximum"),
         ),
         default="100",
         coerce=int,
@@ -48,7 +49,8 @@ class GetCustomReimbursementRulesListForm(FlaskForm):
         field_list_compatibility=True,
     )
     subcategories = fields.PCSelectMultipleField(
-        "Sous-catégories", choices=[(s.id, s.pro_label) for s in subcategories.ALL_SUBCATEGORIES]
+        "Sous-catégories",
+        choices=[wtforms_fields.SelectChoice(s.id, s.pro_label) for s in subcategories.ALL_SUBCATEGORIES],
     )
 
     def is_empty(self) -> bool:
@@ -82,7 +84,8 @@ class CreateCustomReimbursementRuleForm(FlaskForm):
         endpoint="backoffice.autocomplete_pricing_points",
     )
     subcategories = fields.PCSelectMultipleField(
-        "Sous-catégories", choices=[(s.id, s.pro_label) for s in subcategories.ALL_SUBCATEGORIES]
+        "Sous-catégories",
+        choices=[wtforms_fields.SelectChoice(s.id, s.pro_label) for s in subcategories.ALL_SUBCATEGORIES],
     )
 
     rate = fields.PCDecimalField(

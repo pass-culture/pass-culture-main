@@ -4,6 +4,7 @@ import typing
 import sqlalchemy.orm as sa_orm
 import wtforms
 from flask_wtf import FlaskForm
+from wtforms import fields as wtforms_fields
 
 from pcapi.connectors.dms.models import GraphQLApplicationStates
 from pcapi.core.offerers import models as offerers_models
@@ -101,7 +102,10 @@ class OffererValidationListForm(utils.PCForm):
     )
     ae_documents_received = fields.PCSelectMultipleField(
         "Documents reçus",
-        choices=[("yes", "Oui"), ("no", "Non")],
+        choices=[
+            wtforms_fields.SelectChoice("yes", "Oui"),
+            wtforms_fields.SelectChoice("no", "Non"),
+        ],
     )
     instructors = fields.PCTomSelectField(
         "Dernier instructeur",
@@ -121,10 +125,10 @@ class OffererValidationListForm(utils.PCForm):
     limit = fields.PCLimitField(
         "Nombre maximum de résultats",
         choices=(
-            (10, "Afficher 10 résultats maximum"),
-            (25, "Afficher 25 résultats maximum"),
-            (50, "Afficher 50 résultats maximum"),
-            (100, "Afficher 100 résultats maximum"),
+            wtforms_fields.SelectChoice(10, "Afficher 10 résultats maximum"),
+            wtforms_fields.SelectChoice(25, "Afficher 25 résultats maximum"),
+            wtforms_fields.SelectChoice(50, "Afficher 50 résultats maximum"),
+            wtforms_fields.SelectChoice(100, "Afficher 100 résultats maximum"),
         ),
         default="100",
         coerce=int,
@@ -199,10 +203,10 @@ class UserOffererValidationListForm(utils.PCForm):
     limit = fields.PCLimitField(
         "Nombre maximum de résultats",
         choices=(
-            (10, "Afficher 10 résultats maximum"),
-            (25, "Afficher 25 résultats maximum"),
-            (50, "Afficher 50 résultats maximum"),
-            (100, "Afficher 100 résultats maximum"),
+            wtforms_fields.SelectChoice(10, "Afficher 10 résultats maximum"),
+            wtforms_fields.SelectChoice(25, "Afficher 25 résultats maximum"),
+            wtforms_fields.SelectChoice(50, "Afficher 50 résultats maximum"),
+            wtforms_fields.SelectChoice(100, "Afficher 100 résultats maximum"),
         ),
         default="100",
         coerce=int,
