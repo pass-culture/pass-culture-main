@@ -209,14 +209,18 @@ class BaseFinanceBackend:
     def get_invoice_lines(self, invoice_id: int) -> list[dict]:
         indiv_data = self._get_indiv_data(
             invoice_id,
-            db.session.query(finance_models.PricingLine)
-            .join(finance_models.PricingLine.pricing)
+            db.session.query(finance_models.Invoice)
+            .join(finance_models.Invoice.cashflows)
+            .join(finance_models.Cashflow.pricings)
+            .join(finance_models.Pricing.lines)
             .join(finance_models.Pricing.booking),
         )
         indiv_incident_data = self._get_indiv_data(
             invoice_id,
-            db.session.query(finance_models.PricingLine)
-            .join(finance_models.PricingLine.pricing)
+            db.session.query(finance_models.Invoice)
+            .join(finance_models.Invoice.cashflows)
+            .join(finance_models.Cashflow.pricings)
+            .join(finance_models.Pricing.lines)
             .join(finance_models.Pricing.event)
             .join(finance_models.FinanceEvent.bookingFinanceIncident)
             .join(finance_models.BookingFinanceIncident.incident)
@@ -225,14 +229,18 @@ class BaseFinanceBackend:
 
         collective_data = self._get_collective_data(
             invoice_id,
-            db.session.query(finance_models.PricingLine)
-            .join(finance_models.PricingLine.pricing)
+            db.session.query(finance_models.Invoice)
+            .join(finance_models.Invoice.cashflows)
+            .join(finance_models.Cashflow.pricings)
+            .join(finance_models.Pricing.lines)
             .join(finance_models.Pricing.collectiveBooking),
         )
         collective_incident_data = self._get_collective_data(
             invoice_id,
-            db.session.query(finance_models.PricingLine)
-            .join(finance_models.PricingLine.pricing)
+            db.session.query(finance_models.Invoice)
+            .join(finance_models.Invoice.cashflows)
+            .join(finance_models.Cashflow.pricings)
+            .join(finance_models.Pricing.lines)
             .join(finance_models.Pricing.event)
             .join(finance_models.FinanceEvent.bookingFinanceIncident)
             .join(finance_models.BookingFinanceIncident.collectiveBooking),
@@ -254,8 +262,6 @@ class BaseFinanceBackend:
         data = (
             query.join(bookings_models.Booking.deposit)
             .filter(*filters)
-            .join(finance_models.Pricing.cashflows)
-            .join(finance_models.Cashflow.invoices)
             .group_by(
                 finance_models.PricingLine.category,
                 bookings_models.Booking.usedRecreditType,
@@ -291,8 +297,6 @@ class BaseFinanceBackend:
         data = (
             query.join(educational_models.CollectiveBooking.collectiveStock)
             .filter(*filters)
-            .join(finance_models.Pricing.cashflows)
-            .join(finance_models.Cashflow.invoices)
             .join(educational_models.CollectiveBooking.educationalInstitution)
             .join(educational_models.CollectiveBooking.educationalDeposit)
             # max 1 program because of unique constraint on EducationalInstitutionProgramAssociation.institutionId
