@@ -88,20 +88,3 @@ def test_get_capabilities(client, nature, format, capabilities, mandatory_fields
 
     assert response.status_code == 200
     assert response.json == {"capabilities": capabilities, "mandatoryFields": mandatory_fields}
-
-
-@pytest.mark.usefixtures("db_session")
-def test_get_capabilities_with_mandatory_fields(client, mocker):
-    user = users_factories.ProFactory()
-    client = client.with_session_auth(user.email)
-    get_mandatory_fields = mocker.patch(
-        "pcapi.core.nature_format_domain.nature_format_domain.get_mandatory_fields",
-        return_value=[FieldEnum.TITLE, FieldEnum.EAN],
-    )
-
-    with testing.assert_num_queries(testing.AUTHENTICATION_QUERIES):
-        response = client.get("/capabilities", params={"nature": "BIEN", "format": "LIVRE_PAPIER"})
-
-    assert response.status_code == 200
-    assert response.json["mandatoryFields"] == ["TITLE", "EAN"]
-    get_mandatory_fields.assert_called_once_with(nature=NatureEnum.BIEN, format=FormatEnum.LIVRE_PAPIER)

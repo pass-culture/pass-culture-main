@@ -1878,6 +1878,20 @@ export type FeatureResponseModel = {
 };
 
 /**
+ * FieldEnum
+ */
+export enum FieldEnum {
+    TITLE = 'TITLE',
+    DESCRIPTION = 'DESCRIPTION',
+    IMAGE = 'IMAGE',
+    GENRE_MUSIC = 'GENRE_MUSIC',
+    PERFORMER = 'PERFORMER',
+    EAN = 'EAN',
+    AUTHOR = 'AUTHOR',
+    ACCESSIBILITY_ATTRIBUTE_LARGE_PRINT = 'ACCESSIBILITY_ATTRIBUTE_LARGE_PRINT'
+}
+
+/**
  * FormatEnum
  */
 export enum FormatEnum {
@@ -2098,7 +2112,11 @@ export type GetCapabilitiesResponseModel = {
     /**
      * Capabilities
      */
-    capabilities: Array<string>;
+    capabilities: Array<FieldEnum>;
+    /**
+     * Mandatoryfields
+     */
+    mandatoryFields: Array<FieldEnum>;
 };
 
 /**

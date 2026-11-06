@@ -1,11 +1,14 @@
-import { useState } from 'react'
 import { useNavigate } from 'react-router'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
 import { type FormatEnum, NatureEnum } from '@/apiClient/v1'
 import { GET_NFD_QUERY_KEY } from '@/commons/config/swrQueryKeys'
+import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { setFormat, setNature } from '@/commons/store/nfd/reducer'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
+import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { Button } from '@/design-system/Button/Button'
 import {
   ButtonColor,
@@ -31,10 +34,12 @@ const natureIcon: Record<NatureEnum, string> = {
 
 const IndividualOfferV2NatureFormatDomain = (): JSX.Element => {
   const navigate = useNavigate()
-  const [selectedNature, setSelectedNature] = useState<NatureEnum | null>(null)
-  const [selectedFormat, setSelectedFormat] = useState<FormatEnum | null>(null)
+  const dispatch = useAppDispatch()
   const nfdQuery = useSWR([GET_NFD_QUERY_KEY], () =>
     api.getNatureFormatDomain()
+  )
+  const { nature: selectedNature, format: selectedFormat } = useAppSelector(
+    (state) => state.nfd
   )
 
   const onSubmit = async (event: React.SubmitEvent<HTMLFormElement>) => {
@@ -48,78 +53,82 @@ const IndividualOfferV2NatureFormatDomain = (): JSX.Element => {
 
   const natures = nfdQuery.data
   return (
-    <>
-      <h2 className={styles['title']}>Nature et format</h2>
-      <form onSubmit={onSubmit}>
-        <div className={styles['nature']}>
-          <RadioButtonGroup
-            name="nature"
-            label="Sélectionnez la nature"
-            variant={'detailed'}
-            checkedOption={selectedNature as string}
-            display="horizontal"
-            sizing="hug"
-            onChange={(event) =>
-              setSelectedNature(event.target.value as NatureEnum)
-            }
-            options={natures.map((nature) => ({
-              label: nature.label,
-              value: nature.name,
-              asset: {
-                variant: 'icon',
-                src: natureIcon[nature.name],
-              },
-            }))}
-          />
-        </div>
-        {selectedNature && (
-          <div className={styles['format']}>
+    <form onSubmit={onSubmit}>
+      <FormLayout>
+        <FormLayout.Section title="Nature et format">
+          <FormLayout.Row lgSpaceAfter>
             <RadioButtonGroup
-              name="format"
-              label="Sélectionnez le format"
+              name="nature"
+              label="Sélectionnez la nature"
               variant={'detailed'}
-              checkedOption={selectedFormat as string}
+              checkedOption={selectedNature as string}
               display="horizontal"
               sizing="hug"
               onChange={(event) =>
-                setSelectedFormat(event.target.value as FormatEnum)
+                dispatch(setNature(event.target.value as NatureEnum))
               }
-              options={
-                natures
-                  .find((nature) => nature.name === selectedNature)
-                  ?.formats.map((format) => ({
-                    sizing: 'hug',
-                    label: format.label,
-                    value: format.format,
-                  })) ?? []
-              }
+              options={natures.map((nature) => ({
+                label: nature.label,
+                value: nature.name,
+                asset: {
+                  variant: 'icon',
+                  src: natureIcon[nature.name],
+                },
+              }))}
             />
-          </div>
-        )}
-        <ActionsBarSticky hasSideNav={false} isEmbedded={true}>
-          <ActionsBarSticky.Left>
-            <Button
-              as="router-link"
-              to="/accueil"
-              color={ButtonColor.NEUTRAL}
-              variant={ButtonVariant.SECONDARY}
-              label="Annuler et quitter"
-            />
-          </ActionsBarSticky.Left>
+          </FormLayout.Row>
+          <FormLayout.Row>
+            {selectedNature && (
+              <div className={styles['format']}>
+                <RadioButtonGroup
+                  name="format"
+                  label="Sélectionnez le format"
+                  variant={'detailed'}
+                  checkedOption={selectedFormat as string}
+                  display="horizontal"
+                  sizing="hug"
+                  onChange={(event) =>
+                    dispatch(setFormat(event.target.value as FormatEnum))
+                  }
+                  options={
+                    natures
+                      .find((nature) => nature.name === selectedNature)
+                      ?.formats.map((format) => ({
+                        sizing: 'hug',
+                        label: format.label,
+                        value: format.format,
+                      })) ?? []
+                  }
+                />
+              </div>
+            )}
+          </FormLayout.Row>
+        </FormLayout.Section>
+      </FormLayout>
+      <ActionsBarSticky hasSideNav={false} isEmbedded={true}>
+        <ActionsBarSticky.Left>
+          <Button
+            as="router-link"
+            to="/accueil"
+            color={ButtonColor.NEUTRAL}
+            variant={ButtonVariant.SECONDARY}
+            label="Annuler et quitter"
+          />
+        </ActionsBarSticky.Left>
 
-          <ActionsBarSticky.Right>
-            <Button
-              type="submit"
-              color={ButtonColor.BRAND}
-              variant={ButtonVariant.PRIMARY}
-              label="Étape suivante"
-              icon={strokeRightIcon}
-              iconPosition={IconPositionEnum.RIGHT}
-            />
-          </ActionsBarSticky.Right>
-        </ActionsBarSticky>
-      </form>
-    </>
+        <ActionsBarSticky.Right>
+          <Button
+            type="submit"
+            color={ButtonColor.BRAND}
+            variant={ButtonVariant.PRIMARY}
+            label="Étape suivante"
+            icon={strokeRightIcon}
+            disabled={!selectedFormat || !selectedNature}
+            iconPosition={IconPositionEnum.RIGHT}
+          />
+        </ActionsBarSticky.Right>
+      </ActionsBarSticky>
+    </form>
   )
 }
 
