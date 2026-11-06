@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { act, screen } from '@testing-library/react'
 import { Route, Routes } from 'react-router'
 import { axe } from 'vitest-axe'
 
@@ -24,7 +24,7 @@ const renderValidation = () => {
 describe('screens:EmailChangeValidation', () => {
   it('should render without accessibility violations', async () => {
     vi.spyOn(api, 'patchValidateEmail').mockResolvedValueOnce()
-    const { container } = renderValidation()
+    const { container } = await act(async () => renderValidation())
 
     await screen.findByText(
       /Merci d’avoir confirmé votre changement d’adresse email./,
