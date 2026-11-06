@@ -10,6 +10,7 @@ import wtforms
 from flask import flash
 from flask import url_for
 from flask_wtf import FlaskForm
+from wtforms import fields as wtforms_fields
 
 from pcapi.core.categories import pro_categories
 from pcapi.core.categories import subcategories
@@ -158,10 +159,10 @@ class GetOffersBaseFields(forms_utils.PCForm):
     limit = fields.PCLimitField(
         "Nombre maximum de résultats",
         choices=(
-            (100, "Afficher 100 résultats maximum"),
-            (500, "Afficher 500 résultats maximum"),
-            (1000, "Afficher 1000 résultats maximum"),
-            (3000, "Afficher 3000 résultats maximum"),
+            wtforms_fields.SelectChoice(100, "Afficher 100 résultats maximum"),
+            wtforms_fields.SelectChoice(500, "Afficher 500 résultats maximum"),
+            wtforms_fields.SelectChoice(1000, "Afficher 1000 résultats maximum"),
+            wtforms_fields.SelectChoice(3000, "Afficher 3000 résultats maximum"),
         ),
         default="100",
         coerce=int,
@@ -242,7 +243,7 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
     )
     boolean = fields.PCSelectField(
         "Booléen",
-        choices=(("true", "Oui"), ("false", "Non")),
+        choices=(wtforms_fields.SelectChoice("true", "Oui"), wtforms_fields.SelectChoice("false", "Non")),
         default="true",
         validators=[
             wtforms.validators.Optional(""),
@@ -297,7 +298,7 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
     )
     region = fields.PCSelectMultipleField(
         "Régions",
-        choices=geography.get_regions_choices(),
+        choices=[wtforms_fields.SelectChoice(*i) for i in geography.get_regions_choices()],
         search_inline=True,
         field_list_compatibility=True,
     )
@@ -389,7 +390,9 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
     )
     show_type = fields.PCSelectMultipleField(
         "Type de spectacle",
-        choices=[(str(s), show.SHOW_TYPES_LABEL_BY_CODE[s]) for s in show.SHOW_TYPES_LABEL_BY_CODE],
+        choices=[
+            wtforms_fields.SelectChoice(str(s), show.SHOW_TYPES_LABEL_BY_CODE[s]) for s in show.SHOW_TYPES_LABEL_BY_CODE
+        ],
         search_inline=True,
         field_list_compatibility=True,
     )
@@ -487,7 +490,7 @@ class OfferAlgoliaSearchSubForm(forms_utils.PCForm):
     )
     region = fields.PCSelectMultipleField(
         "Régions",
-        choices=geography.get_regions_choices(),
+        choices=[wtforms_fields.SelectChoice(*i) for i in geography.get_regions_choices()],
         search_inline=True,
         field_list_compatibility=True,
     )
@@ -525,7 +528,7 @@ class OfferAlgoliaSearchSubForm(forms_utils.PCForm):
     )
     show_type = fields.PCSelectMultipleField(
         "Type de spectacle",
-        choices=[(label, label) for label in show.SHOW_TYPES_LABEL_BY_CODE.values()],
+        choices=[wtforms_fields.SelectChoice(label, label) for label in show.SHOW_TYPES_LABEL_BY_CODE.values()],
         search_inline=True,
         field_list_compatibility=True,
     )

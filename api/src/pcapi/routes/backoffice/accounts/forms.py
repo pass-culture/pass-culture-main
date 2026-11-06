@@ -8,6 +8,7 @@ import wtforms
 from flask import flash
 from flask import g
 from flask_wtf import FlaskForm
+from wtforms import fields as wtforms_fields
 from wtforms import validators
 
 from pcapi.connectors.dms import models as dms_models
@@ -150,7 +151,10 @@ class AccountsSearchSubForm(utils.PCForm):
     )
     boolean = fields.PCSelectField(
         "Booléen",
-        choices=(("true", "Oui"), ("false", "Non")),
+        choices=(
+            wtforms_fields.SelectChoice("true", "Oui"),
+            wtforms_fields.SelectChoice("false", "Non"),
+        ),
         default="true",
         validators=[
             wtforms.validators.Optional(strip_whitespace=True),
@@ -227,8 +231,8 @@ class GetAccountsListSearchForm(utils.PCForm):
     limit = fields.PCLimitField(
         "Nombre maximum de résultats",
         choices=(
-            (100, "Afficher 100 résultats maximum"),
-            (1000, "Afficher 1000 résultats maximum"),
+            wtforms_fields.SelectChoice(100, "Afficher 100 résultats maximum"),
+            wtforms_fields.SelectChoice(1000, "Afficher 1000 résultats maximum"),
         ),
         default="100",
         coerce=int,
@@ -348,7 +352,8 @@ class QFBonusCreditRequestForm(FlaskForm):
     common_name = fields.PCOptStringField("Nom d'usage du représentant légal")
     birth_date = fields.PCDateField("Date de naissance du représentant légal")
     birth_country = fields.PCSelectWithPlaceholderValueField(
-        "Pays de naissance du représentant légal", choices=countries_utils.INSEE_COUNTRIES
+        "Pays de naissance du représentant légal",
+        choices=(wtforms_fields.SelectChoice(*c) for c in countries_utils.INSEE_COUNTRIES),
     )
     birth_city = fields.PCTomSelectField(
         "Ville de naissance du représentant légal (s'il est né en France)",
@@ -374,7 +379,7 @@ class QFBonusCreditRequestForm(FlaskForm):
 class DisabilityBonusCreditRequestForm(FlaskForm):
     birth_country = fields.PCSelectWithPlaceholderValueField(
         "Pays de naissance du jeune",
-        choices=countries_utils.INSEE_COUNTRIES,
+        choices=(wtforms_fields.SelectChoice(*c) for c in countries_utils.INSEE_COUNTRIES),
     )
     birth_city = fields.PCTomSelectField(
         "Ville de naissance du jeune (s'il est né en France)",
@@ -444,10 +449,10 @@ class AccountUpdateRequestSearchForm(utils.PCForm):
     limit = fields.PCLimitField(
         "Nombre maximum de résultats",
         choices=(
-            (10, "Afficher 10 résultats maximum"),
-            (25, "Afficher 25 résultats maximum"),
-            (50, "Afficher 50 résultats maximum"),
-            (100, "Afficher 100 résultats maximum"),
+            wtforms_fields.SelectChoice(10, "Afficher 10 résultats maximum"),
+            wtforms_fields.SelectChoice(25, "Afficher 25 résultats maximum"),
+            wtforms_fields.SelectChoice(50, "Afficher 50 résultats maximum"),
+            wtforms_fields.SelectChoice(100, "Afficher 100 résultats maximum"),
         ),
         default="100",
         coerce=int,
@@ -455,7 +460,10 @@ class AccountUpdateRequestSearchForm(utils.PCForm):
     )
     has_found_user = fields.PCSelectMultipleField(
         "Compte jeune",
-        choices=(("true", "Avec compte jeune"), ("false", "Sans compte jeune")),
+        choices=(
+            wtforms_fields.SelectChoice("true", "Avec compte jeune"),
+            wtforms_fields.SelectChoice("false", "Sans compte jeune"),
+        ),
     )
     status = fields.PCSelectMultipleField(
         "État",
