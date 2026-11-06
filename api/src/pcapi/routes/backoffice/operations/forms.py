@@ -4,6 +4,7 @@ from urllib.parse import urlparse
 
 import wtforms
 from flask_wtf import FlaskForm
+from wtforms import fields as wtforms_fields
 
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.operations import models
@@ -28,10 +29,10 @@ class SearchSpecialEventForm(utils.PCForm):
     limit = fields.PCLimitField(
         "Nombre maximum de résultats",
         choices=(
-            (10, "Afficher 10 résultats maximum"),
-            (25, "Afficher 25 résultats maximum"),
-            (50, "Afficher 50 résultats maximum"),
-            (100, "Afficher 100 résultats maximum"),
+            wtforms_fields.SelectChoice(10, "Afficher 10 résultats maximum"),
+            wtforms_fields.SelectChoice(25, "Afficher 25 résultats maximum"),
+            wtforms_fields.SelectChoice(50, "Afficher 50 résultats maximum"),
+            wtforms_fields.SelectChoice(100, "Afficher 100 résultats maximum"),
         ),
         default="100",
         coerce=int,
@@ -133,16 +134,18 @@ class OperationResponseForm(utils.PCForm):
     eligibility = fields.PCSelectMultipleField(
         "Éligibilité", choices=utils.choices_from_enum(search.AccountSearchFilter)
     )
-    age = fields.PCSelectMultipleField("Âge", choices=tuple([(i, f"{i} ans") for i in range(14, 21)]))
+    age = fields.PCSelectMultipleField(
+        "Âge", choices=tuple([wtforms_fields.SelectChoice(i, f"{i} ans") for i in range(14, 21)])
+    )
     department = fields.PCSelectMultipleField("Départements", choices=constants.area_choices)
     page = wtforms.HiddenField("page", default="1", validators=(wtforms.validators.Optional(),))
     limit = fields.PCLimitField(
         "Nombre maximum de résultats",
         choices=(
-            (10, "Afficher 10 résultats maximum"),
-            (25, "Afficher 25 résultats maximum"),
-            (50, "Afficher 50 résultats maximum"),
-            (100, "Afficher 100 résultats maximum"),
+            wtforms_fields.SelectChoice(10, "Afficher 10 résultats maximum"),
+            wtforms_fields.SelectChoice(25, "Afficher 25 résultats maximum"),
+            wtforms_fields.SelectChoice(50, "Afficher 50 résultats maximum"),
+            wtforms_fields.SelectChoice(100, "Afficher 100 résultats maximum"),
         ),
         default="100",
         coerce=int,

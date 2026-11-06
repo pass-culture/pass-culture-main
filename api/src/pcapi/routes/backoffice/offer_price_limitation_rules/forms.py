@@ -2,6 +2,7 @@ import typing
 
 import wtforms
 from flask_wtf import FlaskForm
+from wtforms import fields as wtforms_fields
 
 from pcapi.core.categories import pro_categories
 from pcapi.core.categories import subcategories
@@ -20,7 +21,8 @@ class SearchRuleForm(FlaskForm):
     subcategory = fields.PCSelectMultipleField(
         "Sous-catégories",
         choices=sorted(
-            [(s.id, s.pro_label) for s in subcategories.ALL_SUBCATEGORIES if not s.is_event], key=lambda x: x[1]
+            [wtforms_fields.SelectChoice(s.id, s.pro_label) for s in subcategories.ALL_SUBCATEGORIES if not s.is_event],
+            key=lambda x: x.label,
         ),
     )
 
@@ -48,7 +50,8 @@ class CreateOfferPriceLimitationRuleForm(EditOfferPriceLimitationRuleForm):
     subcategory = fields.PCSelectField(
         "Sous-catégorie",
         choices=sorted(
-            [(s.id, s.pro_label) for s in subcategories.ALL_SUBCATEGORIES if not s.is_event], key=lambda x: x[1]
+            [wtforms_fields.SelectChoice(s.id, s.pro_label) for s in subcategories.ALL_SUBCATEGORIES if not s.is_event],
+            key=lambda x: x.label,
         ),
     )
 

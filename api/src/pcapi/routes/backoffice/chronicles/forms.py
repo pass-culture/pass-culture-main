@@ -1,6 +1,7 @@
 import enum
 import typing
 
+from wtforms import fields as wtforms_fields
 from wtforms.validators import DataRequired
 from wtforms.validators import Length
 from wtforms.validators import NumberRange
@@ -43,10 +44,10 @@ class GetChronicleSearchForm(forms_utils.PCForm):
     limit = fields.PCLimitField(
         "Nombre maximum de résultats",
         choices=(
-            (10, "Afficher 10 résultats maximum"),
-            (25, "Afficher 25 résultats maximum"),
-            (50, "Afficher 50 résultats maximum"),
-            (100, "Afficher 100 résultats maximum"),
+            wtforms_fields.SelectChoice(10, "Afficher 10 résultats maximum"),
+            wtforms_fields.SelectChoice(25, "Afficher 25 résultats maximum"),
+            wtforms_fields.SelectChoice(50, "Afficher 50 résultats maximum"),
+            wtforms_fields.SelectChoice(100, "Afficher 100 résultats maximum"),
         ),
         default="100",
         coerce=int,
@@ -55,12 +56,18 @@ class GetChronicleSearchForm(forms_utils.PCForm):
 
     is_active = fields.PCSelectMultipleField(
         "Chronique publiée",
-        choices=(("true", "Oui"), ("false", "Non")),
+        choices=(
+            wtforms_fields.SelectChoice("true", "Oui"),
+            wtforms_fields.SelectChoice("false", "Non"),
+        ),
     )
 
     social_media_diffusible = fields.PCSelectMultipleField(
         "Diffusible réseaux sociaux",
-        choices=[("true", "Oui"), ("false", "Non")],
+        choices=[
+            wtforms_fields.SelectChoice("true", "Oui"),
+            wtforms_fields.SelectChoice("false", "Non"),
+        ],
     )
 
     category = fields.PCSelectMultipleField(

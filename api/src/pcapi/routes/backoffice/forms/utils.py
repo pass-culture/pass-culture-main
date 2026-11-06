@@ -3,6 +3,7 @@ import re
 import typing
 
 from flask_wtf import FlaskForm
+from wtforms import fields as wtforms_fields
 
 from pcapi.models import feature
 from pcapi.utils import email as email_utils
@@ -25,15 +26,19 @@ def choices_from_enum(
     formatter: typing.Callable[[typing.Any], str] | None = None,
     exclude_opts: typing.Iterable[enum.Enum] = (),
     sort: bool = False,
-) -> list[tuple]:
-    choices = [(opt.name, formatter(opt) if formatter else opt.value) for opt in enum_cls if opt not in exclude_opts]
+) -> list[wtforms_fields.SelectChoice]:
+    choices = [
+        wtforms_fields.SelectChoice(opt.name, formatter(opt) if formatter else opt.value)
+        for opt in enum_cls
+        if opt not in exclude_opts
+    ]
     if sort:
-        return sorted(choices, key=lambda x: clean_accents(x[1]))
+        return sorted(choices, key=lambda x: clean_accents(x.label))
     return choices
 
 
-def values_from_enum(enum_cls: type[enum.Enum]) -> list[tuple]:
-    return [(opt.value, opt.value) for opt in enum_cls]
+def values_from_enum(enum_cls: type[enum.Enum]) -> list[wtforms_fields.SelectChoice]:
+    return [wtforms_fields.SelectChoice(opt.value, opt.value) for opt in enum_cls]
 
 
 def is_slug(string: str) -> bool:

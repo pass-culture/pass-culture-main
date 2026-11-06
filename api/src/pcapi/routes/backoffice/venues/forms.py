@@ -4,6 +4,7 @@ from urllib.parse import urlparse
 import sqlalchemy.orm as sa_orm
 import wtforms
 from flask_wtf import FlaskForm
+from wtforms import fields as wtforms_fields
 from wtforms import validators
 
 from pcapi.connectors import acceslibre as acceslibre_connector
@@ -254,10 +255,10 @@ class GetVenuesListForm(utils.PCForm):
     limit = fields.PCLimitField(
         "Nombre maximum de résultats",
         choices=(
-            (100, "Afficher 100 résultats maximum"),
-            (500, "Afficher 500 résultats maximum"),
-            (1000, "Afficher 1000 résultats maximum"),
-            (3000, "Afficher 3000 résultats maximum"),
+            wtforms_fields.SelectChoice(100, "Afficher 100 résultats maximum"),
+            wtforms_fields.SelectChoice(500, "Afficher 500 résultats maximum"),
+            wtforms_fields.SelectChoice(1000, "Afficher 1000 résultats maximum"),
+            wtforms_fields.SelectChoice(3000, "Afficher 3000 résultats maximum"),
         ),
         default="100",
         coerce=int,
@@ -314,7 +315,7 @@ class PricingPointForm(utils.PCForm):
     def __init__(self, venue: offerers_models.Venue, *args: typing.Any, **kwargs: typing.Any) -> None:
         super().__init__(*args, **kwargs)
         self.new_pricing_point.choices = [
-            (offerer_venue.id, f"{offerer_venue.name} ({offerer_venue.siret})")
+            wtforms_fields.SelectChoice(offerer_venue.id, f"{offerer_venue.name} ({offerer_venue.siret})")
             for offerer_venue in venue.managingOfferer.managedVenues
             if offerer_venue.siret and (self.allow_self or offerer_venue.id != venue.id)
         ]

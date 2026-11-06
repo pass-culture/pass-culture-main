@@ -4,6 +4,7 @@ import enum
 import wtforms
 from dateutil.relativedelta import relativedelta
 from flask_wtf import FlaskForm
+from wtforms import fields as wtforms_fields
 
 from pcapi.core.categories import subcategories
 from pcapi.core.finance.conf import GRANTED_DEPOSIT_AMOUNT_18_v2
@@ -27,8 +28,20 @@ class SimpleComponentsForm(FlaskForm):
     date_time = fields.PCDateTimeField("date et heure")
     date = fields.PCDateField("date")
     date_range = fields.PCDateRangeField("intervalle de dates")
-    select = fields.PCSelectWithPlaceholderValueField("un seul choix", choices=((1, "choix 1"), (2, "choix 2")))
-    multiselect = fields.PCSelectMultipleField("plusieurs choix", choices=((1, "choix 1"), (2, "choix 2")))
+    select = fields.PCSelectWithPlaceholderValueField(
+        "un seul choix",
+        choices=(
+            wtforms_fields.SelectChoice(1, "choix 1"),
+            wtforms_fields.SelectChoice(2, "choix 2"),
+        ),
+    )
+    multiselect = fields.PCSelectMultipleField(
+        "plusieurs choix",
+        choices=(
+            wtforms_fields.SelectChoice(1, "choix 1"),
+            wtforms_fields.SelectChoice(2, "choix 2"),
+        ),
+    )
     tomselect = fields.PCTomSelectField(
         "autocomplete",
         choices=[],
@@ -68,21 +81,21 @@ class UserGeneratorForm(utils.PCForm):
     id_provider = fields.PCSelectField(
         "Méthode d'identification",
         choices=[
-            (GeneratedIdProvider.DMS.name, "DMS"),
-            (GeneratedIdProvider.EDUCONNECT.name, "Educonnect"),
-            (GeneratedIdProvider.UBBLE.name, "Ubble"),
+            wtforms_fields.SelectChoice(GeneratedIdProvider.DMS.name, "DMS"),
+            wtforms_fields.SelectChoice(GeneratedIdProvider.EDUCONNECT.name, "Educonnect"),
+            wtforms_fields.SelectChoice(GeneratedIdProvider.UBBLE.name, "Ubble"),
         ],
         default=GeneratedIdProvider.UBBLE.name,
     )
     step = fields.PCSelectField(
         "Étape de validation",
         choices=[
-            (GeneratedSubscriptionStep.EMAIL_VALIDATION.name, "Email Validé"),
-            (GeneratedSubscriptionStep.PHONE_VALIDATION.name, "Téléphone validé"),
-            (GeneratedSubscriptionStep.PROFILE_COMPLETION.name, "Profil complété"),
-            (GeneratedSubscriptionStep.IDENTITY_CHECK.name, "Identité vérifiée"),
-            (GeneratedSubscriptionStep.HONOR_STATEMENT.name, "Attesté sur l'honneur"),
-            (GeneratedSubscriptionStep.BENEFICIARY.name, "Bénéficiaire"),
+            wtforms_fields.SelectChoice(GeneratedSubscriptionStep.EMAIL_VALIDATION.name, "Email Validé"),
+            wtforms_fields.SelectChoice(GeneratedSubscriptionStep.PHONE_VALIDATION.name, "Téléphone validé"),
+            wtforms_fields.SelectChoice(GeneratedSubscriptionStep.PROFILE_COMPLETION.name, "Profil complété"),
+            wtforms_fields.SelectChoice(GeneratedSubscriptionStep.IDENTITY_CHECK.name, "Identité vérifiée"),
+            wtforms_fields.SelectChoice(GeneratedSubscriptionStep.HONOR_STATEMENT.name, "Attesté sur l'honneur"),
+            wtforms_fields.SelectChoice(GeneratedSubscriptionStep.BENEFICIARY.name, "Bénéficiaire"),
         ],
         default=GeneratedSubscriptionStep.EMAIL_VALIDATION.name,
     )
@@ -116,19 +129,19 @@ class UserDeletionForm(utils.PCForm):
     email = fields.PCEmailField("compte_sso_jeune@example.com")
 
 
-def _get_ubble_final_code_choices() -> list[tuple[int, str]]:
-    ok_response_codes = [(ubble_schemas.UBBLE_OK_REASON_CODE, "10000 - OK")]
+def _get_ubble_final_code_choices() -> list[wtforms_fields.SelectChoice]:
+    ok_response_codes = [wtforms_fields.SelectChoice(ubble_schemas.UBBLE_OK_REASON_CODE, "10000 - OK")]
     ubble_final_error_reason_code_choices = [
-        (reason_code, f"{reason_code} - {fraud_reason_code.name}")
+        wtforms_fields.SelectChoice(reason_code, f"{reason_code} - {fraud_reason_code.name}")
         for reason_code, fraud_reason_code in ubble_schemas.UBBLE_REASON_CODE_MAPPING.items()
         if reason_code > 62000
     ]
     return ok_response_codes + ubble_final_error_reason_code_choices
 
 
-def _get_ubble_intermediate_code_choices() -> list[tuple[int, str]]:
+def _get_ubble_intermediate_code_choices() -> list[wtforms_fields.SelectChoice]:
     ubble_intermediate_reason_code_choices = [
-        (reason_code, f"{reason_code} - {fraud_reason_code.name}")
+        wtforms_fields.SelectChoice(reason_code, f"{reason_code} - {fraud_reason_code.name}")
         for reason_code, fraud_reason_code in ubble_schemas.UBBLE_REASON_CODE_MAPPING.items()
         if 61000 < reason_code < 62000
     ]
@@ -162,13 +175,13 @@ class QuotientFamilialConfigurationForm(utils.PCForm):
     mock_type = fields.PCSelectField(
         "Type de mock",
         choices=[
-            (QFMockType.OK.value, "Ok cas courant"),
-            (QFMockType.HOUSEHOLDER_OK.value, "Ok émancipé"),
-            (QFMockType.NOT_IN_TAX_HOUSEHOLD.value, "Pas associé au dossier demandé"),
-            (QFMockType.QUOTIENT_FAMILIAL_TOO_HIGH.value, "Quotient familial trop élevé"),
-            (QFMockType.APPLICATION_NOT_FOUND.value, "404 impossible de trouver le dossier"),
-            (QFMockType.PERSON_NOT_FOUND.value, "422 problème de données d'identification"),
-            (QFMockType.DATA_PROVIDER_ERROR.value, "502 erreur du fournisseur de données"),
+            wtforms_fields.SelectChoice(QFMockType.OK.value, "Ok cas courant"),
+            wtforms_fields.SelectChoice(QFMockType.HOUSEHOLDER_OK.value, "Ok émancipé"),
+            wtforms_fields.SelectChoice(QFMockType.NOT_IN_TAX_HOUSEHOLD.value, "Pas associé au dossier demandé"),
+            wtforms_fields.SelectChoice(QFMockType.QUOTIENT_FAMILIAL_TOO_HIGH.value, "Quotient familial trop élevé"),
+            wtforms_fields.SelectChoice(QFMockType.APPLICATION_NOT_FOUND.value, "404 impossible de trouver le dossier"),
+            wtforms_fields.SelectChoice(QFMockType.PERSON_NOT_FOUND.value, "422 problème de données d'identification"),
+            wtforms_fields.SelectChoice(QFMockType.DATA_PROVIDER_ERROR.value, "502 erreur du fournisseur de données"),
         ],
         default=QFMockType.OK.value,
     )
@@ -186,11 +199,17 @@ class DisabledAdultAllowanceConfigurationForm(utils.PCForm):
     mock_type = fields.PCSelectField(
         "Type de mock",
         choices=[
-            (DisabledAdultAllowanceMockType.RECIPIENT.value, "Ok bénéficiaire"),
-            (DisabledAdultAllowanceMockType.NON_RECIPIENT.value, "Non bénéficiaire"),
-            (DisabledAdultAllowanceMockType.APPLICATION_NOT_FOUND.value, "404 impossible de trouver le dossier"),
-            (DisabledAdultAllowanceMockType.PERSON_NOT_FOUND.value, "422 problème de données d'identification"),
-            (DisabledAdultAllowanceMockType.DATA_PROVIDER_ERROR.value, "502 erreur du fournisseur de données"),
+            wtforms_fields.SelectChoice(DisabledAdultAllowanceMockType.RECIPIENT.value, "Ok bénéficiaire"),
+            wtforms_fields.SelectChoice(DisabledAdultAllowanceMockType.NON_RECIPIENT.value, "Non bénéficiaire"),
+            wtforms_fields.SelectChoice(
+                DisabledAdultAllowanceMockType.APPLICATION_NOT_FOUND.value, "404 impossible de trouver le dossier"
+            ),
+            wtforms_fields.SelectChoice(
+                DisabledAdultAllowanceMockType.PERSON_NOT_FOUND.value, "422 problème de données d'identification"
+            ),
+            wtforms_fields.SelectChoice(
+                DisabledAdultAllowanceMockType.DATA_PROVIDER_ERROR.value, "502 erreur du fournisseur de données"
+            ),
         ],
         default=DisabledAdultAllowanceMockType.RECIPIENT.value,
     )
@@ -209,18 +228,22 @@ class DisabledChildEducationAllowanceConfigurationForm(utils.PCForm):
     mock_type = fields.PCSelectField(
         "Type de mock",
         choices=[
-            (DisabledChildEducationAllowanceMockType.RECIPIENT.value, "Ok bénéficiaire"),
-            (DisabledChildEducationAllowanceMockType.RIGHT_OPENING.value, "Ok ouvrant droit"),
-            (DisabledChildEducationAllowanceMockType.NON_RECIPIENT.value, "Non bénéficiaire"),
-            (
+            wtforms_fields.SelectChoice(DisabledChildEducationAllowanceMockType.RECIPIENT.value, "Ok bénéficiaire"),
+            wtforms_fields.SelectChoice(
+                DisabledChildEducationAllowanceMockType.RIGHT_OPENING.value, "Ok ouvrant droit"
+            ),
+            wtforms_fields.SelectChoice(
+                DisabledChildEducationAllowanceMockType.NON_RECIPIENT.value, "Non bénéficiaire"
+            ),
+            wtforms_fields.SelectChoice(
                 DisabledChildEducationAllowanceMockType.APPLICATION_NOT_FOUND.value,
                 "404 impossible de trouver le dossier",
             ),
-            (
+            wtforms_fields.SelectChoice(
                 DisabledChildEducationAllowanceMockType.PERSON_NOT_FOUND.value,
                 "422 problème de données d'identification",
             ),
-            (
+            wtforms_fields.SelectChoice(
                 DisabledChildEducationAllowanceMockType.DATA_PROVIDER_ERROR.value,
                 "502 erreur du fournisseur de données",
             ),
@@ -239,12 +262,12 @@ class OfferGeneratorForm(utils.PCForm):
     )
     subcategory_id = fields.PCSelectField(
         "Sous-catégorie",
-        choices=[(subcategories.SEANCE_CINE.id, subcategories.SEANCE_CINE.app_label)],
+        choices=[wtforms_fields.SelectChoice(subcategories.SEANCE_CINE.id, subcategories.SEANCE_CINE.app_label)],
         default=subcategories.SEANCE_CINE.id,
     )
     timezone = fields.PCSelectField(
         "Fuseau horaire",
-        choices=[(e, e) for e in TIME_ZONE_COUNTRY_CODE],
+        choices=[wtforms_fields.SelectChoice(e, e) for e in TIME_ZONE_COUNTRY_CODE],
         default=date_utils.METROPOLE_TIMEZONE,
         validators=[wtforms.validators.Optional()],
     )
