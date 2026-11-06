@@ -52,5 +52,5 @@ class EventSeries(Model):
     @property
     def mediationUrl(self) -> str | None:
         if self.mediationUuid:
-            return f"{settings.GCP_BUCKET_NAME}/{settings.ARTIST_THUMBS_FOLDER_NAME}/{self.mediationUuid}"
+            return f"{settings.GCP_READ_BUCKET_NAME}/{settings.ARTIST_THUMBS_FOLDER_NAME}/{self.mediationUuid}"
         return None
