@@ -49,7 +49,5 @@ def get_subscription_stepper() -> serializers.SubscriptionStepperResponseV3:
         subscription_message=serializers.SubscriptionMessageV3.model_validate(subscription_message)
         if subscription_message
         else None,
-        seventeen_year_old_identity_check_method=subscription_repository.get_underage_ok_identity_check_method(
-            current_user
-        ),
+        underage_ok_identity_check_method=subscription_repository.get_underage_ok_identity_check_method(current_user),
     )

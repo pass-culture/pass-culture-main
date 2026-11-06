@@ -9900,17 +9900,6 @@
                         ],
                         "default": null
                     },
-                    "seventeenYearOldIdentityCheckMethod": {
-                        "anyOf": [
-                            {
-                                "$ref": "#/components/schemas/IdentityCheckMethod"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "default": null
-                    },
                     "subscriptionMessage": {
                         "anyOf": [
                             {
@@ -9944,6 +9933,17 @@
                     "title": {
                         "title": "Title",
                         "type": "string"
+                    },
+                    "underageOkIdentityCheckMethod": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/IdentityCheckMethod"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null
                     }
                 },
                 "required": [
