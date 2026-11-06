@@ -210,6 +210,10 @@ Le résumé GitHub Actions indique si le cache a été trouvé. En son absence, 
 tests s'exécutent quand même et leurs durées alimentent le cache des prochains runs.
 Le cache n'est renouvelé qu'après la réussite des huit groupes et la validation
 de leurs huit fichiers de durées ; un run incomplet ne remplace pas l'historique.
+La commande CI fixe explicitement la configuration `pyproject.toml` et la racine
+`/usr/src/app` du conteneur pour conserver les règles de collecte et des identifiants
+de tests stables. Le préfixe `tests-durations-v2-` évite de réutiliser les durées
+produites avec une autre racine de collecte.
 
 ### 1. Lancement des tests depuis la ligne de commande dans l'environnement uv
 
