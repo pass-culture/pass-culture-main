@@ -45,9 +45,11 @@ class SendVenueClosedEmailToAuthorTest:
 
     def test_no_email_sent_if_closed_event_has_no_author(self):
         venue = offerers_factories.VenueFactory()
+        venue2 = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
         history_factories.ActionHistoryFactory(
             authorUser=None, venue=venue, actionType=history_constants.ActionType.VENUE_CLOSED
         )
 
         venue_closed.send_venue_closed_email_to_author(venue.id)
-        assert not mails_testing.outbox
+        assert mails_testing.outbox
+        assert set(mails_testing.outbox[0]["To"].split(", ")) == {venue.bookingEmail, venue2.bookingEmail}
