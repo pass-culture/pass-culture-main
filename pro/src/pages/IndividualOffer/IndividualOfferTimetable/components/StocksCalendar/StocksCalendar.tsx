@@ -1,5 +1,5 @@
 import { type Dispatch, type SetStateAction, useId, useState } from 'react'
-import useSWR, { mutate } from 'swr'
+import useSWR, { useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
 import { getHumanReadableApiError } from '@/apiClient/helpers'
@@ -64,6 +64,7 @@ export type stockQueryKeysType = [
 
 export function StocksCalendar({ offer, mode }: StocksCalendarProps) {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
+  const { mutate } = useSWRConfig()
 
   const [page, setPage] = useState(1)
   const [checkedStocks, setCheckedStocks] = useState(new Set<number>())
@@ -88,7 +89,11 @@ export function StocksCalendar({ offer, mode }: StocksCalendarProps) {
     appliedSort,
   ]
 
-  const { data, isLoading } = useSWR(
+  const {
+    data,
+    isLoading,
+    mutate: mutateStocks,
+  } = useSWR(
     stockQueryKeys,
     ([, offerId, pageNum, filters, sortType]) =>
       api.getStocks({
@@ -161,8 +166,7 @@ export function StocksCalendar({ offer, mode }: StocksCalendarProps) {
     closeDialog: () => void
   ) {
     try {
-      const updatedStocks = await mutate(
-        stockQueryKeys,
+      const updatedStocks = await mutateStocks(
         api.bulkUpdateEventStocks({
           body: {
             offerId: offer.id,
@@ -170,7 +174,8 @@ export function StocksCalendar({ offer, mode }: StocksCalendarProps) {
           },
         }),
         {
-          revalidate: false,
+          populateCache: false,
+          revalidate: true,
         }
       )
 
