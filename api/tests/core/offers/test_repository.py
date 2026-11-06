@@ -10,6 +10,7 @@ import time_machine
 
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offerers.models as offerers_models
 import pcapi.core.providers.constants as providers_constants
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.categories import pro_categories
@@ -1387,6 +1388,332 @@ class GetPaginatedOfferIdsByVenueIdTest:
         assert offer1.id in data
         assert offer2.id in data
         assert offer3.id in data
+
+
+@pytest.mark.usefixtures("db_session")
+@pytest.mark.parametrize(
+    "get_paginated_offer_ids,offer_factory,stock_factory",
+    [
+        pytest.param(
+            repository.get_paginated_thing_offer_ids,
+            factories.ThingOfferFactory,
+            factories.ThingStockFactory,
+            id="things",
+        ),
+        pytest.param(
+            repository.get_paginated_event_offer_ids,
+            factories.EventOfferFactory,
+            factories.EventStockFactory,
+            id="events",
+        ),
+    ],
+)
+class GetPaginatedOfferIdsFiltersTest:
+    def test_filter_on_manual_creation_mode(self, get_paginated_offer_ids, offer_factory, stock_factory):
+        venue = offerers_factories.VenueFactory()
+        manual_offer = offer_factory(venue=venue)
+        offer_factory(venue=venue, lastProvider=providers_factories.PublicApiProviderFactory())
+
+        result = get_paginated_offer_ids(venue_id=venue.id, per_page=10, creation_mode="manual")
+
+        assert result.offer_ids == [manual_offer.id]
+
+    def test_filter_on_imported_creation_mode(self, get_paginated_offer_ids, offer_factory, stock_factory):
+        venue = offerers_factories.VenueFactory()
+        offer_factory(venue=venue)
+        imported_offer = offer_factory(venue=venue, lastProvider=providers_factories.PublicApiProviderFactory())
+
+        result = get_paginated_offer_ids(venue_id=venue.id, per_page=10, creation_mode="imported")
+
+        assert result.offer_ids == [imported_offer.id]
+
+    def test_filter_on_ean(self, get_paginated_offer_ids, offer_factory, stock_factory):
+        venue = offerers_factories.VenueFactory()
+        offer = offer_factory(venue=venue, ean="1234567890123")
+        offer_factory(venue=venue, ean="1234567890124")
+
+        result = get_paginated_offer_ids(venue_id=venue.id, per_page=10, name_keywords_or_ean="1234567890123")
+
+        assert result.offer_ids == [offer.id]
+
+    def test_filter_on_name_containing_the_keywords(self, get_paginated_offer_ids, offer_factory, stock_factory):
+        venue = offerers_factories.VenueFactory()
+        harry_potter = offer_factory(venue=venue, name="Harry Potter à l'école des sorciers")
+        beatrix_potter = offer_factory(venue=venue, name="BEATRIX POTTER")
+        offer_factory(venue=venue, name="Le Hobbit")
+
+        result = get_paginated_offer_ids(venue_id=venue.id, per_page=10, name_keywords_or_ean="potter")
+
+        assert set(result.offer_ids) == {harry_potter.id, beatrix_potter.id}
+
+    def test_filter_on_exact_name_with_short_keywords(self, get_paginated_offer_ids, offer_factory, stock_factory):
+        venue = offerers_factories.VenueFactory()
+        offer = offer_factory(venue=venue, name="Ubu")
+        offer_factory(venue=venue, name="Ubu roi")
+
+        result = get_paginated_offer_ids(venue_id=venue.id, per_page=10, name_keywords_or_ean="ubu")
+
+        assert result.offer_ids == [offer.id]
+
+    def test_filter_on_status(self, get_paginated_offer_ids, offer_factory, stock_factory):
+        venue = offerers_factories.VenueFactory()
+        active_offer = offer_factory(venue=venue)
+        stock_factory(offer=active_offer)
+        offer_factory(venue=venue)  # sold out
+        offer_factory(venue=venue, validation=models.OfferValidationStatus.DRAFT)
+
+        result = get_paginated_offer_ids(venue_id=venue.id, per_page=10, status=offer_mixin.OfferStatus.ACTIVE)
+
+        assert result.offer_ids == [active_offer.id]
+
+    def test_filter_on_inactive_status_of_a_closed_venue(self, get_paginated_offer_ids, offer_factory, stock_factory):
+        venue = offerers_factories.VenueFactory(state=offerers_models.VenueState.CLOSED)
+        offer = offer_factory(venue=venue)
+        stock_factory(offer=offer)
+
+        result = get_paginated_offer_ids(venue_id=venue.id, per_page=10, status=offer_mixin.OfferStatus.INACTIVE)
+
+        assert result.offer_ids == [offer.id]
+
+
+@pytest.mark.usefixtures("db_session")
+class GetPaginatedThingOfferIdsTest:
+    def test_returns_only_thing_offers_of_the_venue(self):
+        venue = offerers_factories.VenueFactory()
+        offer = factories.ThingOfferFactory(venue=venue)
+        factories.EventOfferFactory(venue=venue)
+        factories.ThingOfferFactory()
+        venue_id = venue.id
+
+        with assert_num_queries(2):  # total + page
+            result = repository.get_paginated_thing_offer_ids(venue_id=venue_id, per_page=10)
+
+        assert result.offer_ids == [offer.id]
+        assert result.next_cursor is None
+        assert result.total == 1
+
+    def test_orders_by_name_ignoring_case_and_accents_then_by_id_desc(self):
+        venue = offerers_factories.VenueFactory()
+        miserables_1 = factories.ThingOfferFactory(venue=venue, name="Les Misérables")
+        batman = factories.ThingOfferFactory(venue=venue, name="Batman")
+        asterix = factories.ThingOfferFactory(venue=venue, name="astérix le gaulois")
+        miserables_2 = factories.ThingOfferFactory(venue=venue, name="les miserables")
+
+        result = repository.get_paginated_thing_offer_ids(venue_id=venue.id, per_page=10)
+
+        assert result.offer_ids == [asterix.id, batman.id, miserables_2.id, miserables_1.id]
+
+    def test_paginates_with_cursor(self):
+        venue = offerers_factories.VenueFactory()
+        a, b_1, b_2, b_3, c, d = [factories.ThingOfferFactory(venue=venue, name=name) for name in "ABBBCD"]
+
+        first_page = repository.get_paginated_thing_offer_ids(venue_id=venue.id, per_page=2)
+        assert first_page.offer_ids == [a.id, b_3.id]
+        assert first_page.next_cursor == repository.ThingOffersCursor(name="B", id=b_3.id)
+
+        second_page = repository.get_paginated_thing_offer_ids(
+            venue_id=venue.id, per_page=2, cursor=first_page.next_cursor
+        )
+        assert second_page.offer_ids == [b_2.id, b_1.id]
+        assert second_page.next_cursor == repository.ThingOffersCursor(name="B", id=b_1.id)
+
+        last_page = repository.get_paginated_thing_offer_ids(
+            venue_id=venue.id, per_page=2, cursor=second_page.next_cursor
+        )
+        assert last_page.offer_ids == [c.id, d.id]
+        assert last_page.next_cursor is None
+
+    @patch("pcapi.core.offers.constants.OFFERS_RECAP_LIMIT", 3)
+    def test_total_is_counted_up_to_recap_limit(self):
+        venue = offerers_factories.VenueFactory()
+        factories.ThingOfferFactory.create_batch(5, venue=venue)
+
+        result = repository.get_paginated_thing_offer_ids(venue_id=venue.id, per_page=2)
+
+        assert result.total == 3
+
+
+@pytest.mark.usefixtures("db_session")
+class GetPaginatedEventOfferIdsTest:
+    def _create_offers_in_expected_order(self, venue):
+        now = date_utils.get_naive_utc_now().replace(second=0, microsecond=0)
+
+        past = factories.EventOfferFactory(venue=venue)
+        factories.EventStockFactory(offer=past, beginningDatetime=now - datetime.timedelta(days=10))
+
+        same_datetime_1 = factories.EventOfferFactory(venue=venue)
+        factories.EventStockFactory(offer=same_datetime_1, beginningDatetime=now + datetime.timedelta(days=1))
+        same_datetime_2 = factories.EventOfferFactory(venue=venue)
+        factories.EventStockFactory(offer=same_datetime_2, beginningDatetime=now + datetime.timedelta(days=1))
+
+        several_stocks = factories.EventOfferFactory(venue=venue)
+        factories.EventStockFactory(offer=several_stocks, beginningDatetime=now + datetime.timedelta(days=5))
+        factories.EventStockFactory(offer=several_stocks, beginningDatetime=now + datetime.timedelta(days=2))
+
+        earliest_stock_deleted = factories.EventOfferFactory(venue=venue)
+        factories.EventStockFactory(
+            offer=earliest_stock_deleted, beginningDatetime=now - datetime.timedelta(days=20), isSoftDeleted=True
+        )
+        factories.EventStockFactory(offer=earliest_stock_deleted, beginningDatetime=now + datetime.timedelta(days=3))
+
+        without_stock_1 = factories.EventOfferFactory(venue=venue)
+        without_stock_2 = factories.EventOfferFactory(venue=venue)
+
+        return [
+            past,
+            same_datetime_2,
+            same_datetime_1,
+            several_stocks,
+            earliest_stock_deleted,
+            without_stock_2,
+            without_stock_1,
+        ]
+
+    def test_returns_only_event_offers_of_the_venue(self):
+        venue = offerers_factories.VenueFactory()
+        offer = factories.EventOfferFactory(venue=venue)
+        factories.ThingOfferFactory(venue=venue)
+        factories.EventOfferFactory()
+        venue_id = venue.id
+
+        with assert_num_queries(2):  # total + page
+            result = repository.get_paginated_event_offer_ids(venue_id=venue_id, per_page=10)
+
+        assert result.offer_ids == [offer.id]
+        assert result.next_cursor is None
+        assert result.total == 1
+
+    def test_orders_by_first_beginning_datetime_then_by_id_desc(self):
+        venue = offerers_factories.VenueFactory()
+        offers = self._create_offers_in_expected_order(venue)
+
+        result = repository.get_paginated_event_offer_ids(venue_id=venue.id, per_page=10)
+
+        assert result.offer_ids == [offer.id for offer in offers]
+
+    def test_paginates_with_cursor(self):
+        venue = offerers_factories.VenueFactory()
+        (
+            past,
+            same_datetime_2,
+            same_datetime_1,
+            several_stocks,
+            earliest_stock_deleted,
+            without_stock_2,
+            without_stock_1,
+        ) = self._create_offers_in_expected_order(venue)
+
+        first_page = repository.get_paginated_event_offer_ids(venue_id=venue.id, per_page=2)
+        assert first_page.offer_ids == [past.id, same_datetime_2.id]
+        assert first_page.next_cursor == repository.EventOffersCursor(
+            first_beginning_datetime=same_datetime_2.stocks[0].beginningDatetime, id=same_datetime_2.id
+        )
+
+        second_page = repository.get_paginated_event_offer_ids(
+            venue_id=venue.id, per_page=2, cursor=first_page.next_cursor
+        )
+        assert second_page.offer_ids == [same_datetime_1.id, several_stocks.id]
+
+        third_page = repository.get_paginated_event_offer_ids(
+            venue_id=venue.id, per_page=2, cursor=second_page.next_cursor
+        )
+        assert third_page.offer_ids == [earliest_stock_deleted.id, without_stock_2.id]
+        assert third_page.next_cursor == repository.EventOffersCursor(
+            first_beginning_datetime=None, id=without_stock_2.id
+        )
+
+        last_page = repository.get_paginated_event_offer_ids(
+            venue_id=venue.id, per_page=2, cursor=third_page.next_cursor
+        )
+        assert last_page.offer_ids == [without_stock_1.id]
+        assert last_page.next_cursor is None
+
+    @patch("pcapi.core.offers.constants.OFFERS_RECAP_LIMIT", 3)
+    def test_total_is_counted_up_to_recap_limit(self):
+        venue = offerers_factories.VenueFactory()
+        factories.EventOfferFactory.create_batch(5, venue=venue)
+
+        result = repository.get_paginated_event_offer_ids(venue_id=venue.id, per_page=2)
+
+        assert result.total == 3
+
+    @pytest.mark.parametrize(
+        "period_beginning_date,period_ending_date,expected_offer_names",
+        [
+            (datetime.date(2026, 4, 20), datetime.date(2026, 4, 21), ["in_period"]),
+            (datetime.date(2026, 4, 21), None, ["in_period", "after_period"]),
+            (None, datetime.date(2026, 4, 20), ["before_period"]),
+        ],
+    )
+    def test_filter_on_period(self, period_beginning_date, period_ending_date, expected_offer_names):
+        venue = offerers_factories.VenueFactory()  # Paris datetime
+        offers = {}
+        for name, beginning_datetime in [
+            ("before_period", datetime.datetime(2026, 4, 19, 21)),  # 19/04 at 23:00 in Paris (UTC+2)
+            ("in_period", datetime.datetime(2026, 4, 21, 10)),
+            ("after_period", datetime.datetime(2026, 4, 21, 22, 30)),  # 22/04 at 00:30 in Paris (UTC+2)
+        ]:
+            offers[name] = factories.EventOfferFactory(venue=venue)
+            factories.EventStockFactory(offer=offers[name], beginningDatetime=beginning_datetime)
+        deleted_stock_in_period = factories.EventOfferFactory(venue=venue)
+        factories.EventStockFactory(
+            offer=deleted_stock_in_period, beginningDatetime=datetime.datetime(2026, 4, 20, 10), isSoftDeleted=True
+        )
+
+        result = repository.get_paginated_event_offer_ids(
+            venue_id=venue.id,
+            per_page=10,
+            period_beginning_date=period_beginning_date,
+            period_ending_date=period_ending_date,
+        )
+
+        assert result.offer_ids == [offers[name].id for name in expected_offer_names]
+
+    def test_filter_on_period_uses_the_local_date_of_the_offer_location(self):
+        venue = offerers_factories.VenueFactory()  # Paris datetime
+        cayenne_location = offerers_factories.OfferLocationFactory(
+            offerer=venue.managingOfferer, venue=venue, address__timezone="America/Cayenne"
+        )
+        # 21/04 at 23:00 in Cayenne (UTC-3)
+        offer_in_cayenne = factories.EventOfferFactory(venue=venue, offererAddress=cayenne_location)
+        factories.EventStockFactory(offer=offer_in_cayenne, beginningDatetime=datetime.datetime(2026, 4, 22, 2))
+        # 22/04 at 00:30 in Paris (UTC+2)
+        offer_in_paris = factories.EventOfferFactory(venue=venue)
+        factories.EventStockFactory(offer=offer_in_paris, beginningDatetime=datetime.datetime(2026, 4, 21, 22, 30))
+
+        result = repository.get_paginated_event_offer_ids(
+            venue_id=venue.id,
+            per_page=10,
+            period_beginning_date=datetime.date(2026, 4, 21),
+            period_ending_date=datetime.date(2026, 4, 21),
+        )
+
+        assert result.offer_ids == [offer_in_cayenne.id]
+
+    @pytest.mark.parametrize("with_offer_location_in_another_timezone", [False, True])
+    def test_filter_on_period_uses_the_venue_timezone_for_offers_without_location(
+        self, with_offer_location_in_another_timezone
+    ):
+        venue = offerers_factories.VenueFactory()  # Paris datetime
+        if with_offer_location_in_another_timezone:
+            offerers_factories.OfferLocationFactory(
+                offerer=venue.managingOfferer, venue=venue, address__timezone="America/Cayenne"
+            )
+        # 21/04 at 12:00 in Paris (UTC+2)
+        in_period = factories.EventOfferFactory(venue=venue, offererAddress=None)
+        factories.EventStockFactory(offer=in_period, beginningDatetime=datetime.datetime(2026, 4, 21, 10))
+        # 22/04 at 00:30 in Paris, but 21/04 in Cayenne (UTC-3)
+        after_period = factories.EventOfferFactory(venue=venue, offererAddress=None)
+        factories.EventStockFactory(offer=after_period, beginningDatetime=datetime.datetime(2026, 4, 21, 22, 30))
+
+        result = repository.get_paginated_event_offer_ids(
+            venue_id=venue.id,
+            per_page=10,
+            period_beginning_date=datetime.date(2026, 4, 21),
+            period_ending_date=datetime.date(2026, 4, 21),
+        )
+
+        assert result.offer_ids == [in_period.id]
 
 
 @pytest.mark.usefixtures("db_session")
