@@ -96,8 +96,10 @@ describe('reimbursementsWithFilters', () => {
       bankAccounts: BASE_BANK_ACCOUNTS,
       managedVenues: [],
     })
-    vi.spyOn(api, 'hasInvoice').mockResolvedValue({ hasInvoice: true })
-    vi.spyOn(api, 'getInvoices').mockResolvedValue(BASE_INVOICES)
+    vi.spyOn(api, 'getInvoices').mockResolvedValue({
+      hasInvoice: true,
+      invoices: BASE_INVOICES,
+    })
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
@@ -111,8 +113,10 @@ describe('reimbursementsWithFilters', () => {
   })
 
   it('should render a table with invoices', async () => {
-    vi.spyOn(api, 'hasInvoice').mockResolvedValue({ hasInvoice: true })
-    vi.spyOn(api, 'getInvoices').mockResolvedValue(BASE_INVOICES)
+    vi.spyOn(api, 'getInvoices').mockResolvedValue({
+      hasInvoice: true,
+      invoices: BASE_INVOICES,
+    })
 
     renderReimbursementsInvoices()
 
@@ -157,23 +161,25 @@ describe('reimbursementsWithFilters', () => {
   })
 
   it('should display the invoice table', async () => {
-    vi.spyOn(api, 'hasInvoice').mockResolvedValue({ hasInvoice: true })
-    vi.spyOn(api, 'getInvoices').mockResolvedValue([
-      {
-        reference: 'J123456789',
-        date: '2022-11-02',
-        amount: 100,
-        url: 'J123456789.invoice',
-        status: InvoiceStatus.PAID,
-      },
-      {
-        reference: 'J666666666',
-        date: '2022-11-03',
-        amount: -50,
-        url: 'J666666666.invoice',
-        status: InvoiceStatus.PAID,
-      },
-    ])
+    vi.spyOn(api, 'getInvoices').mockResolvedValue({
+      hasInvoice: true,
+      invoices: [
+        {
+          reference: 'J123456789',
+          date: '2022-11-02',
+          amount: 100,
+          url: 'J123456789.invoice',
+          status: InvoiceStatus.PAID,
+        },
+        {
+          reference: 'J666666666',
+          date: '2022-11-03',
+          amount: -50,
+          url: 'J666666666.invoice',
+          status: InvoiceStatus.PAID,
+        },
+      ],
+    })
 
     renderReimbursementsInvoices()
 
@@ -201,8 +207,10 @@ describe('reimbursementsWithFilters', () => {
   })
 
   it('should render no invoice yet information block', async () => {
-    vi.spyOn(api, 'getInvoices').mockResolvedValue([])
-    vi.spyOn(api, 'hasInvoice').mockResolvedValue({ hasInvoice: false })
+    vi.spyOn(api, 'getInvoices').mockResolvedValue({
+      hasInvoice: false,
+      invoices: [],
+    })
     renderReimbursementsInvoices()
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
@@ -216,8 +224,10 @@ describe('reimbursementsWithFilters', () => {
   })
 
   it('should render error block', async () => {
-    vi.spyOn(api, 'hasInvoice').mockResolvedValue({ hasInvoice: true })
-    vi.spyOn(api, 'getInvoices').mockRejectedValue([])
+    vi.spyOn(api, 'getInvoices').mockRejectedValue({
+      hasInvoice: true,
+      invoices: [],
+    })
 
     renderReimbursementsInvoices()
 
@@ -249,17 +259,19 @@ describe('reimbursementsWithFilters', () => {
 
   it('should let perform actions on invoices', async () => {
     const user = userEvent.setup()
-    vi.spyOn(api, 'getInvoices').mockResolvedValueOnce([
-      {
-        reference: 'J123456789',
-        date: '2022-11-02',
-        amount: 100,
-        url: 'J123456789.invoice',
-        status: InvoiceStatus.PAID,
-      },
-    ])
+    vi.spyOn(api, 'getInvoices').mockResolvedValue({
+      hasInvoice: true,
+      invoices: [
+        {
+          reference: 'J123456789',
+          date: '2022-11-02',
+          amount: 100,
+          url: 'J123456789.invoice',
+          status: InvoiceStatus.PAID,
+        },
+      ],
+    })
     vi.spyOn(api, 'getReimbursementsCsv').mockResolvedValueOnce('data')
-    vi.spyOn(api, 'hasInvoice').mockResolvedValue({ hasInvoice: true })
 
     fetchMock.mockResponseOnce((request) => {
       if (
@@ -313,8 +325,10 @@ describe('reimbursementsWithFilters', () => {
 
   it('should let download several invoices at same time', async () => {
     const user = userEvent.setup()
-    vi.spyOn(api, 'getInvoices').mockResolvedValue(BASE_INVOICES)
-    vi.spyOn(api, 'hasInvoice').mockResolvedValue({ hasInvoice: true })
+    vi.spyOn(api, 'getInvoices').mockResolvedValue({
+      hasInvoice: true,
+      invoices: BASE_INVOICES,
+    })
     vi.spyOn(api, 'getCombinedInvoices').mockResolvedValue({})
     renderReimbursementsInvoices()
 
@@ -346,16 +360,16 @@ describe('reimbursementsWithFilters', () => {
 
   it(`should block download several invoices at same time for more than ${MAX_ITEMS_DOWNLOAD} invoices`, async () => {
     const user = userEvent.setup()
-    vi.spyOn(api, 'hasInvoice').mockResolvedValue({ hasInvoice: true })
-    vi.spyOn(api, 'getInvoices').mockResolvedValue(
-      new Array(MAX_ITEMS_DOWNLOAD + 1).fill(null).map((_, i) => ({
+    vi.spyOn(api, 'getInvoices').mockResolvedValue({
+      hasInvoice: true,
+      invoices: new Array(MAX_ITEMS_DOWNLOAD + 1).fill(null).map((_, i) => ({
         reference: `J${i + 1}`,
         date: '2022-11-02',
         amount: 100,
         url: 'J123456789.invoice',
         status: InvoiceStatus.PAID,
-      }))
-    )
+      })),
+    })
 
     vi.spyOn(api, 'getCombinedInvoices').mockResolvedValueOnce({})
 
@@ -374,8 +388,10 @@ describe('reimbursementsWithFilters', () => {
 
   it('should let download several reimbursment csv at same time', async () => {
     const user = userEvent.setup()
-    vi.spyOn(api, 'getInvoices').mockResolvedValue(BASE_INVOICES)
-    vi.spyOn(api, 'hasInvoice').mockResolvedValue({ hasInvoice: true })
+    vi.spyOn(api, 'getInvoices').mockResolvedValue({
+      hasInvoice: true,
+      invoices: BASE_INVOICES,
+    })
     vi.spyOn(api, 'getReimbursementsCsv').mockResolvedValueOnce('data')
 
     renderReimbursementsInvoices()
@@ -431,8 +447,10 @@ describe('reimbursementsWithFilters', () => {
 
   it('should call api with requested date filters', async () => {
     const user = userEvent.setup()
-    vi.spyOn(api, 'hasInvoice').mockResolvedValue({ hasInvoice: true })
-    vi.spyOn(api, 'getInvoices').mockResolvedValue(BASE_INVOICES)
+    vi.spyOn(api, 'getInvoices').mockResolvedValue({
+      hasInvoice: true,
+      invoices: BASE_INVOICES,
+    })
 
     renderReimbursementsInvoices()
 
@@ -478,8 +496,10 @@ describe('reimbursementsWithFilters', () => {
 
   it('should filter by amount type', async () => {
     const user = userEvent.setup()
-    vi.spyOn(api, 'hasInvoice').mockResolvedValue({ hasInvoice: true })
-    vi.spyOn(api, 'getInvoices').mockResolvedValue(BASE_INVOICES)
+    vi.spyOn(api, 'getInvoices').mockResolvedValue({
+      hasInvoice: true,
+      invoices: BASE_INVOICES,
+    })
 
     renderReimbursementsInvoices()
 
@@ -511,8 +531,10 @@ describe('reimbursementsWithFilters', () => {
 
   it('should display error message and disable search button when beginning date is empty', async () => {
     const user = userEvent.setup()
-    vi.spyOn(api, 'hasInvoice').mockResolvedValue({ hasInvoice: true })
-    vi.spyOn(api, 'getInvoices').mockResolvedValue(BASE_INVOICES)
+    vi.spyOn(api, 'getInvoices').mockResolvedValue({
+      hasInvoice: true,
+      invoices: BASE_INVOICES,
+    })
 
     renderReimbursementsInvoices()
 
@@ -533,8 +555,10 @@ describe('reimbursementsWithFilters', () => {
 
   it('should display error message and disable search button when ending date is empty', async () => {
     const user = userEvent.setup()
-    vi.spyOn(api, 'hasInvoice').mockResolvedValue({ hasInvoice: true })
-    vi.spyOn(api, 'getInvoices').mockResolvedValue(BASE_INVOICES)
+    vi.spyOn(api, 'getInvoices').mockResolvedValue({
+      hasInvoice: true,
+      invoices: BASE_INVOICES,
+    })
 
     renderReimbursementsInvoices()
 

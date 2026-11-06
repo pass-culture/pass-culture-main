@@ -100,8 +100,10 @@ const renderSettlements = (options?: RenderWithProvidersOptions) => {
 
 describe('<Settlements />', () => {
   beforeEach(() => {
-    vi.spyOn(api, 'hasSettlement').mockResolvedValue({ hasSettlement: true })
-    vi.spyOn(api, 'getSettlements').mockResolvedValue(BASE_SETTLEMENTS)
+    vi.spyOn(api, 'getSettlements').mockResolvedValue({
+      settlements: BASE_SETTLEMENTS,
+      hasSettlement: true,
+    })
     vi.spyOn(api, 'getOffererBankAccountsAndAttachedVenues').mockResolvedValue({
       id: 1,
       bankAccounts: BASE_BANK_ACCOUNTS,
@@ -124,9 +126,6 @@ describe('<Settlements />', () => {
     expect(api.getOffererBankAccountsAndAttachedVenues).toHaveBeenCalledWith({
       path: { offerer_id: defaultGetOffererResponseModel.id },
     })
-    expect(api.hasSettlement).toHaveBeenCalledWith({
-      query: { offererId: defaultGetOffererResponseModel.id },
-    })
     expect(api.getSettlements).toHaveBeenCalledWith({
       query: {
         offererId: defaultGetOffererResponseModel.id,
@@ -137,14 +136,16 @@ describe('<Settlements />', () => {
     expect(screen.getByText('VIR001')).toBeInTheDocument()
   })
 
-  it('does not fetch the settlements list and shows the empty state when hasSettlement is false', async () => {
-    vi.spyOn(api, 'hasSettlement').mockResolvedValue({ hasSettlement: false })
+  it('shows the empty state when hasSettlement is false', async () => {
+    vi.spyOn(api, 'getSettlements').mockResolvedValue({
+      settlements: [],
+      hasSettlement: false,
+    })
 
     renderSettlements()
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
-    expect(api.getSettlements).not.toHaveBeenCalled()
     expect(
       screen.getByText('Aucun virement pour le moment')
     ).toBeInTheDocument()
@@ -178,8 +179,10 @@ describe('<Settlements />', () => {
       bankAccounts: [],
       managedVenues: [],
     })
-    vi.spyOn(api, 'hasSettlement').mockResolvedValue({ hasSettlement: false })
-    vi.spyOn(api, 'getSettlements').mockResolvedValue([])
+    vi.spyOn(api, 'getSettlements').mockResolvedValue({
+      settlements: [],
+      hasSettlement: false,
+    })
 
     renderSettlements()
 

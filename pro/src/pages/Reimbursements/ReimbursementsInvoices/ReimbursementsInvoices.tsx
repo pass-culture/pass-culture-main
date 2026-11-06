@@ -5,7 +5,6 @@ import useSWR from 'swr'
 import { api } from '@/apiClient/api'
 import type { getFinanceInvoicesData } from '@/apiClient/v1'
 import {
-  GET_HAS_INVOICE_QUERY_KEY,
   GET_INVOICES_QUERY_KEY,
   GET_OFFERER_BANK_ACCOUNTS_AND_ATTACHED_VENUES_QUERY_KEY,
 } from '@/commons/config/swrQueryKeys'
@@ -26,7 +25,7 @@ import { InvoiceTable } from './InvoiceTable/InvoiceTable'
 
 function extractFilters(
   urlParams: URLSearchParams
-): getFinanceInvoicesData['query'] {
+): Omit<getFinanceInvoicesData['query'], 'offererId'> {
   const amountPositiveOnly = urlParams.get('amountPositiveOnly')
   const amountNegativeOnly = urlParams.get('amountNegativeOnly')
   return {
@@ -55,7 +54,7 @@ const ReimbursementsInvoices = (): JSX.Element => {
     localStorageManager.getItem(LOCAL_STORAGE_KEY.HIDE_FINANCE_BANNER) === '1'
   )
 
-  const offererId = selectedAdminOfferer?.id
+  const offererId = selectedAdminOfferer.id
 
   useEffect(() => {
     if (searchParams.size === 0) {
@@ -63,29 +62,21 @@ const ReimbursementsInvoices = (): JSX.Element => {
     }
   }, [searchParams, setSearchParams])
 
-  const hasInvoiceQuery = useSWR(
-    offererId ? [GET_HAS_INVOICE_QUERY_KEY, offererId] : null,
-    ([, offererId]) => api.hasInvoice({ query: { offererId: offererId } }),
-    { fallbackData: { hasInvoice: false } }
-  )
-
-  const hasInvoice = Boolean(hasInvoiceQuery.data?.hasInvoice)
-
   const getInvoicesQuery = useSWR(
-    offererId && hasInvoice
+    offererId && searchParams.size > 0
       ? [GET_INVOICES_QUERY_KEY, offererId, searchParams]
       : null,
     async () => {
-      const invoices = await api.getInvoices({
+      const result = await api.getInvoices({
         query: {
           offererId: offererId,
           ...extractFilters(searchParams),
         },
       })
-      return invoices
+      return result
     },
     {
-      fallbackData: [],
+      fallbackData: { hasInvoice: false, invoices: [] },
     }
   )
 
@@ -113,8 +104,7 @@ const ReimbursementsInvoices = (): JSX.Element => {
 
   if (
     getOffererBankAccountsAndAttachedVenuesQuery.isLoading ||
-    getInvoicesQuery.isLoading ||
-    hasInvoiceQuery.isLoading
+    getInvoicesQuery.isLoading
   ) {
     return <Spinner />
   }
@@ -122,7 +112,8 @@ const ReimbursementsInvoices = (): JSX.Element => {
   const bankAccounts =
     getOffererBankAccountsAndAttachedVenuesQuery.data?.bankAccounts ?? []
 
-  const invoices = getInvoicesQuery.data ?? []
+  const hasInvoice = getInvoicesQuery.data.hasInvoice ?? false
+  const invoices = getInvoicesQuery.data.invoices ?? []
 
   const onCloseBanner = () => {
     localStorageManager.setItem(LOCAL_STORAGE_KEY.HIDE_FINANCE_BANNER, '1')

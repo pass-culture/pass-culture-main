@@ -21,6 +21,7 @@ URL = "/finance/settlements"
 class GetSettlementsTest:
     num_queries = testing.AUTHENTICATION_QUERIES
     num_queries += 1  # check if user_offerer exists
+    num_queries += 1  # check if offerer has settlements
     num_queries += 1  # get settlements
 
     def test_get_settlements(self, client: TestClient):
@@ -99,53 +100,94 @@ class GetSettlementsTest:
 
         assert response.status_code == 200
         # settlements and invoices are sorted by descending date
-        assert response.json == [
-            {
-                "id": executed_settlement_2.id,
-                "label": "VIR1",
-                "date": batch_1.dateValidated.date().isoformat(),
-                "amount": 200,
-                "bankAccount": "account 2",
-                "status": "EXECUTED",
-                "invoices": [
-                    {
-                        "reference": "F301234568",
-                        "date": paid_invoice_2.date.date().isoformat(),
-                        "amount": 100,
-                        "url": paid_invoice_2.url,
-                        "status": "paid",
-                    },
-                    {
-                        "reference": "F301234567",
-                        "date": paid_invoice_1.date.date().isoformat(),
-                        "amount": 100,
-                        "url": paid_invoice_1.url,
-                        "status": "paid",
-                    },
-                ],
-                "resolvedBy": [],
-            },
-            {
-                "id": executed_settlement_1.id,
-                "label": "VIR2",
-                "date": batch_2.dateValidated.date().isoformat(),
-                "amount": 100,
-                "bankAccount": "account 1",
-                "status": "EXECUTED",
-                "invoices": [],
-                "resolvedBy": [],
-            },
-            {
-                "id": rejected_settlement.id,
-                "label": "VIR3",
-                "date": batch_3.dateValidated.date().isoformat(),
-                "amount": 300,
-                "bankAccount": "account 1",
-                "status": "REJECTED_SOLVED",
-                "invoices": [],
-                "resolvedBy": [],
-            },
-        ]
+        assert response.json == {
+            "hasSettlement": True,
+            "settlements": [
+                {
+                    "id": executed_settlement_2.id,
+                    "label": "VIR1",
+                    "date": batch_1.dateValidated.date().isoformat(),
+                    "amount": 200,
+                    "bankAccount": "account 2",
+                    "status": "EXECUTED",
+                    "invoices": [
+                        {
+                            "reference": "F301234568",
+                            "date": paid_invoice_2.date.date().isoformat(),
+                            "amount": 100,
+                            "url": paid_invoice_2.url,
+                            "status": "paid",
+                        },
+                        {
+                            "reference": "F301234567",
+                            "date": paid_invoice_1.date.date().isoformat(),
+                            "amount": 100,
+                            "url": paid_invoice_1.url,
+                            "status": "paid",
+                        },
+                    ],
+                    "resolvedBy": [],
+                },
+                {
+                    "id": executed_settlement_1.id,
+                    "label": "VIR2",
+                    "date": batch_2.dateValidated.date().isoformat(),
+                    "amount": 100,
+                    "bankAccount": "account 1",
+                    "status": "EXECUTED",
+                    "invoices": [],
+                    "resolvedBy": [],
+                },
+                {
+                    "id": rejected_settlement.id,
+                    "label": "VIR3",
+                    "date": batch_3.dateValidated.date().isoformat(),
+                    "amount": 300,
+                    "bankAccount": "account 1",
+                    "status": "REJECTED_SOLVED",
+                    "invoices": [],
+                    "resolvedBy": [],
+                },
+            ],
+        }
+
+    def test_with_issued_settlement(self, client: TestClient):
+        user_offerer = offerers_factories.UserOffererFactory()
+        factories.SettlementFactory(bankAccount__offerer=user_offerer.offerer, status=models.SettlementStatus.ISSUED)
+
+        client = client.with_session_auth(user_offerer.user.email)
+        offerer_id = user_offerer.offerer.id
+        num_queries = self.num_queries - 1  # no query to fetch the settlements
+        with testing.assert_num_queries(num_queries):
+            response = client.get(URL, params={"offererId": offerer_id})
+
+        assert response.status_code == 200
+        assert response.json == {"settlements": [], "hasSettlement": False}
+
+    def test_with_no_settlement(self, client: TestClient):
+        user_offerer = offerers_factories.UserOffererFactory()
+
+        client = client.with_session_auth(user_offerer.user.email)
+        offerer_id = user_offerer.offerer.id
+        num_queries = self.num_queries - 1  # no query to fetch the settlements
+        with testing.assert_num_queries(num_queries):
+            response = client.get(URL, params={"offererId": offerer_id})
+
+        assert response.status_code == 200
+        assert response.json == {"settlements": [], "hasSettlement": False}
+
+    def test_with_settlement_other_offerer(self, client: TestClient):
+        user_offerer = offerers_factories.UserOffererFactory()
+        factories.SettlementFactory(status=models.SettlementStatus.EXECUTED)
+
+        client = client.with_session_auth(user_offerer.user.email)
+        offerer_id = user_offerer.offerer.id
+        num_queries = self.num_queries - 1  # no query to fetch the settlements
+        with testing.assert_num_queries(num_queries):
+            response = client.get(URL, params={"offererId": offerer_id})
+
+        assert response.status_code == 200
+        assert response.json == {"settlements": [], "hasSettlement": False}
 
     def test_get_settlements_rejected_unresolved(self, client: TestClient):
         now = get_naive_utc_now()
@@ -187,26 +229,29 @@ class GetSettlementsTest:
 
         assert response.status_code == 200
         # the settlement is "rejected unresolved" as the venue is not linked to a bank account
-        assert response.json == [
-            {
-                "id": settlement.id,
-                "label": "VIR1",
-                "date": batch.dateValidated.date().isoformat(),
-                "amount": 100,
-                "bankAccount": bank_account.label,
-                "status": "REJECTED_UNRESOLVED",
-                "invoices": [
-                    {
-                        "reference": invoice.reference,
-                        "date": invoice.date.date().isoformat(),
-                        "amount": 100,
-                        "url": invoice.url,
-                        "status": "paid",
-                    },
-                ],
-                "resolvedBy": [],
-            },
-        ]
+        assert response.json == {
+            "hasSettlement": True,
+            "settlements": [
+                {
+                    "id": settlement.id,
+                    "label": "VIR1",
+                    "date": batch.dateValidated.date().isoformat(),
+                    "amount": 100,
+                    "bankAccount": bank_account.label,
+                    "status": "REJECTED_UNRESOLVED",
+                    "invoices": [
+                        {
+                            "reference": invoice.reference,
+                            "date": invoice.date.date().isoformat(),
+                            "amount": 100,
+                            "url": invoice.url,
+                            "status": "paid",
+                        },
+                    ],
+                    "resolvedBy": [],
+                },
+            ],
+        }
 
     def test_get_settlements_rejected_processed_solved(self, client: TestClient):
         now = get_naive_utc_now()
@@ -284,8 +329,9 @@ class GetSettlementsTest:
             response = client.get(URL, params={"offererId": offerer_id})
 
         assert response.status_code == 200
-        result = sorted(response.json, key=lambda s: s["id"])
-        assert result == [
+        assert response.json["hasSettlement"] is True
+        result_settlements = sorted(response.json["settlements"], key=lambda s: s["id"])
+        assert result_settlements == [
             # the first settlement is "solved" by the two new settlements
             {
                 "id": settlement_1.id,
@@ -393,26 +439,29 @@ class GetSettlementsTest:
             response = client.get(URL, params={"offererId": offerer_id})
 
         assert response.status_code == 200
-        assert response.json == [
-            {
-                "id": settlement.id,
-                "label": None,
-                "date": date.date().isoformat(),
-                "amount": -100,
-                "bankAccount": "pass Culture",
-                "status": "EXECUTED",
-                "invoices": [
-                    {
-                        "reference": invoice.reference,
-                        "date": invoice.date.date().isoformat(),
-                        "amount": -100,
-                        "url": invoice.url,
-                        "status": "paid",
-                    },
-                ],
-                "resolvedBy": [],
-            }
-        ]
+        assert response.json == {
+            "hasSettlement": True,
+            "settlements": [
+                {
+                    "id": settlement.id,
+                    "label": None,
+                    "date": date.date().isoformat(),
+                    "amount": -100,
+                    "bankAccount": "pass Culture",
+                    "status": "EXECUTED",
+                    "invoices": [
+                        {
+                            "reference": invoice.reference,
+                            "date": invoice.date.date().isoformat(),
+                            "amount": -100,
+                            "url": invoice.url,
+                            "status": "paid",
+                        },
+                    ],
+                    "resolvedBy": [],
+                }
+            ],
+        }
 
     def test_get_settlements_bank_account_filter(self, client: TestClient):
         user_offerer = offerers_factories.UserOffererFactory()
@@ -434,8 +483,8 @@ class GetSettlementsTest:
             response = client.get(URL, params={"offererId": offerer_id, "bankAccountId": bank_account_id})
 
         assert response.status_code == 200
-        assert len(response.json) == 1
-        assert response.json[0]["id"] == settlement_1.id
+        assert len(response.json["settlements"]) == 1
+        assert response.json["settlements"][0]["id"] == settlement_1.id
 
     def test_get_settlements_bank_account_filter_other_offerer(self, client: TestClient):
         user_offerer = offerers_factories.UserOffererFactory()
@@ -447,11 +496,12 @@ class GetSettlementsTest:
         client = client.with_session_auth(user_offerer.user.email)
         offerer_id = user_offerer.offerer.id
         bank_account_id = bank_account.id
-        with testing.assert_num_queries(self.num_queries):
+        num_queries = self.num_queries - 1  # no query to fetch the settlements
+        with testing.assert_num_queries(num_queries):
             response = client.get(URL, params={"offererId": offerer_id, "bankAccountId": bank_account_id})
 
         assert response.status_code == 200
-        assert len(response.json) == 0
+        assert response.json == {"hasSettlement": False, "settlements": []}
 
     def test_get_settlements_dates_filter(self, client: TestClient):
         user_offerer = offerers_factories.UserOffererFactory()
@@ -521,8 +571,8 @@ class GetSettlementsTest:
             )
 
         assert response.status_code == 200
-        assert len(response.json) == 6
-        assert {result["id"] for result in response.json} == {
+        assert len(response.json["settlements"]) == 6
+        assert {result["id"] for result in response.json["settlements"]} == {
             settlement_lower_bound.id,
             debit_note_lower_bound.id,
             settlement_within.id,
@@ -569,8 +619,28 @@ class GetSettlementsTest:
             )
 
         assert response.status_code == 200
-        assert len(response.json) == 2
-        assert {result["id"] for result in response.json} == {settlement_match_1.id, settlement_match_2.id}
+        assert len(response.json["settlements"]) == 2
+        assert {result["id"] for result in response.json["settlements"]} == {
+            settlement_match_1.id,
+            settlement_match_2.id,
+        }
+
+    def test_with_settlements_filtered_out(self, client: TestClient):
+        user_offerer = offerers_factories.UserOffererFactory()
+
+        bank_account_1 = factories.BankAccountFactory(offerer=user_offerer.offerer)
+        bank_account_2 = factories.BankAccountFactory(offerer=user_offerer.offerer)
+        factories.SettlementFactory(status=models.SettlementStatus.EXECUTED, bankAccount=bank_account_2)
+
+        client = client.with_session_auth(user_offerer.user.email)
+        offerer_id = user_offerer.offerer.id
+        bank_account_id = bank_account_1.id
+
+        with testing.assert_num_queries(self.num_queries):
+            response = client.get(URL, params={"offererId": offerer_id, "bankAccountId": bank_account_id})
+
+        assert response.status_code == 200
+        assert response.json == {"hasSettlement": True, "settlements": []}
 
     def test_no_access_to_offerer(self, client: TestClient):
         user = users_factories.ProFactory()
