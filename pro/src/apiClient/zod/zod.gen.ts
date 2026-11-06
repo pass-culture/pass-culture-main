@@ -890,6 +890,20 @@ export const zFeatureResponseModel = z.object({
 });
 
 /**
+ * FieldEnum
+ */
+export const zFieldEnum = z.enum([
+    'TITLE',
+    'DESCRIPTION',
+    'IMAGE',
+    'GENRE_MUSIC',
+    'PERFORMER',
+    'EAN',
+    'AUTHOR',
+    'ACCESSIBILITY_ATTRIBUTE_LARGE_PRINT'
+]);
+
+/**
  * FormatEnum
  */
 export const zFormatEnum = z.enum([
@@ -962,7 +976,8 @@ export const zGetBookingsProResponseModel = z.object({
  * GetCapabilitiesResponseModel
  */
 export const zGetCapabilitiesResponseModel = z.object({
-    capabilities: z.array(z.string())
+    capabilities: z.array(zFieldEnum),
+    mandatoryFields: z.array(zFieldEnum)
 });
 
 /**
@@ -1518,11 +1533,11 @@ export const zLocationBodyModelV2 = z.object({
     label: z.string().nullish().default(null),
     latitude: z.union([
         z.number(),
-        z.string().regex(/^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$/)
+        z.string()
     ]),
     longitude: z.union([
         z.number(),
-        z.string().regex(/^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$/)
+        z.string()
     ]),
     postalCode: z.string().length(5).regex(/^\d+$/),
     street: z.string().min(1).max(200)
@@ -1538,8 +1553,8 @@ export const zLocationModelV2 = z.object({
     isManualEdition: z.boolean().optional().default(false),
     isVenueLocation: z.boolean().optional().default(false),
     label: z.string().nullish().default(null),
-    latitude: z.string().regex(/^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$/),
-    longitude: z.string().regex(/^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$/),
+    latitude: z.string(),
+    longitude: z.string(),
     postalCode: z.string().length(5).regex(/^\d+$/),
     street: z.string().min(1).max(200)
 });
@@ -2800,7 +2815,7 @@ export const zThingStockUpsertBodyModel = z.object({
     offerId: z.int(),
     price: z.union([
         z.number(),
-        z.string().regex(/^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$/)
+        z.string()
     ]),
     quantity: z.int().gte(0).lte(1000000).nullish().default(null)
 });
@@ -3352,11 +3367,11 @@ export const zEditVenueBodyModel = z.object({
     isOpenToPublic: z.boolean().nullish().default(null),
     latitude: z.union([
         z.number(),
-        z.string().regex(/^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$/)
+        z.string()
     ]).nullish().default(null),
     longitude: z.union([
         z.number(),
-        z.string().regex(/^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$/)
+        z.string()
     ]).nullish().default(null),
     mentalDisabilityCompliant: z.boolean().nullish().default(null),
     motorDisabilityCompliant: z.boolean().nullish().default(null),
