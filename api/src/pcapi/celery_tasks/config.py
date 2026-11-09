@@ -1,3 +1,4 @@
+import ssl
 import typing
 
 from pcapi import settings
@@ -11,8 +12,23 @@ CELERY_EXTERNAL_CALLS_PRIORITY_QUEUE_NAME = "celery.external_calls.priority"  # 
 CELERY_INTERNAL_CALLS_DEFAULT_QUEUE_NAME = "celery.internal_calls.default"  # Default priority
 CELERY_INTERNAL_CALLS_PRIORITY_QUEUE_NAME = "celery.internal_calls.priority"  # High priority
 
+broker_ssl_settings = (
+    {
+        "ssl_ca_certs": settings.GCP_REDIS_CA_PATH,
+        "ssl_cert_reqs": ssl.CERT_REQUIRED,
+    }
+    if settings.GCP_REDIS_CA_PATH
+    else {},
+)
+redis_url = (
+    f"{settings.REDIS_URL}?credential_provider=pcapi.utils.redis.GoogleTokenProvider"
+    if settings.GCP_REDIS_CA_PATH
+    else settings.REDIS_URL
+)
+
 CELERY_BASE_SETTINGS: typing.Final = {
     "broker_url": settings.REDIS_URL,
+    "broker_use_ssl": broker_ssl_settings,
     "task_acks_late": True,
     "task_reject_on_worker_lost": True,
     "task_serializer": "json",
