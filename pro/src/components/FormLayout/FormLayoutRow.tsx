@@ -41,12 +41,16 @@ export const Row = ({
     </RowWithInfo>
   ) : (
     <div
-      className={cn(style['form-layout-row'], className, {
-        [style['inline-group']]: inline,
-        [style['large-space-after']]: lgSpaceAfter,
-        [style['medium-space-after']]: mdSpaceAfter,
-        [style['small-space-after']]: smSpaceAfter,
-      })}
+      className={cn(
+        style['form-layout-row'],
+        {
+          [style['inline-group']]: inline,
+          [style['large-space-after']]: lgSpaceAfter,
+          [style['medium-space-after']]: mdSpaceAfter,
+          [style['small-space-after']]: smSpaceAfter,
+        },
+        className
+      )}
       data-testid={testId}
       aria-describedby={describedById}
     >

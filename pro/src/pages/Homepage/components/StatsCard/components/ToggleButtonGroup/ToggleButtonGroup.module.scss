@@ -18,7 +18,10 @@
     box-shadow: none;
     background-color: transparent;
     cursor: pointer;
-    transition: all 0.15s ease-in-out;
+    transition:
+      background-color 0.15s ease-in-out,
+      border-radius 0.15s ease-in-out,
+      color 0.15s ease-in-out;
     padding: rem.torem(8px);
     gap: rem.torem(8px);
     color: var(--color-text-default);
