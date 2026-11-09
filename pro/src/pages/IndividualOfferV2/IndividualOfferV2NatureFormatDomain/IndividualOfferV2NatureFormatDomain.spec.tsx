@@ -13,7 +13,7 @@ const natures = [
   {
     formats: [
       { format: FormatEnum.LIVRE_PAPIER, label: 'Livre papier' },
-      { format: FormatEnum.CD_VINYLE, label: 'CD ou vinyle' },
+      { format: FormatEnum.CD, label: 'CD' },
     ],
     label: 'Bien culturel',
     name: NatureEnum.BIEN,
@@ -89,9 +89,7 @@ describe('<IndividualOfferV2NatureFormatDomain />', () => {
     expect(
       screen.getByRole('radio', { name: 'Livre papier' })
     ).toBeInTheDocument()
-    expect(
-      screen.getByRole('radio', { name: 'CD ou vinyle' })
-    ).toBeInTheDocument()
+    expect(screen.getByRole('radio', { name: 'CD' })).toBeInTheDocument()
     await user.click(screen.getByRole('radio', { name: 'Livre papier' }))
     expect(screen.getByRole('radio', { name: 'Livre papier' })).toBeChecked()
 

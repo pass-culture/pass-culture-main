@@ -10,7 +10,8 @@ class NatureEnum(enum.Enum):
 
 
 class FormatEnum(enum.Enum):
-    CD_VINYLE = "CD_VINYLE"
+    CD = "CD"
+    VINYLE = "VINYLE"
     DVD_BLU_RAY = "DVD_BLU_RAY"
     INSTRUMENT_DE_MUSIQUE = "INSTRUMENT_DE_MUSIQUE"
     LIVRE_PAPIER = "LIVRE_PAPIER"
@@ -35,8 +36,12 @@ NFD = [
         "label": "Biens",
         "formats": [
             {
-                "format": FormatEnum.CD_VINYLE,
-                "label": "CD, Vinyle",
+                "format": FormatEnum.CD,
+                "label": "CD",
+            },
+            {
+                "format": FormatEnum.VINYLE,
+                "label": "Vinyle",
             },
             {
                 "format": FormatEnum.DVD_BLU_RAY,
@@ -52,7 +57,7 @@ NFD = [
             },
             {
                 "format": FormatEnum.MATERIEL_ARTS_CREATIFS,
-                "label": "Matériel arts créatifs",
+                "label": "Matériel d'art créatif",
             },
         ],
     },
@@ -80,7 +85,18 @@ class FormatFields(typing.TypedDict):
 
 
 FIELDS_BIEN: typing.Final[dict[FormatEnum, FormatFields]] = {
-    FormatEnum.CD_VINYLE: {
+    FormatEnum.CD: {
+        "capabilities": [
+            FieldEnum.TITLE,
+            FieldEnum.DESCRIPTION,
+            FieldEnum.IMAGE,
+            FieldEnum.GENRE_MUSIC,
+            FieldEnum.PERFORMER,
+            FieldEnum.EAN,
+        ],
+        "mandatory_fields": [FieldEnum.TITLE, FieldEnum.GENRE_MUSIC],
+    },
+    FormatEnum.VINYLE: {
         "capabilities": [
             FieldEnum.TITLE,
             FieldEnum.DESCRIPTION,
