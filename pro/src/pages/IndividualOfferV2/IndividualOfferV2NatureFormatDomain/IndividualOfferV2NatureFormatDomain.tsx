@@ -52,6 +52,15 @@ const IndividualOfferV2NatureFormatDomain = (): JSX.Element => {
   }
 
   const natures = nfdQuery.data
+  const formats =
+    natures
+      .find((nature) => nature.name === selectedNature)
+      ?.formats.map((format) => ({
+        label: format.label,
+        value: format.format,
+      }))
+      .sort((a, b) => a.label.localeCompare(b.label)) ?? []
+
   return (
     <form onSubmit={onSubmit}>
       <FormLayout>
@@ -90,15 +99,7 @@ const IndividualOfferV2NatureFormatDomain = (): JSX.Element => {
                   onChange={(event) =>
                     dispatch(setFormat(event.target.value as FormatEnum))
                   }
-                  options={
-                    natures
-                      .find((nature) => nature.name === selectedNature)
-                      ?.formats.map((format) => ({
-                        sizing: 'hug',
-                        label: format.label,
-                        value: format.format,
-                      })) ?? []
-                  }
+                  options={formats}
                 />
               </div>
             )}

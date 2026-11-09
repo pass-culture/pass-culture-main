@@ -1895,7 +1895,8 @@ export enum FieldEnum {
  * FormatEnum
  */
 export enum FormatEnum {
-    CD_VINYLE = 'CD_VINYLE',
+    CD = 'CD',
+    VINYLE = 'VINYLE',
     DVD_BLU_RAY = 'DVD_BLU_RAY',
     INSTRUMENT_DE_MUSIQUE = 'INSTRUMENT_DE_MUSIQUE',
     LIVRE_PAPIER = 'LIVRE_PAPIER',

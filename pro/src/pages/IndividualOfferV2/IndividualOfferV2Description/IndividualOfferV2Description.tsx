@@ -125,7 +125,7 @@ const IndividualOfferV2Description = (): JSX.Element => {
                 <FormLayout.Row>
                   <TextArea
                     label="Description"
-                    description='Utilisez des doubles astérisques pour mettre en gras : **exemple** et des tirets bas pour l’italique : _exemple_. Vous pourrez vérifier l’affichage à l’étape "Aperçu".'
+                    description='Utilisez des doubles astérisques pour mettre en gras : **exemple** et des tirets bas pour l’italique : _exemple_. Vous pourrez vérifier l’affichage à l’étape "Récapitulatif".'
                     name="description"
                     maxLength={10000}
                     required={mandatoryFields.includes(FieldEnum.DESCRIPTION)}
@@ -191,7 +191,6 @@ const IndividualOfferV2Description = (): JSX.Element => {
                     options={accessibilityOptions}
                     disabled={readOnlyFields.includes('accessibility')}
                     label="Sélectionnez le dispositif d'accessibilité qui correspond à votre offre :"
-                    description="Sélectionnez au moins une option"
                     variant="detailed"
                     error={form.formState.errors.accessibility?.message}
                   />

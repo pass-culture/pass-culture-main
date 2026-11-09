@@ -907,7 +907,8 @@ export const zFieldEnum = z.enum([
  * FormatEnum
  */
 export const zFormatEnum = z.enum([
-    'CD_VINYLE',
+    'CD',
+    'VINYLE',
     'DVD_BLU_RAY',
     'INSTRUMENT_DE_MUSIQUE',
     'LIVRE_PAPIER',

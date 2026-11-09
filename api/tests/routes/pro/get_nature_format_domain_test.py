@@ -18,11 +18,12 @@ def test_get_nature_format_domain(client):
             "name": "BIEN",
             "label": "Biens",
             "formats": [
-                {"format": "CD_VINYLE", "label": "CD, Vinyle"},
+                {"format": "CD", "label": "CD"},
+                {"format": "VINYLE", "label": "Vinyle"},
                 {"format": "DVD_BLU_RAY", "label": "DVD, Blu-ray"},
                 {"format": "INSTRUMENT_DE_MUSIQUE", "label": "Instrument de musique"},
                 {"format": "LIVRE_PAPIER", "label": "Livre papier"},
-                {"format": "MATERIEL_ARTS_CREATIFS", "label": "Matériel arts créatifs"},
+                {"format": "MATERIEL_ARTS_CREATIFS", "label": "Matériel d'art créatif"},
             ],
         },
         {
@@ -58,7 +59,13 @@ def test_get_nature_format_domain_unauthenticated(client):
     [
         (
             "BIEN",
-            "CD_VINYLE",
+            "CD",
+            ["TITLE", "DESCRIPTION", "IMAGE", "GENRE_MUSIC", "PERFORMER", "EAN"],
+            ["TITLE", "GENRE_MUSIC"],
+        ),
+        (
+            "BIEN",
+            "VINYLE",
             ["TITLE", "DESCRIPTION", "IMAGE", "GENRE_MUSIC", "PERFORMER", "EAN"],
             ["TITLE", "GENRE_MUSIC"],
         ),

@@ -8,7 +8,7 @@ from pcapi.core.users import factories as users_factories
     [
         (
             "BIEN",
-            "CD_VINYLE",
+            "CD",
             ["TITLE", "DESCRIPTION", "IMAGE", "GENRE_MUSIC", "PERFORMER", "EAN"],
             ["TITLE", "GENRE_MUSIC"],
         ),
@@ -21,9 +21,9 @@ from pcapi.core.users import factories as users_factories
             ["TITLE"],
         ),
         ("BIEN", "MATERIEL_ARTS_CREATIFS", ["TITLE", "DESCRIPTION", "IMAGE", "EAN"], ["TITLE"]),
-        ("CARTE_ABONNEMENT", "CD_VINYLE", [], []),
-        ("EVENEMENT", "CD_VINYLE", [], []),
-        ("NUMERIQUE", "CD_VINYLE", [], []),
+        ("CARTE_ABONNEMENT", "CD", [], []),
+        ("EVENEMENT", "CD", [], []),
+        ("NUMERIQUE", "CD", [], []),
     ],
 )
 @pytest.mark.usefixtures("db_session")
