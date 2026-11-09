@@ -255,6 +255,7 @@ WITHDRAWAL_DETAILS_FIELD = pydantic_v1.Field(
     description="Further information that will be provided to attendees to ease the offer collection.",
     example="Opening hours, specific office, collection period, access code, email announcement...",
     alias="itemCollectionDetails",
+    max_length=500,
 )
 
 
