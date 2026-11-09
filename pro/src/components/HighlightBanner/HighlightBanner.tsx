@@ -2,46 +2,10 @@ import cn from 'classnames'
 import { useState } from 'react'
 
 import { storageAvailable } from '@/commons/utils/storageAvailable'
-import { Button } from '@/design-system/Button/Button'
-import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullClearIcon from '@/icons/full-clear.svg'
-import strokeCloseIcon from '@/icons/stroke-close.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './HighlightBanner.module.scss'
-
-export enum HighlightBannerVariant {
-  DEFAULT = 'default',
-  ADAGE = 'adage',
-}
-
-const HighlightBannerCloseButton = ({
-  variant,
-  onClose,
-}: {
-  variant: HighlightBannerVariant
-  onClose: React.MouseEventHandler<HTMLButtonElement>
-}) => {
-  return variant === HighlightBannerVariant.DEFAULT ? (
-    <Button
-      iconClassName={styles['close-svg']}
-      variant={ButtonVariant.TERTIARY}
-      color={ButtonColor.NEUTRAL}
-      icon={strokeCloseIcon}
-      aria-label="Fermer la bannière"
-      onClick={onClose}
-    />
-  ) : (
-    <button
-      type="button"
-      className={styles['close']}
-      aria-label="Masquer le bandeau"
-      onClick={onClose}
-    >
-      <SvgIcon src={fullClearIcon} alt="" width="24" />
-    </button>
-  )
-}
 
 interface HighlightBannerProps {
   title: string
@@ -49,7 +13,6 @@ interface HighlightBannerProps {
   localStorageKey: string
   img?: JSX.Element | string
   cta?: JSX.Element
-  variant?: HighlightBannerVariant
 }
 
 export const HighlightBanner = ({
@@ -58,7 +21,6 @@ export const HighlightBanner = ({
   localStorageKey,
   img,
   cta,
-  variant = HighlightBannerVariant.DEFAULT,
 }: HighlightBannerProps) => {
   const isLocalStorageAvailable = storageAvailable('localStorage')
   const [shouldHideHighlightBanner, setShouldHideHighlightBanner] = useState(
@@ -76,9 +38,8 @@ export const HighlightBanner = ({
 
   return (
     <div
-      className={cn(styles[`highlight-banner-${variant}`], {
-        [styles[`highlight-banner-${variant}-closed`]]:
-          shouldHideHighlightBanner,
+      className={cn(styles[`highlight-banner-adage`], {
+        [styles[`highlight-banner-adage-closed`]]: shouldHideHighlightBanner,
       })}
     >
       <div className={styles[`container`]}>
@@ -87,10 +48,14 @@ export const HighlightBanner = ({
         {cta}
       </div>
       {img && <div className={styles['img']}>{img}</div>}
-      <HighlightBannerCloseButton
-        variant={variant}
-        onClose={onCloseHighlightBanner}
-      />
+      <button
+        type="button"
+        className={styles['close']}
+        aria-label="Masquer le bandeau"
+        onClick={onCloseHighlightBanner}
+      >
+        <SvgIcon src={fullClearIcon} alt="" width="24" />
+      </button>
     </div>
   )
 }

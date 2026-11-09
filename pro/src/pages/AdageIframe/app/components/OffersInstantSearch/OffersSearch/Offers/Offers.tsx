@@ -28,10 +28,7 @@ import { LOGS_DATA } from '@/commons/utils/config'
 import { PASS_CULTURE_PREFIX } from '@/commons/utils/localStorageManager'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { AccessibleScrollContainer } from '@/components/AccessibleScrollContainer/AccessibleScrollContainer'
-import {
-  HighlightBanner,
-  HighlightBannerVariant,
-} from '@/components/HighlightBanner/HighlightBanner'
+import { HighlightBanner } from '@/components/HighlightBanner/HighlightBanner'
 import fullGoTopIcon from '@/icons/full-go-top.svg'
 import fullGridIcon from '@/icons/full-grid.svg'
 import fullListIcon from '@/icons/full-list.svg'
@@ -247,7 +244,6 @@ export const Offers = ({
                       className={styles['highlight-banner-icon']}
                     />
                   }
-                  variant={HighlightBannerVariant.ADAGE}
                 />
               )}
             </li>

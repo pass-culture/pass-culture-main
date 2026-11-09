@@ -47,54 +47,6 @@
   }
 }
 
-.highlight-banner-default {
-  width: 100%;
-  min-height: rem.torem(175px);
-  padding: var(--size-spacing-xl);
-  border-radius: var(--size-border-radius-m);
-  background: linear-gradient(180deg, #6123df 30%, #320096 70%);
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: var(--size-spacing-xl);
-  position: relative;
-
-  .container {
-    color: var(--color-text-inverted);
-    justify-content: center;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .title {
-    @include fonts.title3;
-  }
-
-  .description {
-    @include fonts.body-s;
-
-    margin-bottom: var(--size-spacing-l);
-  }
-
-  .close {
-    color: var(--color-text-inverted);
-    background: none;
-    border: none;
-    cursor: pointer;
-    min-width: rem.torem(20px);
-    min-height: rem.torem(20px);
-    margin-left: var(--size-spacing-s);
-    height: fit-content;
-
-    &-svg {
-      margin: 0 !important;
-    }
-
-    &:focus-visible {
-      outline-color: var(--color-border-inverted);
-    }
-  }
-}
-
 @media (max-width: size.$laptop) {
   .highlight-banner-adage {
     .img {

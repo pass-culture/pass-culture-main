@@ -19,7 +19,7 @@ describe('HighlightBanner', () => {
     screen.getByText('test title')
 
     const closeButton = screen.getByRole('button', {
-      name: 'Fermer la bannière',
+      name: 'Masquer le bandeau',
     })
 
     await userEvent.click(closeButton)
