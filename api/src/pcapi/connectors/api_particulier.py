@@ -177,7 +177,6 @@ def get_quotient_familial(
         "sexeEtatCivil": custodian.gender.name,
         "codeCogInseePaysNaissance": country_insee_code,
         "codeCogInseeCommuneNaissance": city_insee_code,
-        "nomCommuneNaissance": custodian.birth_city,
         "annee": at_date.year if at_date else None,
         "mois": at_date.month if at_date else None,
     }
@@ -240,7 +239,6 @@ def get_disabled_adult_allowance(person: bonus_schemas.BonusCreditPerson) -> Dis
         "sexeEtatCivil": person.gender.name,
         "codeCogInseePaysNaissance": country_insee_code,
         "codeCogInseeCommuneNaissance": city_insee_code,
-        "nomCommuneNaissance": person.birth_city,
     }
     response = requests.get(
         AAH_ENDPOINT,
@@ -309,7 +307,6 @@ def get_disabled_child_education_allowance(
         "sexeEtatCivil": person.gender.name,
         "codeCogInseePaysNaissance": country_insee_code,
         "codeCogInseeCommuneNaissance": city_insee_code,
-        "nomCommuneNaissance": person.birth_city,
     }
     response = requests.get(
         AEEH_ENDPOINT,
