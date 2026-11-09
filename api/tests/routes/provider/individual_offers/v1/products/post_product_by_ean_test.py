@@ -63,7 +63,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         response = self.make_request(plain_api_key, json_body=payload)
         assert response.status_code == 404
 
-    @mock.patch("pcapi.core.offers.tasks.create_or_update_ean_offers_celery.delay")
+    @mock.patch("pcapi.core.offers.tasks.create_or_update_ean_offers_celery_etl.delay")
     def test_create_or_update_offer_is_asynchronous(self, mock_delay):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         venue = venue_provider.venue
@@ -502,7 +502,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         venue = db.session.query(offerers_models.Venue).one()
         venue_provider = db.session.query(providers_models.VenueProvider).one()
 
-        log = next(record for record in caplog.records if "Error while creating offer by ean" == record.message)
+        log = next(record for record in caplog.records if "Error while updating offer by ean" == record.message)
 
         assert log.extra == {
             "ean": book_product.ean,

@@ -57,13 +57,14 @@ def _extract(request_payload: offers_schemas.CreateOrUpdateEANOffersRequest) -> 
     offers_to_update = _get_existing_offers(requested_eans, venue)
     offer_to_update_by_ean = {}
     ean_list_to_update: set[str] = set()
-    ean_list_to_create = requested_eans - ean_list_to_update
 
     for offer in offers_to_update:
         offer_ean = offer.ean
         assert offer_ean is not None
         ean_list_to_update.add(offer_ean)
         offer_to_update_by_ean[offer_ean] = offer
+
+    ean_list_to_create = requested_eans - ean_list_to_update
 
     products_by_ean = {}
     with atomic():
@@ -109,7 +110,7 @@ def _transform(
     for requested_ean in requested_eans:
         if requested_ean not in extract_result["products_by_ean"]:
             logger.warning(
-                "Product with ean not found",
+                "Some provided eans were not found",
                 extra={
                     "ean": requested_ean,
                     "venue": request_payload.venue_id,
