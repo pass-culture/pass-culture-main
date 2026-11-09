@@ -3096,6 +3096,7 @@
                     "itemCollectionDetails": {
                         "description": "Further information that will be provided to attendees to ease the offer collection.",
                         "example": "Opening hours, specific office, collection period, access code, email announcement...",
+                        "maxLength": 500,
                         "nullable": true,
                         "title": "Itemcollectiondetails",
                         "type": "string"
@@ -3400,6 +3401,7 @@
                     "itemCollectionDetails": {
                         "description": "Further information that will be provided to attendees to ease the offer collection.",
                         "example": "Opening hours, specific office, collection period, access code, email announcement...",
+                        "maxLength": 500,
                         "nullable": true,
                         "title": "Itemcollectiondetails",
                         "type": "string"
@@ -3677,6 +3679,7 @@
                     "itemCollectionDetails": {
                         "description": "Further information that will be provided to attendees to ease the offer collection.",
                         "example": "Opening hours, specific office, collection period, access code, email announcement...",
+                        "maxLength": 500,
                         "nullable": true,
                         "title": "Itemcollectiondetails",
                         "type": "string"
@@ -7643,6 +7646,7 @@
                     "itemCollectionDetails": {
                         "description": "Further information that will be provided to attendees to ease the offer collection.",
                         "example": "Opening hours, specific office, collection period, access code, email announcement...",
+                        "maxLength": 500,
                         "nullable": true,
                         "title": "Itemcollectiondetails",
                         "type": "string"
@@ -7892,6 +7896,7 @@
                     "itemCollectionDetails": {
                         "description": "Further information that will be provided to attendees to ease the offer collection.",
                         "example": "Opening hours, specific office, collection period, access code, email announcement...",
+                        "maxLength": 500,
                         "nullable": true,
                         "title": "Itemcollectiondetails",
                         "type": "string"
@@ -8231,6 +8236,7 @@
                     "itemCollectionDetails": {
                         "description": "Further information that will be provided to attendees to ease the offer collection.",
                         "example": "Opening hours, specific office, collection period, access code, email announcement...",
+                        "maxLength": 500,
                         "nullable": true,
                         "title": "Itemcollectiondetails",
                         "type": "string"

@@ -86,6 +86,7 @@ class Returns200Test(PatchProductEndpointHelper):
             ("bookingEmail", "bookingEmail", "nouvelle-adresse@salle-de-concert.example.com"),
             ("bookingContact", "bookingContact", "nouveau-contact@salle-de-concert.example.com"),
             ("itemCollectionDetails", "withdrawalDetails", "À retirer au vestiaire"),
+            ("itemCollectionDetails", "withdrawalDetails", "a" * 500),
             (
                 "externalTicketOfficeUrl",
                 "externalTicketOfficeUrl",
@@ -1445,8 +1446,15 @@ class Returns400Test(PatchProductEndpointHelper):
             ("name", "a" * 141, "ensure this value has at most 140 characters"),
             ("description", "a" * 10_001, "ensure this value has at most 10000 characters"),
             ("idAtProvider", "a" * 71, "ensure this value has at most 70 characters"),
+            ("itemCollectionDetails", "a" * 501, "ensure this value has at most 500 characters"),
         ],
-        ids=["name empty", "name too long", "description too long", "idAtProvider too long"],
+        ids=[
+            "name empty",
+            "name too long",
+            "description too long",
+            "idAtProvider too long",
+            "itemCollectionDetails too long",
+        ],
     )
     def test_should_raise_400_because_a_text_field_length_is_out_of_bounds(self, request_field, value, expected_error):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
