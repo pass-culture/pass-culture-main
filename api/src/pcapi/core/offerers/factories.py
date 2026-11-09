@@ -458,15 +458,7 @@ class OffererAddressFactory(BaseFactory[models.OffererAddress]):
 
     label: factory.declarations.BaseDeclaration | None = factory.Sequence("Address label {}".format)
     address = factory.SubFactory(geography_factories.AddressFactory)
-
-    @classmethod
-    def _create(
-        cls, model_class: type[models.OffererAddress], *args: typing.Any, **kwargs: typing.Any
-    ) -> models.OffererAddress:
-        venue = kwargs.get("venue")
-        if not venue:
-            kwargs["venue"] = VenueFactory.create()
-        return super()._create(model_class, *args, **kwargs)
+    venue = factory.SubFactory(VenueFactory)
 
 
 class VenueLocationFactory(OffererAddressFactory):
