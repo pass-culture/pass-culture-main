@@ -830,9 +830,10 @@ def create_collective_booking_overpayment(collective_booking_id: int) -> respons
     if not collective_booking:
         raise NotFound()
 
-    if collective_booking.status != educational_models.CollectiveBookingStatus.REIMBURSED:
-        # it is forbidden to create an overpayment on a booking with status PENDING_REIMBURSEMENT
-        flash("Un incident ne peut être créé que sur une réservation remboursée", "warning")
+    if not collective_booking.is_pending_reimbursement_or_reimbursed:
+        flash(
+            "Un incident ne peut être créé que sur une réservation remboursée ou en attente de remboursement", "warning"
+        )
         mark_transaction_as_invalid()
         if request_utils.is_request_from_htmx():
             return _render_collective_bookings([collective_booking_id])

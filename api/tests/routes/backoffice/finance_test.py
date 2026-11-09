@@ -14,6 +14,7 @@ from pcapi.core.bookings import api as bookings_api
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.educational import factories as educational_factories
+from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import api
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
@@ -2253,10 +2254,16 @@ class CreateCollectiveBookingOverpaymentTest(PostEndpointHelper):
     endpoint_kwargs = {"collective_booking_id": 1}
     needed_permission = perm_models.Permissions.CREATE_INCIDENTS
 
-    @pytest.mark.parametrize("zendesk_id", [None, 1])
-    @pytest.mark.parametrize("comment", [None, "Commentaire facultatif"])
-    def test_create_incident(self, authenticated_client, zendesk_id, comment):
-        collective_booking = educational_factories.ReimbursedCollectiveBookingFactory(
+    @pytest.mark.parametrize(
+        "zendesk_id, comment, status",
+        [
+            (None, "Commentaire facultatif", educational_models.CollectiveBookingStatus.REIMBURSED),
+            (1, None, educational_models.CollectiveBookingStatus.PENDING_REIMBURSEMENT),
+        ],
+    )
+    def test_create_incident(self, authenticated_client, zendesk_id, comment, status):
+        collective_booking = educational_factories.CollectiveBookingFactory(
+            status=status,
             pricings=[finance_factories.CollectivePricingFactory(status=finance_models.PricingStatus.INVOICED)],
         )
 
