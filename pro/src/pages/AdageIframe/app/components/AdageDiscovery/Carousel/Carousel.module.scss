@@ -27,6 +27,10 @@
     gap: var(--size-spacing-l);
     scroll-behavior: smooth;
     padding: rem.torem(20px) var(--size-spacing-xl);
+
+    @media (prefers-reduced-motion: reduce) {
+      scroll-behavior: auto;
+    }
   }
 
   &-loading {
@@ -36,4 +40,3 @@
     justify-content: center;
   }
 }
-

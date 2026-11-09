@@ -113,8 +113,8 @@ export const RequestFormDialog = ({
     reset()
   }
 
-  const closeDialog = () => {
-    onCancel()
+  const closeDialog = async () => {
+    await onCancel()
     onCloseDialog()
   }
 

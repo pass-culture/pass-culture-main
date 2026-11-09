@@ -1,10 +1,10 @@
 @use "styles/mixins/_size.scss" as size;
 
 .media-row {
-  gap: 0 !important;
+  gap: 0;
 
   @media screen and (min-width: size.$laptop) {
-    gap: var(--size-spacing-3xl) !important;
+    gap: var(--size-spacing-3xl);
   }
 }
 

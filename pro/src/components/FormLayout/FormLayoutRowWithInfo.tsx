@@ -31,7 +31,7 @@ export const RowWithInfo = ({
   const sideComponentId = useId()
   return (
     <Row
-      className={cn(className, style['form-layout-row-info'])}
+      className={cn(style['form-layout-row-info'], className)}
       lgSpaceAfter={lgSpaceAfter}
       mdSpaceAfter={mdSpaceAfter}
       smSpaceAfter={smSpaceAfter}
