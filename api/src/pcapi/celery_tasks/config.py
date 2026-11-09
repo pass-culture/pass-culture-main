@@ -1,6 +1,8 @@
+import ssl
 import typing
 
 from pcapi import settings
+from pcapi.utils.redis import GoogleTokenProvider
 
 
 # Queues for asynchronous call to external services
@@ -11,8 +13,23 @@ CELERY_EXTERNAL_CALLS_PRIORITY_QUEUE_NAME = "celery.external_calls.priority"  # 
 CELERY_INTERNAL_CALLS_DEFAULT_QUEUE_NAME = "celery.internal_calls.default"  # Default priority
 CELERY_INTERNAL_CALLS_PRIORITY_QUEUE_NAME = "celery.internal_calls.priority"  # High priority
 
+
+broker_ssl_settings: dict | bool
+if settings.GCP_REDIS_CA_PATH:
+    broker_ssl_settings = {
+        "ssl_ca_certs": settings.GCP_REDIS_CA_PATH,
+        "ssl_cert_reqs": ssl.CERT_REQUIRED,
+    }
+    credential_provider = f"{GoogleTokenProvider.__module__}.{GoogleTokenProvider.__name__}"
+    redis_url = f"{settings.REDIS_URL}?credential_provider={credential_provider}"
+else:
+    broker_ssl_settings = False
+    redis_url = settings.REDIS_URL
+
+
 CELERY_BASE_SETTINGS: typing.Final = {
-    "broker_url": settings.REDIS_URL,
+    "broker_url": redis_url,
+    "broker_use_ssl": broker_ssl_settings,
     "task_acks_late": True,
     "task_reject_on_worker_lost": True,
     "task_serializer": "json",
