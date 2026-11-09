@@ -1,14 +1,21 @@
 {
-    "hitsPerPage": 20,
-    "version": 2,
-    "searchableAttributes": [
-        "name"
-    ],
-    "attributesToRetrieve": null,
-    "distinct": true,
-    "attributesForFaceting": [
-        "searchable(name)"
-    ],
-    "attributesToSnippet": null,
-    "attributesToHighlight": null
+  "hitsPerPage": 20,
+  "version": 2,
+  "replicas": ["artists-variant"],
+  "searchableAttributes": ["name"],
+  "attributesToRetrieve": null,
+  "distinct": true,
+  "attributesForFaceting": ["searchable(name)"],
+  "attributesToSnippet": null,
+  "attributesToHighlight": null,
+  "ranking": [
+    "typo",
+    "geo",
+    "words",
+    "filters",
+    "proximity",
+    "attribute",
+    "exact",
+    "custom"
+  ]
 }
