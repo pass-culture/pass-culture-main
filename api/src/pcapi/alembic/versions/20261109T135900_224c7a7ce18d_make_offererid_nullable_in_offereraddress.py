@@ -1,4 +1,4 @@
-"""set_offererid_not_null_in_offereraddress"""
+"""make_offererId_nullable_in_offereraddress"""
 
 import sqlalchemy as sa
 from alembic import op
@@ -6,7 +6,7 @@ from alembic import op
 
 # pre/post deployment: pre
 # revision identifiers, used by Alembic.
-revision = "0137ef79f2dc"
+revision = "224c7a7ce18d"
 down_revision = "8674a7978007"
 branch_labels: tuple[str] | None = None
 depends_on: list[str] | None = None
