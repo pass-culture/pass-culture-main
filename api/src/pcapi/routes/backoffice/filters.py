@@ -766,15 +766,17 @@ def format_booking_status(
     return format_badge("Réservée", "info") if with_badge else "Réservée"
 
 
-def format_validation_status(status: validation_status_mixin.ValidationStatus) -> str:
+def format_validation_status(
+    status: validation_status_mixin.ValidationStatus | offerers_models.VenueValidationStatus,
+) -> str:
     match status:
         case validation_status_mixin.ValidationStatus.NEW:
             return "Nouveau"
-        case validation_status_mixin.ValidationStatus.PENDING:
+        case validation_status_mixin.ValidationStatus.PENDING | offerers_models.VenueValidationStatus.PENDING:
             return "En attente"
-        case validation_status_mixin.ValidationStatus.VALIDATED:
+        case validation_status_mixin.ValidationStatus.VALIDATED | offerers_models.VenueValidationStatus.APPROVED:
             return "Validé"
-        case validation_status_mixin.ValidationStatus.REJECTED:
+        case validation_status_mixin.ValidationStatus.REJECTED | offerers_models.VenueValidationStatus.REJECTED:
             return "Rejeté"
         case validation_status_mixin.ValidationStatus.DELETED:
             return "Supprimé"
