@@ -1,3 +1,4 @@
+import re
 import typing
 from urllib.parse import urlparse
 
@@ -7,6 +8,7 @@ from flask_wtf import FlaskForm
 from wtforms import validators
 
 from pcapi.connectors import acceslibre as acceslibre_connector
+from pcapi.connectors.dms.models import GraphQLApplicationStates
 from pcapi.core.geography import constants as geography_constants
 from pcapi.core.offerers import constants as offerers_constants
 from pcapi.core.offerers import models as offerers_models
@@ -17,9 +19,14 @@ from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.forms import fields
 from pcapi.routes.backoffice.forms import utils
 from pcapi.routes.backoffice.forms.constants import area_choices
+from pcapi.routes.backoffice.utils import tags as tags_utils
 from pcapi.routes.backoffice.utils.access_control import has_current_user_permission
 from pcapi.routes.backoffice.utils.geography import get_regions_choices
 from pcapi.utils import siren as siren_utils
+from pcapi.utils import string as string_utils
+
+
+DIGITS_AND_WHITESPACES_REGEX = re.compile(r"^[\d\s]+$")
 
 
 class EditVenueForm(utils.PCForm):
@@ -331,3 +338,119 @@ class CloseVenueForm(utils.PCForm):
 
 class ReopenVenueForm(utils.PCForm):
     comment = fields.PCOptCommentField("Motif de la réouverture (optionnel)")
+
+
+class VenueValidationListForm(utils.PCForm):
+    class Meta:
+        csrf = False
+
+    q = fields.PCOptSearchField("Nom, SIREN, code postal, dép., ville, email, nom de compte pro, ID DN CB")
+    regions = fields.PCSelectMultipleField("Régions", choices=get_regions_choices())
+    tags = fields.PCQuerySelectMultipleField(
+        "Tags",
+        query_factory=tags_utils.get_all_offerer_tags_query,
+        get_pk=lambda tag: tag.id,
+        get_label=lambda tag: tag.label or tag.name,
+    )
+    status = fields.PCSelectMultipleField(
+        "États",
+        choices=utils.choices_from_enum(
+            offerers_models.VenueValidationStatus, formatter=filters.format_validation_status
+        ),
+    )
+    ae_documents_received = fields.PCSelectMultipleField(
+        "Documents reçus",
+        choices=[("yes", "Oui"), ("no", "Non")],
+    )
+    instructors = fields.PCTomSelectField(
+        "Dernier instructeur",
+        multiple=True,
+        choices=[],
+        validate_choice=False,
+        endpoint="backoffice.autocomplete_bo_users",
+    )
+    dms_adage_status = fields.PCSelectMultipleField(
+        "États du dossier DN ADAGE",
+        choices=utils.choices_from_enum(GraphQLApplicationStates, filters.format_dms_application_status),
+    )
+    from_date = fields.PCDateField("Demande à partir du", validators=(wtforms.validators.Optional(),))
+    to_date = fields.PCDateField("Demande jusqu'au", validators=(wtforms.validators.Optional(),))
+
+    page = wtforms.HiddenField("page", default="1", validators=(wtforms.validators.Optional(),))
+    limit = fields.PCLimitField(
+        "Nombre maximum de résultats",
+        choices=(
+            (10, "Afficher 10 résultats maximum"),
+            (25, "Afficher 25 résultats maximum"),
+            (50, "Afficher 50 résultats maximum"),
+            (100, "Afficher 100 résultats maximum"),
+        ),
+        default="100",
+        coerce=int,
+        validators=(wtforms.validators.Optional(),),
+    )
+
+    order = wtforms.HiddenField(
+        "order", default="desc", validators=(wtforms.validators.Optional(), wtforms.validators.AnyOf(("asc", "desc")))
+    )
+    sort = wtforms.HiddenField(
+        "sort",
+        default="dateCreated",
+        validators=(wtforms.validators.Optional(), wtforms.validators.AnyOf(("dateCreated",))),
+    )
+
+    def validate_q(self, q: fields.PCOptSearchField) -> fields.PCOptSearchField:
+        if q.data:
+            # Remove spaces from SIREN, IDs, postal code
+            if DIGITS_AND_WHITESPACES_REGEX.match(q.data):
+                q.data = re.sub(r"\s+", "", q.data)
+            if string_utils.is_numeric(q.data) and len(q.data) not in (
+                2,  # department
+                3,  # department
+                5,  # postal code
+                siren_utils.RID7_LENGTH,
+                siren_utils.SIREN_LENGTH,
+                12,  # Démarche Numérique
+            ):
+                raise wtforms.validators.ValidationError(
+                    "Le nombre de chiffres ne correspond pas à un SIREN, RID7, code postal, département ou ID DN CB"
+                )
+        return q
+
+
+class OptionalCommentForm(FlaskForm):
+    comment = fields.PCOptCommentField("Commentaire interne (optionnel)")
+
+
+class VenueValidationForm(OptionalCommentForm):
+    review_all_offers = fields.PCSwitchBooleanField("Revue manuelle de toutes les offres")
+
+
+class BatchVenueValidationForm(empty_forms.BatchForm, VenueValidationForm):
+    pass
+
+
+class VenueRejectionForm(OptionalCommentForm):
+    rejection_reason = fields.PCSelectField(
+        "Raison du rejet",
+        choices=utils.choices_from_enum(
+            offerers_models.OffererRejectionReason, filters.format_offerer_rejection_reason
+        ),
+    )
+
+
+class BatchVenueRejectionForm(empty_forms.BatchForm, VenueRejectionForm):
+    pass
+
+
+class CommentAndTagVenueForm(OptionalCommentForm):
+    tags = fields.PCQuerySelectMultipleField(
+        "Tags Homologation",
+        query_factory=tags_utils.get_validation_tags_query,
+        get_pk=lambda tag: tag.id,
+        get_label=lambda tag: tag.label or tag.name,
+    )
+
+
+class BatchCommentAndTagVenueForm(empty_forms.BatchForm, CommentAndTagVenueForm):
+    pass

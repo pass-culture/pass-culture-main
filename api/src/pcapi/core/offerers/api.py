@@ -3917,3 +3917,200 @@ def notify_tagged_venues_still_closed(days_count: int) -> None:
                 },
             ),
         )
+
+
+# def tag_offerer(offerer: offerers_models.Offerer,    tags_to_add: typing.Iterable[offerers_models.OffererTag] | None = None,
+#     tags_to_remove: typing.Iterable[offerers_models.OffererTag] | None = None,
+#  ) -> None:
+#     pass  # TODO
+
+
+def set_venue_pending(
+    venue: offerers_models.Venue,
+    author_user: users_models.User,
+    comment: str | None = None,
+    tags_to_add: typing.Iterable[offerers_models.OffererTag] | None = None,
+    tags_to_remove: typing.Iterable[offerers_models.OffererTag] | None = None,
+) -> None:
+    was_validated = venue.validationStatus == offerers_models.VenueValidationStatus.APPROVED
+    venue.validationStatus = offerers_models.VenueValidationStatus.PENDING
+
+    offerer = venue.managingOfferer
+    applicants = users_repository.get_users_with_validated_attachment_by_offerer(offerer)
+    remove_pro_role_and_add_non_attached_pro_role(applicants)
+
+    extra_data = {}
+    if tags_to_add or tags_to_remove:
+        extra_data["modified_info"] = {
+            "tags": {
+                "old_info": _format_tags(tags_to_remove or set()),
+                "new_info": _format_tags(tags_to_add or set()),
+            }
+        }
+        if tags_to_add:
+            offerer.tags += list(tags_to_add)
+        if tags_to_remove:
+            offerer.tags = [tag for tag in offerer.tags if tag not in tags_to_remove]
+
+    history_api.add_action(
+        history_constants.ActionType.VENUE_PENDING,
+        author=author_user,
+        offerer=offerer,
+        venue=venue,
+        user=None,  # otherwise mypy does not accept extra_data dict
+        finance_incident=None,  # otherwise mypy does not accept extra_data dict
+        bank_account=None,  # otherwise mypy does not accept extra_data dict
+        rule=None,  # otherwise mypy does not accept extra_data dict
+        chronicle=None,  # otherwise mypy does not accept extra_data dict
+        user_profile_refresh_campaign=None,
+        comment=comment,
+        **extra_data,
+    )
+
+    db.session.flush()
+
+    if was_validated:  # in case it was validated by mistake, then moved to PENDING state again
+        _update_external_venue(venue, index_with_reason=IndexationReason.OFFERER_DEACTIVATION)
+
+
+def _get_user_who_registered_venue(
+    venue: offerers_models.Venue, attached_users: list[users_models.User]
+) -> users_models.User | None:
+    venue_created_action = (
+        db.session.query(history_models.ActionHistory)
+        .filter(
+            history_models.ActionHistory.actionType == history_constants.ActionType.VENUE_CREATED,
+            history_models.ActionHistory.venueId == venue.id,
+        )
+        .order_by(history_models.ActionHistory.actionDate.desc())
+        .options(sa_orm.joinedload(history_models.ActionHistory.authorUser))
+        .first()
+    )
+
+    if venue_created_action:
+        return venue_created_action.user
+
+    if attached_users:
+        return attached_users[0]
+
+    return None
+
+
+def validate_venue(
+    venue: offerers_models.Venue,
+    author_user: users_models.User,
+    review_all_offers: bool = False,
+    **action_args: typing.Any,
+) -> None:
+    if venue.validationStatus == offerers_models.VenueValidationStatus.APPROVED:
+        raise exceptions.VenueAlreadyApprovedException()
+
+    applicants = users_repository.get_users_with_validated_attachment_by_offerer(venue.managingOfferer)
+    user_who_registered_venue = _get_user_who_registered_venue(venue, applicants)
+    venue.validationStatus = offerers_models.VenueValidationStatus.APPROVED
+
+    # Temporarily synchronize status until Offerer.validationStatus column is dropped
+    venue.managingOfferer.validationStatus = ValidationStatus.VALIDATED
+
+    for applicant in applicants:
+        applicant.add_pro_role()
+    db.session.add_all(applicants)
+
+    if review_all_offers:
+        action_args |= _internal_update_fraud_info(
+            venue=venue, confidence_level=offerers_models.OffererConfidenceLevel.MANUAL_REVIEW
+        )
+
+        # Offers created before validation should be reviewed
+        db.session.query(offers_models.Offer).filter(
+            offers_models.Offer.venueId == venue.id,
+            offers_models.Offer.lastValidationType == offer_mixin.OfferValidationType.AUTO,
+            offers_models.Offer.validation == offer_mixin.OfferValidationStatus.APPROVED,
+        ).update(
+            {
+                "validation": offer_mixin.OfferValidationStatus.PENDING,
+                "lastValidationType": None,
+                "lastValidationDate": None,
+                "lastValidationPrice": None,
+            },
+            synchronize_session=False,
+        )
+
+    history_api.add_action(
+        history_constants.ActionType.VENUE_APPROVED,
+        author=author_user,
+        offerer=venue.managingOfferer,
+        venue=venue,
+        user=user_who_registered_venue,
+        **action_args,
+    )
+
+    db.session.flush()
+
+    _update_external_venue(venue, index_with_reason=IndexationReason.OFFERER_VALIDATION)
+
+    if applicants:
+        transactional_mails.send_new_offerer_validation_email_to_pro(venue.managingOfferer)
+
+    if venue.adageId:
+        emails = offerers_repository.get_emails_by_venue(venue)
+        transactional_mails.send_eac_offerer_activation_email(venue, list(emails))
+
+
+def reject_venue(
+    venue: offerers_models.Venue, author_user: users_models.User | None, **action_args: typing.Any
+) -> None:
+    if venue.validationStatus == offerers_models.VenueValidationStatus.REJECTED:
+        raise exceptions.VenueAlreadyRejectedException()
+
+    applicants = users_repository.get_users_with_validated_attachment(venue.managingOfferer)
+    user_who_registered_venue = _get_user_who_registered_venue(venue, applicants)
+
+    was_validated = venue.validationStatus == offerers_models.VenueValidationStatus.APPROVED
+    venue.validationStatus = offerers_models.VenueValidationStatus.REJECTED
+
+    history_api.add_action(
+        history_constants.ActionType.VENUE_REJECTED,
+        author=author_user,
+        offerer=venue.managingOfferer,
+        venue=venue,
+        user=user_who_registered_venue,
+        **action_args,
+    )
+
+    if applicants:
+        # TODO un mail spécifique pour le rejet d'un partenaire culturel
+        transactional_mails.send_new_offerer_rejection_email_to_pro(
+            venue.managingOfferer,
+            action_args.get("rejection_reason"),
+        )
+
+    offerer_has_other_venues = db.session.query(
+        db.session.query(offerers_models.Venue)
+        .filter(
+            offerers_models.Venue.managingOffererId == venue.managingOffererId,
+            offerers_models.Venue.id != venue.id,
+            offerers_models.Venue.validationStatus != offerers_models.VenueValidationStatus.REJECTED,
+        )
+        .exists()
+    ).scalar()
+
+    if not offerer_has_other_venues:
+        # Temporarily synchronize status until Offerer.validationStatus column is dropped
+        venue.managingOfferer.validationStatus = ValidationStatus.REJECTED
+
+        users_offerer = db.session.query(offerers_models.UserOfferer).filter_by(offererId=venue.managingOffererId).all()
+        for user_offerer in users_offerer:
+            reject_offerer_attachment(
+                user_offerer,
+                author_user,
+                "Compte pro rejeté suite au rejet du partenaire culturel",
+                send_email=(user_offerer.user not in applicants),  # do not send a second email
+            )
+
+        remove_pro_role_and_add_non_attached_pro_role(applicants)
+
+    db.session.flush()
+
+    if was_validated:
+        _update_external_venue(venue, index_with_reason=IndexationReason.OFFERER_DEACTIVATION)
