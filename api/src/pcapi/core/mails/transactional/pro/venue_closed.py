@@ -36,9 +36,15 @@ def send_venue_closed_email(venue_id: int) -> None:
 
     author = db.session.query(users_models.User).filter_by(id=history_event.authorUserId).one_or_none()
     if author:
-        recipients = [author.email]
-    else:
-        recipients = [v.bookingEmail for v in venue.managingOfferer.managedVenues if v.bookingEmail]
+        if not author.backoffice_profile:
+            recipients = [author.email]
+        else:
+            author = None
+    if not author:
+        if venue.bookingEmail:
+            recipients = [venue.bookingEmail]
+        else:
+            recipients = [v.bookingEmail for v in venue.managingOfferer.managedVenues if v.bookingEmail]
 
     if not recipients:
         return

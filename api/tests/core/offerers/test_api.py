@@ -4476,7 +4476,13 @@ class CloseVenueTest:
 
     @patch("pcapi.core.mails.transactional.send_venue_closed_email")
     @patch("pcapi.core.mails.transactional.send_venue_closure_request_email")
-    @pytest.mark.parametrize("send_mail", (True, False))
+    @pytest.mark.parametrize(
+        "send_mail",
+        (
+            pytest.param(True, id="send_mail"),
+            pytest.param(False, id="do_not_send_mail"),
+        ),
+    )
     def test_open_venue_becomes_closed(
         self,
         mock_send_venue_closure_request_email,
