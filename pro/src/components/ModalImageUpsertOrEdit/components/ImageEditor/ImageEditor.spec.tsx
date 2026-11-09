@@ -11,7 +11,6 @@ vi.mock('use-debounce', async () => ({
 
 describe('ImageEditor', () => {
   const mockImage = new File(
-    // Use Uint8Array with JPEG signature bytes so react-avatar-editor file reader accept it.
     [new Uint8Array([0xff, 0xd8, 0xff, 0xe0])],
     'image.jpg',
     {
@@ -19,6 +18,19 @@ describe('ImageEditor', () => {
     }
   )
   const initialInnerWidth = global.innerWidth
+
+  beforeEach(() => {
+    vi.spyOn(FileReader.prototype, 'readAsDataURL').mockImplementation(
+      function (this: FileReader) {
+        queueMicrotask(() => {
+          Object.defineProperty(this, 'result', {
+            value: 'data:image/jpeg;base64,/9j/4A==',
+          })
+          this.dispatchEvent(new ProgressEvent('load'))
+        })
+      }
+    )
+  })
 
   afterEach(() => {
     global.innerWidth = initialInnerWidth
