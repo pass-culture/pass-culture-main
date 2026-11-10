@@ -120,3 +120,7 @@ class VideoFeatures(enum.StrEnum):
     LASER = "LASER"
     MX_4D = "MX_4D"
     MX_4D_3D = "MX_4D_3D"
+
+
+class OfferAccessibilityEnum(enum.StrEnum):
+    LARGE_PRINT = "LARGE_PRINT"
