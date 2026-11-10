@@ -21,6 +21,8 @@ logger = logging.getLogger(__name__)
 TOKEN_CACHE_DURATION = 3600  # in seconds = 1h
 REDIS_TOKEN_CACHE_KEY = "cache:cegid:token"
 
+GET_SETTLEMENTS_TIMEOUT = 900  # Cegid takes a very long time to collect all lines, a longer timeout is safer.
+
 INVENTORY_IDS = {
     "ORINDGRANT_18": "ORIND18P0000",
     "OCINDGRANT_18": "CTIND18P0000",
@@ -344,7 +346,7 @@ class CegidFinanceBackend(BaseFinanceBackend):
             url,
             params={"$expand": "PaymentStatusDetails"},
             json={"Date": {"value": from_date_filter}, "EndDate": {"value": to_date_filter}},
-            timeout=180,  # Cegid takes time to collect all lines, a longer timeout is safer.
+            timeout=GET_SETTLEMENTS_TIMEOUT,
         )
 
         if response.status_code != 200:
