@@ -58,7 +58,7 @@ def get_invoices(query: finance_serialize.InvoiceListQueryModel) -> finance_seri
     if not offerer_has_invoice:
         return finance_serialize.InvoiceListResponseModel(hasInvoice=offerer_has_invoice, invoices=[])
 
-    invoices = repository.get_paid_invoices_query(
+    invoices = repository.get_invoices_query(
         current_user,
         bank_account_id=query.bank_account_id,
         date_from=query.period_beginning_date,

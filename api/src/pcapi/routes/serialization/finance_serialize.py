@@ -162,12 +162,8 @@ class SettlementResponseModel(HttpBodyModel):
 
     @classmethod
     def build(cls, settlement: models.Settlement) -> typing.Self:
-        # show paid invoices only and sort in sync with the GET invoices route
-        invoices = sorted(
-            (invoice for invoice in settlement.invoices if invoice.status == models.InvoiceStatus.PAID),
-            key=lambda i: i.date,
-            reverse=True,
-        )
+        # sort invoices in sync with the GET invoices route
+        invoices = sorted(settlement.invoices, key=lambda i: i.date, reverse=True)
 
         # these fields are computed differently depending on the settlement amount sign
         label: str | None

@@ -25,20 +25,15 @@ class GetSettlementsTest:
     num_queries += 1  # get settlements
 
     def test_get_settlements(self, client: TestClient):
+        now = get_naive_utc_now()
         user_offerer = offerers_factories.UserOffererFactory()
         bank_account_1 = factories.BankAccountFactory(label="account 1", offerer=user_offerer.offerer)
         bank_account_2 = factories.BankAccountFactory(label="account 2", offerer=user_offerer.offerer)
 
-        batch_1 = factories.SettlementBatchFactory(
-            name="VIR1", dateValidated=get_naive_utc_now() - datetime.timedelta(days=1)
-        )
-        batch_2 = factories.SettlementBatchFactory(
-            name="VIR2", dateValidated=get_naive_utc_now() - datetime.timedelta(days=2)
-        )
+        batch_1 = factories.SettlementBatchFactory(name="VIR1", dateValidated=now - datetime.timedelta(days=1))
+        batch_2 = factories.SettlementBatchFactory(name="VIR2", dateValidated=now - datetime.timedelta(days=2))
         # this batch name will be displayed as VIR3
-        batch_3 = factories.SettlementBatchFactory(
-            name="VIR3-1", dateValidated=get_naive_utc_now() - datetime.timedelta(days=3)
-        )
+        batch_3 = factories.SettlementBatchFactory(name="VIR3-1", dateValidated=now - datetime.timedelta(days=3))
 
         executed_settlement_1 = factories.SettlementFactory(
             status=models.SettlementStatus.EXECUTED,
@@ -57,7 +52,7 @@ class GetSettlementsTest:
             status=models.InvoiceStatus.PAID,
             reference="F301234567",
             amount=-10000,
-            date=get_naive_utc_now() - datetime.timedelta(days=2),
+            date=now - datetime.timedelta(days=2),
             bankAccount=bank_account_2,
             settlements=[executed_settlement_2],
         )
@@ -65,16 +60,23 @@ class GetSettlementsTest:
             status=models.InvoiceStatus.PAID,
             reference="F301234568",
             amount=-10000,
-            date=get_naive_utc_now() - datetime.timedelta(days=1),
+            date=now - datetime.timedelta(days=1),
             bankAccount=bank_account_2,
             settlements=[executed_settlement_2],
         )
-        # these two non-paid invoices will no appear in the result
-        factories.InvoiceFactory(
-            status=models.InvoiceStatus.PENDING, bankAccount=bank_account_2, settlements=[executed_settlement_2]
+        pending_invoice = factories.InvoiceFactory(
+            status=models.InvoiceStatus.PENDING,
+            amount=0,
+            date=now - datetime.timedelta(days=3),
+            bankAccount=bank_account_2,
+            settlements=[executed_settlement_2],
         )
-        factories.InvoiceFactory(
-            status=models.InvoiceStatus.PENDING_PAYMENT, bankAccount=bank_account_2, settlements=[executed_settlement_2]
+        pending_payment_invoice = factories.InvoiceFactory(
+            status=models.InvoiceStatus.PENDING_PAYMENT,
+            amount=0,
+            date=now - datetime.timedelta(days=4),
+            bankAccount=bank_account_2,
+            settlements=[executed_settlement_2],
         )
         rejected_settlement = factories.SettlementFactory(
             status=models.SettlementStatus.REJECTED,
@@ -124,6 +126,20 @@ class GetSettlementsTest:
                             "amount": 100,
                             "url": paid_invoice_1.url,
                             "status": "paid",
+                        },
+                        {
+                            "reference": pending_invoice.reference,
+                            "date": pending_invoice.date.date().isoformat(),
+                            "amount": 0,
+                            "url": pending_invoice.url,
+                            "status": "pending",
+                        },
+                        {
+                            "reference": pending_payment_invoice.reference,
+                            "date": pending_payment_invoice.date.date().isoformat(),
+                            "amount": 0,
+                            "url": pending_payment_invoice.url,
+                            "status": "pending_payment",
                         },
                     ],
                     "resolvedBy": [],
