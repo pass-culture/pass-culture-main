@@ -1320,34 +1320,6 @@ export const zGetVenuePricingPointResponseModel = z.object({
 });
 
 /**
- * HasInvoiceQueryModel
- */
-export const zHasInvoiceQueryModel = z.object({
-    offererId: z.int()
-});
-
-/**
- * HasInvoiceResponseModel
- */
-export const zHasInvoiceResponseModel = z.object({
-    hasInvoice: z.boolean()
-});
-
-/**
- * HasSettlementQueryModel
- */
-export const zHasSettlementQueryModel = z.object({
-    offererId: z.int()
-});
-
-/**
- * HasSettlementResponseModel
- */
-export const zHasSettlementResponseModel = z.object({
-    hasSettlement: z.boolean()
-});
-
-/**
  * HeadlineOfferCreationBodyModel
  */
 export const zHeadlineOfferCreationBodyModel = z.object({
@@ -1416,7 +1388,7 @@ export const zInvoiceListQueryModel = z.object({
     amountNegativeOnly: z.boolean().nullish().default(null),
     amountPositiveOnly: z.boolean().nullish().default(null),
     bankAccountId: z.int().nullish().default(null),
-    offererId: z.int().nullish().default(null),
+    offererId: z.int(),
     periodBeginningDate: z.iso.date().nullish().default(null),
     periodEndingDate: z.iso.date().nullish().default(null)
 });
@@ -1444,7 +1416,10 @@ export const zInvoiceResponseModel = z.object({
 /**
  * InvoiceListResponseModel
  */
-export const zInvoiceListResponseModel = z.array(zInvoiceResponseModel);
+export const zInvoiceListResponseModel = z.object({
+    hasInvoice: z.boolean(),
+    invoices: z.array(zInvoiceResponseModel)
+});
 
 /**
  * LegalStatusResponseModel
@@ -2218,7 +2193,10 @@ export const zSettlementResponseModel = z.object({
 /**
  * SettlementListResponseModel
  */
-export const zSettlementListResponseModel = z.array(zSettlementResponseModel);
+export const zSettlementListResponseModel = z.object({
+    hasSettlement: z.boolean(),
+    settlements: z.array(zSettlementResponseModel)
+});
 
 /**
  * ShortHighlightResponseModel
@@ -3966,29 +3944,11 @@ export const zGetCombinedInvoicesQuery = z.object({
     invoiceReferences: z.array(z.string())
 });
 
-export const zHasInvoiceQuery = z.object({
-    offererId: z.int()
-});
-
-/**
- * OK
- */
-export const zHasInvoiceResponse = zHasInvoiceResponseModel;
-
-export const zHasSettlementQuery = z.object({
-    offererId: z.int()
-});
-
-/**
- * OK
- */
-export const zHasSettlementResponse = zHasSettlementResponseModel;
-
 export const zGetInvoicesQuery = z.object({
+    offererId: z.int(),
     periodBeginningDate: z.iso.date().nullish().default(null),
     periodEndingDate: z.iso.date().nullish().default(null),
     bankAccountId: z.int().nullish().default(null),
-    offererId: z.int().nullish().default(null),
     amountPositiveOnly: z.boolean().nullish().default(null),
     amountNegativeOnly: z.boolean().nullish().default(null)
 });
