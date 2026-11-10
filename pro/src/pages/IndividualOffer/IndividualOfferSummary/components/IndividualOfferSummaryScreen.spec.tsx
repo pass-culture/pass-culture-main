@@ -45,8 +45,8 @@ import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactori
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import {
   type RenderComponentFunction,
-  renderWithProviders,
   type RenderWithProvidersOptions,
+  renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
 import {
