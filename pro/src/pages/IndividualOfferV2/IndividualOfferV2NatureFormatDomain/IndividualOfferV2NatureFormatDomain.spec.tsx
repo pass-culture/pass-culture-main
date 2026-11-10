@@ -12,7 +12,7 @@ import { Component as IndividualOfferV2NatureFormatDomain } from './IndividualOf
 const natures = [
   {
     formats: [
-      { format: FormatEnum.LIVRE_PAPIER, label: 'Livre papier' },
+      { format: FormatEnum.LIVRE_PAPIER, label: 'Livre' },
       { format: FormatEnum.CD, label: 'CD' },
     ],
     label: 'Bien culturel',
@@ -86,12 +86,10 @@ describe('<IndividualOfferV2NatureFormatDomain />', () => {
     expect(
       screen.getByRole('group', { name: 'Sélectionnez le format' })
     ).toBeInTheDocument()
-    expect(
-      screen.getByRole('radio', { name: 'Livre papier' })
-    ).toBeInTheDocument()
+    expect(screen.getByRole('radio', { name: 'Livre' })).toBeInTheDocument()
     expect(screen.getByRole('radio', { name: 'CD' })).toBeInTheDocument()
-    await user.click(screen.getByRole('radio', { name: 'Livre papier' }))
-    expect(screen.getByRole('radio', { name: 'Livre papier' })).toBeChecked()
+    await user.click(screen.getByRole('radio', { name: 'Livre' }))
+    expect(screen.getByRole('radio', { name: 'Livre' })).toBeChecked()
 
     await user.click(screen.getByRole('radio', { name: 'Événement' }))
 
@@ -99,7 +97,7 @@ describe('<IndividualOfferV2NatureFormatDomain />', () => {
       screen.getByRole('radio', { name: 'DVD ou Blu-ray' })
     ).toBeInTheDocument()
     expect(
-      screen.queryByRole('radio', { name: 'Livre papier' })
+      screen.queryByRole('radio', { name: 'Livre' })
     ).not.toBeInTheDocument()
   })
 
@@ -121,7 +119,7 @@ describe('<IndividualOfferV2NatureFormatDomain />', () => {
     await user.click(
       await screen.findByRole('radio', { name: 'Bien culturel' })
     )
-    await user.click(screen.getByRole('radio', { name: 'Livre papier' }))
+    await user.click(screen.getByRole('radio', { name: 'Livre' }))
 
     await user.click(screen.getByRole('button', { name: 'Étape suivante' }))
 
