@@ -55,6 +55,7 @@ from pcapi.core.external.batch import transactional_notifications
 from pcapi.core.external.compliance import api
 from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import models as finance_models
+from pcapi.core.nature_format_domain import nature_format_domain as nfd
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offers import models as offers_models
@@ -2770,3 +2771,30 @@ def replace_offer_price_categories(
     db.session.flush()
 
     return offer
+
+
+def get_subcategory_from_nfd(
+    nature: nfd.NatureEnum | None,
+    format: nfd.FormatEnum | None,
+    domain: nfd.DomainEnum | None,
+) -> subcategories.Subcategory | None:
+    match (nature, format, domain):
+        case (nfd.NatureEnum.BIEN, nfd.FormatEnum.LIVRE_PAPIER):
+            return subcategories.LIVRE_PAPIER
+        case (nfd.NatureEnum.BIEN, nfd.FormatEnum.CD):
+            return subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD
+        case (nfd.NatureEnum.BIEN, nfd.FormatEnum.VINYLE):
+            return subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE
+        case (nfd.NatureEnum.BIEN, nfd.FormatEnum.DVD_BLU_RAY):
+            return subcategories.SUPPORT_PHYSIQUE_FILM
+        case (nfd.NatureEnum.BIEN, nfd.FormatEnum.MATERIEL_ARTS_CREATIFS):
+            return subcategories.MATERIEL_ART_CREATIF
+        case (nfd.NatureEnum.BIEN, nfd.FormatEnum.INSTRUMENT_DE_MUSIQUE):
+            return subcategories.ACHAT_INSTRUMENT
+    return None
+
+
+def fill_offer_subcategory(offer: models.Offer) -> None:
+    subcategory = get_subcategory_from_nfd(offer.nature, offer.format, offer.domaine)
+    if subcategory:
+        offer.subcategoryId = subcategory.id
