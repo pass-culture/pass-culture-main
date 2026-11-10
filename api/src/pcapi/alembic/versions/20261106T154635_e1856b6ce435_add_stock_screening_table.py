@@ -23,7 +23,7 @@ def upgrade() -> None:
         sa.Column("language", MagicEnum(offers_constants.LanguageFeatures), nullable=True),
         sa.Column("videoFormat", MagicEnum(offers_constants.VideoFeatures), nullable=True),
         sa.Column("accessibility", postgresql.ARRAY(sa.Text()), nullable=False),
-        sa.Column("seanceSpeciale", postgresql.ARRAY(sa.Text()), nullable=False),
+        sa.Column("specialEventType", postgresql.ARRAY(sa.Text()), nullable=False),
         sa.Column("id", sa.BigInteger(), autoincrement=True, nullable=False),
         sa.ForeignKeyConstraint(["stockId"], ["stock.id"], ondelete="CASCADE"),
         sa.PrimaryKeyConstraint("id"),

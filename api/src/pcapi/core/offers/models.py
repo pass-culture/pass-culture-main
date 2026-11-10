@@ -413,7 +413,7 @@ class Stock(PcObject, Model, SoftDeletableMixin):
     bookings: sa_orm.Mapped[list["Booking"]] = sa_orm.relationship(
         "Booking", foreign_keys="Booking.stockId", back_populates="stock"
     )
-    screening: sa_orm.Mapped["Screening"] = sa_orm.relationship(
+    screening: sa_orm.Mapped["Screening | None"] = sa_orm.relationship(
         "Screening", foreign_keys="Screening.stockId", back_populates="stock"
     )
 
