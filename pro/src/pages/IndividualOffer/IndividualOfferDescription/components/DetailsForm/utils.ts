@@ -1,5 +1,3 @@
-import type { OfferExtraData } from 'commons/core/Offers/types'
-
 import {
   type ArtistOfferLinkResponseModelV2,
   type CategoryResponseModel,
@@ -148,7 +146,7 @@ export function getInitialValuesFromOffer(
       subcategory.id === offer.subcategoryId
   )
   assertOrFrontendError(subcategory, 'La categorie de l’offre est introuvable.')
-  const extraData = offer.extraData as OfferExtraData
+  const extraData = offer.extraData
   const ean = extraData?.ean ?? DEFAULT_DETAILS_FORM_VALUES.ean
 
   return {

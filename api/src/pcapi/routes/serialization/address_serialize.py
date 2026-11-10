@@ -95,26 +95,6 @@ class LocationResponseModel(BaseModel):
         return round(value, 5)
 
 
-class VenueAddressInfoGetter(pydantic_v1.utils.GetterDict):
-    def get(self, key: str, default: typing.Any = None) -> typing.Any:
-        venue = self._obj
-        if key == "coordinates":
-            return {
-                "latitude": venue.offererAddress.address.latitude,
-                "longitude": venue.offererAddress.address.longitude,
-            }
-        if key == "address" or key == "street":
-            return venue.offererAddress.address.street
-        if key == "city":
-            return venue.offererAddress.address.city
-        if key == "postalCode":
-            return venue.offererAddress.address.postalCode
-        if key == "departmentCode" or key == "departementCode":
-            return venue.offererAddress.address.departmentCode
-
-        return super().get(key, default)
-
-
 def retrieve_address_info_from_oa(offerer_address: OffererAddress) -> dict:
     """Utility function that retrieves the location information from the offerer_address"""
     return {

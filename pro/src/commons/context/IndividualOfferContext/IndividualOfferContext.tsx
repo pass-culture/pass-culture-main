@@ -14,7 +14,6 @@ import {
   GET_CATEGORIES_QUERY_KEY,
   GET_OFFER_QUERY_KEY,
 } from '@/commons/config/swrQueryKeys'
-import type { OfferExtraData } from '@/commons/core/Offers/types'
 import { isOfferProductBasedButNotSynchronized } from '@/commons/core/Offers/utils/typology'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
@@ -88,7 +87,7 @@ export const IndividualOfferContextProvider = ({
     }
   )
   const offer = offerQuery.data
-  const extraData = offer?.extraData as OfferExtraData | undefined
+  const extraData = offer?.extraData
   const offerEan = extraData?.ean
 
   //  Get the offer on the venue with the same EAN if it exists

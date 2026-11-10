@@ -6,7 +6,6 @@ import {
   type SubcategoryResponseModel,
 } from '@/apiClient/v1'
 import { showOptionsTree } from '@/commons/core/Offers/categoriesSubTypes'
-import type { OfferExtraData } from '@/commons/core/Offers/types'
 import { isOfferProductBasedButNotSynchronized } from '@/commons/core/Offers/utils/typology'
 
 function stringifyArtist(
@@ -47,7 +46,7 @@ const getMusicData = (
   musicSubTypeName?: string
   gtl_id?: string
 } => {
-  const extraData = offer.extraData as OfferExtraData | undefined
+  const extraData = offer.extraData
 
   return {
     musicTypeName:
@@ -56,7 +55,7 @@ const getMusicData = (
         : musicTypes?.find(
             (item) => item.gtl_id.substring(0, 2) === gtl_id?.substring(0, 2) // Gtl_id is a string of 8 characters, only first 2 are relevant to music genre
           )?.label,
-    gtl_id: extraData?.gtl_id,
+    gtl_id: extraData?.gtl_id || undefined,
   }
 }
 
@@ -94,7 +93,7 @@ const serializerOfferSubCategoryFields = (
       durationMinutes: '',
     }
   }
-  const extraData = offer.extraData as OfferExtraData | undefined
+  const extraData = offer.extraData
 
   const showType = showOptionsTree.find(
     (item) => item.code === Number.parseInt(extraData?.showType ?? '', 10)
@@ -106,7 +105,7 @@ const serializerOfferSubCategoryFields = (
   const { musicTypeName, musicSubTypeName, gtl_id } = getMusicData(
     offer,
     musicTypes,
-    extraData?.gtl_id
+    extraData?.gtl_id || undefined
   )
 
   const defaultValue = (fieldName: string) =>
@@ -114,13 +113,13 @@ const serializerOfferSubCategoryFields = (
   return {
     author: serializeArtist(
       offer,
-      extraData?.author,
+      extraData?.author || undefined,
       defaultValue('author'),
       ArtistType.AUTHOR
     ),
     stageDirector: serializeArtist(
       offer,
-      extraData?.stageDirector,
+      extraData?.stageDirector || undefined,
       defaultValue('stageDirector'),
       ArtistType.STAGE_DIRECTOR
     ),
@@ -133,7 +132,7 @@ const serializerOfferSubCategoryFields = (
     visa: extraData?.visa || defaultValue('visa'),
     performer: serializeArtist(
       offer,
-      extraData?.performer,
+      extraData?.performer || undefined,
       defaultValue('performer'),
       ArtistType.PERFORMER
     ),
