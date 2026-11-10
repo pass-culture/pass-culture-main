@@ -14,6 +14,9 @@ from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import constants as educational_constants
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.utils import format_collective_offer_displayed_status
+from pcapi.core.permissions import models as permissions_models
+from pcapi.core.users import models as users_models
+from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import filters
@@ -419,6 +422,30 @@ class RejectCollectiveOfferForm(FlaskForm):
 
 
 class BatchRejectCollectiveOfferForm(empty_forms.BatchForm, RejectCollectiveOfferForm):
+    pass
+
+
+class SetInstructorForm(FlaskForm):
+    instructor = fields.PCBOUsersSelectField(
+        "Responsable",
+        permissions=[permissions_models.Permissions.MANAGE_OFFER_INSTRUCTOR],
+    )
+
+    def validate_instructor(self, instructor: fields.PCBOUsersSelectField) -> fields.PCBOUsersSelectField:
+        if instructor.data != "":
+            instructor_user = (
+                db.session.query(users_models.User)
+                .join(permissions_models.BackOfficeUserProfile)
+                .filter(users_models.User.id == int(instructor.data))
+                .one_or_none()
+            )
+            if instructor_user is None:
+                raise wtforms.validators.ValidationError("Cet utilisateur n'est pas administrateur ou n'existe plus")
+            instructor.data = instructor_user
+        return instructor
+
+
+class BatchSetInstructorForm(empty_forms.BatchForm, SetInstructorForm):
     pass
 
 
