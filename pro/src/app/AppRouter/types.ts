@@ -22,23 +22,31 @@ interface CustomRouteBase extends NonIndexRouteObject {
 export type CustomRouteTree = Array<CustomRouteGroup | CustomRouteOrphan>
 
 export interface CustomRouteOrphan extends CustomRouteBase {
-  // TODO (igabriele, 2026-04-29): Make `handle` required once all the `title` props have been moved into `handle`.
-  handle?: CustomRouteHandle
+  handle: CustomRouteHandle
   loader: NonIndexRouteObject['loader']
-  /** @deprecated Move `title` within `handle` prop: `handle: { title: '...' }`. */
-  title?: string
 }
 
-export interface CustomRouteGroup extends CustomRouteBase {
+export interface CustomRouteGroup extends CustomNestedRouteGroup {
   loader: NonIndexRouteObject['loader']
-  children: (CustomRouteGroupChild | IndexRouteObject)[]
 }
 export interface CustomRouteGroupChild extends CustomRouteBase {
-  // TODO (igabriele, 2026-04-29): Make `handle` required once all the `title` props have been moved into `handle`.
-  handle?: CustomRouteHandle
-  /** @deprecated Move `title` within `handle` prop: `handle: { title: '...' }`. */
-  title?: string
+  handle: CustomRouteHandle
   loader?: NonNullable<NonIndexRouteObject['loader']>
+}
+
+interface CustomNestedRouteGroup extends CustomRouteBase {
+  handle?: CustomRouteHandle
+  children: (
+    | CustomNestedRouteGroup
+    | CustomRouteGroupChild
+    | IndexRouteObject
+  )[]
+}
+
+export interface CustomRouteGroupChild extends CustomRouteBase {
+  handle: CustomRouteHandle
+  loader?: NonNullable<NonIndexRouteObject['loader']>
+  children?: never
 }
 
 export interface RedirectionRouteObject extends NonIndexRouteObject {

@@ -39,13 +39,13 @@ export const venuePageRouteSubgroup: CustomRouteGroup = {
     },
     {
       path: 'page-partenaire',
-      handle: {
-        title: 'Page sur lapplication',
-      },
       children: [
         {
           index: true,
           lazy: () => import('@/pages/IndividualVenuePage/IndividualVenuePage'),
+          handle: {
+            title: 'Page sur l’application',
+          },
         },
         {
           path: 'edition',
