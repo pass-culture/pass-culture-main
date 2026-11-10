@@ -62,7 +62,6 @@ const IndividualOfferDescription = (): JSX.Element | null => {
       return
     }
 
-    // TODO(mdesquilbet, 2026-09-30): Update model in backend (and migrate it to Pydantic v2)
     const imageUrl = product.images.recto as string | null
     if (imageUrl) {
       handleEanImage(imageUrl)
