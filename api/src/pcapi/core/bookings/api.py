@@ -341,7 +341,7 @@ def _book_offer(
         )
 
         log_extra_data = {
-            "provider_id": stock.lastProviderId,
+            "provider_id": stock.offer.lastProviderId,
             "venue_id": stock.offer.venueId,
             "offer_id": stock.offerId,
             "stock_id": stock.id,
