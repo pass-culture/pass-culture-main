@@ -1,5 +1,7 @@
 import csv
 import datetime
+import decimal
+import functools
 import logging
 from collections.abc import Iterable
 from io import TextIOWrapper
@@ -11,6 +13,9 @@ from flask import Blueprint
 
 from pcapi import settings
 from pcapi.connectors.googledrive import GoogleDriveBackend
+from pcapi.core import search
+from pcapi.core.external.attributes import api as external_attributes_api
+from pcapi.core.external.zendesk_sell import api as zendesk_sell_api
 from pcapi.core.finance import deposit_api
 from pcapi.core.finance import models as finance_models
 from pcapi.core.history import api as history_api
@@ -18,7 +23,9 @@ from pcapi.core.history import constants as history_constants
 from pcapi.core.internal_notifications.transactional import import_test_user_failure
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.providers import models as providers_models
+from pcapi.core.search.models import IndexationReason
 from pcapi.core.users import api as users_api
 from pcapi.core.users.models import EligibilityType
 from pcapi.core.users.models import User
@@ -26,15 +33,14 @@ from pcapi.core.users.models import UserRole
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
-from pcapi.routes.serialization import address_serialize
-from pcapi.routes.serialization import offerers_serialize
-from pcapi.routes.serialization import venue_serialize
 from pcapi.routes.serialization.users import ProUserCreationBodyV2Model
 from pcapi.utils import crypto
 from pcapi.utils import date as date_utils
 from pcapi.utils.email import anonymize_email
 from pcapi.utils.email import sanitize_email
 from pcapi.utils.siren import complete_siren_or_siret
+from pcapi.utils.transaction_manager import atomic
+from pcapi.utils.transaction_manager import on_commit
 
 
 logger = logging.getLogger(__name__)
@@ -100,34 +106,39 @@ def _create_pro_user(row: dict) -> User:
     )
 
     siret = _get_siret(row["SIREN"])
-    gps = (48.865987, 2.3232)
-    offerer_creation_info = offerers_serialize.CreateOffererBodyModel(
-        city="PARIS",
-        latitude=gps[0],
-        longitude=gps[1],
-        name=f"{(row['Type'] or 'test').split(':')[-1].capitalize()} {row['Prénom']} {row['Nom']}",
-        postal_code="75001",
-        insee_code="75101",
-        siren=siret[:9],
-        street="1 place de la Concorde",
-        phone_number=None,
-    )
-    new_onboarding_info = offerers_api.NewOnboardingInfo(
-        activity=offerers_models.Activity.OTHER,
-        target=offerers_models.Target.INDIVIDUAL_AND_EDUCATIONAL,
-        webPresence="https://www.example.com",
-    )
-    user_offerer = offerers_api.create_offerer(
-        user, offerer_creation_info, new_onboarding_info, comment="Créée par la commande `import_test_users`"
-    )
+    siren = siret[:9]
+    offerer = db.session.query(offerers_models.Offerer).filter(offerers_models.Offerer.siren == siren).one_or_none()
 
-    # Validate offerer
-    offerer = user_offerer.offerer
-    offerer.validationStatus = ValidationStatus.VALIDATED
-    offerer.dateValidated = now
-    offerer.allowedOnAdage = True
-    db.session.add(offerer)
+    if offerer is None:
+        # create the offerer
+        offerer = offerers_models.Offerer(
+            name=f"{(row['Type'] or 'test').split(':')[-1].capitalize()} {row['Prénom']} {row['Nom']}",
+            siren=siren,
+            isActive=True,
+            validationStatus=ValidationStatus.VALIDATED,
+            dateValidated=now,
+            allowedOnAdage=True,
+        )
+        db.session.add(offerer)
+        history_api.add_action(
+            history_constants.ActionType.OFFERER_NEW,
+            author=user,
+            user=user,
+            offerer=offerer,
+            comment="Créée par la commande `import_test_users`",
+        )
+        db.session.flush()
 
+    # create the user_offerer
+    user_offerer = offerers_models.UserOfferer(offerer=offerer, user=user, validationStatus=ValidationStatus.VALIDATED)
+    db.session.add(user_offerer)
+    history_api.add_action(
+        history_constants.ActionType.USER_OFFERER_NEW,
+        author=user,
+        user=user,
+        offerer=offerer,
+        comment="Créée par la commande `import_test_users`",
+    )
     history_api.add_action(
         history_constants.ActionType.OFFERER_VALIDATED,
         author=None,
@@ -135,49 +146,73 @@ def _create_pro_user(row: dict) -> User:
         offerer=offerer,
         comment="Validée automatiquement par le script de création",
     )
+    db.session.flush()
 
-    # Most of offerers are not validated on staging without this commit() - TODO: is this related to atomic? oa?
-    db.session.commit()
+    # user and offerer side effects
+    external_attributes_api.update_external_pro(user.email)
+    zendesk_sell_api.create_offerer(offerer)
 
-    address = address_serialize.LocationBodyModelV2(
-        street=offerer_creation_info.street,  # type: ignore [arg-type]
-        city=offerer_creation_info.city,
-        postalCode=offerer_creation_info.postal_code,
-        inseeCode="75101",
-        # latitude and longitude are cast as Decimal in before validator
-        latitude=gps[0],  # type: ignore [arg-type]
-        longitude=gps[1],  # type: ignore [arg-type]
-        banId="75101_2259_00001",  # 1 place de la Concorde
-        label=None,
-    )
-
-    venue_creation_info = venue_serialize.PostVenueBodyModel(
+    # create the venue
+    dms_token = offerers_api.generate_dms_token()
+    name = f"Structure {row['Prénom']} {row['Nom']}"
+    venue = offerers_models.Venue(
+        dmsToken=dms_token,
         activity=offerers_models.Activity.OTHER,
-        address=address,
-        booking_email=user.email,
+        venueTypeCode=offerers_schemas.VenueTypeCode.OTHER,
+        bookingEmail=user.email,
         comment=None,
-        cultural_domains=[],
-        managing_offerer_id=offerer.id,
-        name=f"Structure {row['Prénom']} {row['Nom']}",
-        public_name=None,
+        managingOffererId=offerer.id,
+        name=name,
+        publicName=name,
         siret=siret,
-        venue_label_id=None,
-        withdrawal_details=None,
+        venueLabelId=None,
+        withdrawalDetails=None,
         description=None,
-        contact=None,
-        audio_disability_compliant=False,
-        mental_disability_compliant=False,
-        motor_disability_compliant=False,
-        visual_disability_compliant=False,
-        is_open_to_public=True,
+        audioDisabilityCompliant=False,
+        mentalDisabilityCompliant=False,
+        motorDisabilityCompliant=False,
+        visualDisabilityCompliant=False,
+        isOpenToPublic=True,
+        isPermanent=True,
+        validationStatus=offerers_models.VenueValidationStatus.APPROVED,
     )
-    venue = offerers_api.create_venue(
-        venue_creation_info, user, validation_status=offerers_models.VenueValidationStatus.APPROVED
-    )
-    offerers_api.create_venue_registration(venue.id, new_onboarding_info.target, new_onboarding_info.webPresence)
+    db.session.add(venue)
+    history_api.add_action(history_constants.ActionType.VENUE_CREATED, author=user, venue=venue)
+    db.session.flush()
+
+    # venue side effects
+    on_commit(functools.partial(search.async_index_venue_ids, [venue.id], reason=IndexationReason.VENUE_CREATION))
+    zendesk_sell_api.create_venue(venue)
+
     venue.adageId = f"TEST{venue.id}"
     venue.adageInscriptionDate = now
-    db.session.add(venue)
+
+    # create the venue address
+    address_body = offerers_schemas.CoreLocationModelV2(
+        isManualEdition=False,
+        isVenueLocation=True,
+        banId="75101_2259_00001",
+        city="PARIS",
+        inseeCode="75101",
+        label=None,
+        latitude=decimal.Decimal("48.865987"),
+        longitude=decimal.Decimal("2.3232"),
+        postalCode="75001",
+        street="1 place de la Concorde",
+    )
+
+    address = offerers_api.create_offerer_address_from_address_api(address_body)
+    offerer_address = offerers_models.OffererAddress(
+        addressId=address.id,
+        type=offerers_models.LocationType.VENUE_LOCATION,
+        label=None,  # venue location always gets an empty label
+        venue=venue,
+    )
+    db.session.add(offerer_address)
+    db.session.flush()
+
+    # create finance objects
+    offerers_api.link_venue_to_pricing_point(venue, pricing_point_id=venue.id)
 
     for i, status in enumerate(finance_models.BankAccountApplicationStatus, start=1):
         bank_account = finance_models.BankAccount(
@@ -191,8 +226,7 @@ def _create_pro_user(row: dict) -> User:
         if status is finance_models.BankAccountApplicationStatus.ACCEPTED:
             db.session.add(offerers_models.VenueBankAccountLink(venue=venue, bankAccount=bank_account, timespan=(now,)))
 
-    # Avoid rollback() on objects above when re-using an existing address in get_or_create_address
-    db.session.commit()
+    db.session.flush()
 
     # Create a second address linked to the offerer in another region
     second_address = offerers_api.get_or_create_address(
@@ -218,6 +252,7 @@ def _create_pro_user(row: dict) -> User:
 
     user.isEmailValidated = True
     user.add_pro_role()
+    db.session.flush()
 
     return user
 
@@ -232,7 +267,8 @@ def _add_or_update_user_from_row(row: dict, update_if_exists: bool) -> User | No
     else:
         role = UserRole(row["Role"]) if row["Role"] else None
         if role == UserRole.PRO:
-            user = _create_pro_user(row)
+            with atomic():
+                user = _create_pro_user(row)
         else:
             user = _create_beneficiary(row, role)
 
