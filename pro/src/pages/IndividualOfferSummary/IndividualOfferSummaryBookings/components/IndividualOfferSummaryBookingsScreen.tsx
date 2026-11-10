@@ -71,10 +71,6 @@ export const IndividualOfferSummaryBookingsScreen = ({
 
   const filteredBookings = filterBookingsRecap(bookings ?? [], {
     bookingStatus: bookingsStatusFilters,
-    // TODO Improve the filtering of the base bookings page, it is a mess
-    // because it mixes backend and frontend filtering in weird ways.
-    // Thus I must reuse this function with lots of empty values
-    // to filter by booking status
     bookingBeneficiary: EMPTY_FILTER_VALUE,
     bookingToken: EMPTY_FILTER_VALUE,
     offerISBN: EMPTY_FILTER_VALUE,
