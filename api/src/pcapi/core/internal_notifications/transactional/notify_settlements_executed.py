@@ -15,5 +15,5 @@ def send(batch: finance_models.SettlementBatch) -> None:
                 },
             }
         ],
-        icon_emoji=":billets_volants:",
+        icon_emoji=":money_with_wings:",
     )
