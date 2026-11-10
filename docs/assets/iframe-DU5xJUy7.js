@@ -1,0 +1,1 @@
+import{t as e}from"./iframe-DaTGmT-4.js";e();
