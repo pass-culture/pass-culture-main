@@ -295,14 +295,14 @@ jobs:
           CACHE_HIT: ${{ steps.restore-test-durations.outputs.cache-hit }}
         run: |
           if [ -n "$CACHE_HIT" ]; then
-            echo "Pytest: historical test durations restored for all eight groups." >> "$GITHUB_STEP_SUMMARY"
+            echo "Pytest: historical test durations restored for all ten groups." >> "$GITHUB_STEP_SUMMARY"
           else
             echo "Pytest: no historical durations cache found; this run will populate it." >> "$GITHUB_STEP_SUMMARY"
           fi
 
   pytest:
     needs: restore-test-durations
-    name: "Pytest ${{ matrix.pytest_args.description }} : ${{ matrix.group }}/4"
+    name: "Pytest ${{ matrix.pytest_args.description }} : ${{ matrix.group }}/5"
     env:
       RUN_ENV: tests
       DATABASE_URL_TEST: postgresql://pytest:pytest@postgres:5432/pass_culture
@@ -316,7 +316,7 @@ jobs:
             description: "(without BO)"
           - collection: "tests/routes/backoffice"
             description: "(only BO)"
-        group: [1, 2, 3, 4]
+        group: [1, 2, 3, 4, 5]
     services:
       redis:
         image: mirror.gcr.io/valkey/valkey:9.0-alpine
@@ -415,7 +415,7 @@ jobs:
             "$IMAGE_NAME" \
             -c '
               pytest -c /usr/src/app/pyproject.toml --rootdir=/usr/src/app $COLLECTION \
-              --splits 4 --group $GROUP \
+              --splits 5 --group $GROUP \
               --store-durations --durations-path /tests/.test_durations --clean-durations \
               --durations=10 --junitxml="/tests/junit.xml" \
               -q --color=yes
@@ -458,7 +458,7 @@ jobs:
           path: ${{ runner.temp }}/pytest-partial-durations
           merge-multiple: false
 
-      # This step regroups the 8 partial files and sorts keys alphabetically
+      # This step regroups the 10 partial files and sorts keys alphabetically
       - name: Merge all partial test durations
         # overrides workflow default
         working-directory: /
@@ -470,8 +470,8 @@ jobs:
             files+=("$file")
           done < <(find "$TEMP/pytest-partial-durations" -type f -name .test_durations -print0)
 
-          if [ "${#files[@]}" -ne 8 ]; then
-            echo "::error::Expected 8 pytest duration files, found ${#files[@]}. Check the partial duration artifact uploads."
+          if [ "${#files[@]}" -ne 10 ]; then
+            echo "::error::Expected 10 pytest duration files, found ${#files[@]}. Check the partial duration artifact uploads."
             exit 1
           fi
 
