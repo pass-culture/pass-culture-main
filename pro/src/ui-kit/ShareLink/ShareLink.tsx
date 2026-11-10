@@ -40,12 +40,10 @@ export const ShareLink = ({
       snackBar.success(notifySuccessMessage)
       logCopyEvent()
     } catch {
-      if (inputRef.current) {
-        inputRef.current.select()
-        document.execCommand('copy')
-        snackBar.success(notifySuccessMessage)
-        logCopyEvent()
-      }
+      inputRef.current?.select()
+      snackBar.error(
+        'Une erreur est survenue lors de la copie du lien. Veuillez le copier manuellement.'
+      )
     }
   }
 

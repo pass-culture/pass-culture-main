@@ -39,7 +39,7 @@ const offerId = 1
 
 describe('ShareLink Component', () => {
   beforeEach(() => {
-    document.execCommand = vi.fn()
+    logEventMock.mockClear()
   })
 
   it('should render the input with the correct value and label', () => {
@@ -55,37 +55,30 @@ describe('ShareLink Component', () => {
   })
 
   it('should copy the link and show notification on button click', async () => {
+    const user = userEvent.setup()
     renderShareLink({ link, label, notifySuccessMessage, offerId })
     const button = screen.getByRole('button', { name: /Copier/i })
-    await userEvent.click(button)
+    await user.click(button)
     expect(
       (await screen.findAllByText(notifySuccessMessage)).length
     ).toBeGreaterThan(0)
   })
 
   it('should copy the link to clipboard', async () => {
-    const writeTextMock = vi.fn().mockResolvedValueOnce(undefined)
-    Object.assign(navigator, {
-      clipboard: { writeText: writeTextMock },
-    })
-
+    const user = userEvent.setup()
     renderShareLink({ link, label, notifySuccessMessage, offerId })
     const button = screen.getByRole('button', { name: /Copier/i })
-    await userEvent.click(button)
-    expect(writeTextMock).toHaveBeenCalledWith(link)
+    await user.click(button)
+    expect(await navigator.clipboard.readText()).toBe(link)
   })
 
   it('should log event when link is copied', async () => {
-    const writeTextMock = vi.fn().mockResolvedValueOnce(undefined)
-    Object.assign(navigator, {
-      clipboard: { writeText: writeTextMock },
-    })
-
+    const user = userEvent.setup()
     renderShareLink({ link, label, notifySuccessMessage, offerId })
     const button = screen.getByRole('button', { name: /Copier/i })
-    await userEvent.click(button)
-    await userEvent.click(button)
-    await userEvent.click(button)
+    await user.click(button)
+    await user.click(button)
+    await user.click(button)
 
     expect(logEventMock).toHaveBeenCalledTimes(1)
     expect(logEventMock).toHaveBeenCalledWith(
@@ -94,5 +87,29 @@ describe('ShareLink Component', () => {
         offerId,
       }
     )
+  })
+
+  it('should select the link and show an error when copy fails', async () => {
+    const user = userEvent.setup()
+    vi.spyOn(navigator.clipboard, 'writeText').mockRejectedValueOnce(
+      new Error()
+    )
+
+    renderShareLink({ link, label, notifySuccessMessage, offerId })
+    const input = screen.getByLabelText<HTMLInputElement>(label)
+    const button = screen.getByRole('button', { name: /Copier/i })
+    await user.click(button)
+
+    expect(
+      (
+        await screen.findAllByText(
+          'Une erreur est survenue lors de la copie du lien. Veuillez le copier manuellement.'
+        )
+      ).length
+    ).toBeGreaterThan(0)
+    expect(screen.queryByText(notifySuccessMessage)).not.toBeInTheDocument()
+    expect(input.selectionStart).toBe(0)
+    expect(input.selectionEnd).toBe(link.length)
+    expect(logEventMock).not.toHaveBeenCalled()
   })
 })
