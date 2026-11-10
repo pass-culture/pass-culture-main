@@ -3701,13 +3701,25 @@ def _is_a_pricing_point_to_an_opened_venue(venue: models.Venue) -> bool:
     ).scalar()
 
 
-def close_venue(venue: models.Venue, author: users_models.User, comment: str | None = None) -> None:
-    logger.info("close_venue called on venue %s by user %s", venue.id, author.id)
+def close_venue(
+    venue: models.Venue,
+    author: users_models.User,
+    comment: str | None = None,
+    send_mail: bool = True,
+) -> None:
+    logger.info(
+        "close_venue called on venue %s by user %s with mail sent=%s",
+        venue.id,
+        author.id,
+        send_mail,
+        extra={"venue_id": venue.id, "user_id": author.id},
+    )
     closure_request_tag = criteria_api.get_siret_shift_pending_tag()
     if venue.is_closed:
         if closure_request_tag in venue.criteria and not venue.is_pricing_point:
             criteria_api.unlink_criterion_from_venue(criterion=closure_request_tag, venue=venue)
-            on_commit(partial(transactional_mails.send_venue_closed_email_to_author, venue.id))
+            if send_mail:
+                transactional_mails.send_venue_closed_email(venue.id)
         return
 
     venue.state = models.VenueState.CLOSED
@@ -3725,9 +3737,11 @@ def close_venue(venue: models.Venue, author: users_models.User, comment: str | N
 
     if _is_a_pricing_point_to_an_opened_venue(venue):
         criteria_api.link_criterion_to_venue(criterion=closure_request_tag, venue=venue)
-        on_commit(partial(transactional_mails.send_venue_closure_request_email, venue.id))
+        if send_mail:
+            transactional_mails.send_venue_closure_request_email(venue.id)
     else:
-        on_commit(partial(transactional_mails.send_venue_closed_email_to_author, venue.id))
+        if send_mail:
+            transactional_mails.send_venue_closed_email(venue.id)
 
 
 def reopen_venue(venue: models.Venue, author: users_models.User, comment: str | None = None) -> None:
