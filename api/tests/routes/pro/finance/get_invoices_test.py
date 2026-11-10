@@ -44,6 +44,18 @@ class GetInvoicesTest:
         )
         _other_bank_account = finance_factories.BankAccountFactory()
         _other_invoice = finance_factories.InvoiceFactory(bankAccount=_other_bank_account)
+        invoice3 = finance_factories.InvoiceFactory(
+            bankAccount=bank_account,
+            date=dt2 + datetime.timedelta(days=15),
+            amount=-2000,
+            status=InvoiceStatus.PENDING,
+        )
+        invoice4 = finance_factories.InvoiceFactory(
+            bankAccount=bank_account,
+            date=dt2 + datetime.timedelta(days=30),
+            amount=-2500,
+            status=InvoiceStatus.PENDING_PAYMENT,
+        )
 
         client = client.with_session_auth(pro.email)
         with testing.assert_num_queries(self.num_queries):
@@ -53,6 +65,20 @@ class GetInvoicesTest:
         assert response.json == {
             "hasInvoice": True,
             "invoices": [
+                {
+                    "reference": invoice4.reference,
+                    "date": invoice4.date.date().isoformat(),
+                    "amount": 25.0,
+                    "url": invoice4.url,
+                    "status": "pending_payment",
+                },
+                {
+                    "reference": invoice3.reference,
+                    "date": invoice3.date.date().isoformat(),
+                    "amount": 20.0,
+                    "url": invoice3.url,
+                    "status": "pending",
+                },
                 {
                     "reference": invoice2.reference,
                     "date": invoice2.date.date().isoformat(),
@@ -250,9 +276,9 @@ class GetInvoicesTest:
 
     def test_with_no_invoice(self, client: TestClient):
         user_offerer = offerers_factories.UserOffererFactory()
-        bank_account = finance_factories.BankAccountFactory(offerer=user_offerer.offerer)
-        finance_factories.InvoiceFactory(status=InvoiceStatus.PENDING, bankAccount=bank_account)
-        finance_factories.InvoiceFactory(status=InvoiceStatus.PENDING_PAYMENT, bankAccount=bank_account)
+
+        bank_account = finance_factories.BankAccountFactory()
+        finance_factories.InvoiceFactory(bankAccount=bank_account)
 
         client = client.with_session_auth(user_offerer.user.email)
         params = {"offererId": user_offerer.offerer.id}

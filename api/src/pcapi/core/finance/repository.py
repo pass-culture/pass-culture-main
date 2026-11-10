@@ -575,7 +575,7 @@ def convert_to_datetime(date: datetime.date) -> datetime.datetime:
     return date_utils.get_day_start(date, utils.ACCOUNTING_TIMEZONE).astimezone(pytz.utc)
 
 
-def get_paid_invoices_query(
+def get_invoices_query(
     user: users_models.User,
     bank_account_id: int | None = None,
     offerer_id: int | None = None,
@@ -607,10 +607,7 @@ def get_paid_invoices_query(
 
     invoices = (
         db.session.query(models.Invoice)
-        .filter(
-            models.Invoice.bankAccountId.in_(bank_account_subquery.with_entities(models.BankAccount.id)),
-            models.Invoice.status == models.InvoiceStatus.PAID,
-        )
+        .filter(models.Invoice.bankAccountId.in_(bank_account_subquery.with_entities(models.BankAccount.id)))
         .options(
             sa_orm.joinedload(models.Invoice.bankAccount).load_only(models.BankAccount.label),
             sa_orm.joinedload(models.Invoice.cashflows).joinedload(models.Cashflow.batch),
@@ -640,7 +637,7 @@ def has_invoice(offerer_id: int) -> bool:
     return db.session.query(
         db.session.query(models.Invoice)
         .join(models.Invoice.bankAccount)
-        .filter(models.BankAccount.offererId == offerer_id, models.Invoice.status == models.InvoiceStatus.PAID)
+        .filter(models.BankAccount.offererId == offerer_id)
         .exists()
     ).scalar()
 

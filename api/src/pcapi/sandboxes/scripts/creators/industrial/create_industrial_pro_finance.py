@@ -90,7 +90,7 @@ def create_various_settlements(user: users_models.User) -> None:
             factories.InvoiceFactory.create(amount=5000, bankAccount=bank_account_1, date=batch_1.dateValidated),
         ],
     )
-    _generate_fake_invoice_pdfs(settlement_1)
+    _generate_fake_invoice_pdfs_from_settlement(settlement_1)
     # settlement on batch 1, bank account 1, three invoices
     settlement_2 = factories.SettlementFactory.create(
         status=models.SettlementStatus.EXECUTED,
@@ -103,7 +103,7 @@ def create_various_settlements(user: users_models.User) -> None:
             factories.InvoiceFactory.create(amount=-15000, bankAccount=bank_account_1, date=batch_3.dateValidated),
         ],
     )
-    _generate_fake_invoice_pdfs(settlement_2)
+    _generate_fake_invoice_pdfs_from_settlement(settlement_2)
     # settlement on batch 2, bank account 2, two invoices, one is not PAID
     settlement_3 = factories.SettlementFactory.create(
         status=models.SettlementStatus.EXECUTED,
@@ -120,7 +120,7 @@ def create_various_settlements(user: users_models.User) -> None:
             ),
         ],
     )
-    _generate_fake_invoice_pdfs(settlement_3)
+    _generate_fake_invoice_pdfs_from_settlement(settlement_3)
     # settlement on batch 3, bank account 2, one invoice
     settlement_4 = factories.SettlementFactory.create(
         status=models.SettlementStatus.EXECUTED,
@@ -131,7 +131,7 @@ def create_various_settlements(user: users_models.User) -> None:
             factories.InvoiceFactory.create(amount=-4000, bankAccount=bank_account_2, date=batch_2.dateValidated),
         ],
     )
-    _generate_fake_invoice_pdfs(settlement_4)
+    _generate_fake_invoice_pdfs_from_settlement(settlement_4)
     # settlement on batch 3, bank account 2, no invoice
     settlement_5 = factories.SettlementFactory.create(
         status=models.SettlementStatus.EXECUTED,
@@ -139,7 +139,7 @@ def create_various_settlements(user: users_models.User) -> None:
         bankAccount=bank_account_2,
         batch=batch_3,
     )
-    _generate_fake_invoice_pdfs(settlement_5)
+    _generate_fake_invoice_pdfs_from_settlement(settlement_5)
 
     # rejected settlement on batch 4, refused bank account
     # when a settlement is rejected, the bank account is refused and the linked venues are detached
@@ -154,9 +154,9 @@ def create_various_settlements(user: users_models.User) -> None:
             ),
         ],
     )
-    _generate_fake_invoice_pdfs(settlement_6)
+    _generate_fake_invoice_pdfs_from_settlement(settlement_6)
 
-    # debit note settlement paid by offerer : no batch, one invoice
+    # debit note settlement paid by offerer: no batch, one invoice
     settlement_debit_note = factories.SettlementFactory.create(
         status=models.SettlementStatus.EXECUTED,
         amount=9000,
@@ -168,7 +168,20 @@ def create_various_settlements(user: users_models.User) -> None:
             ),
         ],
     )
-    _generate_fake_invoice_pdfs(settlement_debit_note)
+    _generate_fake_invoice_pdfs_from_settlement(settlement_debit_note)
+
+    # pending invoices
+    pending_invoice = factories.InvoiceFactory.create(
+        amount=-1000, bankAccount=bank_account_1, date=batch_3.dateValidated, status=models.InvoiceStatus.PENDING
+    )
+    _generate_fake_invoice_pdfs(pending_invoice)
+    pending_payment_invoice = factories.InvoiceFactory.create(
+        amount=-2000,
+        bankAccount=bank_account_1,
+        date=batch_3.dateValidated,
+        status=models.InvoiceStatus.PENDING_PAYMENT,
+    )
+    _generate_fake_invoice_pdfs(pending_payment_invoice)
 
 
 @log_func_duration
@@ -206,7 +219,7 @@ def create_rejected_settlement(user: users_models.User) -> None:
         batch=batch,
         invoices=[invoice],
     )
-    _generate_fake_invoice_pdfs(settlement)
+    _generate_fake_invoice_pdfs_from_settlement(settlement)
 
 
 @log_func_duration
@@ -243,7 +256,7 @@ def create_rejected_processed_solved_settlements(user: users_models.User) -> Non
         batch=batch_1,
         invoices=[invoice_1],
     )
-    _generate_fake_invoice_pdfs(settlement_1)
+    _generate_fake_invoice_pdfs_from_settlement(settlement_1)
 
     # one bank account is refused and the venue links are valid until 4 days go
     second_batch_date = now - datetime.timedelta(days=4)
@@ -271,7 +284,7 @@ def create_rejected_processed_solved_settlements(user: users_models.User) -> Non
         batch=batch_2,
         invoices=[invoice_2],
     )
-    _generate_fake_invoice_pdfs(settlement_2)
+    _generate_fake_invoice_pdfs_from_settlement(settlement_2)
 
     # another valid bank account is now linked to the venue (previously linked to the first bank account)
     bank_account_3 = factories.BankAccountFactory.create(label="Compte bancaire OK 1", offerer=offerer)
@@ -294,17 +307,25 @@ def create_rejected_processed_solved_settlements(user: users_models.User) -> Non
     )
 
 
-def _generate_fake_invoice_pdfs(settlement: models.Settlement) -> None:
+def _generate_fake_invoice_pdfs_from_settlement(settlement: models.Settlement) -> None:
     for invoice in settlement.invoices:
-        pdf_title = f"Justificatif n°{invoice.reference}"
-        invoice_settlements = [s.batch.get_displayed_name() for s in invoice.settlements if s.batch]
-        invoice_pdf = "<h1>{title}</h1><h2>Virements associés</h2><ul>{settlement_list}</ul>".format(
-            title=pdf_title,
-            settlement_list="".join([f"<li>{settlement_label}</li>" for settlement_label in invoice_settlements]),
-        )
-        store_public_object(
-            folder="invoices",
-            object_id=invoice.storage_object_id,
-            blob=generate_pdf_from_html(invoice_pdf),
-            content_type="application/pdf",
-        )
+        _generate_fake_invoice_pdfs(invoice)
+
+
+def _generate_fake_invoice_pdfs(invoice: models.Invoice) -> None:
+    pdf_title = f"Justificatif n°{invoice.reference}"
+    status = f"Status : {invoice.status.value}"
+    invoice_settlements = [s.batch.get_displayed_name() for s in invoice.settlements if s.batch]
+
+    invoice_pdf = "<h1>{title}</h1><h2>{status}</h2><h2>Virements associés</h2><ul>{settlement_list}</ul>".format(
+        title=pdf_title,
+        status=status,
+        settlement_list="".join([f"<li>{settlement_label}</li>" for settlement_label in invoice_settlements]),
+    )
+
+    store_public_object(
+        folder="invoices",
+        object_id=invoice.storage_object_id,
+        blob=generate_pdf_from_html(invoice_pdf),
+        content_type="application/pdf",
+    )
