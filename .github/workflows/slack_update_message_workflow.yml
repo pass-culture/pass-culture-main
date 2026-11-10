@@ -28,12 +28,12 @@ jobs:
     outputs:
       message-ts: ${{ steps.update-message.outputs.message-ts }}
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/checkout@v7.0.1
         with:
           fetch-tags: false
           persist-credentials: false
       - name: Install passdirector
-        uses: pass-culture/common-workflows/actions/setup-passdirector@b470d76b19d7f3ebcda367f5e17484228021d388 # v1.0.0
+        uses: pass-culture/common-workflows/actions/setup-passdirector@setup-passdirector/v1.0.0
         with:
           version: v0.8.4
           github_app_id: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID}}

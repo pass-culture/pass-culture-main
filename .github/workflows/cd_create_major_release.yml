@@ -18,7 +18,7 @@ jobs:
   check-major-release-creation-is-allowed: # TODO (tcoudray-pass, 15/04/2026) Refacto when we get rid of the old workflow
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
           sparse-checkout: |
@@ -46,7 +46,7 @@ jobs:
       message-base: ${{ steps.compute.outputs.message-base }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        uses: actions/checkout@v7.0.1
         with:
           fetch-tags: true
           persist-credentials: false
@@ -113,7 +113,7 @@ jobs:
       # This is needed because tags are protected and the default GITHUB_TOKEN cannot be exempted
       # from this ruleset
       - name: Authenticate through github app ghactionci
-        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        uses: actions/create-github-app-token@v3.2.0
         id: github-token
         with:
           app-id: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
@@ -125,7 +125,7 @@ jobs:
           permission-contents: write
 
       - name: Checkout new tag
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        uses: actions/checkout@v7.0.1
         with:
           ref: v${{ needs.compute-major-version-variables.outputs.release-number }}.0.0
           persist-credentials: true
