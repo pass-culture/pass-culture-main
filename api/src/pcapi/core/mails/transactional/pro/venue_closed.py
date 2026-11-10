@@ -6,11 +6,17 @@ from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
+from pcapi.utils.date import get_date_formatted_for_email
+from pcapi.utils.date import get_time_formatted_for_email
+from pcapi.utils.date import utc_datetime_to_department_timezone
 
 
 def get_venue_closed_email_data(
     venue: offerers_models.Venue, history_event: history_models.ActionHistory, author: users_models.User | None
 ) -> models.TransactionalEmailData:
+    request_date = utc_datetime_to_department_timezone(
+        history_event.actionDate, venue.offererAddress.address.departmentCode
+    )
     return models.TransactionalEmailData(
         template=TransactionalEmail.VENUE_CLOSED_CONFIRMATION.value,
         params={
@@ -20,8 +26,8 @@ def get_venue_closed_email_data(
             "USER_FIRST_NAME": author.firstName if author else None,
             "USER_LAST_NAME": author.lastName if author else None,
             "USER_EMAIL": author.email if author else None,
-            "REQUEST_DATE": history_event.actionDate.date(),
-            "REQUEST_TIME": history_event.actionDate.time(),
+            "REQUEST_DATE": get_date_formatted_for_email(request_date),
+            "REQUEST_TIME": get_time_formatted_for_email(request_date),
         },
     )
 
@@ -35,12 +41,10 @@ def send_venue_closed_email(venue_id: int) -> None:
         return
 
     author = db.session.query(users_models.User).filter_by(id=history_event.authorUserId).one_or_none()
-    if author:
-        if not author.backoffice_profile:
-            recipients = [author.email]
-        else:
-            author = None
-    if not author:
+    if author and not author.backoffice_profile:
+        recipients = [author.email]
+    else:
+        author = None  # discard BO user - we don't want to sent those informations
         if venue.bookingEmail:
             recipients = [venue.bookingEmail]
         else:

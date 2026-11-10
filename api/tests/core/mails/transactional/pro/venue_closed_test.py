@@ -1,3 +1,4 @@
+import datetime
 from dataclasses import asdict
 
 import pytest
@@ -23,15 +24,23 @@ class SendVenueClosedEmailToAuthorTest:
         ),
     )
     def test_send_mail(self, is_bo_user, has_booking_email):
-        author = users_factories.UserFactory()
+        author = users_factories.UserFactory(firstName="John", lastName="Doe", email="john@doe")
         if is_bo_user:
             perm_api.create_backoffice_profile(author)
-        venue = offerers_factories.VenueFactory(bookingEmail=("venue1@nowhere" if has_booking_email else None))
+        venue = offerers_factories.VenueFactory(
+            publicName="pub name",
+            siret="67",
+            managingOfferer__name="the offerer name",
+            bookingEmail=("venue1@nowhere" if has_booking_email else None),
+        )
         offerers_factories.VenueFactory(bookingEmail="venue2@nowhere", managingOfferer=venue.managingOfferer)
         offerers_factories.VenueFactory(bookingEmail="venue3@nowhere", managingOfferer=venue.managingOfferer)
         offerers_factories.VenueFactory(bookingEmail=None, managingOfferer=venue.managingOfferer)
-        history_event = history_factories.ActionHistoryFactory(
-            authorUser=author, venue=venue, actionType=history_constants.ActionType.VENUE_CLOSED
+        history_factories.ActionHistoryFactory(
+            authorUser=author,
+            venue=venue,
+            actionType=history_constants.ActionType.VENUE_CLOSED,
+            actionDate=datetime.datetime(2026, 11, 10, 10, 52, 58, 168587, tzinfo=datetime.UTC),
         )
 
         venue_closed.send_venue_closed_email(venue.id)
@@ -48,21 +57,21 @@ class SendVenueClosedEmailToAuthorTest:
             assert mail["To"] == author.email
         assert mail["template"] == asdict(TransactionalEmail.VENUE_CLOSED_CONFIRMATION.value)
         params = {
-            "VENUE_NAME": venue.publicName,
-            "SIRET": venue.siret,
-            "OFFERER_NAME": venue.managingOfferer.name,
+            "VENUE_NAME": "pub name",
+            "SIRET": "67",
+            "OFFERER_NAME": "the offerer name",
             "USER_FIRST_NAME": None,
             "USER_LAST_NAME": None,
             "USER_EMAIL": None,
-            "REQUEST_DATE": history_event.actionDate.date(),
-            "REQUEST_TIME": history_event.actionDate.time(),
+            "REQUEST_DATE": "mardi 10 novembre 2026",
+            "REQUEST_TIME": "11h52",
         }
         if not is_bo_user:
             params.update(
                 {
-                    "USER_FIRST_NAME": author.firstName,
-                    "USER_LAST_NAME": author.lastName,
-                    "USER_EMAIL": author.email,
+                    "USER_FIRST_NAME": "John",
+                    "USER_LAST_NAME": "Doe",
+                    "USER_EMAIL": "john@doe",
                 }
             )
         assert mail["params"] == params
