@@ -1,4 +1,7 @@
 # Last update 2025
+from pcapi.utils.clean_accents import clean_accents
+
+
 # https://explore.data.gouv.fr/fr/datasets/58c984b088ee386cdb1261f3/#/resources/4cd91b1b-684b-44e0-af86-77b623fcb5f2
 # Keep only 1 entry for each "cog" (keep the most recent one)
 
@@ -261,3 +264,5 @@ INSEE_COUNTRIES = [
     ("99522", "Territoires de l’Australie en Océanie"),
     ("99699", "Antarctique"),
 ]
+
+ALPHABETICALLY_SORTED_COUNTRIES = sorted(INSEE_COUNTRIES, key=lambda t: clean_accents(t[1]))
