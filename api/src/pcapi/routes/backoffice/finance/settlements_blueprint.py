@@ -107,7 +107,7 @@ def validate_settlement_batch(batch_id: int) -> response_utils.BackofficeRespons
 
     on_commit(
         partial(
-            finance_tasks.settlement_batch_validation_task,
+            finance_tasks.settlement_batch_validation_task.delay,
             finance_tasks.ValidateSettlementBatchRequest(batch_id=batch_id).model_dump(),
         )
     )
