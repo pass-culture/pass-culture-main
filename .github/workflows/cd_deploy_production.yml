@@ -44,7 +44,7 @@ jobs:
       APP_VERSION: ${{ steps.app-version.outputs.APP_VERSION }}
     steps:
       - name: "Checkout Release"
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        uses: actions/checkout@v7.0.1
         with:
           ref: "${{ github.ref }}"
           fetch-depth: 0
@@ -104,7 +104,7 @@ jobs:
     runs-on: ubuntu-22.04
     needs: deploy
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
       - name: Publish Github release

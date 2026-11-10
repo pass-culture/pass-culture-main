@@ -30,16 +30,16 @@ jobs:
     runs-on: ubuntu-22.04
     continue-on-error: ${{ inputs.continue_on_error }}
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
       - name: "OpenID Connect Authentication"
         id: "openid-auth"
-        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+        uses: google-github-actions/auth@v3.0.0
         with:
           workload_identity_provider: ${{ vars.WORKLOAD_IDENTITY_PRD }}
           service_account: ${{ vars.PRO_DEPLOY_SERVICE_ACCOUNT }}
-      - uses: pass-culture/common-workflows/actions/setup-firebase-tools@e6bcac798f0e97e8071b2e87a5c6a28c9bb538f4
+      - uses: pass-culture/common-workflows/actions/setup-firebase-tools@IC-1390-create-setup-firebase-tools-action
       - name: "Clone version to live channel"
         id: "clone-version"
         env:
