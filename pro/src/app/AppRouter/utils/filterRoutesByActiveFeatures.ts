@@ -1,9 +1,12 @@
 import type { RouteObject } from 'react-router'
 
-import type { CustomRouteTree } from '../types'
+type FeatureAwareRoute = RouteObject & {
+  featureName?: string
+  disabledWithFeatureName?: string
+}
 
 const isRouteActive = (
-  route: CustomRouteTree[number],
+  route: FeatureAwareRoute,
   activeFeatures: string[]
 ): boolean => {
   if (
@@ -18,10 +21,10 @@ const isRouteActive = (
 
 // Filter routes based on active features recursively for nested children
 export const filterRoutesByActiveFeatures = (
-  routes: RouteObject[],
+  routes: FeatureAwareRoute[],
   activeFeatures: string[]
-): CustomRouteTree =>
-  (routes as CustomRouteTree)
+): RouteObject[] =>
+  routes
     .filter((route) => isRouteActive(route, activeFeatures))
     .map((route) =>
       route.children
