@@ -82,6 +82,26 @@ class QuotientFamilialBonusTaskTest:
             payload = tasks.BonusTaskPayload(fraud_check_id=1)
             tasks.apply_for_quotient_familial_bonus_task.delay(payload.model_dump())
 
+    @patch("pcapi.core.subscription.bonus.api.apply_for_quotient_familial_bonus")
+    def test_giving_up_after_a_while(self, mocked_apply_for_qf):
+        now = date_utils.get_naive_utc_now()
+        last_week = now - relativedelta(weeks=1, hours=1)
+        user = users_factories.BeneficiaryFactory()
+        fraud_check = subscription_factories.QFBonusCreditFraudCheckFactory(
+            user=user,
+            status=subscription_models.FraudCheckStatus.STARTED,
+            dateCreated=last_week,
+            resultContent=subscription_factories.QuotientFamilialBonusCreditContentFactory(
+                error_code="12345", next_retry_at=now.isoformat()
+            ).model_dump(),
+        )
+        mocked_apply_for_qf.side_effect = api_particulier.ParticulierApiException
+
+        payload = tasks.BonusTaskPayload(fraud_check_id=fraud_check.id)
+        tasks.apply_for_quotient_familial_bonus_task.delay(payload.model_dump())
+
+        assert fraud_check.status == subscription_models.FraudCheckStatus.ERROR
+
 
 class AdultDisabilityBonusTaskTest:
     @patch("pcapi.connectors.api_particulier.get_disabled_adult_allowance")
@@ -142,6 +162,26 @@ class AdultDisabilityBonusTaskTest:
         with does_not_raise():
             payload = tasks.BonusTaskPayload(fraud_check_id=1)
             tasks.apply_for_adult_disability_bonus_task.delay(payload.model_dump())
+
+    @patch("pcapi.core.subscription.bonus.api.apply_for_adult_disability_bonus")
+    def test_giving_up_after_a_while(self, mocked_apply_for_aah):
+        now = date_utils.get_naive_utc_now()
+        last_week = now - relativedelta(weeks=1, hours=1)
+        user = users_factories.BeneficiaryFactory()
+        fraud_check = subscription_factories.AAHBonusCreditFraudCheckFactory(
+            user=user,
+            status=subscription_models.FraudCheckStatus.STARTED,
+            dateCreated=last_week,
+            resultContent=subscription_factories.AdultDisabilityBonusCreditContentFactory(
+                error_code="12345", next_retry_at=now.isoformat()
+            ).model_dump(),
+        )
+        mocked_apply_for_aah.side_effect = api_particulier.ParticulierApiException
+
+        payload = tasks.BonusTaskPayload(fraud_check_id=fraud_check.id)
+        tasks.apply_for_adult_disability_bonus_task.delay(payload.model_dump())
+
+        assert fraud_check.status == subscription_models.FraudCheckStatus.ERROR
 
 
 class DisabledChildEducationBonusTaskTest:
@@ -205,6 +245,26 @@ class DisabledChildEducationBonusTaskTest:
         with does_not_raise():
             payload = tasks.BonusTaskPayload(fraud_check_id=1)
             tasks.apply_for_disabled_child_education_bonus_task.delay(payload.model_dump())
+
+    @patch("pcapi.core.subscription.bonus.api.apply_for_disabled_child_education_bonus")
+    def test_giving_up_after_a_while(self, mocked_apply_for_aeeh):
+        now = date_utils.get_naive_utc_now()
+        last_week = now - relativedelta(weeks=1, hours=1)
+        user = users_factories.BeneficiaryFactory()
+        fraud_check = subscription_factories.AEEHBonusCreditFraudCheckFactory(
+            user=user,
+            status=subscription_models.FraudCheckStatus.STARTED,
+            dateCreated=last_week,
+            resultContent=subscription_factories.DisabledChildEducationBonusCreditContentFactory(
+                error_code="12345", next_retry_at=now.isoformat()
+            ).model_dump(),
+        )
+        mocked_apply_for_aeeh.side_effect = api_particulier.ParticulierApiException
+
+        payload = tasks.BonusTaskPayload(fraud_check_id=fraud_check.id)
+        tasks.apply_for_disabled_child_education_bonus_task.delay(payload.model_dump())
+
+        assert fraud_check.status == subscription_models.FraudCheckStatus.ERROR
 
 
 class RecoverStartedBonusCreditApplicationsTest:
