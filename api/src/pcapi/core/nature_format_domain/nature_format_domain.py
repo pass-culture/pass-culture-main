@@ -18,6 +18,10 @@ class FormatEnum(enum.Enum):
     MATERIEL_ARTS_CREATIFS = "MATERIEL_ARTS_CREATIFS"
 
 
+class DomainEnum(enum.Enum):
+    DANSE = "DANSE"
+
+
 class FieldEnum(enum.Enum):
     TITLE = "TITLE"
     DESCRIPTION = "DESCRIPTION"
