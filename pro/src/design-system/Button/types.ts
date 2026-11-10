@@ -83,12 +83,6 @@ interface ButtonBaseProps {
    * The position of the icon
    */
   iconPosition?: IconPositionEnum
-  /**
-   * The class name of the icon
-   *
-   * @deprecated We shouldn't inject any custom style in a DS component.
-   */
-  iconClassName?: string
 }
 
 /**

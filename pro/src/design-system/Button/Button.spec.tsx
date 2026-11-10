@@ -303,17 +303,6 @@ describe('Button', () => {
       expect(icon).toBeInTheDocument()
     })
 
-    it('should render button with icon and custom icon className', () => {
-      const { container } = renderButton({
-        label: 'Icon with class',
-        icon: fullNextIcon,
-        iconClassName: 'custom-icon-class',
-      })
-
-      const icon = container.querySelector('svg.btn-icon.custom-icon-class')
-      expect(icon).toBeInTheDocument()
-    })
-
     it('should render button with icon alt text', () => {
       renderButton({
         label: 'Icon with alt',
@@ -551,7 +540,6 @@ describe('Button', () => {
         icon: fullNextIcon,
         iconPosition: IconPositionEnum.RIGHT,
         iconAlt: 'Next',
-        iconClassName: 'custom-class',
       })
 
       const button = screen.getByRole('button', { name: /Complex Button/ })
@@ -564,7 +552,6 @@ describe('Button', () => {
       expect(screen.getByText('Complex Button')).toBeInTheDocument()
       const icon = screen.getByRole('img', { name: 'Next' })
       expect(icon).toBeInTheDocument()
-      expect(icon).toHaveClass('custom-class')
     })
   })
 
