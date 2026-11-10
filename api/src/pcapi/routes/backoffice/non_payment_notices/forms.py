@@ -1,6 +1,7 @@
 import datetime
 
 from flask_wtf import FlaskForm
+from wtforms import fields as wtforms_fields
 from wtforms import validators
 
 from pcapi.core.offerers import models as offerers_models
@@ -59,9 +60,9 @@ class GetNoticesSearchForm(forms_utils.PCForm):
     limit = fields.PCLimitField(
         "Nombre maximum de résultats",
         choices=(
-            (100, "Afficher 100 résultats maximum"),
-            (500, "Afficher 500 résultats maximum"),
-            (1000, "Afficher 1000 résultats maximum"),
+            wtforms_fields.SelectChoice(100, "Afficher 100 résultats maximum"),
+            wtforms_fields.SelectChoice(500, "Afficher 500 résultats maximum"),
+            wtforms_fields.SelectChoice(1000, "Afficher 1000 résultats maximum"),
         ),
         default="100",
         coerce=int,
