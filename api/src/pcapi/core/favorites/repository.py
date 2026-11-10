@@ -11,9 +11,6 @@ from pcapi import settings
 from pcapi.core.artist.models import Artist
 from pcapi.core.favorites import exceptions
 from pcapi.core.favorites import models
-from pcapi.core.favorites.models import FavoriteArtist
-from pcapi.core.favorites.models import FavoriteOffer
-from pcapi.core.favorites.models import FavoriteVenue
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import models as offers_models
@@ -144,7 +141,7 @@ def get_favorite_offers_for(
         query = query.filter(models.FavoriteOffer.id == favorite_id)
 
     if offer_id:
-        query = query.filter(Offer.id == offer_id)
+        query = query.filter(models.FavoriteOffer.offerId == offer_id)
 
     results = db.session.execute(query).unique().all()
 
@@ -172,7 +169,7 @@ def get_favorite_artists_for(
         query = query.filter(models.FavoriteArtist.id == favorite_id)
 
     if artist_id:
-        query = query.filter(Artist.id == artist_id)
+        query = query.filter(models.FavoriteArtist.artistId == artist_id)
 
     results = db.session.scalars(query).all()
 
@@ -183,14 +180,14 @@ def get_favorite_venues_for(
     user: users_models.User,
     favorite_id: int | None = None,
     venue_id: int | None = None,
-) -> list[FavoriteVenue]:
+) -> list[models.FavoriteVenue]:
     query = sa.select(models.FavoriteVenue).where(models.FavoriteVenue.userId == user.id)
 
     if favorite_id:
         query = query.filter(models.FavoriteVenue.id == favorite_id)
 
     if venue_id:
-        query = query.filter(FavoriteVenue.venue.id == venue_id)
+        query = query.filter(models.FavoriteVenue.venueId == venue_id)
 
     results = db.session.scalars(query)
 
@@ -299,7 +296,7 @@ def has_reached_max_favorites_for(
     if not settings.MAX_FAVORITES:
         return False
 
-    query: Query[FavoriteArtist] | Query[FavoriteOffer] | Query[FavoriteVenue]
+    query: Query[models.FavoriteArtist] | Query[models.FavoriteOffer] | Query[models.FavoriteVenue]
 
     match type:
         case "offer":

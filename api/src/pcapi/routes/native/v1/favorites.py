@@ -62,11 +62,16 @@ def create_favorite(body: serializers.FavoriteRequest) -> serializers.FavoriteRe
         offer = offers_repository.get_offer_by_id(body.offer_id)
         track_offer_added_to_favorites_event(current_user.id, offer)
 
-    favorite_data = get_favorite_offers_for(current_user, offer_id=body.offer_id)[0]
+    favorite_data = get_favorite_offers_for(current_user, offer_id=body.offer_id)
+
+    if not favorite_data:
+        raise ResourceNotFoundError()
+
+    favorite = favorite_data[0]
 
     return serializers.FavoriteResponse(
-        id=favorite_data.favorite.id,
-        offer=serializers.FavoriteOfferResponse.build(favorite_data),
+        id=favorite.favorite.id,
+        offer=serializers.FavoriteOfferResponse.build(favorite),
     )
 
 
