@@ -2770,6 +2770,46 @@ class ValidateSettlementBatchTest(PostEndpointHelper):
             "REFERENCES_FACTURES": ", ".join(sorted([invoices[0].reference, invoices[1].reference])),
         }
 
+    @patch("pcapi.core.finance.api.validate_invoices")
+    def test_validate_settlement_batch_when_bank_account_is_also_linked_to_soft_deleted_venue(
+        self, mock_validate_invoices, authenticated_client
+    ):
+        batch = finance_factories.SettlementBatchFactory(name="VIR124")
+        offerer = offerers_factories.OffererFactory()
+        bank_account = offerers_factories.VenueBankAccountLinkFactory(
+            venue__managingOfferer=offerer, venue__bookingEmail="settlement@example.com"
+        ).bankAccount
+        other_link = offerers_factories.VenueBankAccountLinkFactory(venue__managingOfferer=offerer)
+        other_link.venue.isSoftDeleted = True
+        db.session.add(other_link.venue)
+        db.session.commit()
+
+        invoice = finance_factories.InvoiceFactory(
+            status=finance_models.InvoiceStatus.PENDING_PAYMENT, bankAccount=bank_account
+        )
+        finance_factories.SettlementFactory(batch=batch, invoices=[invoice], bankAccount=bank_account, amount=-1000)
+
+        response = self.post_to_endpoint(authenticated_client, batch_id=batch.id)
+        assert response.status_code == 303
+
+        mock_validate_invoices.assert_called_once()
+        assert set(mock_validate_invoices.call_args.args[0]) == {invoice.id}
+
+        alerts = flash.get_htmx_flash_messages(authenticated_client)
+        assert (
+            f"Le lot {batch.name} a été validé. Les virements, factures et réservations sont en cours de mise à jour"
+            in alerts["success"]
+        )
+
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0]["To"] == "settlement@example.com"
+        assert mails_testing.outbox[0]["template"] == asdict(TransactionalEmail.SETTLEMENT_VALIDATED.value)
+        assert mails_testing.outbox[0]["params"] == {
+            "FORMATTED_MONTANT_REMBOURSEMENT": "10 €",
+            "LIBELLE_VIREMENT": "VIR124",
+            "REFERENCES_FACTURES": invoice.reference,
+        }
+
     def test_validate_settlement_batch_not_found(self, authenticated_client):
         response = self.post_to_endpoint(authenticated_client, batch_id=99999, expected_num_queries=3)
         assert response.status_code == 404

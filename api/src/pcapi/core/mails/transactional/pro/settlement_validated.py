@@ -20,10 +20,12 @@ def get_settlement_validated_email_data(settlement: finance_models.Settlement) -
 
 
 def send_settlement_validated_email_to_pro(settlement: finance_models.Settlement) -> None:
+    # Even if VenueBankAccountLink.venueId is not nullable, link.venue may be null when the Venue is soft-deleted!
+    # We don't want to send email to email related to soft-deleted venues.
     recipients = [
         link.venue.bookingEmail
         for link in settlement.bankAccount.venueLinks
-        if link.timespan.upper is None and link.venue.bookingEmail is not None
+        if link.timespan.upper is None and link.venue and link.venue.bookingEmail
     ]
     if not recipients:
         return
