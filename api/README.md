@@ -202,6 +202,20 @@ Pour ça, via Docker:
 Une fois le le backend lancé, les tests peuvent être exécutés avec ou sans docker compose, et ce indépendamment de la manière
 de lancer le backend.
 
+En CI, les tests sont répartis en cinq groupes par collection (`without BO` et
+`only BO`), soit dix groupes au total, avec `pytest-split`. Le workflow
+restaure les durées historiques depuis le cache, puis transmet le même fichier
+`.test_durations` à tous les groupes via l'artefact `test-durations-before`.
+Les relances des groupes réutilisent cet artefact pour conserver la répartition.
+Le résumé GitHub Actions indique si le cache a été trouvé. En son absence, les
+tests s'exécutent quand même et leurs durées alimentent le cache des prochains runs.
+Le cache n'est renouvelé qu'après la réussite des dix groupes et la validation
+de leurs dix fichiers de durées ; un run incomplet ne remplace pas l'historique.
+La commande CI fixe explicitement la configuration `pyproject.toml` et la racine
+`/usr/src/app` du conteneur pour conserver les règles de collecte et des identifiants
+de tests stables. Le préfixe `tests-durations-v2-` évite de réutiliser les durées
+produites avec une autre racine de collecte.
+
 ### 1. Lancement des tests depuis la ligne de commande dans l'environnement uv
 
 ```shell

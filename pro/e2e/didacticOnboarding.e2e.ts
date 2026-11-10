@@ -1,8 +1,6 @@
 import { expect, test } from './fixtures/didacticOnboarding'
 import {
-  isGetCategoriesResponse,
   isGetOfferResponse,
-  isGetOffersResponse,
   isPatchOffersResponse,
   isPatchStocksResponse,
   isPublishOfferResponse,
@@ -200,17 +198,21 @@ test.describe('Didactic Onboarding feature', () => {
     await page.getByLabel(/Non accessible/).check()
     await page.getByText('Enregistrer et continuer').click()
 
-    await Promise.all([
-      page.goto('/onboarding/individuel'),
-      page.waitForResponse(isGetCategoriesResponse),
-      page.waitForResponse(isGetOffersResponse),
-    ])
+    await expect(
+      page.getByRole('heading', { name: 'Où profiter de l’offre ?' })
+    ).toBeVisible()
+
+    await page.goto('/onboarding/individuel')
 
     await expect(
       page.getByRole('heading', {
         level: 2,
         name: 'Reprendre une offre déjà commencée',
       })
+    ).toBeVisible()
+
+    await expect(
+      page.getByRole('link', { name: /Mon offre en brouillon/ })
     ).toBeVisible()
 
     await Promise.all([

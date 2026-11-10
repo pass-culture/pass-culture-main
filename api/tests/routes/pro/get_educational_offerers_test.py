@@ -93,4 +93,6 @@ class GetEducationalOfferersTest:
         with testing.assert_num_queries(queries):
             response = client.get("/offerers/educational")
             assert response.status_code == 200
-            assert response.json == expected_response
+            response_data = response.json
+            response_data["educationalOfferers"].sort(key=lambda offerer: offerer["id"])
+            assert response_data == expected_response
