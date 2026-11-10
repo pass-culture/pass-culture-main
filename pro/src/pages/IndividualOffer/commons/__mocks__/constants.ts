@@ -42,14 +42,6 @@ export const MOCKED_SUBCATEGORY = {
     isEvent: false,
     onlineOfflinePlatform: CATEGORY_STATUS.ONLINE,
   }),
-  // TODO (igabriele, 2025-07-30): Remove this once it's removed from the API.
-  /** @deprecated `ONLINE_OR_OFFLINE` should never exist anymore in production. */
-  EVENT_ONLINE_AND_OFFLINE: typedSubcategoryFactory({
-    id: SubcategoryIdEnum.SALON,
-    categoryId: MOCKED_CATEGORY.A.id,
-    isEvent: false,
-    onlineOfflinePlatform: CATEGORY_STATUS.ONLINE_OR_OFFLINE,
-  }),
   NON_EVENT_OFFLINE: typedSubcategoryFactory({
     id: SubcategoryIdEnum.ABO_PRATIQUE_ART,
     categoryId: MOCKED_CATEGORY.A.id,
