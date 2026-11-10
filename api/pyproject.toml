@@ -102,6 +102,7 @@ dev = [
   "jsbeautifier==2.0.3",                  # djlint requires 1.15.1 which is broken
   "mypy==2.4.1",
   "pgcli==4.7.1",
+  "psutil==7.2.2",
   "psycopg[binary]==3.3.6",
   "pytest==9.2.0",
   "pytest-dotenv ==0.5.2",
