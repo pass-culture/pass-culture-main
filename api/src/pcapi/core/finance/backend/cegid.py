@@ -371,7 +371,7 @@ class CegidFinanceBackend(BaseFinanceBackend):
                         settlement_batch_label=settlement_data.get("DescLot", {}).get("value"),
                         settlement_date=datetime.date.fromisoformat(settlement_data["Date"]["value"].split("T")[0]),
                         amount=(1 if settlement_data["AdjgDocType"]["value"] == "Refund" else -1)
-                        * int(float(settlement_data["Amount"]["value"]) * 100),
+                        * round(settlement_data["Amount"]["value"] * 100),
                     )
                     settlements.append(payload)
                 except Exception as exc:
