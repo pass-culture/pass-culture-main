@@ -19,7 +19,6 @@ type ErrorAdage = {
   }
 }
 
-// TODO remove this function because it is use at only one place
 // biome-ignore lint/suspicious/noExplicitAny: Generic error.
 export const hasErrorCode = (error: any): error is ErrorAdage =>
   typeof error?.body?.code === 'string'
@@ -63,8 +62,6 @@ export const getHumanReadableApiError = (
   return defaultMessage
 }
 
-// TODO: find a way to test this by mocking ReadableStream
-// in fetch response
 /* istanbul ignore next */
 export const getFileFromURL = async (
   url: string,
