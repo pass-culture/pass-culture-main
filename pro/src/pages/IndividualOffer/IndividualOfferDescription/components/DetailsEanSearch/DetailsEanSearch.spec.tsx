@@ -217,21 +217,6 @@ describe('DetailsEanSearch', () => {
           expect(getButton()).toBeDisabled()
         })
       })
-
-      it.skip('should display an error message if POST API ends with an EAN error', async () => {
-        // Should not be tested here
-        // but the feature is already broken on master
-
-        const eanSubmitError = 'This EAN is already used'
-        renderDetailsEanSearch({
-          canClearProduct: true,
-          productEan: '9781234567897',
-        })
-
-        await waitFor(() => {
-          expect(screen.queryByText(eanSubmitError)).toBeInTheDocument()
-        })
-      })
     })
 
     describe('when an EAN search is performed and ends with a product API error', () => {
