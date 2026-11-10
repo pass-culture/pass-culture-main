@@ -41,7 +41,6 @@ const meta: Meta<typeof ButtonComponent> = {
     icon: undefined,
     iconAlt: '',
     iconPosition: IconPositionEnum.LEFT,
-    iconClassName: '',
   },
   argTypes: {
     as: {

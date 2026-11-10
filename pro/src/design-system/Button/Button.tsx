@@ -39,7 +39,6 @@ export const Button = forwardRef<
       icon,
       iconAlt,
       iconPosition = IconPositionEnum.LEFT,
-      iconClassName,
       onClick,
       /***** Link props *****/
       opensInNewTab = false,
@@ -84,7 +83,6 @@ export const Button = forwardRef<
         icon={icon || fullLinkIcon}
         iconAlt={iconAlt ?? (opensInNewTab ? 'Nouvelle fenêtre' : '')}
         className={styles['btn-icon']}
-        iconClassName={iconClassName}
       />
     )
 
