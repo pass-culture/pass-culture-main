@@ -15,6 +15,7 @@ from pcapi.core.categories import subcategories
 from pcapi.core.external.batch import models as batch_models
 from pcapi.core.external.batch import testing as push_testing
 from pcapi.core.favorites import factories as favorite_factories
+from pcapi.core.favorites.api import set_offer_as_favorite
 from pcapi.core.favorites.models import FavoriteOffer
 from pcapi.core.favorites.repository import get_favorite_offers_for
 from pcapi.core.offers import factories as offers_factories
@@ -480,6 +481,26 @@ class CreateFavoriteTest:
         response = client.with_token(user).post(FAVORITES_URL, json={"offerId": offer.id})
 
         # Then
+        assert response.status_code == 404
+        assert db.session.query(FavoriteOffer).count() == 0
+
+    def test_offer_deactivated_after_favorite_creation(self, client):
+        # The offer is deactivated (e.g. by another transaction) after the favorite has been created
+        # but before it is read again to build the response: the route must not crash.
+        user = users_factories.UserFactory()
+        offer = offers_factories.EventOfferFactory()
+
+        def set_offer_as_favorite_then_deactivate_offer(user, offer_id):
+            favorite = set_offer_as_favorite(user, offer_id)
+            db.session.query(offers_models.Offer).filter_by(id=offer_id).update({"publicationDatetime": None})
+            return favorite
+
+        with mock.patch(
+            "pcapi.routes.native.v1.favorites.set_offer_as_favorite",
+            side_effect=set_offer_as_favorite_then_deactivate_offer,
+        ):
+            response = client.with_token(user).post(FAVORITES_URL, json={"offerId": offer.id})
+
         assert response.status_code == 404
         assert db.session.query(FavoriteOffer).count() == 0
 
