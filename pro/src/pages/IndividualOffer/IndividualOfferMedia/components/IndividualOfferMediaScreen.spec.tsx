@@ -392,6 +392,7 @@ describe('IndividualOfferMediaScreen', () => {
     describe('when the offer has an image', () => {
       const offerWithImage = {
         activeMediation: {
+          authorId: null,
           thumbUrl: 'https://image.url/thumb.jpg',
           credit: 'Un crédit',
           alternativeText: 'Texte alternatif',

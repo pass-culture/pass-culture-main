@@ -477,7 +477,7 @@ class GetOfferMediationResponseModelV2(HttpBodyModel):
         if not mediation:
             return None
         return cls(
-            authorId=str(mediation.authorId),
+            authorId=str(mediation.authorId) if mediation.authorId else None,
             credit=mediation.credit,
             thumbUrl=mediation.thumbUrl,
             alternativeText=mediation.alternativeText,

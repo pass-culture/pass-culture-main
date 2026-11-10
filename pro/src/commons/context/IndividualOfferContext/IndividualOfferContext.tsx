@@ -7,6 +7,7 @@ import { api } from '@/apiClient/api'
 import type {
   CategoryResponseModel,
   GetIndividualOfferResponseModelV2,
+  OfferExtraDataV2,
   SubcategoryResponseModel,
 } from '@/apiClient/v1'
 import {
@@ -14,7 +15,6 @@ import {
   GET_CATEGORIES_QUERY_KEY,
   GET_OFFER_QUERY_KEY,
 } from '@/commons/config/swrQueryKeys'
-import type { OfferExtraData } from '@/commons/core/Offers/types'
 import { isOfferProductBasedButNotSynchronized } from '@/commons/core/Offers/utils/typology'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
@@ -88,7 +88,7 @@ export const IndividualOfferContextProvider = ({
     }
   )
   const offer = offerQuery.data
-  const extraData = offer?.extraData as OfferExtraData | undefined
+  const extraData = offer?.extraData as OfferExtraDataV2 | undefined
   const offerEan = extraData?.ean
 
   //  Get the offer on the venue with the same EAN if it exists

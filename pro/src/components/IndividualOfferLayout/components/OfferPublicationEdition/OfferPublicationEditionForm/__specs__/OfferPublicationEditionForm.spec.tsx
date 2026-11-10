@@ -53,13 +53,7 @@ describe('OfferPublicationEditionForm', () => {
   it('should disable the form if the pause toggle is on', async () => {
     renderOfferPublicationEditionForm({
       offer: getIndividualOfferFactory({
-<<<<<<< HEAD
-        // @ts-expect-error:waiting for backend to migrate to pydantic v2
         publicationDatetime: null,
-        // @ts-expect-error:waiting for backend to migrate to pydantic v2
-=======
-        publicationDatetime: null,
->>>>>>> d552e21bd48 ((PC-43939)[API] feat: migrate get offer to pydantic V2)
         bookingAllowedDatetime: null,
       }),
       onSubmit: () => {},
@@ -89,10 +83,6 @@ describe('OfferPublicationEditionForm', () => {
     renderOfferPublicationEditionForm({
       offer: getIndividualOfferFactory({
         publicationDatetime: publicationDateFomatted,
-<<<<<<< HEAD
-        // @ts-expect-error:waiting for backend to migrate to pydantic v2
-=======
->>>>>>> d552e21bd48 ((PC-43939)[API] feat: migrate get offer to pydantic V2)
         bookingAllowedDatetime: null,
       }),
       onSubmit: () => {},

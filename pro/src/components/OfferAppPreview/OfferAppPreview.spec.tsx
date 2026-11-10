@@ -13,6 +13,7 @@ describe('OfferAppPreview', () => {
       'Photographie réalisée par Arthur et conservée dans les archives du théâtre municipal'
     const offer = getIndividualOfferFactory({
       activeMediation: {
+        authorId: null,
         thumbUrl: 'https://example.com/image.jpg',
         alternativeText: 'Une scène de théâtre',
         credit,
