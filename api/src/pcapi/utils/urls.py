@@ -57,16 +57,25 @@ def build_pc_pro_offer_path(offer: CollectiveOffer | CollectiveOfferTemplate | O
     return f"/offre/individuelle/{offer.id}/visibilite"
 
 
+def build_pc_pro_new_collective_offer_from_template_link(
+    collective_offer_template: CollectiveOfferTemplate, request_id: int
+) -> str:
+    venue_query_param = (
+        f"?id-structure={collective_offer_template.venueId}" if collective_offer_template.venueId else ""
+    )
+    return f"{settings.PRO_URL}/offre/collectif/creation/{collective_offer_template.id}/requete/{request_id}{venue_query_param}"
+
+
 def build_pc_pro_offerer_link(offerer: offerers_models.Offerer) -> str:
     return f"/hub?offerer={offerer.id}"
 
 
 def build_pc_pro_venue_path(venue: offerers_models.Venue) -> str:
-    return f"/accueil?venue={venue.id}"
+    return f"/accueil?id-structure={venue.id}"
 
 
 def build_pc_pro_venue_parameters_path(venue: offerers_models.Venue) -> str:
-    return f"/parametres?venue={venue.id}"
+    return f"/parametres?id-structure={venue.id}"
 
 
 def build_pc_pro_venue_link(venue: offerers_models.Venue) -> str:
