@@ -153,7 +153,12 @@ def as_utc_without_timezone(d: datetime.datetime) -> datetime.datetime:
     #
     # Warning:
     # this function might add an offset when converting to UTC.
-    return d.astimezone(pytz.utc).replace(tzinfo=None)
+
+    try:
+        return d.astimezone(pytz.utc).replace(tzinfo=None)
+    except (ValueError, OverflowError):
+        # the conversion goes beyond the years supported by `datetime` (1 to 9999): use the closest bound
+        return datetime.datetime.max if d.year == datetime.MAXYEAR else datetime.datetime.min
 
 
 def without_timezone(d: datetime.datetime) -> datetime.datetime:
