@@ -49,7 +49,7 @@ export const OnboardingOfferIndividual = (): JSX.Element => {
           Comment souhaitez-vous créer votre 1ère offre ?
         </h2>
         <FormLayout>
-          <FormLayout.Section>
+          <FormLayout.Section accessibleLabel="Choix du mode de création de l'offre">
             <div className={styles['offer-choices']}>
               <CardLink
                 to={getIndividualOfferUrl({
@@ -75,7 +75,7 @@ export const OnboardingOfferIndividual = (): JSX.Element => {
           </FormLayout.Section>
 
           {draftOffers.length > 0 && (
-            <FormLayout.Section>
+            <FormLayout.Section accessibleLabel="Offres en brouillon">
               <DraftOffers offers={draftOffers} />
             </FormLayout.Section>
           )}

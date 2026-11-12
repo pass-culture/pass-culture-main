@@ -80,7 +80,7 @@ export const SimulatorOpenToPublic = (): JSX.Element => {
         <FormProvider {...methods}>
           <form onSubmit={handleSubmit(onSubmit)}>
             <ScrollToFirstHookFormErrorAfterSubmit />
-            <FormLayout.Section>
+            <FormLayout.Section accessibleLabel="Choix de l'ouverture au public">
               <FormLayout.Row className={styles['row-field-public']}>
                 <OpenToPublicToggle
                   error={formState.errors.isOpenToPublic?.message}
