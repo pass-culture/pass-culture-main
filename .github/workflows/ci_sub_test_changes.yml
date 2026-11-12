@@ -25,7 +25,7 @@ permissions: write-all
 
 jobs:
   lint-github-actions:
-    name: Lint GitHub actions & worflows
+    name: Lint GitHub actions & workflows
     if: ${{ inputs.github-changed }}
     runs-on: ubuntu-latest
     steps:
@@ -35,6 +35,11 @@ jobs:
           persist-credentials: false
       - name: "Run actionlint"
         uses: pass-culture/common-workflows/actions/actionlint-check@actionlint/v0.3
+
+  check-github-actions-lockfile:
+    name: Check that the GHA lockfile is up-to-date
+    if: ${{ inputs.github-changed }}
+    uses: ./.github/workflows/ci_sub_check_gha_lockfile.yml
 
   build-backend-image:
     name: Build backend image
