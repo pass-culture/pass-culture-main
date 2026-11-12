@@ -1205,6 +1205,34 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
         assert chronicle.userId is None
         assert chronicle.email == "anonymized_email@anonymized.passculture"
 
+    def test_clean_device_data_on_anonymize_beneficiary_user(self) -> None:
+        user_to_anonymize = users_factories.BeneficiaryFactory(
+            firstName="user_to_anonymize",
+            age=18,
+            lastConnectionDate=date_utils.get_naive_utc_now() - relativedelta(years=3, days=1),
+            deposit__expirationDate=date_utils.get_naive_utc_now() - relativedelta(years=5, days=1),
+        )
+        bookings_factories.BookingDeviceFactory(booking__user=user_to_anonymize, booking__stock__price=0)
+        users_factories.LoginDeviceHistoryFactory(user=user_to_anonymize)
+        users_factories.NativeUserSessionFactory(user=user_to_anonymize, deviceOs="iOS", deviceSource="iPhone 13")
+        other_user_booking_device = bookings_factories.BookingDeviceFactory()
+
+        gdpr_api.anonymize_beneficiary_users()
+
+        assert db.session.query(bookings_models.BookingDevice).one() == other_user_booking_device
+        assert (
+            db.session.query(users_models.LoginDeviceHistory)
+            .filter(users_models.LoginDeviceHistory.userId == user_to_anonymize.id)
+            .count()
+            == 0
+        )
+        assert (
+            db.session.query(users_models.NativeUserSession)
+            .filter(users_models.NativeUserSession.userId == user_to_anonymize.id)
+            .count()
+            == 0
+        )
+
     def test_anonymize_beneficiary_user_force_iris_not_found(self) -> None:
         user_to_anonymize = users_factories.BeneficiaryFactory(
             firstName="user_to_anonymize",

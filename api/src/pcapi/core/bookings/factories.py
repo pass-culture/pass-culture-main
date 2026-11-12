@@ -130,3 +130,14 @@ class FraudulentBookingTagFactory(BaseFactory):
     booking = factory.SubFactory(BookingFactory)
     venue = factory.SelfAttribute("booking.venue")
     author = factory.SubFactory(users_factories.AdminFactory)
+
+
+class BookingDeviceFactory(BaseFactory):
+    class Meta:
+        model = models.BookingDevice
+
+    booking = factory.SubFactory(BookingFactory)
+    deviceId = factory.LazyFunction(lambda: str(uuid.uuid4()).upper())
+    os = "iOS"
+    source = "iPhone 13"
+    ipAddress = "192.0.2.1"

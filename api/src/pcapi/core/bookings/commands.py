@@ -28,6 +28,12 @@ def archive_old_bookings() -> None:
     api.archive_old_bookings()
 
 
+@blueprint.cli.command("delete_old_booking_device")
+@cron_decorators.log_cron_with_transaction
+def delete_old_booking_device() -> None:
+    api.delete_old_booking_device()
+
+
 @blueprint.cli.command("recompute_dnBookedQuantity")
 @click.argument("stock-ids", type=int, nargs=-1, required=True)
 @click.option("--apply", is_flag=True)

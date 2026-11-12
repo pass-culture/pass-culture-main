@@ -46,6 +46,7 @@ from pcapi.core.users import constants
 from pcapi.core.users import exceptions
 from pcapi.core.users import models
 from pcapi.core.users import schemas
+from pcapi.core.users import sessions
 from pcapi.core.users.api import SingleSignOnProviders
 from pcapi.core.users.email import constants as email_constants
 from pcapi.models import db
@@ -168,6 +169,12 @@ def anonymize_user(
 
     db.session.query(models.TrustedDevice).filter(models.TrustedDevice.userId == user.id).delete()
     db.session.query(models.LoginDeviceHistory).filter(models.LoginDeviceHistory.userId == user.id).delete()
+    db.session.query(bookings_models.BookingDevice).filter(
+        bookings_models.BookingDevice.bookingId.in_(
+            db.session.query(bookings_models.Booking.id).filter(bookings_models.Booking.userId == user.id)
+        )
+    ).delete()
+    sessions.disconnect_native_user_sessions(user_id=user.id)
     db.session.query(history_models.ActionHistory).filter(
         history_models.ActionHistory.userId == user.id,
         history_models.ActionHistory.offererId.is_(None),

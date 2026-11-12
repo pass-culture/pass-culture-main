@@ -10,6 +10,7 @@ from operator import attrgetter
 import sqlalchemy as sa
 import sqlalchemy.exc as sa_exc
 import sqlalchemy.orm as sa_orm
+from dateutil.relativedelta import relativedelta
 from sqlalchemy.sql.base import ExecutableOption
 
 import pcapi.core.external_bookings.api as external_bookings_api
@@ -473,7 +474,7 @@ def _book_offer(
 
         booking_device = models.BookingDevice(
             booking=booking,
-            deviceId=native_user_session.deviceId or None,  # NativeUserSession.deviceId can be an empty string
+            deviceId=native_user_session.deviceId or None,
             os=native_user_session.deviceOs,
             source=native_user_session.deviceSource,
             ipAddress=ip_address,
@@ -1424,6 +1425,13 @@ def archive_old_bookings() -> None:
             "archivedBookings": number_updated,
         },
     )
+
+
+def delete_old_booking_device() -> None:
+    thirteen_months_ago = date_utils.get_naive_utc_now() - relativedelta(months=13)
+
+    db.session.query(models.BookingDevice).filter(models.BookingDevice.dateCreated <= thirteen_months_ago).delete()
+    db.session.commit()
 
 
 def handle_expired_individual_bookings() -> None:

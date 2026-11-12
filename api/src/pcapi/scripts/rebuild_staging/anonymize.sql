@@ -305,6 +305,8 @@ WHERE reason is not null
 TRUNCATE TABLE activity;
 TRUNCATE TABLE user_session;
 TRUNCATE TABLE native_user_session;
+TRUNCATE TABLE booking_device;
+TRUNCATE TABLE login_device_history;
 
 -- Avoid synchronization with providers
 UPDATE venue_provider SET "isActive" = false;

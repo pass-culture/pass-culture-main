@@ -9,6 +9,7 @@ from unittest.mock import patch
 
 import pytest
 import sqlalchemy.exc
+from dateutil.relativedelta import relativedelta
 from flask import current_app
 from sqlalchemy import create_engine
 from sqlalchemy.sql import text
@@ -2425,6 +2426,27 @@ class ArchiveOldBookingsTest:
         db.session.refresh(old_booking)
         assert not recent_booking.displayAsEnded
         assert old_booking.displayAsEnded
+
+
+@pytest.mark.usefixtures("db_session")
+class DeleteOldBookingDeviceTest:
+    def test_delete_booking_device_older_than_thirteen_months(self) -> None:
+        thirteen_months_ago = date_utils.get_naive_utc_now() - relativedelta(months=13)
+        bookings_factories.BookingDeviceFactory(dateCreated=thirteen_months_ago)
+        bookings_factories.BookingDeviceFactory(dateCreated=thirteen_months_ago - timedelta(days=1))
+
+        api.delete_old_booking_device()
+
+        assert db.session.query(models.BookingDevice).count() == 0
+        assert db.session.query(models.Booking).count() == 2
+
+    def test_keep_booking_device_created_less_than_thirteen_months_ago(self) -> None:
+        less_than_thirteen_months_ago = date_utils.get_naive_utc_now() - relativedelta(months=13) + timedelta(days=1)
+        booking_device = bookings_factories.BookingDeviceFactory(dateCreated=less_than_thirteen_months_ago)
+
+        api.delete_old_booking_device()
+
+        assert db.session.query(models.BookingDevice).one() == booking_device
 
 
 @pytest.mark.usefixtures("db_session")

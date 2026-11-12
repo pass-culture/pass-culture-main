@@ -1156,6 +1156,7 @@ class LoginDeviceHistoryFactory(BaseFactory):
     os = "iOS"
     source = "iPhone 13"
     location = "Paris"
+    ipAddress = "192.0.2.1"
 
 
 class SingleSignOnFactory(BaseFactory):
