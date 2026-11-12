@@ -99,6 +99,8 @@ workflows:
         - 'actions/checkout@v7.0.1'
         - 'actions/setup-python@v7.0.0'
         - 'tj-actions/changed-files@v47.0.6'
+    '.github/workflows/ci_sub_check_gha_lockfile.yml':
+        - 'actions/checkout@v7.0.1'
     '.github/workflows/ci_sub_compute_changes.yml':
         - 'actions/checkout@v7.0.1'
         - 'tj-actions/changed-files@v47.0.6'
