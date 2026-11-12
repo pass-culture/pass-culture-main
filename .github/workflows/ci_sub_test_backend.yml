@@ -25,7 +25,7 @@ jobs:
           persist-credentials: false
       - name: Load docker image
         id: load-docker-image
-        uses: $/.github/actions/load-docker-image
+        uses: $/.github/actions/load-docker-image@master
         with:
           image: ${{ inputs.image }}
           tag: ${{ inputs.tag }}
@@ -91,7 +91,7 @@ jobs:
           persist-credentials: false
       - name: Load docker image
         id: load-docker-image
-        uses: $/.github/actions/load-docker-image
+        uses: $/.github/actions/load-docker-image@master
         with:
           image: ${{ inputs.image }}
           tag: ${{ inputs.tag }}
@@ -333,7 +333,7 @@ jobs:
           persist-credentials: false
       - name: Load docker image
         id: load-docker-image
-        uses: $/.github/actions/load-docker-image
+        uses: $/.github/actions/load-docker-image@master
         with:
           image: ${{ inputs.image }}
           tag: ${{ inputs.tag }}
