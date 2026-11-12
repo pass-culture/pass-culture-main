@@ -543,6 +543,7 @@ def _get_collective_offers(
                 educational_models.CollectiveOffer.providerId,
                 educational_models.CollectiveOffer.isActive,
                 educational_models.CollectiveOffer.dateArchived,
+                educational_models.CollectiveOffer.venueId,
             ),
             sa_orm.contains_eager(educational_models.CollectiveOffer.collectiveStock).options(
                 sa_orm.load_only(

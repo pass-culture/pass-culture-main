@@ -737,6 +737,7 @@ def _get_offers_by_ids(
             sa_orm.load_only(
                 offers_models.Offer.id,
                 offers_models.Offer.name,
+                offers_models.Offer.venueId,
                 offers_models.Offer.subcategoryId,
                 offers_models.Offer.rankingWeight,
                 offers_models.Offer.dateCreated,
