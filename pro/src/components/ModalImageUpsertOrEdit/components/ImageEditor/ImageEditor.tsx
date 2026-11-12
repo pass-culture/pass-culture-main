@@ -13,6 +13,12 @@ import AvatarEditor, {
 } from 'react-avatar-editor'
 import { useDebouncedCallback } from 'use-debounce'
 
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
+import fullDownIcon from '@/icons/full-down.svg'
+import fullLeftIcon from '@/icons/full-left.svg'
+import fullRightIcon from '@/icons/full-right.svg'
+import fullUpIcon from '@/icons/full-up.svg'
 import { Slider } from '@/ui-kit/form/Slider/Slider'
 
 import { CanvasTools } from './canvas'
@@ -23,6 +29,13 @@ const CANVAS_MOBILE_BREAKPOINT = 600
 const KEYBOARD_STEP_IN_PX = 5
 // Lets the user chain key presses / drag before the new state is announced
 const EDITOR_STATE_ANNOUNCEMENT_DELAY_IN_MS = 500
+
+const MOVE_CONTROLS = [
+  { direction: 'up', label: 'le haut', icon: fullUpIcon, x: 0, y: 1 },
+  { direction: 'down', label: 'le bas', icon: fullDownIcon, x: 0, y: -1 },
+  { direction: 'left', label: 'la gauche', icon: fullLeftIcon, x: 1, y: 0 },
+  { direction: 'right', label: 'la droite', icon: fullRightIcon, x: -1, y: 0 },
+]
 
 type CroppingRect = ReturnType<AvatarEditorRef['getCroppingRect']>
 
@@ -91,8 +104,6 @@ export const ImageEditor = forwardRef<AvatarEditorRef, ImageEditorProps>(
     ref
   ) => {
     const imageDisableDescriptionId = useId()
-    const editorStateId = useId()
-    const keyboardInstructionsId = useId()
     const zoomSliderId = useId()
     const editorRef = useRef<AvatarEditorRef>(null)
     const [position, setPosition] = useState<Position>(initialPosition)
@@ -191,6 +202,25 @@ export const ImageEditor = forwardRef<AvatarEditorRef, ImageEditorProps>(
       [debouncedOnChangeDone]
     )
 
+    const moveImage = (x: number, y: number) => {
+      if (!editorRef.current || !isImageReady) {
+        return
+      }
+
+      const rect = editorRef.current.getCroppingRect()
+      // Convert the same pixel step as the keyboard into image coordinates.
+      onPositionChange({
+        x:
+          rect.x +
+          rect.width / 2 +
+          (x * KEYBOARD_STEP_IN_PX * rect.width) / responsiveCanvasWidth,
+        y:
+          rect.y +
+          rect.height / 2 +
+          (y * KEYBOARD_STEP_IN_PX * rect.height) / responsiveCanvasHeight,
+      })
+    }
+
     const isScaleDisabled = maxScale <= 1
     // Force a minimum zoom level of 2x when zoom is available (prevents the user from zooming too little)
     // If zoom enabled AND maxScale < 2, use 2; otherwise use maxScale (e.g., 1.5 → 2, 3 → 3)
@@ -225,63 +255,75 @@ export const ImageEditor = forwardRef<AvatarEditorRef, ImageEditorProps>(
       })
     }
 
+    const containerRef = useRef<HTMLDivElement>(null)
+
+    useEffect(() => {
+      const canvas = containerRef.current?.querySelector('canvas')
+      if (!canvas) return
+
+      const instructions = isScaleDisabled
+        ? 'Utilisez les flèches du clavier pour déplacer l’image.'
+        : 'Utilisez les flèches du clavier pour déplacer l’image et les touches + et - pour zoomer.'
+
+      canvas.setAttribute('tabindex', '0')
+      canvas.setAttribute('role', 'img')
+      canvas.setAttribute('aria-roledescription', 'éditeur d’image')
+
+      canvas.setAttribute(
+        'aria-label',
+        "Éditeur de cadrage et de zoom de l'image. " +
+          instructions +
+          (editorStateDescription ? ' ' + editorStateDescription : '')
+      )
+
+      canvas.removeAttribute('aria-describedby')
+    }, [isScaleDisabled, editorStateDescription])
+
     return (
-      <div
-        className={style['image-editor']}
-        // react-avatar-editor hardcodes english ARIA attributes on the canvas
-        ref={(el) => {
-          const canvas = el?.querySelector('canvas')
-          canvas?.setAttribute(
-            'aria-label',
-            "Editeur de cadrage et de zoom de l'image"
-          )
-          canvas?.setAttribute('aria-roledescription', 'éditeur d’image')
-          canvas?.setAttribute(
-            'aria-describedby',
-            `${editorStateId} ${keyboardInstructionsId}`
-          )
-        }}
-      >
-        <AvatarEditor
-          color={[0, 0, 0, 0.2]}
-          crossOrigin="anonymous"
-          image={image}
-          keyboardStep={KEYBOARD_STEP_IN_PX}
-          onLoadFailure={onImageError}
-          onImageChange={drawCropBorder}
-          onImageReady={() => {
-            onImagePainted?.()
-            drawCropBorder()
-            setIsImageReady(true)
-          }}
-          onPositionChange={onPositionChange}
-          onRequestScaleChange={onRequestScaleChange}
-          position={position}
-          ref={editorRef}
-          scale={scale}
-          width={responsiveCanvasWidth}
-          height={responsiveCanvasHeight}
-          border={[responsiveCropBorderWidth, responsiveCropBorderHeight]}
-        />
-        <output
-          id={editorStateId}
-          className={style['image-editor-visually-hidden']}
-        >
-          {editorStateDescription}
-        </output>
-        <span
-          id={keyboardInstructionsId}
-          className={style['image-editor-visually-hidden']}
-        >
-          {isScaleDisabled
-            ? 'Utilisez les flèches du clavier pour déplacer l’image.'
-            : 'Utilisez les flèches du clavier pour déplacer l’image et les touches + et - pour zoomer.'}
-        </span>
+      <div ref={containerRef} className={style['image-editor']}>
+        <div className={style['image-editor-canvas']}>
+          <AvatarEditor
+            color={[0, 0, 0, 0.2]}
+            crossOrigin="anonymous"
+            image={image}
+            keyboardStep={KEYBOARD_STEP_IN_PX}
+            onLoadFailure={onImageError}
+            onImageChange={drawCropBorder}
+            onImageReady={() => {
+              onImagePainted?.()
+              drawCropBorder()
+              setIsImageReady(true)
+            }}
+            onPositionChange={onPositionChange}
+            onRequestScaleChange={onRequestScaleChange}
+            position={position}
+            ref={editorRef}
+            scale={scale}
+            width={responsiveCanvasWidth}
+            height={responsiveCanvasHeight}
+            border={[responsiveCropBorderWidth, responsiveCropBorderHeight]}
+          />
+          {MOVE_CONTROLS.map(({ direction, label, icon, x, y }) => (
+            <div
+              key={direction}
+              className={style[`image-editor-move-${direction}`]}
+            >
+              <Button
+                icon={icon}
+                aria-label={`Déplacer l’image vers ${label}`}
+                color={ButtonColor.NEUTRAL}
+                variant={ButtonVariant.SECONDARY}
+                disabled={!isImageReady}
+                onClick={() => moveImage(x, y)}
+              />
+            </div>
+          ))}
+        </div>
         <label className={style['image-editor-label']} htmlFor={zoomSliderId}>
           Zoom : {zoomPercentage} %
         </label>
         <div className={style['image-editor-scale']}>
-          <span className={style['image-editor-scale-label']}>min</span>
+          <p className={style['image-editor-scale-label']}>min</p>
           <div className={style['image-editor-scale-input']}>
             <Slider
               id={zoomSliderId}
@@ -302,15 +344,23 @@ export const ImageEditor = forwardRef<AvatarEditorRef, ImageEditorProps>(
               hideLabel
             />
           </div>
-          <span className={style['image-editor-scale-label']}>max</span>
+          <p className={style['image-editor-scale-label']}>max</p>
+        </div>
+        <div
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+          className={style['image-editor-visually-hidden']}
+        >
+          Paramétrages de l'image : {editorStateDescription}
         </div>
         {isScaleDisabled && (
-          <span
+          <p
             id={imageDisableDescriptionId}
             className={style['image-editor-scale-disabled']}
           >
             L’image est trop petite pour utiliser le zoom.
-          </span>
+          </p>
         )}
       </div>
     )

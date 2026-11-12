@@ -1,5 +1,7 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { type ComponentProps, createRef } from 'react'
+import type { AvatarEditorRef } from 'react-avatar-editor'
 import { axe } from 'vitest-axe'
 
 import { ImageEditor, map } from './ImageEditor'
@@ -46,15 +48,19 @@ describe('ImageEditor', () => {
     maxScale: 4,
   }
 
-  const CANVAS_LABEL = "Editeur de cadrage et de zoom de l'image"
+  const CANVAS_LABEL = /^Éditeur de cadrage et de zoom de l'image/
 
   it('renders correctly', () => {
     render(<ImageEditor {...defaultProps} />)
 
-    expect(
-      screen.getByRole('application', { name: CANVAS_LABEL })
-    ).toHaveProperty('tagName', 'CANVAS')
+    expect(screen.getByRole('img', { name: CANVAS_LABEL })).toHaveProperty(
+      'tagName',
+      'CANVAS'
+    )
     expect(screen.getByTestId('slider')).toBeInTheDocument()
+    for (const button of screen.getAllByRole('button')) {
+      expect(button).toBeDisabled()
+    }
   })
 
   describe('with a loaded image', () => {
@@ -74,11 +80,11 @@ describe('ImageEditor', () => {
     })
 
     const renderLoadedImageEditor = async (
-      props: Partial<typeof defaultProps> & { onChangeDone?: () => void } = {}
+      props: Partial<ComponentProps<typeof ImageEditor>> = {}
     ) => {
       const view = render(<ImageEditor {...defaultProps} {...props} />)
       await waitFor(() =>
-        expect(screen.getByRole('status')).not.toBeEmptyDOMElement()
+        expect(screen.getByRole('status')).toHaveTextContent('Zone cadrée')
       )
       return view
     }
@@ -94,17 +100,20 @@ describe('ImageEditor', () => {
       expect(canvas).toHaveAttribute('tabindex', '0')
       expect(canvas).toHaveAttribute('aria-roledescription', 'éditeur d’image')
       expect(screen.getByRole('status')).toHaveTextContent(INITIAL_EDITOR_STATE)
-      expect(canvas).toHaveAccessibleDescription(
-        `${INITIAL_EDITOR_STATE} Utilisez les flèches du clavier pour déplacer l’image et les touches + et - pour zoomer.`
+      expect(canvas).toHaveAccessibleName(
+        `Éditeur de cadrage et de zoom de l'image. Utilisez les flèches du clavier pour déplacer l’image et les touches + et - pour zoomer. ${INITIAL_EDITOR_STATE}`
       )
+      expect(
+        screen.queryByText(/^Utilisez les flèches du clavier/)
+      ).not.toBeInTheDocument()
       expect(await axe(container)).toHaveNoViolations()
     })
 
     it('should not mention keyboard zoom when zoom is disabled', async () => {
       await renderLoadedImageEditor({ maxScale: 1 })
 
-      expect(screen.getByLabelText(CANVAS_LABEL)).toHaveAccessibleDescription(
-        `${INITIAL_EDITOR_STATE} Utilisez les flèches du clavier pour déplacer l’image.`
+      expect(screen.getByLabelText(CANVAS_LABEL)).toHaveAccessibleName(
+        `Éditeur de cadrage et de zoom de l'image. Utilisez les flèches du clavier pour déplacer l’image. ${INITIAL_EDITOR_STATE}`
       )
     })
 
@@ -123,8 +132,67 @@ describe('ImageEditor', () => {
           'Zoom : 100 %. Zone cadrée : de 10 à 77 % de la largeur et de 0 à 100 % de la hauteur de l’image.'
         )
       )
+      expect(screen.getByLabelText(CANVAS_LABEL)).toHaveAccessibleName(
+        /Zone cadrée : de 10 à 77 % de la largeur/
+      )
       expect(onChangeDone).toHaveBeenCalled()
     })
+
+    it.each(
+      [384, 1024].flatMap((windowWidth) =>
+        [1, 2].flatMap((initialScale) =>
+          [
+            { key: 'ArrowUp', opposite: 'ArrowDown', direction: 'le haut' },
+            { key: 'ArrowDown', opposite: 'ArrowUp', direction: 'le bas' },
+            {
+              key: 'ArrowLeft',
+              opposite: 'ArrowRight',
+              direction: 'la gauche',
+            },
+            {
+              key: 'ArrowRight',
+              opposite: 'ArrowLeft',
+              direction: 'la droite',
+            },
+          ].map((direction) => ({ windowWidth, initialScale, ...direction }))
+        )
+      )
+    )(
+      'moves towards $direction like $key at scale $initialScale and width $windowWidth',
+      async ({ windowWidth, initialScale, key, opposite, direction }) => {
+        global.innerWidth = windowWidth
+        const user = userEvent.setup()
+        const editorRef = createRef<AvatarEditorRef>()
+        const onChangeDone = vi.fn()
+        await renderLoadedImageEditor({
+          ref: editorRef,
+          initialScale,
+          onChangeDone,
+        })
+
+        const initialRect = editorRef.current?.getCroppingRect()
+        await user.tab()
+        await user.keyboard(`{${key}}`)
+        const keyboardRect = editorRef.current?.getCroppingRect()
+
+        await user.keyboard(`{${opposite}}`)
+        const restoredRect = editorRef.current?.getCroppingRect()
+        expect(restoredRect?.x).toBeCloseTo(initialRect?.x ?? 0)
+        expect(restoredRect?.y).toBeCloseTo(initialRect?.y ?? 0)
+
+        onChangeDone.mockClear()
+        const button = screen.getByRole('button', {
+          name: `Déplacer l’image vers ${direction}`,
+        })
+        await user.click(button)
+
+        const buttonRect = editorRef.current?.getCroppingRect()
+        expect(buttonRect?.x).toBeCloseTo(keyboardRect?.x ?? 0)
+        expect(buttonRect?.y).toBeCloseTo(keyboardRect?.y ?? 0)
+        expect(onChangeDone).toHaveBeenCalled()
+        expect(button).toHaveFocus()
+      }
+    )
 
     it('should zoom in and out with the keyboard "+" and "-" keys', async () => {
       const user = userEvent.setup()
