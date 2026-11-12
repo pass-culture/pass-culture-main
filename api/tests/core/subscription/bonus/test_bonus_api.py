@@ -762,6 +762,28 @@ class QuotientFamilialApplicationTest:
             recredit.recreditType for recredit in user.deposit.recredits
         ]
 
+    def test_giving_up_after_a_while(self):
+        now = date_utils.get_naive_utc_now()
+        last_week = now - relativedelta(weeks=1, hours=1)
+        with time_machine.travel(last_week):
+            user = users_factories.BeneficiaryFactory()
+            fraud_check = subscription_factories.QFBonusCreditFraudCheckFactory(
+                user=user,
+                status=subscription_models.FraudCheckStatus.STARTED,
+                resultContent=subscription_factories.QuotientFamilialBonusCreditContentFactory(
+                    error_code="12345", next_retry_at=now.isoformat()
+                ).model_dump(),
+            )
+
+        with requests_mock.Mocker() as mock, pytest.raises(api_particulier.ParticulierApiUnavailable):
+            mock.get(
+                api_particulier.QUOTIENT_FAMILIAL_ENDPOINT, status_code=502, json=bonus_fixtures.DATA_PROVIDER_ERROR
+            )
+
+            bonus_api.apply_for_quotient_familial_bonus(fraud_check)
+
+        assert fraud_check.status == subscription_models.FraudCheckStatus.ERROR
+
 
 def _build_user_from_fixture(quotient_familial_json_response: dict) -> users_models.User:
     child_data = quotient_familial_json_response["data"]["enfants"][0]
@@ -988,6 +1010,7 @@ class DisabledAdultAllowanceTest:
         with pytest.raises(api_particulier.ParticulierApiUnavailable):
             bonus_api.apply_for_adult_disability_bonus(fraud_check)
 
+        assert fraud_check.status == subscription_models.FraudCheckStatus.STARTED
         assert fraud_check.resultContent["http_status_code"] == 500
         assert fraud_check.resultContent["request_id"] == "a unique id"
 
@@ -1091,6 +1114,26 @@ class DisabledAdultAllowanceTest:
         assert finance_models.RecreditType.BONUS_CREDIT not in [
             recredit.recreditType for recredit in user.deposit.recredits
         ]
+
+    def test_giving_up_after_a_while(self):
+        now = date_utils.get_naive_utc_now()
+        last_week = now - relativedelta(weeks=1, hours=1)
+        with time_machine.travel(last_week):
+            user = users_factories.BeneficiaryFactory()
+            fraud_check = subscription_factories.AAHBonusCreditFraudCheckFactory(
+                user=user,
+                status=subscription_models.FraudCheckStatus.STARTED,
+                resultContent=subscription_factories.AdultDisabilityBonusCreditContentFactory(
+                    error_code="12345", next_retry_at=now.isoformat()
+                ).model_dump(),
+            )
+
+        with requests_mock.Mocker() as mock, pytest.raises(api_particulier.ParticulierApiUnavailable):
+            mock.get(api_particulier.AAH_ENDPOINT, status_code=502, json=bonus_fixtures.DATA_PROVIDER_ERROR)
+
+            bonus_api.apply_for_adult_disability_bonus(fraud_check)
+
+        assert fraud_check.status == subscription_models.FraudCheckStatus.ERROR
 
 
 @pytest.mark.usefixtures("db_session")
@@ -1427,6 +1470,26 @@ class DisabledChildEducationAllowanceTest:
         assert finance_models.RecreditType.BONUS_CREDIT not in [
             recredit.recreditType for recredit in user.deposit.recredits
         ]
+
+    def test_giving_up_after_a_while(self):
+        now = date_utils.get_naive_utc_now()
+        last_week = now - relativedelta(weeks=1, hours=1)
+        with time_machine.travel(last_week):
+            user = users_factories.BeneficiaryFactory()
+            fraud_check = subscription_factories.AEEHBonusCreditFraudCheckFactory(
+                user=user,
+                status=subscription_models.FraudCheckStatus.STARTED,
+                resultContent=subscription_factories.DisabledChildEducationBonusCreditContentFactory(
+                    error_code="12345", next_retry_at=now.isoformat()
+                ).model_dump(),
+            )
+
+        with requests_mock.Mocker() as mock, pytest.raises(api_particulier.ParticulierApiUnavailable):
+            mock.get(api_particulier.AEEH_ENDPOINT, status_code=502, json=bonus_fixtures.DATA_PROVIDER_ERROR)
+
+            bonus_api.apply_for_disabled_child_education_bonus(fraud_check)
+
+        assert fraud_check.status == subscription_models.FraudCheckStatus.ERROR
 
 
 class NameMatchingTest:

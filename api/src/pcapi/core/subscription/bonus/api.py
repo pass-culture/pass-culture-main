@@ -488,13 +488,38 @@ def _call_api_particulier[
         status = subscription_models.FraudCheckStatus.KO
         reason_codes = [subscription_models.FraudReasonCode.PERSON_NOT_FOUND]
         http_status_code, error_code, request_id = e.status_code, e.error_code, e.request_id
+    except (api_particulier.ParticulierApiRequestConflict, api_particulier.ParticulierApiRateLimitExceeded) as e:
+        with atomic():
+            if not fraud_check.resultContent:
+                fraud_check.resultContent = {}
+
+            fraud_check.resultContent["http_status_code"] = e.status_code
+            fraud_check.resultContent["error_code"] = e.error_code
+            fraud_check.resultContent["request_id"] = e.request_id
+
+        raise
+
     except api_particulier.ParticulierApiException as e:
         with atomic():
             if not fraud_check.resultContent:
                 fraud_check.resultContent = {}
+
+            previous_error_code = fraud_check.resultContent.get("error_code")
+            previous_retry_at = fraud_check.resultContent.get("next_retry_at")
+
             fraud_check.resultContent["http_status_code"] = e.status_code
             fraud_check.resultContent["error_code"] = e.error_code
             fraud_check.resultContent["request_id"] = e.request_id
+
+            has_already_failed = previous_error_code is not None
+            should_give_up = (
+                has_already_failed
+                and previous_retry_at is not None
+                and (datetime.datetime.fromisoformat(previous_retry_at) - fraud_check.dateCreated)
+                > datetime.timedelta(days=7)
+            )
+            if should_give_up:
+                fraud_check.status = subscription_models.FraudCheckStatus.ERROR
 
         raise
 
