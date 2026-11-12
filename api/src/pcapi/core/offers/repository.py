@@ -1,3 +1,4 @@
+import dataclasses
 import datetime
 import enum
 import logging
@@ -35,6 +36,7 @@ from pcapi.utils import date as date_utils
 from pcapi.utils import string as string_utils
 from pcapi.utils.decorators import retry
 
+from . import constants as offers_constants
 from . import exceptions
 from . import models
 from . import utils
@@ -716,13 +718,7 @@ def get_offers_by_filters(
         query = query.filter(models.Offer.subcategoryId.in_(requested_subcategories))
 
     if name_keywords_or_ean is not None:
-        if string_utils.is_ean_valid(name_keywords_or_ean):
-            query = query.filter(models.Offer.ean == name_keywords_or_ean)
-        else:
-            search = name_keywords_or_ean
-            if len(name_keywords_or_ean) > 3:
-                search = f"%{name_keywords_or_ean}%"
-            query = query.filter(models.Offer.name.ilike(search))
+        query = query.filter(_get_name_keywords_or_ean_filter(name_keywords_or_ean))
 
     if status is not None:
         status_filters = models.Offer.get_status_filters(status=status)
@@ -798,13 +794,345 @@ def get_offers_by_filters(
     return query
 
 
-def _filter_by_creation_mode(query: sa_orm.Query, creation_mode: str) -> sa_orm.Query:
-    if creation_mode == MANUAL_CREATION_MODE:
-        query = query.filter(models.Offer.lastProviderId.is_(None))
-    if creation_mode == IMPORTED_CREATION_MODE:
-        query = query.filter(models.Offer.lastProviderId.is_not(None))
+def _get_name_keywords_or_ean_filter(name_keywords_or_ean: str) -> sa.ColumnElement[bool]:
+    if string_utils.is_ean_valid(name_keywords_or_ean):
+        return models.Offer.ean == name_keywords_or_ean
 
-    return query
+    search = name_keywords_or_ean
+    if len(name_keywords_or_ean) > 3:
+        search = f"%{name_keywords_or_ean}%"
+    return models.Offer.name.ilike(search)
+
+
+def _get_creation_mode_filters(creation_mode: str) -> list[sa.ColumnElement[bool]]:
+    if creation_mode == MANUAL_CREATION_MODE:
+        return [models.Offer.lastProviderId.is_(None)]
+    if creation_mode == IMPORTED_CREATION_MODE:
+        return [models.Offer.lastProviderId.is_not(None)]
+    return []
+
+
+def _filter_by_creation_mode(query: sa_orm.Query, creation_mode: str) -> sa_orm.Query:
+    return query.filter(*_get_creation_mode_filters(creation_mode))
+
+
+@dataclasses.dataclass(frozen=True)
+class ThingOffersCursor:
+    name: str
+    id: int
+
+
+@dataclasses.dataclass(frozen=True)
+class EventOffersCursor:
+    first_beginning_datetime: datetime.datetime | None
+    id: int
+
+
+@dataclasses.dataclass(frozen=True)
+class PaginatedOfferIds[CursorT: (ThingOffersCursor, EventOffersCursor)]:
+    offer_ids: list[int]
+    next_cursor: CursorT | None
+    total: int
+
+
+def get_paginated_thing_offer_ids(
+    *,
+    venue_id: int,
+    per_page: int,
+    cursor: ThingOffersCursor | None = None,
+    status: offer_mixin.OfferStatus | None = None,
+    name_keywords_or_ean: str | None = None,
+    creation_mode: str | None = None,
+    is_digital: bool | None = None,
+    order_by_desc: bool = False,
+) -> PaginatedOfferIds[ThingOffersCursor]:
+    filters = _get_offers_filters(
+        venue_id=venue_id,
+        subcategory_ids=subcategories.THING_SUBCATEGORIES,
+        is_digital=is_digital,
+        status=status,
+        name_keywords_or_ean=name_keywords_or_ean,
+        creation_mode=creation_mode,
+    )
+
+    total = _get_capped_total(filters)
+
+    sort_name = sa.func.lower(sa.func.immutable_unaccent(models.Offer.name))
+
+    if cursor is not None:
+        cursor_sort_name = sa.func.lower(sa.func.immutable_unaccent(sa.literal(cursor.name)))
+        if order_by_desc:
+            filters += [
+                # redundant but lets the index scan start at the cursor
+                sort_name <= cursor_sort_name,
+                sa.or_(sort_name < cursor_sort_name, models.Offer.id > cursor.id),
+            ]
+        else:
+            filters += [
+                # redundant but lets the index scan start at the cursor
+                sort_name >= cursor_sort_name,
+                sa.or_(sort_name > cursor_sort_name, models.Offer.id < cursor.id),
+            ]
+
+    if order_by_desc:
+        order_by = (sort_name.desc(), models.Offer.id.asc())
+    else:
+        order_by = (sort_name.asc(), models.Offer.id.desc())
+
+    rows = db.session.execute(
+        sa.select(models.Offer.id, models.Offer.name).where(*filters).order_by(*order_by).limit(per_page + 1)
+    ).all()
+
+    next_cursor = None
+    if len(rows) > per_page:
+        rows = rows[:per_page]
+        next_cursor = ThingOffersCursor(name=rows[-1].name, id=rows[-1].id)
+
+    return PaginatedOfferIds(
+        offer_ids=[row.id for row in rows],
+        next_cursor=next_cursor,
+        total=total,
+    )
+
+
+def get_paginated_event_offer_ids(
+    *,
+    venue_id: int,
+    per_page: int,
+    cursor: EventOffersCursor | None = None,
+    status: offer_mixin.OfferStatus | None = None,
+    name_keywords_or_ean: str | None = None,
+    creation_mode: str | None = None,
+    is_digital: bool | None = None,
+    order_by_desc: bool = True,
+    period_beginning_date: datetime.date | None = None,
+    period_ending_date: datetime.date | None = None,
+) -> PaginatedOfferIds[EventOffersCursor]:
+    filters = _get_offers_filters(
+        venue_id=venue_id,
+        subcategory_ids=subcategories.EVENT_SUBCATEGORIES,
+        is_digital=is_digital,
+        status=status,
+        name_keywords_or_ean=name_keywords_or_ean,
+        creation_mode=creation_mode,
+    )
+
+    if period_beginning_date is not None or period_ending_date is not None:
+        filters.append(
+            _get_event_offers_period_filter(
+                venue_id=venue_id,
+                period_beginning_date=period_beginning_date,
+                period_ending_date=period_ending_date,
+            )
+        )
+
+    total = _get_capped_total(filters)
+
+    first_beginning_datetime_query = (
+        sa.select(sa.func.min(models.Stock.beginningDatetime).label("first_beginning_datetime"))
+        .where(
+            models.Stock.offerId == models.Offer.id,
+            # IS NOT TRUE rather than IS FALSE
+            # otherwise PostgreSQL 18 vastly overestimates the cost of ix_stock_bookability
+            models.Stock.isSoftDeleted.is_not(True),
+        )
+        # lateral computes this date once per offer
+        .lateral()
+    )
+    first_beginning_datetime = first_beginning_datetime_query.c.first_beginning_datetime
+
+    if cursor is not None:
+        if cursor.first_beginning_datetime is None:
+            # offers without a dated stock come last ordered by id
+            if order_by_desc:
+                filters += [first_beginning_datetime.is_(None), models.Offer.id > cursor.id]
+            else:
+                filters += [first_beginning_datetime.is_(None), models.Offer.id < cursor.id]
+        elif order_by_desc:
+            filters.append(
+                sa.or_(
+                    first_beginning_datetime < cursor.first_beginning_datetime,
+                    sa.and_(first_beginning_datetime == cursor.first_beginning_datetime, models.Offer.id > cursor.id),
+                    first_beginning_datetime.is_(None),
+                )
+            )
+        else:
+            filters.append(
+                sa.or_(
+                    first_beginning_datetime > cursor.first_beginning_datetime,
+                    sa.and_(first_beginning_datetime == cursor.first_beginning_datetime, models.Offer.id < cursor.id),
+                    first_beginning_datetime.is_(None),
+                )
+            )
+
+    if order_by_desc:
+        order_by = (first_beginning_datetime.desc().nulls_last(), models.Offer.id.asc())
+    else:
+        order_by = (first_beginning_datetime.asc().nulls_last(), models.Offer.id.desc())
+
+    rows = db.session.execute(
+        sa.select(models.Offer.id, first_beginning_datetime)
+        .join(first_beginning_datetime_query, sa.true())
+        .where(*filters)
+        .order_by(*order_by)
+        .limit(per_page + 1)
+    ).all()
+
+    next_cursor = None
+    if len(rows) > per_page:
+        rows = rows[:per_page]
+        next_cursor = EventOffersCursor(first_beginning_datetime=rows[-1].first_beginning_datetime, id=rows[-1].id)
+
+    return PaginatedOfferIds(
+        offer_ids=[row.id for row in rows],
+        next_cursor=next_cursor,
+        total=total,
+    )
+
+
+def _get_offers_filters(
+    *,
+    venue_id: int,
+    subcategory_ids: typing.Iterable[str],
+    is_digital: bool | None,
+    status: offer_mixin.OfferStatus | None,
+    name_keywords_or_ean: str | None,
+    creation_mode: str | None,
+) -> list[sa.ColumnElement[bool]]:
+    filtered_subcategory_ids = set(subcategory_ids)
+
+    if is_digital is True:
+        filtered_subcategory_ids &= set(subcategories.ONLINE_SUBCATEGORIES)
+    elif is_digital is False:
+        filtered_subcategory_ids -= set(subcategories.ONLINE_SUBCATEGORIES)
+
+    filters: list[sa.ColumnElement[bool]] = [
+        models.Offer.venueId == venue_id,
+        models.Offer.subcategoryId.in_(filtered_subcategory_ids),
+    ]
+    if creation_mode is not None:
+        filters += _get_creation_mode_filters(creation_mode)
+
+    if name_keywords_or_ean is not None:
+        filters.append(_get_name_keywords_or_ean_filter(name_keywords_or_ean))
+
+    if status == offer_mixin.OfferStatus.INACTIVE:
+        # Offer.get_status_filters reads Venue.state for each offer: read it once so that the index can be used
+        filters.append(models.Offer.validation == models.OfferValidationStatus.APPROVED)
+        venue_is_closed = db.session.scalar(
+            sa.select(offerers_models.Venue.is_closed).where(offerers_models.Venue.id == venue_id)
+        )
+        if not venue_is_closed:
+            filters.append(models.Offer.publicationDatetime.is_(None))
+    elif status is not None:
+        filters += [offerers_models.Venue.id == models.Offer.venueId, *models.Offer.get_status_filters(status=status)]
+
+    return filters
+
+
+def _get_capped_total(filters: list[sa.ColumnElement[bool]]) -> int:
+    offer_ids = sa.select(models.Offer.id).where(*filters).limit(offers_constants.OFFERS_RECAP_LIMIT).subquery()
+    return db.session.execute(sa.select(sa.func.count()).select_from(offer_ids)).scalar_one()
+
+
+def _get_venue_timezones(venue_id: int) -> set[str]:
+    return set(
+        db.session.scalars(
+            sa.select(geography_models.Address.timezone)
+            .join(
+                offerers_models.OffererAddress,
+                offerers_models.OffererAddress.addressId == geography_models.Address.id,
+            )
+            .where(offerers_models.OffererAddress.venueId == venue_id)
+            .distinct()
+        )
+    )
+
+
+def _get_beginning_datetime_range_filter(
+    start: datetime.datetime | None, end: datetime.datetime | None
+) -> sa.ColumnElement[bool]:
+    filters = []
+    if start is not None:
+        filters.append(models.Stock.beginningDatetime >= start)
+    if end is not None:
+        filters.append(models.Stock.beginningDatetime <= end)
+    return sa.and_(*filters)
+
+
+def _get_event_offers_period_filter(
+    *,
+    venue_id: int,
+    period_beginning_date: datetime.date | None,
+    period_ending_date: datetime.date | None,
+) -> sa.ColumnElement[bool]:
+    utc_periods_by_timezone: dict[str, tuple[datetime.datetime | None, datetime.datetime | None]] = {}
+    for timezone in _get_venue_timezones(venue_id):
+        utc_start, utc_end = date_utils.convert_date_period_to_utc_datetime_period(
+            (period_beginning_date, period_ending_date),  # type: ignore[arg-type]
+            timezone,
+        )
+        # stock.beginningDatetime is stored as a naive UTC datetime
+        utc_periods_by_timezone[timezone] = (
+            utc_start.replace(tzinfo=None) if utc_start else None,
+            utc_end.replace(tzinfo=None) if utc_end else None,
+        )
+
+    if not utc_periods_by_timezone:
+        return sa.false()
+
+    stock_filters: list[sa.ColumnElement[bool]] = [
+        models.Stock.offerId == models.Offer.id,
+        models.Stock.isSoftDeleted.is_not(True),
+    ]
+
+    if len(utc_periods_by_timezone) == 1:
+        [(start, end)] = utc_periods_by_timezone.values()
+        stock_filters.append(_get_beginning_datetime_range_filter(start, end))
+
+    else:
+        starts = [start for start, _ in utc_periods_by_timezone.values() if start is not None]
+        ends = [end for _, end in utc_periods_by_timezone.values() if end is not None]
+        # add a wide condition that lets the index skip stocks outside every timezone's period
+        stock_filters.append(
+            _get_beginning_datetime_range_filter(min(starts) if starts else None, max(ends) if ends else None)
+        )
+
+        offer_timezone = (
+            sa.select(geography_models.Address.timezone)
+            .join(
+                offerers_models.OffererAddress,
+                offerers_models.OffererAddress.addressId == geography_models.Address.id,
+            )
+            .where(offerers_models.OffererAddress.id == models.Offer.offererAddressId)
+            .correlate(models.Offer)
+            .scalar_subquery()
+        )
+
+        venue_timezone = (
+            sa.select(geography_models.Address.timezone)
+            .join(
+                offerers_models.OffererAddress,
+                offerers_models.OffererAddress.addressId == geography_models.Address.id,
+            )
+            .where(
+                offerers_models.OffererAddress.venueId == venue_id,
+                offerers_models.OffererAddress.type == offerers_models.LocationType.VENUE_LOCATION,
+            )
+            .scalar_subquery()
+        )
+
+        target_timezone = sa.func.coalesce(offer_timezone, venue_timezone)
+
+        # each offer must match the period converted to its own timezone
+        period_filter_by_timezone = [
+            sa.and_(target_timezone == timezone, _get_beginning_datetime_range_filter(start, end))
+            for timezone, (start, end) in utc_periods_by_timezone.items()
+        ]
+
+        stock_filters.append(sa.or_(*period_filter_by_timezone))
+
+    return sa.select(1).select_from(models.Stock).where(*stock_filters).correlate(models.Offer).exists()
 
 
 def venue_already_has_validated_offer(venue_id: int) -> bool:
