@@ -34,7 +34,10 @@ jobs:
           fetch-tags: false
           persist-credentials: false
       - name: "Run actionlint"
-        uses: pass-culture/common-workflows/actions/actionlint-check@actionlint/v0.3
+        uses: pass-culture/common-workflows/actions/actionlint-check@actionlint/v0.5
+        with:
+          # we use a GHA lockfile
+          ignore-unpinned-sha: true
 
   check-github-actions-lockfile:
     name: Check that the GHA lockfile is up-to-date
