@@ -124,10 +124,7 @@ describe('validationSchema', () => {
           { beginningTime: '10:00' },
         ],
       },
-      expectedErrors: [
-        'Veuillez renseigner des horaires différents',
-        'Veuillez renseigner des horaires différents',
-      ],
+      expectedErrors: ['Veuillez renseigner des horaires différents'],
     },
     {
       description: 'date is in the past',

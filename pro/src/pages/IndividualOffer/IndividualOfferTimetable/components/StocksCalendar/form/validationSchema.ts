@@ -91,33 +91,7 @@ export const getValidationSchema = () =>
             .required('Veuillez renseigner un horaire'),
         })
       )
-      // TODO(cnormant, 2025-07-23): create and use a custom test, its certainly not the only place where we need to check for duplicate values
-      .test('arebeginningTimesUnique', (list) => {
-        const duplicateIndex = list
-          .map((time) => time.beginningTime)
-          .reduce<yup.ValidationError[]>(
-            (accumulator, currentValue, index, self) => {
-              if (
-                self.indexOf(currentValue) !== self.lastIndexOf(currentValue)
-              ) {
-                accumulator.push(
-                  new yup.ValidationError(
-                    'Veuillez renseigner des horaires différents',
-                    null,
-                    `beginningTimes[${index}].beginningTime`
-                  )
-                )
-              }
-              return accumulator
-            },
-            []
-          )
-
-        if (duplicateIndex.length > 0) {
-          return new yup.ValidationError(duplicateIndex)
-        }
-        return true
-      }),
+      .uniqueBy('beginningTime', 'Veuillez renseigner des horaires différents'),
     quantityPerPriceCategories: quantityPerPriceCategoriesSchema,
     bookingLimitDateInterval: yup
       .number()
