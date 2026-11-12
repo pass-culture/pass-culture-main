@@ -2,7 +2,6 @@ import cn from 'classnames'
 import {
   type ForwardedRef,
   forwardRef,
-  useCallback,
   useEffect,
   useId,
   useRef,
@@ -82,7 +81,7 @@ type MultiSelectProps = {
 )
 
 /**
- * MultiSelect component for selecting multiple options from a dropdown list.
+ * MultiSelect disclosure containing native checkboxes.
  *
  * This component provides a customizable dropdown for selecting multiple options,
  * with features like search functionality, select all option, and individual option selection.
@@ -192,19 +191,24 @@ export const MultiSelect = forwardRef(
       updateSelectedItems(updatedItems)
     }
 
-    const handleKeyDown = useCallback((event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setIsOpen(false)
-      }
-    }, [])
-
     useEffect(() => {
+      if (!isOpen) return
+
+      const handleKeyDown = (event: globalThis.KeyboardEvent) => {
+        if (
+          event.key === 'Escape' &&
+          containerRef.current?.contains(document.activeElement)
+        ) {
+          event.stopPropagation()
+          setIsOpen(false)
+          containerRef.current.querySelector('button')?.focus()
+        }
+      }
+
       document.addEventListener('keydown', handleKeyDown)
 
-      return () => {
-        document.removeEventListener('keydown', handleKeyDown)
-      }
-    }, [handleKeyDown])
+      return () => document.removeEventListener('keydown', handleKeyDown)
+    }, [isOpen])
 
     useOnClickOrFocusOutside(containerRef, () => setIsOpen(false))
 

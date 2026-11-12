@@ -47,7 +47,8 @@ export const MultiSelectPanel = ({
   }
 
   return (
-    <dialog id={id} className={styles['panel']} aria-label={label} open>
+    <fieldset id={id} className={styles['panel']}>
+      <legend className={styles['visually-hidden']}>{label}</legend>
       {hasSearch && (
         <div className={styles['search-input']}>
           <SearchInput
@@ -98,6 +99,6 @@ export const MultiSelectPanel = ({
           </div>
         )}
       </div>
-    </dialog>
+    </fieldset>
   )
 }

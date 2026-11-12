@@ -80,6 +80,57 @@ describe('<MultiSelect />', () => {
     expect(selectAllCheckbox).not.toBeInTheDocument()
   })
 
+  it('opens a disclosure without moving focus and supports native checkbox keyboard navigation', async () => {
+    const user = userEvent.setup()
+    renderMultiSelect({ options })
+
+    const trigger = screen.getByRole('button', { name: 'Options' })
+    expect(trigger).toHaveAttribute('aria-expanded', 'false')
+    expect(trigger).not.toHaveAttribute('aria-haspopup')
+    trigger.focus()
+    await user.keyboard('[Enter]')
+
+    const panel = screen.getByRole('group', { name: 'Options' })
+    expect(panel).toHaveAttribute('id', trigger.getAttribute('aria-controls'))
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    expect(trigger).toHaveAttribute('aria-expanded', 'true')
+    expect(trigger).toHaveFocus()
+
+    await user.tab()
+    const firstOption = screen.getByRole('checkbox', { name: 'Option 1' })
+    expect(firstOption).toHaveFocus()
+    expect(firstOption).toBeChecked()
+    await user.keyboard('[Space]')
+    expect(firstOption).not.toBeChecked()
+    await user.tab()
+    expect(screen.getByRole('checkbox', { name: 'Option 2' })).toHaveFocus()
+
+    await user.keyboard('[Escape]')
+    expect(trigger).toHaveFocus()
+    expect(trigger).toHaveAttribute('aria-expanded', 'false')
+    expect(panel).not.toBeInTheDocument()
+  })
+
+  it('allows tabbing out of the panel without trapping focus', async () => {
+    const user = userEvent.setup()
+    renderMultiSelect({ options })
+
+    await user.click(screen.getByRole('button', { name: 'Options' }))
+    await user.tab()
+    await user.tab()
+    await user.tab()
+    expect(screen.getByRole('checkbox', { name: 'Option 3' })).toHaveFocus()
+
+    await user.tab()
+    expect(
+      screen.getByRole('button', { name: 'Supprimer Option 1' })
+    ).toHaveFocus()
+    expect(screen.getByRole('button', { name: 'Options' })).toHaveAttribute(
+      'aria-expanded',
+      'false'
+    )
+  })
+
   it('selects all options when "Select All" is clicked', async () => {
     renderMultiSelect({ hasSelectAllOptions: true, options })
 
