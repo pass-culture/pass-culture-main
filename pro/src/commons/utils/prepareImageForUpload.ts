@@ -18,7 +18,7 @@ export const prepareImageForUpload = async (
     minSizes?: { width: number; height: number }
     cropWidth?: number
   } = {}
-): Promise<File> => {
+): Promise<File | undefined> => {
   if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
     return file
   }
@@ -31,6 +31,10 @@ export const prepareImageForUpload = async (
     }
 
     const { width, height } = bitmap
+
+    if (minSizes && (width < minSizes.width || height < minSizes.height)) {
+      return
+    }
     const longestSide = Math.max(width, height)
 
     if (cropWidth <= 0) {
