@@ -31,7 +31,9 @@ from pcapi.core.finance.models import CustomReimbursementRule
 from pcapi.core.geography import models as geography_models
 from pcapi.core.highlights.models import HighlightRequest
 from pcapi.core.history.constants import ACTION_HISTORY_ORDER_BY
+from pcapi.core.nature_format_domain import nature_format_domain as nfd
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offers import constants as offers_constants
 from pcapi.core.providers.models import Provider
 from pcapi.models import Model
 from pcapi.models import db
@@ -45,6 +47,7 @@ from pcapi.models.pc_object import PcObject
 from pcapi.models.soft_deletable_mixin import SoftDeletableMixin
 from pcapi.utils import date as date_utils
 from pcapi.utils import db as db_utils
+from pcapi.utils.db import MagicEnum
 
 
 logger = logging.getLogger(__name__)
@@ -707,6 +710,12 @@ class OfferMetaData(PcObject, Model):
     videoTitle: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text(), nullable=True)
     videoUrl: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
     videoDescription: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
+    accessibility: sa_orm.Mapped[list[offers_constants.OfferAccessibilityEnum]] = sa_orm.mapped_column(
+        sa_mutable.MutableList.as_mutable(postgresql.ARRAY(MagicEnum(offers_constants.OfferAccessibilityEnum))),
+        nullable=True,
+        default=[],
+        server_default="{}",
+    )
 
 
 class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
@@ -892,6 +901,17 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
     likesCount: sa_orm.Mapped["int"] = sa_orm.query_expression()
     # TODO: Will be deleted in PR #24783 after native code deletion
     hasProAdvice: sa_orm.Mapped["bool"] = sa_orm.query_expression()
+
+    nature: sa_orm.Mapped[nfd.NatureEnum | None] = sa_orm.mapped_column(
+        db_utils.MagicEnum(nfd.NatureEnum), nullable=True
+    )
+    format: sa_orm.Mapped[nfd.FormatEnum | None] = sa_orm.mapped_column(
+        db_utils.MagicEnum(nfd.FormatEnum), nullable=True
+    )
+    domaine: sa_orm.Mapped[nfd.DomainEnum | None] = sa_orm.mapped_column(
+        db_utils.MagicEnum(nfd.DomainEnum), nullable=True
+    )
+
     __table_args__ = (
         sa.Index(
             "idx_offer_lastValidationAuthorUserId",
