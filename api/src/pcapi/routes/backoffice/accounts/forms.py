@@ -348,7 +348,7 @@ class QFBonusCreditRequestForm(FlaskForm):
     common_name = fields.PCOptStringField("Nom d'usage du représentant légal")
     birth_date = fields.PCDateField("Date de naissance du représentant légal")
     birth_country = fields.PCSelectWithPlaceholderValueField(
-        "Pays de naissance du représentant légal", choices=countries_utils.INSEE_COUNTRIES
+        "Pays de naissance du représentant légal", choices=countries_utils.ALPHABETICALLY_SORTED_COUNTRIES
     )
     birth_city = fields.PCTomSelectField(
         "Ville de naissance du représentant légal (s'il est né en France)",
@@ -374,7 +374,7 @@ class QFBonusCreditRequestForm(FlaskForm):
 class DisabilityBonusCreditRequestForm(FlaskForm):
     birth_country = fields.PCSelectWithPlaceholderValueField(
         "Pays de naissance du jeune",
-        choices=countries_utils.INSEE_COUNTRIES,
+        choices=countries_utils.ALPHABETICALLY_SORTED_COUNTRIES,
     )
     birth_city = fields.PCTomSelectField(
         "Ville de naissance du jeune (s'il est né en France)",
