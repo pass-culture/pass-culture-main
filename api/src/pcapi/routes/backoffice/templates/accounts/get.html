@@ -33,7 +33,7 @@
   {% if is_user_expired %}<span class="mx-1">{{ "Informations expirées" | format_badge("warning") }}</span>{% endif %}
   {% if duplicate_user_id %}
     <small class="mx-1"><a href="{{ duplicate_user_id | pc_backoffice_public_account_link }}"
-   target="_blank">User ID
+                           target="_blank">User ID
     doublon : {{ duplicate_user_id }}</a></small>
   {% endif %}
 {% endblock %}
