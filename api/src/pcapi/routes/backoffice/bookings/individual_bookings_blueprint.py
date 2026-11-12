@@ -95,6 +95,7 @@ def _get_individual_bookings_query() -> sa_orm.Query:
                 offers_models.Offer.isDuo,
                 offers_models.Offer.subcategoryId,
                 offers_models.Offer.withdrawalType,
+                offers_models.Offer.venueId,
             )
             .joinedload(offers_models.Offer.offererAddress)
             .load_only()
@@ -922,6 +923,7 @@ def get_individual_booking(booking_id: int) -> response_utils.BackofficeResponse
                 offers_models.Offer.subcategoryId,
                 offers_models.Offer.withdrawalType,
                 offers_models.Offer.productId,
+                offers_models.Offer.venueId,
             )
             .joinedload(offers_models.Offer.offererAddress)
             .joinedload(offerers_models.OffererAddress.address),

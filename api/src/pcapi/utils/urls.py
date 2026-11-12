@@ -48,13 +48,14 @@ def build_pc_pro_offer_link(offer: CollectiveOffer | CollectiveOfferTemplate | O
 
 
 def build_pc_pro_offer_path(offer: CollectiveOffer | CollectiveOfferTemplate | Offer) -> str:
+    venue_query_param = f"?id-structure={offer.venueId}" if offer.venueId else ""
     if isinstance(offer, CollectiveOffer):
-        return f"/offre/{offer.id}/collectif/recapitulatif"
+        return f"/offre/{offer.id}/collectif/recapitulatif{venue_query_param}"
 
     if isinstance(offer, CollectiveOfferTemplate):
-        return f"/offre/T-{offer.id}/collectif/recapitulatif"
+        return f"/offre/T-{offer.id}/collectif/recapitulatif{venue_query_param}"
 
-    return f"/offre/individuelle/{offer.id}/visibilite"
+    return f"/offre/individuelle/{offer.id}/visibilite{venue_query_param}"
 
 
 def build_pc_pro_new_collective_offer_from_template_link(

@@ -137,7 +137,8 @@ class BaseBookingListForm(FlaskForm):
             )
             output = (
                 f"?page=1&bookingBeginningDate={str(from_date)}&bookingEndingDate={str(to_date)}&bookingStatusFilter=booked"
-                f"&offerType=all&offerVenueId={self.venue.data[0]}"
+                # setting 'id-structure' here allows the pc pro app to select the right venue in the user context (avoiding the /hub redirection)
+                f"&offerType=all&id-structure={self.venue.data[0]}"
             )
         return output
 
