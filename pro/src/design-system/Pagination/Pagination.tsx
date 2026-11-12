@@ -67,7 +67,7 @@ export const Pagination = ({
             aria-label={
               !isFirstPage
                 ? `Aller à la page précédente (${currentPage - 1} sur ${pageCount})`
-                : undefined
+                : 'Page précédente'
             }
             className={cn(
               styles['pagination-link'],
@@ -170,7 +170,7 @@ export const Pagination = ({
             aria-label={
               !isLastPage
                 ? `Aller à la page suivante (${currentPage + 1} sur ${pageCount})`
-                : undefined
+                : 'Page suivante'
             }
             className={cn(
               styles['pagination-link'],

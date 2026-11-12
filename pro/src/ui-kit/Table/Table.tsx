@@ -176,7 +176,7 @@ export function Table<
   }
 
   const sortedData = useMemo(() => {
-    if (!currentSortingColumn) {
+    if (!currentSortingColumn || currentSortingMode === SortingMode.NONE) {
       return data
     }
     const col = columns.find((c) => c.id === currentSortingColumn)
@@ -213,6 +213,9 @@ export function Table<
   return (
     <>
       <div className={classNames(styles.wrapper, className)}>
+        <p className="visually-hidden" role="status" aria-live="polite">
+          {isLoading ? 'Chargement des données du tableau en cours...' : ''}
+        </p>
         <table
           className={classNames(styles['table'], {
             [styles['table-separate']]: variant === TableVariant.SEPARATE,
@@ -304,21 +307,19 @@ export function Table<
             </>
           )}
 
-          <tbody>
-            {isLoading &&
-              Array.from({ length: 8 }).map((_, index) => (
-                <tr
-                  key={`loading-row-${columns.length}-${
-                    // biome-ignore lint/suspicious/noArrayIndexKey: ignore for Skeleton
-                    index
-                  }`}
-                >
-                  <td colSpan={columns.length + 1}>
+          {isLoading && (
+            <tbody aria-hidden="true">
+              {Array.from({ length: 8 }).map((_, index) => (
+                // biome-ignore lint/suspicious/noArrayIndexKey: Ignore for skeleton
+                <tr key={`loading-row-${index}`}>
+                  <td colSpan={columns.length + (selectable ? 1 : 0)}>
                     <Skeleton height="7rem" width="100%" />
                   </td>
                 </tr>
               ))}
-
+            </tbody>
+          )}
+          <tbody>
             <TableNoFilterResult
               colSpan={columns.length + (selectable ? 1 : 0)}
               message={noResult.message}
