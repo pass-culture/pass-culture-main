@@ -44,6 +44,17 @@ describe('FileUploadItem', () => {
     renderFileUploadItem({ status })
 
     expect(screen.getByRole('status')).toHaveTextContent(label)
+    expect(
+      screen.getByRole('button', { name: 'Supprimer Nom du fichier.pdf' })
+    ).toHaveAccessibleDescription(`3 Mo ${label}`)
+  })
+
+  it('should describe the delete button with the file size', () => {
+    renderFileUploadItem()
+
+    expect(
+      screen.getByRole('button', { name: 'Supprimer Nom du fichier.pdf' })
+    ).toHaveAccessibleDescription('3 Mo')
   })
 
   it('should delete the file', async () => {

@@ -1,5 +1,5 @@
 import classNames from 'classnames'
-import type { RefCallback } from 'react'
+import { type RefCallback, useId } from 'react'
 
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
@@ -36,11 +36,13 @@ export function FileUploadItem({
   onDelete,
   deleteButtonRef,
 }: Readonly<FileUploadItemProps>) {
+  const detailsId = useId()
+
   return (
     <li className={styles['file-upload-item']}>
       <div className={styles['content']}>
         <p className={styles['name']}>{file.name}</p>
-        <div className={styles['details']}>
+        <div id={detailsId} className={styles['details']}>
           <p className={styles['size']}>{formatFileSize(file.size)}</p>
           {/* Always rendered so that status changes are announced. */}
           <output
@@ -67,6 +69,7 @@ export function FileUploadItem({
         color={ButtonColor.NEUTRAL}
         icon={fullTrashIcon}
         aria-label={`Supprimer ${file.name}`}
+        aria-describedby={detailsId}
         disabled={disabled}
         onClick={onDelete}
       />
