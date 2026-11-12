@@ -28,15 +28,18 @@ export const OfferAppPreview = ({
               className={style['offer-img']}
               src={image.url}
               alt={image?.alternativeText || 'Illustration de l’offre'}
-              aria-describedby={
-                offer.activeMediation?.credit ? imageCreditId : undefined
-              }
+              aria-describedby={image.credit ? imageCreditId : undefined}
             />
-            {offer.activeMediation?.credit ? (
+            {image.credit ? (
               <figcaption id={imageCreditId}>
                 <p className={style['image-credit-text']}>
                   Crédit image :{' '}
-                  {truncateAtWord(offer.activeMediation?.credit, 50)}
+                  <span aria-hidden="true">
+                    {truncateAtWord(image.credit, 50)}
+                  </span>
+                  <span className={style['visually-hidden']}>
+                    {image.credit}
+                  </span>
                 </p>
               </figcaption>
             ) : null}

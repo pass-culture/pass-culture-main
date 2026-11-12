@@ -199,6 +199,7 @@ export const ModalImageUpsertOrEdit = ({
     })
     setCredit(initialCredit ?? '')
     setAlternativeText(initialAlternativeText ?? '')
+    setIsInformative(Boolean(initialAlternativeText))
     setScale(initialScale)
   }
   const onImageReplace = () => hardReset()

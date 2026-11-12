@@ -192,6 +192,53 @@ describe('ModalImageUpsertOrEdit', () => {
   })
 
   describe('when an image is loaded', () => {
+    it.each(['Ancien texte', ''])(
+      'restores the informative state and alternative text after cancelling (%j)',
+      async (alternativeText) => {
+        const props = {
+          ...defaultProps,
+          initialValues: {
+            ...defaultProps.initialValues,
+            alternativeText,
+          },
+        }
+        const { rerender } = renderModalImageCrop(props)
+        const checkboxName = /L’image est porteuse d’informations/
+        const checkbox = await screen.findByRole('checkbox', {
+          name: checkboxName,
+        })
+        await userEvent.click(checkbox)
+        await userEvent.click(screen.getByRole('button', { name: 'Annuler' }))
+        rerender(<ModalImageUpsertOrEdit {...props} open={false} />)
+        rerender(<ModalImageUpsertOrEdit {...props} open />)
+
+        const restoredCheckbox = await screen.findByRole('checkbox', {
+          name: checkboxName,
+        })
+        expect(restoredCheckbox).toHaveProperty(
+          'checked',
+          Boolean(alternativeText)
+        )
+        if (alternativeText) {
+          expect(
+            screen.getByLabelText('Texte alternatif de l’image')
+          ).toHaveValue(alternativeText)
+        } else {
+          expect(
+            screen.queryByLabelText('Texte alternatif de l’image')
+          ).not.toBeInTheDocument()
+        }
+
+        await userEvent.click(screen.getByRole('button', { name: 'Importer' }))
+        expect(onImageUpload).toHaveBeenCalledWith(
+          expect.objectContaining({
+            alternativeText: alternativeText || null,
+          }),
+          expect.any(String)
+        )
+      }
+    )
+
     it('should render an image editor & a preview with the loaded image', async () => {
       vi.spyOn(imageUtils, 'getImageBitmap').mockResolvedValue({
         width: 500,
