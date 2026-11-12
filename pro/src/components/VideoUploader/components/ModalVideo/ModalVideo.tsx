@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { useAnalytics } from '@/app/App/analytics/firebase'
@@ -28,6 +28,8 @@ export const ModalVideo = ({
   addVideoRef,
 }: ModalVideoProps): JSX.Element | null => {
   const [error, setError] = useState<string>()
+  const [descriptionError, setDescriptionError] = useState<string>()
+  const descriptionRef = useRef<HTMLInputElement>(null)
   const { videoUrl, videoData, onVideoUpload, offerId, videoDescription } =
     useVideoUploaderContext()
   const [draftVideoUrl, setDraftVideoUrl] = useState(videoUrl)
@@ -41,6 +43,7 @@ export const ModalVideo = ({
     setDraftVideoDescription(videoDescription)
     setIsInformative(Boolean(videoDescription))
     setError(undefined)
+    setDescriptionError(undefined)
     onClose()
   }
 
@@ -52,6 +55,16 @@ export const ModalVideo = ({
       primaryAction={
         <Button
           onClick={async () => {
+            const isDescriptionValid =
+              !isInformative || draftVideoDescription.trim().length > 0
+            if (!isDescriptionValid) {
+              setDescriptionError(
+                'Veuillez renseigner une description textuelle.'
+              )
+              descriptionRef.current?.focus()
+              return
+            }
+            setDescriptionError(undefined)
             if (draftVideoUrl && !getUrlYoutubeError(draftVideoUrl)) {
               await onVideoUpload({
                 videoUrl: draftVideoUrl,
@@ -117,6 +130,7 @@ export const ModalVideo = ({
               checked={isInformative}
               onChange={(e) => {
                 setIsInformative(e.target.checked)
+                setDescriptionError(undefined)
                 if (!e.target.checked) {
                   setDraftVideoDescription('')
                 }
@@ -127,8 +141,15 @@ export const ModalVideo = ({
                   name="alternativeText"
                   maxCharactersCount={150}
                   value={draftVideoDescription}
+                  ref={descriptionRef}
+                  error={descriptionError}
                   required
-                  onChange={(e) => setDraftVideoDescription(e.target.value)}
+                  onChange={(e) => {
+                    setDraftVideoDescription(e.target.value)
+                    if (e.target.value.trim()) {
+                      setDescriptionError(undefined)
+                    }
+                  }}
                 />
               }
             />

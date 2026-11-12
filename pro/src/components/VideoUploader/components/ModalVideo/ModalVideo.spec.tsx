@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import { api } from '@/apiClient/api'
@@ -14,6 +14,71 @@ import { ModalVideo } from './ModalVideo'
 const mockLogEvent = vi.fn()
 
 describe('ModalVideo', () => {
+  it.each(['', '   '])(
+    'shows an accessible error and focuses an empty description (%j)',
+    async (descriptionValue) => {
+      const getMetadata = vi
+        .spyOn(api, 'getOfferVideoMetadata')
+        .mockResolvedValue({})
+      const onClose = vi.fn()
+      renderWithProviders(
+        <VideoUploaderContextProvider
+          offerId={1}
+          initialVideoData={{
+            videoUrl: 'https://www.youtube.com/watch?v=25ztioI37oc',
+          }}
+        >
+          <ModalVideo
+            isOpen
+            onClose={onClose}
+            addVideoRef={{ current: null }}
+            editVideoRef={{ current: null }}
+          />
+        </VideoUploaderContextProvider>
+      )
+
+      const checkbox = screen.getByRole('checkbox', {
+        name: /^Ajouter une description textuelle détaillée/,
+      })
+      await userEvent.click(checkbox)
+      const description = screen.getByRole('textbox', {
+        name: /^Description textuelle pour les malvoyants/,
+      })
+      if (descriptionValue) {
+        await userEvent.type(description, descriptionValue)
+      }
+
+      await userEvent.click(screen.getByRole('button', { name: 'Ajouter' }))
+
+      const errorMessage = 'Veuillez renseigner une description textuelle.'
+      expect(description).toHaveFocus()
+      expect(description).toHaveAttribute('aria-invalid', 'true')
+      expect(description).toHaveAccessibleDescription(
+        expect.stringContaining(errorMessage)
+      )
+      expect(
+        screen
+          .getAllByRole('alert')
+          .some((alert) => within(alert).queryByText(errorMessage))
+      ).toBe(true)
+      expect(getMetadata).not.toHaveBeenCalled()
+      expect(onClose).not.toHaveBeenCalled()
+
+      await userEvent.type(description, 'Description de la vidéo')
+      expect(description).toHaveAttribute('aria-invalid', 'false')
+      expect(screen.queryByText(errorMessage)).not.toBeInTheDocument()
+
+      await userEvent.clear(description)
+      await userEvent.click(screen.getByRole('button', { name: 'Ajouter' }))
+      await userEvent.click(checkbox)
+      expect(screen.queryByText(errorMessage)).not.toBeInTheDocument()
+
+      await userEvent.click(screen.getByRole('button', { name: 'Ajouter' }))
+      expect(getMetadata).toHaveBeenCalled()
+      expect(onClose).toHaveBeenCalledOnce()
+    }
+  )
+
   it('should render an heading, a cancel button, a save button and a field', () => {
     renderWithProviders(
       <ModalVideo
