@@ -150,6 +150,7 @@ export const CumulatedViews = ({ periodStats }: CumulatedViewsProps) => {
           <div role="tabpanel" aria-labelledby={right.id}>
             <Table
               title={`Nombre de vues cumulées de toutes vos offres sur les ${periodStats?.viewsByMonth.length ?? 0} derniers mois`}
+              a11ySummary={`Chaque ligne représente le nombre de vues cumulées sur vos offres sur les ${periodStats?.viewsByMonth.length ?? 0} derniers mois`}
               columns={columns}
               data={(
                 periodStats?.viewsByMonth.map((i) => ({ ...i, id: i.month })) ??

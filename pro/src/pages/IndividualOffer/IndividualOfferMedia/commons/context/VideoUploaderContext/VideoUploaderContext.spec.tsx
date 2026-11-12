@@ -101,6 +101,7 @@ const renderVideoUploaderContext = (offer: GetIndividualOfferResponseModel) => {
 }
 
 describe('VideoUploaderContext', () => {
+  const user = userEvent.setup()
   it('should render without accessibility violations', async () => {
     const offer = getIndividualOfferFactory({
       videoData: {
@@ -151,7 +152,7 @@ describe('VideoUploaderContext', () => {
 
     renderVideoUploaderContext(offer)
 
-    await userEvent.click(screen.getByText(LABELS.controls.delete))
+    await user.click(screen.getByText(LABELS.controls.delete))
 
     expect(screen.queryByText('3 min')).not.toBeInTheDocument()
     expect(
@@ -180,11 +181,11 @@ describe('VideoUploaderContext', () => {
 
     renderVideoUploaderContext(offer)
 
-    await userEvent.type(
+    await user.type(
       screen.getByLabelText(LABELS.display.input),
       'http://youtube.url'
     )
-    await userEvent.click(screen.getByText(LABELS.controls.upload))
+    await user.click(screen.getByText(LABELS.controls.upload))
 
     expect(api.getOfferVideoMetadata).toHaveBeenCalledWith({
       query: { videoUrl: 'http://youtube.url' },
@@ -209,12 +210,12 @@ describe('VideoUploaderContext', () => {
 
     renderVideoUploaderContext(offer)
 
-    await userEvent.type(
+    await user.type(
       screen.getByLabelText(LABELS.display.input),
       'http://youtube.url'
     )
-    await userEvent.click(screen.getByText(LABELS.controls.upload))
-    await userEvent.click(screen.getByText(LABELS.controls.submit))
+    await user.click(screen.getByText(LABELS.controls.upload))
+    await user.click(screen.getByText(LABELS.controls.submit))
 
     expect(api.updateOfferVideo).toHaveBeenCalledWith({
       path: { offer_id: offer.id },
@@ -244,13 +245,13 @@ describe('VideoUploaderContext', () => {
     renderVideoUploaderContext(offer)
 
     const input = screen.getByLabelText(LABELS.display.input)
-    await userEvent.clear(input)
-    await userEvent.type(input, 'http://invalid.youtube.url')
+    await user.clear(input)
+    await user.type(input, 'http://invalid.youtube.url')
     const description = screen.getByLabelText(LABELS.display.description)
-    await userEvent.clear(description)
-    await userEvent.type(description, 'Nouvelle description')
-    await userEvent.click(screen.getByText(LABELS.controls.upload))
-    await userEvent.click(screen.getByText(LABELS.controls.submit))
+    await user.clear(description)
+    await user.type(description, 'Nouvelle description')
+    await user.click(screen.getByText(LABELS.controls.upload))
+    await user.click(screen.getByText(LABELS.controls.submit))
 
     expect(api.getOfferVideoMetadata).toHaveBeenCalledWith({
       query: { videoUrl: 'http://invalid.youtube.url' },
@@ -290,8 +291,8 @@ describe('VideoUploaderContext', () => {
       const description = screen.getByLabelText(LABELS.display.description)
       expect(description).toHaveValue(initialDescription ?? '')
 
-      await userEvent.clear(description)
-      await userEvent.type(description, 'Nouvelle description')
+      await user.clear(description)
+      await user.type(description, 'Nouvelle description')
 
       expect(
         screen.getByText(
@@ -299,8 +300,8 @@ describe('VideoUploaderContext', () => {
         )
       ).toBeInTheDocument()
 
-      await userEvent.click(screen.getByText(LABELS.controls.upload))
-      await userEvent.click(screen.getByText(LABELS.controls.submit))
+      await user.click(screen.getByText(LABELS.controls.upload))
+      await user.click(screen.getByText(LABELS.controls.submit))
 
       expect(
         screen.getByText('Video description: Nouvelle description')
@@ -328,9 +329,9 @@ describe('VideoUploaderContext', () => {
     })
     renderVideoUploaderContext(offer)
 
-    await userEvent.clear(screen.getByLabelText(LABELS.display.description))
-    await userEvent.click(screen.getByText(LABELS.controls.upload))
-    await userEvent.click(screen.getByText(LABELS.controls.submit))
+    await user.clear(screen.getByLabelText(LABELS.display.description))
+    await user.click(screen.getByText(LABELS.controls.upload))
+    await user.click(screen.getByText(LABELS.controls.submit))
 
     expect(api.updateOfferVideo).toHaveBeenCalledWith({
       path: { offer_id: offer.id },

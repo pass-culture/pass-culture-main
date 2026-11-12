@@ -14,6 +14,7 @@ import { ModalVideo } from './ModalVideo'
 const mockLogEvent = vi.fn()
 
 describe('ModalVideo', () => {
+  const user = userEvent.setup()
   it.each(['', '   '])(
     'shows an accessible error and focuses an empty description (%j)',
     async (descriptionValue) => {
@@ -40,15 +41,15 @@ describe('ModalVideo', () => {
       const checkbox = screen.getByRole('checkbox', {
         name: /^Ajouter une description textuelle détaillée/,
       })
-      await userEvent.click(checkbox)
+      await user.click(checkbox)
       const description = screen.getByRole('textbox', {
         name: /^Description textuelle pour les malvoyants/,
       })
       if (descriptionValue) {
-        await userEvent.type(description, descriptionValue)
+        await user.type(description, descriptionValue)
       }
 
-      await userEvent.click(screen.getByRole('button', { name: 'Ajouter' }))
+      await user.click(screen.getByRole('button', { name: 'Ajouter' }))
 
       const errorMessage = 'Veuillez renseigner une description textuelle.'
       expect(description).toHaveFocus()
@@ -64,16 +65,16 @@ describe('ModalVideo', () => {
       expect(getMetadata).not.toHaveBeenCalled()
       expect(onClose).not.toHaveBeenCalled()
 
-      await userEvent.type(description, 'Description de la vidéo')
+      await user.type(description, 'Description de la vidéo')
       expect(description).toHaveAttribute('aria-invalid', 'false')
       expect(screen.queryByText(errorMessage)).not.toBeInTheDocument()
 
-      await userEvent.clear(description)
-      await userEvent.click(screen.getByRole('button', { name: 'Ajouter' }))
-      await userEvent.click(checkbox)
+      await user.clear(description)
+      await user.click(screen.getByRole('button', { name: 'Ajouter' }))
+      await user.click(checkbox)
       expect(screen.queryByText(errorMessage)).not.toBeInTheDocument()
 
-      await userEvent.click(screen.getByRole('button', { name: 'Ajouter' }))
+      await user.click(screen.getByRole('button', { name: 'Ajouter' }))
       expect(getMetadata).toHaveBeenCalled()
       expect(onClose).toHaveBeenCalledOnce()
     }
@@ -127,23 +128,23 @@ describe('ModalVideo', () => {
       })
     ).not.toBeInTheDocument()
 
-    await userEvent.click(checkbox)
+    await user.click(checkbox)
 
     expect(checkbox).toBeChecked()
     const description = screen.getByRole('textbox', {
       name: /^Description textuelle pour les malvoyants/,
     })
-    await userEvent.type(description, 'Description de la vidéo')
+    await user.type(description, 'Description de la vidéo')
     expect(description).toHaveValue('Description de la vidéo')
 
-    await userEvent.click(checkbox)
+    await user.click(checkbox)
     expect(
       screen.queryByRole('textbox', {
         name: /^Description textuelle pour les malvoyants/,
       })
     ).not.toBeInTheDocument()
 
-    await userEvent.click(checkbox)
+    await user.click(checkbox)
     expect(
       screen.getByRole('textbox', {
         name: /^Description textuelle pour les malvoyants/,
@@ -184,8 +185,8 @@ describe('ModalVideo', () => {
     const checkbox = screen.getByRole('checkbox', {
       name: /^Ajouter une description textuelle détaillée/,
     })
-    await userEvent.click(checkbox)
-    await userEvent.click(checkbox)
+    await user.click(checkbox)
+    await user.click(checkbox)
 
     expect(
       screen.getByRole('textbox', {
@@ -223,8 +224,8 @@ describe('ModalVideo', () => {
       ).toBeInTheDocument()
     })
 
-    await userEvent.type(screen.getByLabelText('Lien URL Youtube'), 'fake url')
-    await userEvent.tab()
+    await user.type(screen.getByLabelText('Lien URL Youtube'), 'fake url')
+    await user.tab()
 
     expect(
       screen.getByText(
@@ -272,12 +273,12 @@ describe('ModalVideo', () => {
       ).toBeInTheDocument()
     })
 
-    await userEvent.type(
+    await user.type(
       screen.getByLabelText('Lien URL Youtube'),
       'https://www.youtube.com/watch?v=25ztioI37oc'
     )
 
-    await userEvent.click(screen.getByRole('button', { name: 'Ajouter' }))
+    await user.click(screen.getByRole('button', { name: 'Ajouter' }))
 
     expect(screen.getByText('api error')).toBeInTheDocument()
   })
@@ -314,12 +315,12 @@ describe('ModalVideo', () => {
       ).toBeInTheDocument()
     })
 
-    await userEvent.type(
+    await user.type(
       screen.getByLabelText('Lien URL Youtube'),
       'https://www.youtube.com/watch?v=25ztioI37oc'
     )
 
-    await userEvent.click(screen.getByRole('button', { name: 'Ajouter' }))
+    await user.click(screen.getByRole('button', { name: 'Ajouter' }))
 
     expect(api.getOfferVideoMetadata).toHaveBeenCalled()
   })
@@ -364,25 +365,22 @@ describe('ModalVideo', () => {
         name: /^Description textuelle pour les malvoyants/,
       })
 
-    await userEvent.clear(urlInput)
-    await userEvent.type(
-      urlInput,
-      'https://www.youtube.com/watch?v=bX2Oz6l1Z0s'
-    )
-    await userEvent.clear(getDescriptionInput())
-    await userEvent.type(getDescriptionInput(), 'Nouvelle description')
-    await userEvent.click(screen.getByRole('button', { name: 'Ajouter' }))
+    await user.clear(urlInput)
+    await user.type(urlInput, 'https://www.youtube.com/watch?v=bX2Oz6l1Z0s')
+    await user.clear(getDescriptionInput())
+    await user.type(getDescriptionInput(), 'Nouvelle description')
+    await user.click(screen.getByRole('button', { name: 'Ajouter' }))
 
     expect(screen.getByText('api error')).toBeInTheDocument()
 
-    await userEvent.click(screen.getByRole('button', { name: 'Annuler' }))
+    await user.click(screen.getByRole('button', { name: 'Annuler' }))
 
     expect(urlInput).toHaveValue(initialVideoUrl)
     expect(getDescriptionInput()).toHaveValue(initialVideoDescription)
     expect(screen.queryByText('api error')).not.toBeInTheDocument()
 
-    await userEvent.click(checkbox)
-    await userEvent.click(screen.getByRole('button', { name: 'Annuler' }))
+    await user.click(checkbox)
+    await user.click(screen.getByRole('button', { name: 'Annuler' }))
 
     expect(checkbox).toBeChecked()
     expect(getDescriptionInput()).toHaveValue(initialVideoDescription)
