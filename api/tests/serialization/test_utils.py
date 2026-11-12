@@ -1,5 +1,9 @@
-import pytest
+import datetime
 
+import pytest
+import pytz
+
+from pcapi.serialization.utils import as_utc_without_timezone
 from pcapi.serialization.utils import check_url
 
 
@@ -58,3 +62,31 @@ class CheckUrlTest:
     )
     def test_accepted_url(self, url):
         assert check_url(url, pydantic_version="v1")
+
+
+class AsUtcWithoutTimezoneTest:
+    def test_converts_aware_datetime_to_naive_utc(self):
+        paris_datetime = pytz.timezone("Europe/Paris").localize(datetime.datetime(2026, 7, 14, 22, 0))
+
+        assert as_utc_without_timezone(paris_datetime) == datetime.datetime(2026, 7, 14, 20, 0)
+
+    @pytest.mark.parametrize(
+        "value",
+        [
+            datetime.datetime(9999, 12, 31, 21, 59, 59),
+            datetime.datetime(9999, 12, 31, 23, 0, tzinfo=datetime.timezone(datetime.timedelta(hours=-5))),
+        ],
+    )
+    def test_returns_max_datetime_when_conversion_goes_beyond_year_9999(self, value):
+        # PC-44463: the conversion raised "ValueError: year 10000 is out of range"
+        assert as_utc_without_timezone(value) == datetime.datetime.max
+
+    @pytest.mark.parametrize(
+        "value",
+        [
+            datetime.datetime(1, 1, 1, 0, 0),
+            datetime.datetime(1, 1, 1, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(hours=5))),
+        ],
+    )
+    def test_returns_min_datetime_when_conversion_goes_before_year_1(self, value):
+        assert as_utc_without_timezone(value) == datetime.datetime.min
