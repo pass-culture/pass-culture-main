@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { Target } from '@/apiClient/v1'
+import { Target, TargetAudience } from '@/apiClient/v1'
 import { DEFAULT_ADDRESS_FORM_VALUES } from '@/components/SignupJourneyForm/Offerer/constants'
 import {
   resetSimulatorStorage,
@@ -97,10 +97,9 @@ describe('SignupJourneyContextProvider - Scenario 1: Simulator Migration (SIRET 
     vi.mocked(tryRestoreOpenToPublicFromStorage).mockReturnValue(
       'true' as never
     )
-    vi.mocked(tryRestoreTargetAudienceFromStorage).mockReturnValue({
-      individual: false,
-      collective: true,
-    } as never)
+    vi.mocked(tryRestoreTargetAudienceFromStorage).mockReturnValue([
+      TargetAudience.COLLECTIVE,
+    ])
 
     renderProvider()
 
@@ -152,10 +151,10 @@ describe('SignupJourneyContextProvider - Scenario 1: Simulator Migration (SIRET 
     vi.mocked(tryRestoreSiretFromStorage).mockReturnValue(
       '22222222200022' as never
     )
-    vi.mocked(tryRestoreTargetAudienceFromStorage).mockReturnValue({
-      individual: true,
-      collective: true,
-    } as never)
+    vi.mocked(tryRestoreTargetAudienceFromStorage).mockReturnValue([
+      TargetAudience.INDIVIDUAL,
+      TargetAudience.COLLECTIVE,
+    ])
 
     renderProvider()
 

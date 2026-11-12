@@ -29,10 +29,7 @@ vi.mock('@/commons/utils/sendSentryCustomError', () => ({
 const contextValue = {
   siret: '123 456 789 01234',
   setSiret: vi.fn(),
-  targetAudiences: {
-    individual: true,
-    collective: true,
-  },
+  targetAudiences: [TargetAudience.INDIVIDUAL, TargetAudience.COLLECTIVE],
   setTargetAudiences: vi.fn(),
   openToPublic: 'true',
   setOpenToPublic: noop,
@@ -66,15 +63,15 @@ describe('<SimulatorResults />', () => {
 
   it.each([
     {
-      inputTargets: { individual: true, collective: true },
+      inputTargets: [TargetAudience.INDIVIDUAL, TargetAudience.COLLECTIVE],
       expectedTargets: [TargetAudience.INDIVIDUAL, TargetAudience.COLLECTIVE],
     },
     {
-      inputTargets: { individual: true, collective: false },
+      inputTargets: [TargetAudience.INDIVIDUAL],
       expectedTargets: [TargetAudience.INDIVIDUAL],
     },
     {
-      inputTargets: { individual: false, collective: true },
+      inputTargets: [TargetAudience.COLLECTIVE],
       expectedTargets: [TargetAudience.COLLECTIVE],
     },
   ])(

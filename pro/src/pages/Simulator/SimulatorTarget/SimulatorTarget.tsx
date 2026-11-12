@@ -3,6 +3,7 @@ import { useEffect, useRef } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 
+import { TargetAudience } from '@/apiClient/v1'
 import { claimNavigationFocus } from '@/app/App/hook/useFocus'
 import { BubbleStepper } from '@/components/BubbleStepper/BubbleStepper'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
@@ -30,6 +31,20 @@ const defaultFormValues = {
   },
 }
 
+const audiencesToFormValues = (
+  audiences: TargetAudience[] | null | undefined
+): SimulatorTargetAudienceFormValues['targetAudiences'] => ({
+  individual: audiences?.includes(TargetAudience.INDIVIDUAL) ?? false,
+  collective: audiences?.includes(TargetAudience.COLLECTIVE) ?? false,
+})
+
+const formValuesToAudiences = (
+  values: SimulatorTargetAudienceFormValues['targetAudiences']
+): TargetAudience[] => [
+  ...(values.individual ? [TargetAudience.INDIVIDUAL] : []),
+  ...(values.collective ? [TargetAudience.COLLECTIVE] : []),
+]
+
 export const SimulatorTarget = (): JSX.Element => {
   const navigate = useNavigate()
   const { targetAudiences, setTargetAudiences } = useSimulatorContext()
@@ -41,12 +56,7 @@ export const SimulatorTarget = (): JSX.Element => {
 
   const methods = useForm({
     defaultValues: targetAudiences
-      ? {
-          targetAudiences: {
-            individual: targetAudiences.individual ?? false,
-            collective: targetAudiences.collective ?? false,
-          },
-        }
+      ? { targetAudiences: audiencesToFormValues(targetAudiences) }
       : defaultFormValues,
     resolver: yupResolver(validationSchema),
   })
@@ -57,7 +67,9 @@ export const SimulatorTarget = (): JSX.Element => {
       const targetAudienceStoredData =
         tryRestoreTargetAudienceFromStorage(setTargetAudiences)
       if (targetAudienceStoredData) {
-        reset({ targetAudiences: targetAudienceStoredData })
+        reset({
+          targetAudiences: audiencesToFormValues(targetAudienceStoredData),
+        })
       }
     } catch {
       // Nothing to do
@@ -65,8 +77,9 @@ export const SimulatorTarget = (): JSX.Element => {
   }, [setTargetAudiences, reset])
 
   const onSubmit = (formValues: SimulatorTargetAudienceFormValues) => {
-    saveTargetAudienceToStorage(formValues.targetAudiences)
-    setTargetAudiences(formValues.targetAudiences)
+    const audiences = formValuesToAudiences(formValues.targetAudiences)
+    saveTargetAudienceToStorage(audiences)
+    setTargetAudiences(audiences)
     void navigate('/inscription/preparation/resultats')
   }
 

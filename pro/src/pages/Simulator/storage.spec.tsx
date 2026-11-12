@@ -12,7 +12,7 @@ import {
 } from 'pages/Simulator/storage'
 import { vi } from 'vitest'
 
-import { ActivityOpenToPublic } from 'apiClient/v1'
+import { ActivityOpenToPublic, TargetAudience } from 'apiClient/v1'
 
 let inMemoryLocalStorage = new Map<string, string>()
 
@@ -83,27 +83,26 @@ describe('storage', () => {
     )
     expect(initialValue).toBeUndefined()
     expect(mockSetTargetAudience).not.toHaveBeenCalled()
-    saveTargetAudienceToStorage({ individual: true })
+    saveTargetAudienceToStorage([TargetAudience.INDIVIDUAL])
     const storedValue = tryRestoreTargetAudienceFromStorage(
       mockSetTargetAudience
     )
-    expect(storedValue).toEqual({ individual: true })
-    expect(mockSetTargetAudience).toHaveBeenCalledWith({ individual: true })
+    expect(storedValue).toEqual([TargetAudience.INDIVIDUAL])
+    expect(mockSetTargetAudience).toHaveBeenCalledWith([
+      TargetAudience.INDIVIDUAL,
+    ])
   })
 
   it('should reset all simulator storage altogether', () => {
     saveActivityToStorage(ActivityOpenToPublic.ARTISTIC_PRACTICE)
-    saveTargetAudienceToStorage({ individual: true, collective: false })
+    saveTargetAudienceToStorage([TargetAudience.INDIVIDUAL])
     saveSiretToStorage('12312312312312')
     saveOpenToPublicToStorage('true')
 
     expect(Array.from(inMemoryLocalStorage.entries())).toEqual(
       expect.arrayContaining([
         ['PASS_CULTURE_SIMULATOR_ACTIVITY', 'ARTISTIC_PRACTICE'],
-        [
-          'PASS_CULTURE_SIMULATOR_TARGET_CUSTOMER',
-          '{"individual":true,"collective":false}',
-        ],
+        ['PASS_CULTURE_SIMULATOR_TARGET_CUSTOMER', '["INDIVIDUAL"]'],
         ['PASS_CULTURE_SIMULATOR_SIRET', '12312312312312'],
         ['PASS_CULTURE_SIMULATOR_OPEN_TO_PUBLIC', 'true'],
       ])

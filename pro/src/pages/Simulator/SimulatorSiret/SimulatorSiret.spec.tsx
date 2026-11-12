@@ -13,10 +13,7 @@ const setSiretMock = vi.fn()
 const contextValue = {
   siret: undefined,
   setSiret: setSiretMock,
-  targetAudiences: {
-    individual: undefined,
-    collective: undefined,
-  },
+  targetAudiences: [],
   setTargetAudiences: vi.fn(),
   openToPublic: null,
   setOpenToPublic: noop,
