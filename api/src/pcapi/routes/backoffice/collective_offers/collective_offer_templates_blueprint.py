@@ -64,6 +64,7 @@ def _get_collective_offer_templates_query() -> sa_orm.Query:
                 educational_models.CollectiveOfferTemplate.validation,
                 educational_models.CollectiveOfferTemplate.authorId,
                 educational_models.CollectiveOfferTemplate.rejectionReason,
+                educational_models.CollectiveOfferTemplate.venueId,
             ),
             sa_orm.contains_eager(educational_models.CollectiveOfferTemplate.venue).options(
                 sa_orm.load_only(

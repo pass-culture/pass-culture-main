@@ -74,6 +74,7 @@ def _get_collective_bookings_query() -> sa_orm.Query:
                 educational_models.CollectiveOffer.id,
                 educational_models.CollectiveOffer.name,
                 educational_models.CollectiveOffer.formats,
+                educational_models.CollectiveOffer.venueId,
             )
             .selectinload(educational_models.CollectiveOffer.offererAddress)
             .load_only()
