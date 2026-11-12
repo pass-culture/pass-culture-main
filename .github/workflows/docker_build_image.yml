@@ -38,7 +38,7 @@ jobs:
           git add version.txt
 
       - name: Build docker image and save as github artifact
-        uses: $/.github/actions/build-docker-image@master
+        uses: $/.github/actions/build-docker-image
         with:
           image: ${{ inputs.image }}
           context: api

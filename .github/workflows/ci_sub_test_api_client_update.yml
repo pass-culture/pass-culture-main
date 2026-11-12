@@ -59,7 +59,7 @@ jobs:
 
       - name: Load docker image
         id: load-docker-image
-        uses: $/.github/actions/load-docker-image@master
+        uses: $/.github/actions/load-docker-image
         with:
           image: ${{ inputs.image }}
           tag: ${{ inputs.tag }}
