@@ -1,5 +1,5 @@
 from pcapi.core.educational import models
-from pcapi.core.educational.serialization.collective_booking import _get_educational_offer_accessibility
+from pcapi.core.educational.schemas import get_educational_offer_accessibility
 from pcapi.core.educational.utils import format_collective_additional_fee_type
 from pcapi.utils.date import format_into_utc_date
 
@@ -12,7 +12,7 @@ def expected_serialized_prebooking(booking: models.CollectiveBooking) -> dict:
 
     return {
         "address": "",
-        "accessibility": _get_educational_offer_accessibility(offer),
+        "accessibility": get_educational_offer_accessibility(offer),
         "startDatetime": format_into_utc_date(stock.startDatetime),
         "endDatetime": format_into_utc_date(stock.endDatetime),
         "cancellationDate": format_into_utc_date(booking.cancellationDate) if booking.cancellationDate else None,

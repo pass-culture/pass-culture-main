@@ -14,7 +14,7 @@ def serialize_collective_booking(
     redactor = collective_booking.educationalRedactor
 
     return schemas.EducationalBookingResponse(
-        accessibility=_get_educational_offer_accessibility(offer),
+        accessibility=schemas.get_educational_offer_accessibility(offer),
         address=schemas.get_adage_collective_offer_address(offer),
         startDatetime=stock.startDatetime,
         endDatetime=stock.endDatetime,
@@ -45,7 +45,7 @@ def serialize_collective_booking(
         ),
         UAICode=collective_booking.educationalInstitution.institutionId,
         yearId=int(collective_booking.educationalYearId),
-        status=get_collective_booking_status(collective_booking),
+        status=schemas.get_collective_booking_status(collective_booking),
         cancellationReason=collective_booking.cancellationReason,
         venueTimezone=venue.offererAddress.address.timezone,
         domain_ids=[domain.id for domain in domains],
@@ -59,44 +59,11 @@ def serialize_collective_booking(
     )
 
 
-def get_collective_booking_status(
-    collective_booking: models.CollectiveBooking,
-) -> models.CollectiveBookingStatus | schemas.CollectiveBookingRefused:
-    if collective_booking.status in (
-        models.CollectiveBookingStatus.USED,
-        models.CollectiveBookingStatus.PENDING_REIMBURSEMENT,
-        models.CollectiveBookingStatus.REIMBURSED,
-    ):
-        return models.CollectiveBookingStatus.USED
-
-    if collective_booking.cancellationReason in [
-        models.CollectiveBookingCancellationReasons.REFUSED_BY_INSTITUTE,
-        models.CollectiveBookingCancellationReasons.REFUSED_BY_HEADMASTER,
-    ]:
-        return "REFUSED"
-
-    return collective_booking.status
-
-
 def _get_collective_offer_contact(offer: models.CollectiveOffer) -> schemas.Contact:
     return schemas.Contact(
         email=offer.contactEmail,
         phone=offer.contactPhone,
     )
-
-
-def _get_educational_offer_accessibility(offer: models.CollectiveOffer) -> str:
-    disability_compliance = []
-    if offer.audioDisabilityCompliant:
-        disability_compliance.append("Auditif")
-    if offer.mentalDisabilityCompliant:
-        disability_compliance.append("Psychique ou cognitif")
-    if offer.motorDisabilityCompliant:
-        disability_compliance.append("Moteur")
-    if offer.visualDisabilityCompliant:
-        disability_compliance.append("Visuel")
-
-    return ", ".join(disability_compliance) or "Non accessible"
 
 
 def serialize_reimbursement_notification(

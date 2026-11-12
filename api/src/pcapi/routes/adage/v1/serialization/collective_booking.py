@@ -6,9 +6,12 @@ import pydantic
 from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import models
 from pcapi.core.educational import schemas
-from pcapi.core.educational.serialization.collective_booking import get_collective_booking_status
 from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.serialization import HttpQueryParamsModel
+
+
+class EducationalBookingResponse(schemas.EducationalBookingResponseV2, HttpBodyModel):
+    pass
 
 
 class GetEducationalBookingsQueryModel(HttpQueryParamsModel):
@@ -59,7 +62,7 @@ class EducationalBookingPerYearResponse(HttpBodyModel):
         return cls(
             id=booking.id,
             UAICode=booking.educationalInstitution.institutionId,
-            status=get_collective_booking_status(booking),
+            status=schemas.get_collective_booking_status(booking),
             additionalDetails=offer.additionalDetails,
             cancellationReason=booking.cancellationReason,
             confirmationDate=booking.confirmationDate,
