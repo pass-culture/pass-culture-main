@@ -142,7 +142,7 @@ workflows:
         - 'mikepenz/action-junit-report@v6.5.0'
     '.github/workflows/ci_sub_test_changes.yml':
         - 'actions/checkout@v7.0.1'
-        - 'pass-culture/common-workflows@actionlint/v0.3'
+        - 'pass-culture/common-workflows@actionlint/v0.5'
     '.github/workflows/ci_sub_test_e2e.yml':
         - 'actions/cache@v6.1.0'
         - 'actions/checkout@v7.0.1'
@@ -394,9 +394,9 @@ dependencies:
         commit: 'sha1-a67aba1f7a63bcb20f5b722557a4bdcba2511ab5'
         owner_id: 52448870
         repo_id: 801391899
-    'pass-culture/common-workflows@actionlint/v0.3':
-        ref: 'actionlint/v0.3'
-        commit: 'sha1-547f3df463509ca831922b667e6dc2d29f74e4e0'
+    'pass-culture/common-workflows@actionlint/v0.5':
+        ref: 'actionlint/v0.5'
+        commit: 'sha1-37f8a5d2484f8a9a9bdf8087540770c8dd86c87f'
         owner_id: 52448870
         repo_id: 801391899
     'pass-culture/common-workflows@pc-k8s-connect/v0.3.1':
