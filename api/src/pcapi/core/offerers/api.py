@@ -3744,6 +3744,14 @@ def close_venue(
             transactional_mails.send_venue_closed_email(venue.id)
 
 
+def remove_venue_closure_related_tags(venue: models.Venue) -> None:
+    closure_request_tag = criteria_api.get_closure_request_tag()
+    criteria_api.unlink_criterion_from_venue(criterion=closure_request_tag, venue=venue)
+
+    siret_shift_pending_tag = criteria_api.get_siret_shift_pending_tag()
+    criteria_api.unlink_criterion_from_venue(criterion=siret_shift_pending_tag, venue=venue)
+
+
 def reopen_venue(venue: models.Venue, author: users_models.User, comment: str | None = None) -> None:
     if not venue.is_closed or venue.managingOfferer.isClosed:
         return
@@ -3752,8 +3760,7 @@ def reopen_venue(venue: models.Venue, author: users_models.User, comment: str | 
     history_api.add_action(history_constants.ActionType.VENUE_REOPENED, author=author, venue=venue, comment=comment)
     _update_external_venue(venue, index_with_reason=IndexationReason.VENUE_REOPENED)
 
-    closure_request_tag = criteria_api.get_closure_request_tag()
-    criteria_api.unlink_criterion_from_venue(criterion=closure_request_tag, venue=venue)
+    remove_venue_closure_related_tags(venue)
 
     original_action = history_repository.get_latest_venue_closure_event(venue.id)
     if original_action and original_action.authorUser:
