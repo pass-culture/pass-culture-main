@@ -79,6 +79,17 @@ export const FilesUpload = ({
 
   useImperativeHandle(ref, () => uploadZoneInputRef.current as HTMLInputElement)
 
+  // Once displayed, the first added file gets the focus on its delete button,
+  // so that the addition is announced (the button is described by the file details).
+  const fileToFocusRef = useRef<File | undefined>(undefined)
+  useEffect(() => {
+    const fileToFocus = fileToFocusRef.current
+    if (fileToFocus && files.includes(fileToFocus)) {
+      fileToFocusRef.current = undefined
+      deleteButtonsRef.current.get(getFileId(fileToFocus))?.focus()
+    }
+  }, [files])
+
   const updateFiles = (newFiles: File[]) => {
     latestFilesRef.current = newFiles
     if (value === undefined) {
@@ -107,9 +118,10 @@ export const FilesUpload = ({
         ref={uploadZoneInputRef}
         disabled={disabled}
         filesCount={files.length}
-        onFilesAdded={(addedFiles) =>
+        onFilesAdded={(addedFiles) => {
+          fileToFocusRef.current = addedFiles[0]
           updateFiles([...latestFilesRef.current, ...addedFiles])
-        }
+        }}
       />
       {files.length > 0 && (
         <ul className={styles['files-list']} aria-label="Fichiers ajoutés">

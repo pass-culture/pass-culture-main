@@ -6,6 +6,8 @@ import styles from './FieldHeader.module.scss'
 type FieldHeaderProps = {
   fieldId: string
   label?: string | JSX.Element
+  /** Id of the label, to reference it from `aria-labelledby` */
+  labelId?: string
   required: boolean
   requiredIndicator?: RequiredIndicator
   description?: string
@@ -16,6 +18,7 @@ type FieldHeaderProps = {
 export function FieldHeader({
   fieldId,
   label,
+  labelId,
   required,
   requiredIndicator,
   description,
@@ -31,7 +34,7 @@ export function FieldHeader({
     >
       <div>
         {label && (
-          <label htmlFor={fieldId} className={styles['label']}>
+          <label id={labelId} htmlFor={fieldId} className={styles['label']}>
             <span>{label}</span>
             {required && requiredIndicator === 'symbol' && (
               <span className={styles['label-mandatory-symbol']}>*</span>

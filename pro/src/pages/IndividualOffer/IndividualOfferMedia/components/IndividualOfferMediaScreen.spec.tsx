@@ -319,16 +319,20 @@ describe('IndividualOfferMediaScreen', () => {
     it('should display an error when the file type is not accepted', async () => {
       await renderIndividualOfferMediaScreen()
 
+      const imageInput = screen.getByLabelText(LABELS.imageInput)
       await userEvent
         .setup({ applyAccept: false })
         .upload(
-          screen.getByLabelText(LABELS.imageInput),
+          imageInput,
           new File(['%PDF'], 'document.pdf', { type: 'application/pdf' })
         )
 
       expect(
         await screen.findByText('Le format du fichier n’est pas accepté.')
       ).toBeInTheDocument()
+      expect(imageInput).toHaveAccessibleName(
+        'Ajoutez une image Le fichier choisi est non conforme : Le format du fichier n’est pas accepté.'
+      )
     })
 
     it('should replace the error of a previous image when a new file is rejected', async () => {

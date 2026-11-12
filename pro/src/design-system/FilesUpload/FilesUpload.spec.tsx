@@ -60,6 +60,20 @@ describe('FilesUpload', () => {
     expect(onChange).toHaveBeenLastCalledWith([fileA, fileB])
   })
 
+  it('should focus the delete button of the first added file', async () => {
+    const user = userEvent.setup()
+    renderFilesUpload()
+
+    await user.upload(getInput(), [createFile('a.pdf')])
+    await user.upload(getInput(), [createFile('b.pdf'), createFile('c.pdf')])
+
+    await waitFor(() =>
+      expect(
+        screen.getByRole('button', { name: 'Supprimer b.pdf' })
+      ).toHaveFocus()
+    )
+  })
+
   it('should display the status of each file', () => {
     renderFilesUpload({
       value: [createFile('a.pdf'), createFile('b.pdf')],

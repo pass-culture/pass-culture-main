@@ -117,14 +117,11 @@ const getRejectionMessage = (
 const getRejectionMessages = (
   fileRejections: readonly FileRejection[],
   maxFiles?: number
-): string[] => {
-  const messages = fileRejections
+): string[] =>
+  fileRejections
     .flatMap(({ errors }) => errors)
     .map(({ code }) => getRejectionMessage(code, maxFiles))
     .filter((message): message is string => message !== null)
-
-  return [...new Set(messages)]
-}
 
 export const UploadZone = ({
   name,
@@ -151,11 +148,13 @@ export const UploadZone = ({
   const formLayoutDescribedBy = useFormLayoutSideComponentDescribedBy()
   const uploadZoneId = useId()
   const inputId = id ?? uploadZoneId
+  const labelId = useId()
   const descriptionId = useId()
   const instructionId = useId()
   const conditionsId = useId()
   const counterId = useId()
   const errorsId = useId()
+  const rejectionPrefixId = useId()
 
   const [rejectionMessages, setRejectionMessages] = useState<string[]>([])
 
@@ -221,12 +220,28 @@ export const UploadZone = ({
     Boolean
   )
   const hasError = errors.length > 0
+  const errorIds = errors.map((_, index) => `${errorsId}-${index}`)
+  const rejectionErrorIds = errorIds.filter((_, index) =>
+    rejectionMessages.includes(errors[index])
+  )
+  const formErrorIds = errorIds.filter(
+    (errorId) => !rejectionErrorIds.includes(errorId)
+  )
+
+  // The files rejected by the zone are announced in the input name, right after
+  // the label and before the native value of the input ("Aucun fichier choisi").
+  const labelledByIds = [
+    label ? labelId : instructionId,
+    ...(rejectionErrorIds.length > 0
+      ? [rejectionPrefixId, ...rejectionErrorIds]
+      : []),
+  ].join(' ')
 
   const describedByIds = [
     description ? descriptionId : '',
     conditionsText ? conditionsId : '',
     hasFilesCounter ? counterId : '',
-    hasError ? errorsId : '',
+    ...formErrorIds,
     describedBy ?? '',
     formLayoutDescribedBy ?? '',
   ]
@@ -240,6 +255,7 @@ export const UploadZone = ({
           <FieldHeader
             fieldId={inputId}
             label={label}
+            labelId={labelId}
             labelVariant={labelVariant}
             description={description}
             descriptionId={descriptionId}
@@ -268,7 +284,12 @@ export const UploadZone = ({
               : 'Importez ou déposez le fichier ici'}
           </p>
           {conditionsText && (
-            <p id={conditionsId} className={styles['zone-conditions']}>
+            // Only read through the description of the file input, which comes after it.
+            <p
+              id={conditionsId}
+              className={styles['zone-conditions']}
+              aria-hidden="true"
+            >
               {conditionsText}
             </p>
           )}
@@ -282,7 +303,7 @@ export const UploadZone = ({
           name={name}
           className={styles['zone-input']}
           disabled={disabled}
-          aria-labelledby={label ? undefined : instructionId}
+          aria-labelledby={labelledByIds}
           aria-describedby={describedByIds || undefined}
           aria-invalid={hasError}
           aria-required={required}
@@ -296,9 +317,18 @@ export const UploadZone = ({
       >
         <div role="alert" className={styles['errors']}>
           {hasError && (
-            <div id={errorsId} className={styles['errors-list']}>
-              {errors.map((errorMessage) => (
-                <p key={errorMessage} className={styles['error']}>
+            <div className={styles['errors-list']}>
+              {rejectionErrorIds.length > 0 && (
+                <p id={rejectionPrefixId} className={styles['visually-hidden']}>
+                  Le fichier choisi est non conforme :
+                </p>
+              )}
+              {errors.map((errorMessage, index) => (
+                <p
+                  key={errorMessage}
+                  id={errorIds[index]}
+                  className={styles['error']}
+                >
                   <SvgIcon
                     src={fullErrorIcon}
                     alt=""
@@ -311,7 +341,7 @@ export const UploadZone = ({
           )}
         </div>
         {hasFilesCounter && (
-          <p id={counterId} className={styles['counter']} aria-live="polite">
+          <p id={counterId} className={styles['counter']}>
             {filesCount}/{maxFiles} {maxFiles > 1 ? 'fichiers' : 'fichier'}{' '}
             maximum
           </p>

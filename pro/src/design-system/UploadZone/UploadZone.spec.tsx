@@ -60,6 +60,11 @@ describe('UploadZone', () => {
     expect(input).toHaveAccessibleDescription(
       /^Description du champ Formats acceptés : PDF\. Poids maximum : 5 Mo\. 0\/3 fichiers maximum$/
     )
+    // Not read before the file input, only through its description.
+    expect(screen.getByText(/^Formats acceptés/)).toHaveAttribute(
+      'aria-hidden',
+      'true'
+    )
   })
 
   it('should display custom conditions instead of the default ones', () => {
@@ -88,19 +93,13 @@ describe('UploadZone', () => {
     ).toBeInTheDocument()
   })
 
-  it('should only accept a single file when maxFiles is 1', () => {
+  it('should only accept a single file, without files counter, when used alone with maxFiles 1', () => {
     renderUploadZone({ maxFiles: 1 })
 
-    expect(screen.getByLabelText('Justificatifs')).not.toHaveAttribute(
-      'multiple'
-    )
-  })
-
-  it('should not display the files counter when used alone', () => {
-    renderUploadZone({ maxFiles: 1 })
-
+    const input = screen.getByLabelText('Justificatifs')
+    expect(input).not.toHaveAttribute('multiple')
     expect(screen.queryByText(/fichiers? maximum/)).not.toBeInTheDocument()
-    expect(screen.getByLabelText('Justificatifs')).toHaveAccessibleDescription(
+    expect(input).toHaveAccessibleDescription(
       'Formats acceptés : PDF. Poids maximum : 5 Mo.'
     )
   })
@@ -186,7 +185,13 @@ describe('UploadZone', () => {
 
     expect(await screen.findByText(message)).toBeInTheDocument()
     expect(screen.getByRole('alert')).toHaveTextContent(message)
-    expect(input).toHaveAccessibleDescription(expect.stringContaining(message))
+    // Announced right after the label, before the native value of the input.
+    expect(input).toHaveAccessibleName(
+      `Justificatifs Le fichier choisi est non conforme : ${message}`
+    )
+    expect(input).toHaveAccessibleDescription(
+      'Formats acceptés : PDF. Poids maximum : 5 Mo.'
+    )
     expect(input).toBeInvalid()
     expect(input).toHaveFocus()
     expect(onFilesAdded).not.toHaveBeenCalled()
@@ -227,6 +232,25 @@ describe('UploadZone', () => {
       await screen.findByText('Le format du fichier n’est pas accepté.')
     ).toBeInTheDocument()
     expect(screen.getByText('Le fichier est trop lourd.')).toBeInTheDocument()
+    expect(screen.getByLabelText('Justificatifs')).toHaveAccessibleName(
+      'Justificatifs Le fichier choisi est non conforme : Le format du fichier n’est pas accepté. Le fichier est trop lourd.'
+    )
+  })
+
+  it('should announce the rejections after the instruction when there is no label', async () => {
+    renderUploadZone({ label: undefined })
+    const input = screen.getByLabelText('Importez ou déposez le fichier ici')
+
+    fireEvent.drop(
+      input,
+      getDataTransfer([createFile('image.png', 'image/png')])
+    )
+
+    await waitFor(() =>
+      expect(input).toHaveAccessibleName(
+        'Importez ou déposez le fichier ici Le fichier choisi est non conforme : Le format du fichier n’est pas accepté.'
+      )
+    )
   })
 
   it('should only add the files fitting in the remaining slots', async () => {
@@ -267,7 +291,13 @@ describe('UploadZone', () => {
     expect(screen.getByRole('alert')).toHaveTextContent(
       'Veuillez ajouter un fichier'
     )
-    expect(screen.getByLabelText('Justificatifs')).toBeInvalid()
+    const input = screen.getByLabelText('Justificatifs')
+    expect(input).toBeInvalid()
+    // Not a rejection of the zone: kept in the description.
+    expect(input).toHaveAccessibleName('Justificatifs')
+    expect(input).toHaveAccessibleDescription(
+      'Formats acceptés : PDF. Poids maximum : 5 Mo. Veuillez ajouter un fichier'
+    )
   })
 
   it('should disable the file input', () => {
