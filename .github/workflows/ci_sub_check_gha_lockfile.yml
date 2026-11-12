@@ -5,6 +5,10 @@ name: 3 [CI] Check GitHub Actions lockfile
 
 on:
   workflow_call:
+  # FIXME: remove before merge
+  push:
+    branches:
+    - fseguin/PC-44521-gha-lockile
 
 permissions:
   contents: read
