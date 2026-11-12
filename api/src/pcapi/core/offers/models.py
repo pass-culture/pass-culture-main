@@ -923,11 +923,19 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
             "publicationDatetime",
             postgresql_where='"publicationDatetime" IS NOT NULL',
         ),
+        # TODO (tpommellet): to remove once we shipped the new offers list
         sa.Index(
             "ix_offer_venueId_validation_publicationDatetime",
             "venueId",
             "validation",
             "publicationDatetime",
+        ),
+        sa.Index(
+            "ix_offer_venueId_validation_publicationDatetime_id",
+            "venueId",
+            "validation",
+            "publicationDatetime",
+            postgresql_include=["id"],
         ),
     )
 
