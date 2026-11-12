@@ -4781,6 +4781,25 @@ class ReopenVenueTest:
         assert venue.state is None
         mock_send_venue_reopened_email.assert_called()
 
+    def test_old_closure_related_tags_are_removed(self):
+        venue = offerers_factories.VenueFactory(state=offerers_models.VenueState.CLOSED)
+        venue.criteria = [criteria_api.get_closure_request_tag(), criteria_api.get_siret_shift_pending_tag()]
+
+        author = users_factories.BaseUserFactory()
+        history_factories.ActionHistoryFactory(
+            actionType=history_constants.ActionType.VENUE_CLOSED,
+            authorUser=author,
+            venue=venue,
+        )
+
+        with atomic():
+            offerers_api.reopen_venue(venue, author)
+
+        db.session.refresh(venue)
+
+        assert venue.state is None
+        assert not venue.criteria
+
     def test_reopen_venue_adds_immediate_reopen_action_with_comment(self):
         venue = offerers_factories.VenueFactory(state=offerers_models.VenueState.CLOSED)
         author = users_factories.BaseUserFactory()

@@ -17,6 +17,12 @@ def get_or_create_category(label: str) -> criteria_models.CriterionCategory:
     if not result:
         result = criteria_models.CriterionCategory(label=label)
         db.session.add(result)
+
+        # warning: this flush is needed within some contexts (eg. tests)
+        # where many criteria are built with the same category: the
+        # whole get/fetch the list of categories is not well-handled
+        # by the existing SQLA session.
+        db.session.flush([result])
     return result
 
 
