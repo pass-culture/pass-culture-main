@@ -3715,11 +3715,10 @@ def close_venue(
         extra={"venue_id": venue.id, "user_id": author.id},
     )
     siret_shift_pending_tag = criteria_api.get_siret_shift_pending_tag()
-    if venue.is_closed:
-        if siret_shift_pending_tag in venue.criteria and not venue.is_pricing_point:
-            criteria_api.unlink_criterion_from_venue(criterion=siret_shift_pending_tag, venue=venue)
-            if send_mail:
-                transactional_mails.send_venue_closed_email(venue.id)
+    if venue.is_closed and siret_shift_pending_tag in venue.criteria and not venue.is_pricing_point:
+        criteria_api.unlink_criterion_from_venue(criterion=siret_shift_pending_tag, venue=venue)
+        if send_mail:
+            transactional_mails.send_venue_closed_email(venue.id)
 
     venue.state = models.VenueState.CLOSED
     history_api.add_action(history_constants.ActionType.VENUE_CLOSED, author=author, venue=venue, comment=comment)
