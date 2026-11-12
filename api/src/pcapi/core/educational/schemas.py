@@ -99,6 +99,162 @@ class AdditionalFeeResponseV2(HttpBodyModel):
         return cls(label=label, amount=float(fee.amount))
 
 
+def get_adage_collective_offer_address(offer: models.CollectiveOffer) -> str:
+    match offer.locationType:
+        case models.CollectiveLocationType.SCHOOL:
+            return "Dans l'établissement scolaire"
+
+        case models.CollectiveLocationType.ADDRESS:
+            if offer.offererAddress is None:
+                return ""
+
+            return offer.offererAddress.address.fullAddress
+
+        case models.CollectiveLocationType.TO_BE_DEFINED:
+            return offer.locationComment or ""
+
+
+def get_educational_offer_accessibility(offer: models.CollectiveOffer) -> str:
+    disability_compliance = []
+    if offer.audioDisabilityCompliant:
+        disability_compliance.append("Auditif")
+    if offer.mentalDisabilityCompliant:
+        disability_compliance.append("Psychique ou cognitif")
+    if offer.motorDisabilityCompliant:
+        disability_compliance.append("Moteur")
+    if offer.visualDisabilityCompliant:
+        disability_compliance.append("Visuel")
+
+    return ", ".join(disability_compliance) or "Non accessible"
+
+
+def get_collective_booking_status(
+    collective_booking: models.CollectiveBooking,
+) -> models.CollectiveBookingStatus | CollectiveBookingRefused:
+    if collective_booking.status in (
+        models.CollectiveBookingStatus.USED,
+        models.CollectiveBookingStatus.PENDING_REIMBURSEMENT,
+        models.CollectiveBookingStatus.REIMBURSED,
+    ):
+        return models.CollectiveBookingStatus.USED
+
+    if collective_booking.cancellationReason in [
+        models.CollectiveBookingCancellationReasons.REFUSED_BY_INSTITUTE,
+        models.CollectiveBookingCancellationReasons.REFUSED_BY_HEADMASTER,
+    ]:
+        return "REFUSED"
+
+    return collective_booking.status
+
+
+class EducationalBookingResponseV2(pydantic_v2.BaseModel):
+    accessibility: str = pydantic_v2.Field(description="Accessibility of the offer")
+    address: str = pydantic_v2.Field(description="Adresse of event")
+    startDatetime: datetime.datetime = pydantic_v2.Field(description="Start date of event")
+    endDatetime: datetime.datetime = pydantic_v2.Field(description="End date of event")
+    cancellationDate: datetime.datetime | None = pydantic_v2.Field(
+        description="Date of cancellation if prebooking is cancelled"
+    )
+    cancellationLimitDate: datetime.datetime | None = pydantic_v2.Field(
+        description="Limit date to cancel the prebooking"
+    )
+    confirmationDate: datetime.datetime | None = pydantic_v2.Field(
+        description="Date of confirmation if prebooking is confirmed"
+    )
+    confirmationLimitDate: datetime.datetime = pydantic_v2.Field(description="Limit date to confirm the prebooking")
+    contact: AdageContact = pydantic_v2.Field(description="Contact of the prebooking")
+    creationDate: datetime.datetime
+    description: str | None = pydantic_v2.Field(description="Offer description")
+    additionalDetails: str | None = pydantic_v2.Field(description="Practical information on the offer")
+    durationMinutes: int | None = pydantic_v2.Field(description="Offer's duration in minutes")
+    id: int = pydantic_v2.Field(description="pass Culture's prebooking id")
+    venueName: str = pydantic_v2.Field(description="Name of cultural venue proposing the event")
+    name: str = pydantic_v2.Field(description="Name of event")
+    numberOfTickets: int = pydantic_v2.Field(description="Number of students")
+    numberOfTeachers: int = pydantic_v2.Field(description="Number of adults accompanying the students")
+    price: float = pydantic_v2.Field(description="Total price of the prebooking")
+    servicePrice: float = pydantic_v2.Field(description="Total price minus the additional fees")
+    additionalFees: list[AdditionalFeeResponseV2] = pydantic_v2.Field(
+        description="Fees related to transport, accommodation..."
+    )
+    redactor: AdageRedactor
+    uaiCode: str = pydantic_v2.Field(description="Educational institution UAI code", alias="UAICode")
+    yearId: int = pydantic_v2.Field(description="Shared year id")
+    status: models.CollectiveBookingStatus | CollectiveBookingRefused
+    cancellationReason: models.CollectiveBookingCancellationReasons | None = pydantic_v2.Field(
+        description="Reason when a prebooking order is cancelled"
+    )
+    participants: list[str] = pydantic_v2.Field(description="List of class levels which can participate")
+    priceDetail: str | None = pydantic_v2.Field(description="Offer's stock price detail")
+    venueTimezone: str
+    domainIds: list[int]
+    domainLabels: list[str]
+    interventionArea: list[str]
+    imageCredit: str | None = pydantic_v2.Field(description="Credit for the source image")
+    imageUrl: str | None = pydantic_v2.Field(description="Url for offer image")
+    venueId: int
+    offererName: str
+    formats: list[EacFormat]
+
+    model_config = pydantic_v2.ConfigDict(
+        title="Prebooking detailed response",
+        json_encoders={datetime.datetime: format_into_utc_date},
+    )
+
+    @classmethod
+    def build(cls, collective_booking: models.CollectiveBooking) -> typing.Self:
+        stock = collective_booking.collectiveStock
+        offer = stock.collectiveOffer
+        domains = offer.domains
+        venue = offer.venue
+        redactor = collective_booking.educationalRedactor
+
+        return cls(
+            accessibility=get_educational_offer_accessibility(offer),
+            address=get_adage_collective_offer_address(offer),
+            startDatetime=stock.startDatetime,
+            endDatetime=stock.endDatetime,
+            cancellationDate=collective_booking.cancellationDate,
+            cancellationLimitDate=collective_booking.cancellationLimitDate,
+            confirmationDate=collective_booking.confirmationDate,
+            confirmationLimitDate=collective_booking.confirmationLimitDate,
+            contact=AdageContact(email=offer.contactEmail, phone=offer.contactPhone),
+            creationDate=collective_booking.dateCreated,
+            description=offer.description,
+            additionalDetails=offer.additionalDetails,
+            durationMinutes=offer.durationMinutes,
+            id=collective_booking.id,
+            venueName=venue.publicName or venue.name,
+            name=offer.name,
+            numberOfTickets=stock.numberOfTickets,
+            numberOfTeachers=stock.numberOfTeachers,
+            participants=[student.value for student in offer.students],
+            priceDetail=stock.priceDetail,
+            price=float(stock.price),
+            servicePrice=float(stock.servicePrice),
+            additionalFees=[AdditionalFeeResponseV2.build(fee) for fee in stock.collectiveAdditionalFees],
+            redactor=AdageRedactor(
+                email=redactor.email,
+                redactorFirstName=redactor.firstName,
+                redactorLastName=redactor.lastName,
+                redactorCivility=redactor.civility,
+            ),
+            UAICode=collective_booking.educationalInstitution.institutionId,
+            yearId=int(collective_booking.educationalYearId),
+            status=get_collective_booking_status(collective_booking),
+            cancellationReason=collective_booking.cancellationReason,
+            venueTimezone=venue.offererAddress.address.timezone,
+            domainIds=[domain.id for domain in domains],
+            domainLabels=[domain.name for domain in domains],
+            interventionArea=offer.interventionArea,
+            imageCredit=offer.imageCredit,
+            imageUrl=offer.imageUrl,
+            venueId=venue.id,
+            offererName=venue.managingOfferer.name,
+            formats=offer.formats,
+        )
+
+
 class EducationalBookingResponse(AdageBaseResponseModel):
     accessibility: str = Field(description="Accessibility of the offer")
     address: str = Field(description="Adresse of event")
@@ -191,21 +347,6 @@ class AdageEducationalInstitution(pydantic_v2.BaseModel):
     codePostal: str
     latitude: decimal.Decimal | None = None
     longitude: decimal.Decimal | None = None
-
-
-def get_adage_collective_offer_address(offer: models.CollectiveOffer) -> str:
-    match offer.locationType:
-        case models.CollectiveLocationType.SCHOOL:
-            return "Dans l'établissement scolaire"
-
-        case models.CollectiveLocationType.ADDRESS:
-            if offer.offererAddress is None:
-                return ""
-
-            return offer.offererAddress.address.fullAddress
-
-        case models.CollectiveLocationType.TO_BE_DEFINED:
-            return offer.locationComment or ""
 
 
 class AdageCollectiveOffer(pydantic_v2.BaseModel):
