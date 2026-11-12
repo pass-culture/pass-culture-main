@@ -1,10 +1,10 @@
-from pcapi import settings
 from pcapi.core import mails
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.utils import get_collective_offer_full_address
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.utils.date import get_date_formatted_for_email
+from pcapi.utils.urls import build_pc_pro_new_collective_offer_from_template_link
 
 
 def send_new_request_made_by_redactor_to_pro(request: educational_models.CollectiveOfferRequest) -> None:
@@ -37,7 +37,9 @@ def get_data_request_made_by_redactor_to_pro(
             "REDACTOR_LASTNAME": request.educationalRedactor.lastName,
             "REDACTOR_EMAIL": request.educationalRedactor.email,
             "REDACTOR_PHONE_NUMBER": request.phoneNumber,
-            "OFFER_CREATION_URL": f"{settings.PRO_URL}/offre/collectif/creation/{request.collectiveOfferTemplateId}/requete/{request.id}",
+            "OFFER_CREATION_URL": build_pc_pro_new_collective_offer_from_template_link(
+                request.collectiveOfferTemplate, request.id
+            ),
             "OFFERER_ID": request.collectiveOfferTemplate.venue.managingOffererId,
             "VENUE_ID": request.collectiveOfferTemplate.venue.id,
             "COLLECTIVE_OFFER_ADDRESS": get_collective_offer_full_address(request.collectiveOfferTemplate),
