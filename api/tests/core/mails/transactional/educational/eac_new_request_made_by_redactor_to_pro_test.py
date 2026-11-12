@@ -31,6 +31,9 @@ class SendEacNewBookingEmailToProTest:
         send_new_request_made_by_redactor_to_pro(request)
 
         mails.send.assert_called_once()
+
+        expected_offer_creation_link = f"{settings.PRO_URL}/offre/collectif/creation/{request.collectiveOfferTemplateId}/requete/{request.id}?id-structure={request.collectiveOfferTemplate.venue.id}"
+
         assert mails.send.call_args.kwargs["data"].params == {
             "OFFER_NAME": request.collectiveOfferTemplate.name,
             "VENUE_NAME": request.collectiveOfferTemplate.venue.name,
@@ -45,7 +48,7 @@ class SendEacNewBookingEmailToProTest:
             "REDACTOR_LASTNAME": "Khteur",
             "REDACTOR_EMAIL": request.educationalRedactor.email,
             "REDACTOR_PHONE_NUMBER": None,
-            "OFFER_CREATION_URL": f"{settings.PRO_URL}/offre/collectif/creation/{request.collectiveOfferTemplateId}/requete/{request.id}",
+            "OFFER_CREATION_URL": expected_offer_creation_link,
             "OFFERER_ID": request.collectiveOfferTemplate.venue.managingOffererId,
             "VENUE_ID": request.collectiveOfferTemplate.venue.id,
             "COLLECTIVE_OFFER_ADDRESS": f"Nice location - {oa.address.fullAddress}",
