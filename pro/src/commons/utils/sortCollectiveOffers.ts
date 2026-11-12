@@ -18,7 +18,10 @@ export function sortCollectiveOffers<
 ) {
   const sortedOffers = offers.slice()
 
-  if (currentSortingColumn === CollectiveOffersSortingColumn.EVENT_DATE) {
+  if (
+    currentSortingColumn === CollectiveOffersSortingColumn.EVENT_DATE &&
+    sortingMode !== SortingMode.NONE
+  ) {
     return sortedOffers.sort((offerA, offerB) =>
       sortByDate(
         offerA.dates?.start ?? '',

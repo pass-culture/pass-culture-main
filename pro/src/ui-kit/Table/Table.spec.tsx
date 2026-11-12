@@ -113,13 +113,17 @@ describe('<Table />', () => {
     expect(within(rows[2]).getByText('2')).toBeInTheDocument()
 
     await userEvent.click(
-      screen.getByRole('img', { name: 'Trier par ordre croissant' })
+      screen.getByRole('button', {
+        name: /Value.*Cliquez pour trier par ordre croissant/,
+      })
     )
     rows = screen.getAllByRole('row')
     expect(within(rows[2]).getByText('1')).toBeInTheDocument()
 
     await userEvent.click(
-      screen.getByRole('img', { name: 'Trier par ordre décroissant' })
+      screen.getByRole('button', {
+        name: /Value.*Cliquez pour trier par ordre décroissant/,
+      })
     )
     rows = screen.getAllByRole('row')
     expect(within(rows[2]).getByText('2')).toBeInTheDocument()
@@ -142,12 +146,16 @@ describe('<Table />', () => {
           .getAllByTestId('table-row')
           .map((row) => within(row).getAllByRole('cell')[0].textContent)
       const header = screen.getByRole('columnheader', { name: /Value/ })
+      const sortButton = screen.getByRole('button', { name: /Value/ })
       expect(getRowNames()).toEqual(['Alpha', 'Beta', 'Gamma'])
       expect(header).not.toHaveAttribute('aria-sort')
+      expect(sortButton).toHaveAccessibleDescription(
+        'Aucun tri appliqué à cette colonne.'
+      )
 
       await user.click(
         screen.getByRole('button', {
-          name: /Value\s*Trier par ordre croissant/,
+          name: /Value\s*Cliquez pour trier par ordre croissant/,
         })
       )
       expect(getRowNames()).toEqual(
@@ -156,10 +164,14 @@ describe('<Table />', () => {
           : ['Beta', 'Alpha', 'Gamma']
       )
       expect(header).toHaveAttribute('aria-sort', 'ascending')
+      expect(sortButton).toHaveAccessibleDescription(
+        'Tri actuel : ordre croissant.'
+      )
+      expect(sortButton).toHaveFocus()
 
       await user.click(
         screen.getByRole('button', {
-          name: /Value\s*Trier par ordre décroissant/,
+          name: /Value\s*Cliquez pour trier par ordre décroissant/,
         })
       )
       expect(getRowNames()).toEqual(
@@ -168,15 +180,25 @@ describe('<Table />', () => {
           : ['Gamma', 'Alpha', 'Beta']
       )
       expect(header).toHaveAttribute('aria-sort', 'descending')
+      expect(sortButton).toHaveAccessibleDescription(
+        'Tri actuel : ordre décroissant.'
+      )
+      expect(sortButton).toHaveFocus()
 
       await user.click(
-        screen.getByRole('button', { name: /Value\s*Ne plus trier/ })
+        screen.getByRole('button', {
+          name: /Value\s*Cliquez pour ne plus trier/,
+        })
       )
       expect(getRowNames()).toEqual(['Alpha', 'Beta', 'Gamma'])
       expect(header).not.toHaveAttribute('aria-sort')
+      expect(sortButton).toHaveAccessibleDescription(
+        'Aucun tri appliqué à cette colonne.'
+      )
+      expect(sortButton).toHaveFocus()
       expect(
         screen.getByRole('button', {
-          name: /Value\s*Trier par ordre croissant/,
+          name: /Value\s*Cliquez pour trier par ordre croissant/,
         })
       ).toBeInTheDocument()
     }
