@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { fireEvent, screen } from '@testing-library/react'
 
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
@@ -26,11 +26,31 @@ describe('VideoPreview', () => {
     expect(document.querySelectorAll('figure')).toHaveLength(1)
   })
 
-  it('does not render an empty caption when no description is provided', () => {
+  it('does render a placeholder caption when no description is provided', () => {
     renderWithProviders(
       <VideoPreview videoThumbnailUrl="http://youtube.image.com" />
     )
 
-    expect(document.querySelector('figcaption')).not.toBeInTheDocument()
+    expect(
+      screen
+        .getByText(/Aucune description textuelle renseignée pour la vidéo/)
+        .closest('figcaption')
+    ).toBeInTheDocument()
+  })
+
+  it('announces the video preview label when its thumbnail fails to load', () => {
+    renderWithProviders(
+      <VideoPreview videoThumbnailUrl="http://youtube.image.com" />
+    )
+
+    fireEvent.error(
+      screen.getByRole('img', { name: 'Prévisualisation de la vidéo' })
+    )
+
+    expect(
+      screen.getByRole('img', {
+        name: 'Prévisualisation de la vidéo. Aperçu vidéo corrompu, veuillez ajouter une nouvelle vidéo',
+      })
+    ).toBeInTheDocument()
   })
 })
