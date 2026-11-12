@@ -29,11 +29,15 @@ export const useOnVenueImageUpload = (
     alternativeText,
     cropParams,
   }: OnImageUploadArgs) => {
+    const banner = await prepareImageForUpload(imageFile, {
+      cropWidth: cropParams?.width,
+    })
+    if (!banner) {
+      throw new Error('Failed to prepare image for upload')
+    }
     const editedVenue = await postImageToVenue(
       venueId,
-      await prepareImageForUpload(imageFile, {
-        cropWidth: cropParams?.width,
-      }),
+      banner,
       credit,
       alternativeText,
       cropParams

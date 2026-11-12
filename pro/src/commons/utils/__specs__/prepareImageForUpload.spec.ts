@@ -33,7 +33,7 @@ describe('prepareImageForUpload', () => {
 
   it('should reduce large images while preserving the file metadata', async () => {
     const result = await prepareImageForUpload(file)
-
+    assert(result !== undefined)
     expect(result.size).toBeLessThan(file.size)
     expect(result.name).toBe(file.name)
     expect(result.type).toBe(file.type)
@@ -159,7 +159,9 @@ describe('prepareImageForUpload', () => {
     })
     toBlob.mockResolvedValue(new Blob(['small'], { type: 'image/png' }))
 
-    expect((await prepareImageForUpload(png)).type).toBe('image/png')
+    const thumb = await prepareImageForUpload(png)
+    assert(thumb !== undefined)
+    expect(thumb.type).toBe('image/png')
     expect(toBlob).toHaveBeenCalledWith(expect.anything(), 'image/png', 0.85)
   })
 
