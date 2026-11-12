@@ -10,9 +10,9 @@
             résultat{{ rows_count | pluralize }}
             {% if not pagination and not hide_search_block %}
               affiché{{ rows_count | pluralize }}<i class="bi bi-info-circle"
-   data-bs-toggle="tooltip"
-   data-bs-placement="top"
-   data-bs-title="Pour afficher davantage de résultats, changer le filtre de résultats maximum dans la barre de recherche."></i>
+                                                    data-bs-toggle="tooltip"
+                                                    data-bs-placement="top"
+                                                    data-bs-title="Pour afficher davantage de résultats, changer le filtre de résultats maximum dans la barre de recherche."></i>
             {% endif %}
           </p>
         {% elif not hide_menu %}

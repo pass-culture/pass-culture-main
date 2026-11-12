@@ -14,14 +14,14 @@
       {% set from_to_date_formatted = (form.from_to_date.data[0].strftime("%d/%m/%Y") + ' - ' + form.from_to_date.data[1].strftime("%d/%m/%Y")) if form.from_to_date.data else None %}
       <a href="{{ url_for('backoffice.individual_bookings.get_individual_booking_csv_download', venue=form.venue.data[0], from_to_date=from_to_date_formatted) }}"
          class="mx-2"><i class="bi bi-filetype-csv"
-   data-bs-toggle="tooltip"
-   data-bs-placement="top"
-   data-bs-title="Télécharger en CSV."></i></a>
+                         data-bs-toggle="tooltip"
+                         data-bs-placement="top"
+                         data-bs-title="Télécharger en CSV."></i></a>
       <a href="{{ url_for('backoffice.individual_bookings.get_individual_booking_xlsx_download', venue=form.venue.data[0], from_to_date=from_to_date_formatted) }}"
          class="mx-2"><i class="bi bi-filetype-xlsx"
-   data-bs-toggle="tooltip"
-   data-bs-placement="top"
-   data-bs-title="Télécharger en Excel."></i></a>
+                         data-bs-toggle="tooltip"
+                         data-bs-placement="top"
+                         data-bs-title="Télécharger en Excel."></i></a>
       <span class="mx-2">{{ clipboard.copy_to_clipboard(pro_visualisation_link, "Copier l'url pour PC pro") }}</span>
     </span>
   {% endif %}
