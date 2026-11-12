@@ -1528,7 +1528,7 @@ class RunIntegrationTest:
         assert user.dateOfBirth.date() == self.BENEFICIARY_BIRTH_DATE
         assert user.validatedBirthDate == dms_validated_birth_date
 
-        assert len(user.beneficiaryFraudChecks) == 5  # DMS, HONOR_STATEMENT, PROFILE_COMPLETION, AAH, AEEH
+        assert len(user.beneficiaryFraudChecks) == 6  # DMS, HONOR_STATEMENT, PROFILE_COMPLETION, QF, AAH, AEEH
 
         dms_fraud_check = next(
             fraud_check
@@ -1871,7 +1871,7 @@ class GraphQLSourceProcessApplicationTest:
 
         dms_subscription_api.import_all_updated_dms_applications(6712558)
 
-        assert len(user.beneficiaryFraudChecks) == 5  # DMS, HONOR_STATEMENT, PROFILE_COMPLETION, AAH, AEEH
+        assert len(user.beneficiaryFraudChecks) == 6  # DMS, HONOR_STATEMENT, PROFILE_COMPLETION, QF, AAH, AEEH
         assert user.roles == [users_models.UserRole.BENEFICIARY]
 
         get_applications_with_details.assert_called_once()
@@ -1907,7 +1907,7 @@ class GraphQLSourceProcessApplicationTest:
 
         dms_subscription_api.import_all_updated_dms_applications(6712558)
 
-        assert len(user.beneficiaryFraudChecks) == 5  # DMS, HONOR_STATEMENT, PROFILE_COMPLETION, AAH, AEEH
+        assert len(user.beneficiaryFraudChecks) == 6  # DMS, HONOR_STATEMENT, PROFILE_COMPLETION, QF, AAH, AEEH
         assert user.roles == [users_models.UserRole.BENEFICIARY]
 
         get_applications_with_details.assert_called_once()

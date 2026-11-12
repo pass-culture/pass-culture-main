@@ -2356,6 +2356,7 @@ class ActivateBeneficiaryIfNoMissingStepTest:
             if fraud_check.type in subscription_models.BONUS_CREDIT_CHECK_TYPES
         ]
         assert set(bonus_fraud_check_types) == {
+            subscription_models.FraudCheckType.QF_BONUS_CREDIT,
             subscription_models.FraudCheckType.AAH_BONUS_CREDIT,
             subscription_models.FraudCheckType.AEEH_BONUS_CREDIT,
         }
@@ -2382,6 +2383,7 @@ class ActivateBeneficiaryIfNoMissingStepTest:
             if fraud_check.type in subscription_models.BONUS_CREDIT_CHECK_TYPES
         ]
         assert set(bonus_fraud_check_types) == {
+            subscription_models.FraudCheckType.QF_BONUS_CREDIT,
             subscription_models.FraudCheckType.AAH_BONUS_CREDIT,
             subscription_models.FraudCheckType.AEEH_BONUS_CREDIT,
         }
@@ -2413,6 +2415,7 @@ class ActivateBeneficiaryIfNoMissingStepTest:
             if fraud_check.type in subscription_models.BONUS_CREDIT_CHECK_TYPES
         ]
         assert set(bonus_fraud_check_types) == {
+            subscription_models.FraudCheckType.QF_BONUS_CREDIT,
             subscription_models.FraudCheckType.AAH_BONUS_CREDIT,
             subscription_models.FraudCheckType.AEEH_BONUS_CREDIT,
         }
@@ -2443,6 +2446,7 @@ class ActivateBeneficiaryIfNoMissingStepTest:
             if fraud_check.type in subscription_models.BONUS_CREDIT_CHECK_TYPES
         ]
         assert set(bonus_fraud_check_types) == {
+            subscription_models.FraudCheckType.QF_BONUS_CREDIT,
             subscription_models.FraudCheckType.AAH_BONUS_CREDIT,
             subscription_models.FraudCheckType.AEEH_BONUS_CREDIT,
         }
