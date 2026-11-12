@@ -4,7 +4,7 @@ import { addDays } from 'date-fns'
 import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
-import type { GetIndividualOfferResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferResponseModelV2 } from '@/apiClient/v1'
 import { IndividualOfferContextProvider } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
@@ -27,7 +27,7 @@ const renderIndividualOfferTimetable = ({
   offer,
   features = [],
 }: {
-  offer: GetIndividualOfferResponseModel
+  offer: GetIndividualOfferResponseModelV2
   features?: string[]
 }) => {
   vi.spyOn(api, 'getOffer').mockResolvedValue(offer)
@@ -50,7 +50,7 @@ const renderIndividualOfferTimetable = ({
 }
 
 describe('IndividualOfferTimetable', () => {
-  let offer: GetIndividualOfferResponseModel
+  let offer: GetIndividualOfferResponseModelV2
   const offerId = 12
 
   beforeEach(() => {

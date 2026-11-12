@@ -91,10 +91,10 @@ export const zArtistOfferLinkBodyModelV2 = z.object({
 });
 
 /**
- * ArtistOfferLinkResponseModel
+ * ArtistOfferLinkResponseModelV2
  */
-export const zArtistOfferLinkResponseModel = z.object({
-    artistId: z.string(),
+export const zArtistOfferLinkResponseModelV2 = z.object({
+    artistId: z.string().nullable(),
     artistName: z.string(),
     artistType: zArtistType
 });
@@ -1112,28 +1112,28 @@ export const zGetOfferExposureResponseModel = z.object({
 });
 
 /**
- * GetOfferLastProviderResponseModel
+ * GetOfferLastProviderResponseModelV2
  */
-export const zGetOfferLastProviderResponseModel = z.object({
+export const zGetOfferLastProviderResponseModelV2 = z.object({
     name: z.string()
 });
 
 /**
- * GetOfferManagingOffererResponseModel
+ * GetOfferManagingOffererResponseModelV2
  */
-export const zGetOfferManagingOffererResponseModel = z.object({
+export const zGetOfferManagingOffererResponseModelV2 = z.object({
     id: z.int(),
     name: z.string()
 });
 
 /**
- * GetOfferMediationResponseModel
+ * GetOfferMediationResponseModelV2
  */
-export const zGetOfferMediationResponseModel = z.object({
-    alternativeText: z.string().optional(),
-    authorId: z.string().optional(),
-    credit: z.string().optional(),
-    thumbUrl: z.string().optional()
+export const zGetOfferMediationResponseModelV2 = z.object({
+    alternativeText: z.string().nullable(),
+    authorId: z.string().nullable(),
+    credit: z.string().nullable(),
+    thumbUrl: z.string().nullable()
 });
 
 /**
@@ -1157,22 +1157,22 @@ export const zGetOfferStockResponseModel = z.object({
 });
 
 /**
- * GetOfferVenueResponseModel
+ * GetOfferVenueResponseModelV2
  */
-export const zGetOfferVenueResponseModel = z.object({
-    audioDisabilityCompliant: z.boolean().optional(),
-    bookingEmail: z.string().optional(),
-    city: z.string().optional(),
-    departementCode: z.string().optional(),
+export const zGetOfferVenueResponseModelV2 = z.object({
+    audioDisabilityCompliant: z.boolean().nullable(),
+    bookingEmail: z.string().nullable(),
+    city: z.string().nullable(),
+    departementCode: z.string().nullable(),
     id: z.int(),
-    managingOfferer: zGetOfferManagingOffererResponseModel,
-    mentalDisabilityCompliant: z.boolean().optional(),
-    motorDisabilityCompliant: z.boolean().optional(),
+    managingOfferer: zGetOfferManagingOffererResponseModelV2,
+    mentalDisabilityCompliant: z.boolean().nullable(),
+    motorDisabilityCompliant: z.boolean().nullable(),
     name: z.string(),
-    postalCode: z.string().optional(),
+    postalCode: z.string().nullable(),
     publicName: z.string(),
-    street: z.string().optional(),
-    visualDisabilityCompliant: z.boolean().optional()
+    street: z.string().nullable(),
+    visualDisabilityCompliant: z.boolean().nullable()
 });
 
 /**
@@ -1755,69 +1755,6 @@ export const zOfferDomain = z.object({
 });
 
 /**
- * OfferExtraData
- */
-export const zOfferExtraData = z.object({
-    allocineId: z.int().optional(),
-    artist: z.string().optional(),
-    author: z.string().optional(),
-    backlink: z.string().optional(),
-    bookFormat: z.string().optional(),
-    cast: z.array(z.string()).optional(),
-    certificate: z.string().optional(),
-    code_clil: z.string().optional(),
-    collection: z.string().optional(),
-    comic_series: z.string().optional(),
-    comment: z.string().optional(),
-    companies: z.array(z.record(z.string(), z.unknown())).optional(),
-    contenu_explicite: z.string().optional(),
-    countries: z.array(z.string()).optional(),
-    credits: z.array(z.record(z.string(), z.unknown())).optional(),
-    csr_id: z.string().optional(),
-    date_parution: z.string().optional(),
-    dewey: z.string().optional(),
-    diffusionVersion: z.string().optional(),
-    dispo: z.int().optional(),
-    dispo_label: z.string().optional(),
-    distributeur: z.string().optional(),
-    ean: z.string().optional(),
-    editeur: z.string().optional(),
-    eidr: z.string().optional(),
-    genres: z.array(z.string()).optional(),
-    gtl_id: z.string().optional(),
-    langue: z.string().optional(),
-    langueiso: z.string().optional(),
-    musicSubType: z.string().optional(),
-    musicType: z.string().optional(),
-    music_label: z.string().optional(),
-    nb_galettes: z.string().optional(),
-    nb_pages: z.string().optional(),
-    num_in_collection: z.string().optional(),
-    originalTitle: z.string().optional(),
-    performer: z.string().optional(),
-    posterUrl: z.string().optional(),
-    prix_livre: z.string().optional(),
-    prix_musique: z.string().optional(),
-    productionYear: z.int().optional(),
-    rayon: z.string().optional(),
-    releaseDate: z.string().optional(),
-    releases: z.array(z.record(z.string(), z.unknown())).optional(),
-    runtime: z.int().optional(),
-    schoolbook: z.boolean().optional(),
-    showSubType: z.string().optional(),
-    showType: z.string().optional(),
-    speaker: z.string().optional(),
-    stageDirector: z.string().optional(),
-    synopsis: z.string().optional(),
-    theater: z.record(z.string(), z.unknown()).optional(),
-    titelive_regroup: z.string().optional(),
-    title: z.string().optional(),
-    top: z.string().optional(),
-    type: z.string().optional(),
-    visa: z.string().optional()
-});
-
-/**
  * OfferExtraDataV2
  */
 export const zOfferExtraDataV2 = z.object({
@@ -2079,9 +2016,9 @@ export const zPostVenueProviderBody = z.object({
 });
 
 /**
- * PriceCategoryResponseModel
+ * PriceCategoryResponseModelV2
  */
-export const zPriceCategoryResponseModel = z.object({
+export const zPriceCategoryResponseModelV2 = z.object({
     hasStocks: z.boolean(),
     id: z.int(),
     label: z.string(),
@@ -2202,6 +2139,14 @@ export const zSettlementListResponseModel = z.object({
  * ShortHighlightResponseModel
  */
 export const zShortHighlightResponseModel = z.object({
+    id: z.int(),
+    name: z.string()
+});
+
+/**
+ * ShortHighlightResponseModelV2
+ */
+export const zShortHighlightResponseModelV2 = z.object({
     id: z.int(),
     name: z.string()
 });
@@ -3278,6 +3223,18 @@ export const zVideoData = z.object({
 });
 
 /**
+ * VideoDataV2
+ */
+export const zVideoDataV2 = z.object({
+    videoDescription: z.string().nullish().default(null),
+    videoDuration: z.int().nullish().default(null),
+    videoExternalId: z.string().nullish().default(null),
+    videoThumbnailUrl: z.string().nullish().default(null),
+    videoTitle: z.string().nullish().default(null),
+    videoUrl: z.string().nullish().default(null)
+});
+
+/**
  * VideoMetatdataQueryModel
  */
 export const zVideoMetatdataQueryModel = z.object({
@@ -3426,8 +3383,6 @@ export const zGetVenueResponseModel = z.object({
 
 /**
  * WithdrawalTypeEnum
- *
- * An enumeration.
  */
 export const zWithdrawalTypeEnum = z.enum([
     'by_email',
@@ -3437,27 +3392,27 @@ export const zWithdrawalTypeEnum = z.enum([
 ]);
 
 /**
- * GetIndividualOfferResponseModel
+ * GetIndividualOfferResponseModelV2
  */
-export const zGetIndividualOfferResponseModel = z.object({
-    activeMediation: zGetOfferMediationResponseModel.optional(),
-    artistOfferLinks: z.array(zArtistOfferLinkResponseModel),
-    audioDisabilityCompliant: z.boolean().optional(),
-    bookingAllowedDatetime: z.iso.datetime().optional(),
-    bookingContact: z.string().optional(),
-    bookingEmail: z.string().optional(),
-    bookingsCount: z.int().optional(),
+export const zGetIndividualOfferResponseModelV2 = z.object({
+    activeMediation: zGetOfferMediationResponseModelV2.nullable(),
+    artistOfferLinks: z.array(zArtistOfferLinkResponseModelV2),
+    audioDisabilityCompliant: z.boolean().nullable(),
+    bookingAllowedDatetime: z.iso.datetime().nullable(),
+    bookingContact: z.string().nullable(),
+    bookingEmail: z.string().nullable(),
+    bookingsCount: z.int().nullable(),
     canBeEvent: z.boolean(),
     dateCreated: z.iso.datetime(),
-    description: z.string().optional(),
-    durationMinutes: z.int().optional(),
-    externalTicketOfficeUrl: z.string().optional(),
-    extraData: zOfferExtraData.optional(),
+    description: z.string().nullable(),
+    durationMinutes: z.int().nullable(),
+    externalTicketOfficeUrl: z.string().nullable(),
+    extraData: zOfferExtraDataV2.nullable(),
     hasBookingLimitDatetimesPassed: z.boolean(),
     hasCulturalOutreachClaim: z.boolean(),
     hasPendingBookings: z.boolean(),
     hasStocks: z.boolean(),
-    highlightRequests: z.array(zShortHighlightResponseModel),
+    highlightRequests: z.array(zShortHighlightResponseModelV2),
     id: z.int(),
     isActive: z.boolean(),
     isDigital: z.boolean(),
@@ -3466,27 +3421,27 @@ export const zGetIndividualOfferResponseModel = z.object({
     isEvent: z.boolean(),
     isHeadlineOffer: z.boolean(),
     isNational: z.boolean(),
-    isNonFreeOffer: z.boolean().optional(),
+    isNonFreeOffer: z.boolean().nullable(),
     isThing: z.boolean(),
-    lastProvider: zGetOfferLastProviderResponseModel.optional(),
-    location: zLocationResponseModel.optional(),
-    mentalDisabilityCompliant: z.boolean().optional(),
-    motorDisabilityCompliant: z.boolean().optional(),
+    lastProvider: zGetOfferLastProviderResponseModelV2.nullable(),
+    location: zLocationResponseModelV2.nullable(),
+    mentalDisabilityCompliant: z.boolean().nullable(),
+    motorDisabilityCompliant: z.boolean().nullable(),
     name: z.string(),
-    priceCategories: z.array(zPriceCategoryResponseModel).optional(),
-    productId: z.int().optional(),
-    publicationDate: z.iso.datetime().optional(),
-    publicationDatetime: z.iso.datetime().optional(),
+    priceCategories: z.array(zPriceCategoryResponseModelV2).nullable(),
+    productId: z.int().nullable(),
+    publicationDate: z.iso.datetime().nullable(),
+    publicationDatetime: z.iso.datetime().nullable(),
     status: zOfferStatus,
     subcategoryId: zSubcategoryIdEnum,
-    thumbUrl: z.string().optional(),
-    url: z.string().optional(),
-    venue: zGetOfferVenueResponseModel,
-    videoData: zVideoData,
-    visualDisabilityCompliant: z.boolean().optional(),
-    withdrawalDelay: z.int().optional(),
-    withdrawalDetails: z.string().optional(),
-    withdrawalType: zWithdrawalTypeEnum.optional()
+    thumbUrl: z.string().nullable(),
+    url: z.string().nullable(),
+    venue: zGetOfferVenueResponseModelV2,
+    videoData: zVideoDataV2,
+    visualDisabilityCompliant: z.boolean().nullable(),
+    withdrawalDelay: z.int().nullable(),
+    withdrawalDetails: z.string().nullable(),
+    withdrawalType: zWithdrawalTypeEnum.nullable()
 });
 
 /**
@@ -4196,7 +4151,7 @@ export const zPatchPublishOfferBody = zPatchOfferPublishBodyModel;
 /**
  * OK
  */
-export const zPatchPublishOfferResponse = zGetIndividualOfferResponseModel;
+export const zPatchPublishOfferResponse = zGetIndividualOfferResponseModelV2;
 
 export const zCreateThumbnailBody = zCreateThumbnailBodyModel;
 
@@ -4228,7 +4183,7 @@ export const zGetOfferPath = z.object({
 /**
  * OK
  */
-export const zGetOfferResponse = zGetIndividualOfferResponseModel;
+export const zGetOfferResponse = zGetIndividualOfferResponseModelV2;
 
 export const zPatchOfferBody = zPatchOfferBodyModel;
 
@@ -4239,7 +4194,7 @@ export const zPatchOfferPath = z.object({
 /**
  * OK
  */
-export const zPatchOfferResponse = zGetIndividualOfferResponseModel;
+export const zPatchOfferResponse = zGetIndividualOfferResponseModelV2;
 
 export const zGetOfferExposurePath = z.object({
     offer_id: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' })
@@ -4259,7 +4214,7 @@ export const zPostHighlightRequestOfferPath = z.object({
 /**
  * Created
  */
-export const zPostHighlightRequestOfferResponse = zGetIndividualOfferResponseModel;
+export const zPostHighlightRequestOfferResponse = zGetIndividualOfferResponseModelV2;
 
 export const zReplaceOfferPriceCategoriesBody = zPriceCategoryBody;
 
@@ -4270,7 +4225,7 @@ export const zReplaceOfferPriceCategoriesPath = z.object({
 /**
  * OK
  */
-export const zReplaceOfferPriceCategoriesResponse = zGetIndividualOfferResponseModel;
+export const zReplaceOfferPriceCategoriesResponse = zGetIndividualOfferResponseModelV2;
 
 export const zGetStocksStatsPath = z.object({
     offer_id: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' })
@@ -4517,7 +4472,7 @@ export const zCreateOfferBody = zPostOfferBodyModel;
 /**
  * Created
  */
-export const zCreateOfferResponse = zGetIndividualOfferResponseModel;
+export const zCreateOfferResponse = zGetIndividualOfferResponseModelV2;
 
 export const zDeleteVenueProviderPath = z.object({
     venue_provider_id: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' })
