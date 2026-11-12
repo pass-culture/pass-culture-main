@@ -74,7 +74,7 @@ workflows:
     '.github/workflows/ci_daily_security_scan.yml':
         - 'actions/checkout@v7.0.1'
         - 'actions/upload-artifact@v7.0.1'
-        - 'github/codeql-action@61817fadad823920a8924645dd5f67985d6a1d94'
+        - 'github/codeql-action@v4.39.1'
     '.github/workflows/ci_delete_firebase_preview_on_pr_closed_passdirector.yml':
         - 'actions/checkout@v7.0.1'
         - 'google-github-actions/auth@v3.0.0'
@@ -292,9 +292,9 @@ dependencies:
         repo_id: 273043452
         uses:
             - 'actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f'
-    'github/codeql-action@61817fadad823920a8924645dd5f67985d6a1d94':
-        ref: 'main'
-        commit: 'sha1-61817fadad823920a8924645dd5f67985d6a1d94'
+    'github/codeql-action@v4.39.1':
+        ref: 'v4.39.1'
+        commit: 'sha1-9b3254085494b55a0f7c4c2b3d2d52cc712ce370'
         owner_id: 9919
         repo_id: 259445878
     'google-github-actions/auth@v1':
