@@ -46,11 +46,11 @@ def get_educational_bookings(
 @adage_api_key_required
 @spectree_serialize(
     api=blueprint.api,
-    response_model=educational_schemas.EducationalBookingResponse,
+    response_model=collective_booking.EducationalBookingResponse,
     on_error_statuses=[404, 422],
     tags=("change prebookings",),
 )
-def confirm_prebooking(educational_booking_id: int) -> educational_schemas.EducationalBookingResponse:
+def confirm_prebooking(educational_booking_id: int) -> collective_booking.EducationalBookingResponse:
     try:
         educational_booking = educational_api_booking.confirm_collective_booking(educational_booking_id)
     except exceptions.InsufficientFund:
@@ -66,7 +66,7 @@ def confirm_prebooking(educational_booking_id: int) -> educational_schemas.Educa
     except exceptions.EducationalDepositNotFound:
         raise ApiErrors({"code": "DEPOSIT_NOT_FOUND"}, status_code=404)
 
-    return serialize_collective_booking(educational_booking)
+    return collective_booking.EducationalBookingResponse.build(educational_booking)
 
 
 @blueprint.adage_v1.route("/prebookings/<int:educational_booking_id>/refuse", methods=["POST"])
