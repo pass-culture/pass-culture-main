@@ -18,12 +18,12 @@ export const ConnectedAsAside = ({ currentUser }: ConnectedAsAsideProps) => {
         width="20"
         className={styles['connect-as-icon']}
       />
-      <div className={styles['connect-as-text']}>
+      <p className={styles['connect-as-text']}>
         Vous êtes connecté en tant que :{NBSP}
         <strong>
           {currentUser.firstName} {currentUser.lastName}
         </strong>
-      </div>
+      </p>
     </aside>
   )
 }

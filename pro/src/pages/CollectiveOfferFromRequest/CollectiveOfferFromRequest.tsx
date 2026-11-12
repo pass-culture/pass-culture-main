@@ -80,13 +80,13 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
         <Spinner />
       ) : (
         <>
-          <div className={styles['eac-section']}>
+          <p className={styles['eac-section']}>
             Vous avez reçu une demande de création d’offres de la part d’un
             établissement scolaire. Vous pouvez créer une offre à partir des
             informations saisies par l’enseignant. Toutes les informations sont
             modifiables.
             <br /> L’offre sera visible par l’enseignant sur ADAGE.
-          </div>
+          </p>
           <SummarySection title="Détails de la demande">
             <div className={styles['eac-section']}>
               <SummaryDescriptionList
@@ -112,11 +112,11 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
                     title: 'Etablissement scolaire',
                     isBlock: true,
                     text: (
-                      <div>
+                      <p className={styles['institution-address']}>
                         {`${informations.institution.institutionType} ${informations.institution.name}`.trim()}
                         <br />
                         {`${informations.institution.postalCode} ${informations.institution.city}`}
-                      </div>
+                      </p>
                     ),
                   },
                   {

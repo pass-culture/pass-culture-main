@@ -43,7 +43,7 @@ export const HighlightBanner = ({
       })}
     >
       <div className={styles[`container`]}>
-        <div className={styles['title']}>{title}</div>
+        <p className={styles['title']}>{title}</p>
         <p className={styles['description']}>{description}</p>
         {cta}
       </div>

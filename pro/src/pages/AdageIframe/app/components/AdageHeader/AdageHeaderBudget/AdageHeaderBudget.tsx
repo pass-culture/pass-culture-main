@@ -26,14 +26,14 @@ export const AdageHeaderBudget = ({
           label="Solde prévisionnel"
         />
       </div>
-      <div className={styles['adage-header-budget-value']}>
+      <p className={styles['adage-header-budget-value']}>
         {Intl.NumberFormat('fr-FR', {
           style: 'currency',
           currency: 'EUR',
           maximumFractionDigits: 0,
           minimumFractionDigits: 0, //  Some browsers need the minimum to be explicit since the defaut min value for currency is 2, in what case min > max
         }).format(institutionBudget)}
-      </div>
+      </p>
     </div>
   )
 }

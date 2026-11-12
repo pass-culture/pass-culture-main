@@ -121,7 +121,9 @@ export const Hub = () => {
           </div>
         }
         {venues.length > 0 && filteredVenues.length === 0 && (
-          <div>Aucune structure ne correspond à votre recherche "{query}".</div>
+          <p className={styles['no-search-results']}>
+            Aucune structure ne correspond à votre recherche "{query}".
+          </p>
         )}
         <div className={styles['venue-list']}>
           {filteredVenues.map((venue) => (

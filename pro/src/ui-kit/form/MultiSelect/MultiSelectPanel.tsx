@@ -65,7 +65,9 @@ export const MultiSelectPanel = ({
         data-testid="panel-scrollable"
       >
         <output className={styles['visually-hidden']}>
-          <span>{filteredOptions.length} résultats trouvés</span>
+          <p className={styles['search-results-count']}>
+            {filteredOptions.length} résultats trouvés
+          </p>
         </output>
         {filteredOptions.length > 0 ? (
           <ul className={styles['container']}>
@@ -93,9 +95,9 @@ export const MultiSelectPanel = ({
             ))}
           </ul>
         ) : (
-          <div className={styles['empty-search']}>
+          <p className={styles['empty-search']}>
             <span>{'Aucun résultat trouvé pour votre recherche.'}</span>
-          </div>
+          </p>
         )}
       </div>
     </dialog>

@@ -70,7 +70,7 @@ export const CheckboxGroup = ({
       )}
       <div role="alert">
         {error && (
-          <div id={errorId}>
+          <p className={styles['checkbox-group-error-message']} id={errorId}>
             <SvgIcon
               src={fullError}
               alt=""
@@ -78,7 +78,7 @@ export const CheckboxGroup = ({
               className={styles['checkbox-group-error-icon']}
             />
             <span className={styles['checkbox-group-error']}>{error}</span>
-          </div>
+          </p>
         )}
       </div>
       <div className={styles['checkbox-group-options']}>

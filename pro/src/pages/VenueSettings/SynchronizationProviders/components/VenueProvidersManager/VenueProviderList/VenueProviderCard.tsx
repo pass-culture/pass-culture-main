@@ -47,13 +47,13 @@ export const VenueProviderCard = ({
             className={style['provider-logo']}
           />
         )}
-        <div className={style['provider-name']}>
+        <p className={style['provider-name']}>
           {providerInfo?.name ?? provider.name}
-        </div>
+        </p>
       </div>
       {isPublicAPIProvider ? (
         <div className={style['venue-provider-info-container']}>
-          <div className={style['venue-provider-account-info']}>
+          <p className={style['venue-provider-account-info']}>
             Date d'ajout :{' '}
             <span>
               {formatLocalTimeDateString(
@@ -62,15 +62,15 @@ export const VenueProviderCard = ({
                 'dd/MM/yyyy à HH:mm'
               )}
             </span>
-          </div>
+          </p>
         </div>
       ) : (
         <div className={style['venue-provider-info-container']}>
-          <div className={style['venue-provider-account-info']}>
+          <p className={style['venue-provider-account-info']}>
             Compte : <span>{venueIdAtOfferProvider}</span>
-          </div>
+          </p>
           {lastSyncDate ? (
-            <div className={style['last-synchronisation']}>
+            <p className={style['last-synchronisation']}>
               <span>Dernière synchronisation :</span>
               <span>
                 {' '}
@@ -80,12 +80,12 @@ export const VenueProviderCard = ({
                   'dd/MM/yyyy à HH:mm'
                 )}
               </span>
-            </div>
+            </p>
           ) : (
-            <div>
+            <p className={style['import-status']}>
               Importation en cours. Cette étape peut durer plusieurs dizaines de
               minutes.
-            </div>
+            </p>
           )}
         </div>
       )}

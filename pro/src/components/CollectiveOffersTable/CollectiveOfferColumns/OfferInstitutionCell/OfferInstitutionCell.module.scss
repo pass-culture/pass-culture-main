@@ -8,9 +8,15 @@
 }
 
 .institution-label-ellipsis {
+  @include fonts.body-accent-xs;
+
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.institution-postal-code {
+  @include fonts.body-accent-xs;
 }

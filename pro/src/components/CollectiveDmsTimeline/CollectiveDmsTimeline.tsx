@@ -61,10 +61,10 @@ export const CollectiveDmsTimeline = ({
     type: TimelineStepType.SUCCESS,
     content: (
       <>
-        <div className={styles['timeline-step-title-disabled']}>
+        <p className={styles['timeline-step-title-disabled']}>
           Votre dossier a été déposé
-        </div>
-        <div>{buildDate}</div>
+        </p>
+        <p className={styles['timeline-step-date']}>{buildDate}</p>
       </>
     ),
   }
@@ -73,10 +73,10 @@ export const CollectiveDmsTimeline = ({
     type: TimelineStepType.SUCCESS,
     content: (
       <>
-        <div className={styles['timeline-step-title-disabled']}>
+        <p className={styles['timeline-step-title-disabled']}>
           Votre dossier a été déposé
-        </div>
-        <div>{buildDate}</div>
+        </p>
+        <p className={styles['timeline-step-date']}>{buildDate}</p>
       </>
     ),
   }
@@ -84,9 +84,9 @@ export const CollectiveDmsTimeline = ({
     type: TimelineStepType.WAITING,
     content: (
       <>
-        <div className={styles['timeline-step-title']}>
+        <p className={styles['timeline-step-title']}>
           Votre dossier est en attente d’instruction
-        </div>
+        </p>
         <p>
           Votre dossier doit être instruit par la commission régionale du
           territoire dans lequel se situe votre siège social.
@@ -118,11 +118,11 @@ export const CollectiveDmsTimeline = ({
     type: TimelineStepType.WAITING,
     content: (
       <>
-        <div className={styles['timeline-step-title']}>
+        <p className={styles['timeline-step-title']}>
           Votre dossier est en cours d’instruction
-        </div>
+        </p>
         <div>
-          {instructionDate}
+          <p className={styles['timeline-step-date']}>{instructionDate}</p>
           <br />
           <p>
             Votre dossier est en cours d’instruction par la commission de
@@ -147,10 +147,10 @@ export const CollectiveDmsTimeline = ({
     type: TimelineStepType.SUCCESS,
     content: (
       <>
-        <div className={styles['timeline-step-title-disabled']}>
+        <p className={styles['timeline-step-title-disabled']}>
           Votre dossier est passé en instruction
-        </div>
-        <div>{instructionDate}</div>
+        </p>
+        <p className={styles['timeline-step-date']}>{instructionDate}</p>
       </>
     ),
   }
@@ -159,11 +159,11 @@ export const CollectiveDmsTimeline = ({
     type: TimelineStepType.SUCCESS,
     content: (
       <>
-        <div className={styles['timeline-step-title-disabled']}>
+        <p className={styles['timeline-step-title-disabled']}>
           Votre demande de référencement a été acceptée
-        </div>
+        </p>
         <div>
-          {processingDate}
+          <p className={styles['timeline-step-date']}>{processingDate}</p>
           <br />
           <p>
             Votre structure doit encore être référencée dans ADAGE par les
@@ -187,17 +187,17 @@ export const CollectiveDmsTimeline = ({
   const disabledInstructionStep = {
     type: TimelineStepType.DISABLED,
     content: (
-      <div className={styles['timeline-step-title-disabled']}>
+      <p className={styles['timeline-step-title-disabled']}>
         Votre dossier est passé en instruction
-      </div>
+      </p>
     ),
   }
   const disabledDoneStep = {
     type: TimelineStepType.DISABLED,
     content: (
-      <div className={styles['timeline-step-title-disabled']}>
+      <p className={styles['timeline-step-title-disabled']}>
         Votre dossier a été traité
-      </div>
+      </p>
     ),
   }
 
@@ -205,9 +205,9 @@ export const CollectiveDmsTimeline = ({
     type: TimelineStepType.WAITING,
     content: (
       <>
-        <div className={styles['timeline-step-title']}>
+        <p className={styles['timeline-step-title']}>
           Votre structure est en cours d’ajout dans ADAGE
-        </div>
+        </p>
         <p>
           Une fois votre structure ajoutée dans ADAGE par le ministère de
           l’Éducation nationale, vous pourrez renseigner vos informations à
@@ -222,18 +222,18 @@ export const CollectiveDmsTimeline = ({
     type: TimelineStepType.SUCCESS,
     content: (
       <>
-        <div className={styles['timeline-step-title-disabled']}>
+        <p className={styles['timeline-step-title-disabled']}>
           Votre structure a été référencée dans ADAGE par les équipes du
           ministère de l’Éducation nationale
-        </div>
-        <div>{adageDate}</div>
+        </p>
+        <p className={styles['timeline-step-date']}>{adageDate}</p>
         <div className={styles['timeline-infobox']}>
-          <div className={styles['timeline-infobox-text']}>
+          <p className={styles['timeline-infobox-text']}>
             Vous pouvez désormais créer des offres collectives ! Nous vous
             invitons à vérifier les informations de votre structure qui sont
             désormais visibles sur ADAGE par les enseignants et chefs
             d’établissements.
-          </div>
+          </p>
         </div>
       </>
     ),
@@ -242,9 +242,9 @@ export const CollectiveDmsTimeline = ({
   const disabledAcceptedAdageStep = {
     type: TimelineStepType.DISABLED,
     content: (
-      <div className={styles['timeline-step-title-disabled']}>
+      <p className={styles['timeline-step-title-disabled']}>
         Votre structure a été ajoutée dans ADAGE
-      </div>
+      </p>
     ),
   }
 

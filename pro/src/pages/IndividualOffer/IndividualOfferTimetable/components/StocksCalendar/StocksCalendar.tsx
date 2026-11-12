@@ -307,9 +307,9 @@ export function StocksCalendar({ offer, mode }: StocksCalendarProps) {
               />
             </div>
             {stockCount > 0 && (
-              <div className={styles['count']}>
+              <p className={styles['count']}>
                 {stockCount} {pluralizeFr(stockCount, 'date', 'dates')}
-              </div>
+              </p>
             )}
             <StocksCalendarTable
               stocks={stocks}

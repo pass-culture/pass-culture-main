@@ -43,3 +43,7 @@
     @include fonts.body-accent-s;
   }
 }
+
+.expired-offer-description {
+  @include fonts.body-s;
+}

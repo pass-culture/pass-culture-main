@@ -5,13 +5,13 @@ import styles from './IncomeError.module.scss'
 
 export const IncomeError = () => {
   return (
-    <div className={styles['income-error']}>
+    <p className={styles['income-error']}>
       <SvgIcon
         className={styles['income-error-icon']}
         src={strokePageNotFoundIcon}
         alt=""
       />
       Erreur dans le chargement des données.
-    </div>
+    </p>
   )
 }

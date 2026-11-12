@@ -45,9 +45,9 @@ export const ExternalAccessibilityCollapse = ({
         </div>
         <div className={styles['title-container']}>
           <p className={styles['title']}>{title}</p>
-          <div className={styles['accessibility-label']}>
+          <p className={styles['accessibility-label']}>
             {isAccessible ? 'Accessible' : 'Non accessible'}
-          </div>
+          </p>
         </div>
         <button
           type="button"

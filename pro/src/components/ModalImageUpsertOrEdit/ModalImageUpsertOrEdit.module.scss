@@ -2,6 +2,10 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_size.scss" as size;
 
+.modal-image-crop-callout-description {
+  @include fonts.body-s;
+}
+
 .modal-image-crop {
   display: flex;
   flex-direction: column;

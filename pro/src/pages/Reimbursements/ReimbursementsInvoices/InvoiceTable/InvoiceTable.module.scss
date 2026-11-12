@@ -9,14 +9,20 @@
 }
 
 .negative-amount {
+  @include fonts.body;
+
   color: var(--color-text-error);
 }
 
 .positive-amount {
+  @include fonts.body;
+
   color: var(--color-text-success);
 }
 
 .cell-document-type {
+  @include fonts.body;
+
   display: flex;
   gap: var(--size-spacing-xs);
 }

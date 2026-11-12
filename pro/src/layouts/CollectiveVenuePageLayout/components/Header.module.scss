@@ -48,6 +48,8 @@
 }
 
 .venue-type {
+  @include fonts.body;
+
   color: var(--color-text-subtle);
   text-transform: uppercase;
 }

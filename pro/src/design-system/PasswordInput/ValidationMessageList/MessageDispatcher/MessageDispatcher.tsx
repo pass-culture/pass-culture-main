@@ -33,27 +33,27 @@ type MessageProps = {
 }
 
 const MessageSuccess = ({ message }: MessageProps): JSX.Element => (
-  <div
+  <p
     className={cn(styles['message'], styles['message-success'])}
     data-testid={`success-${message}`}
   >
     <SvgIcon src={fullValidIcon} alt={''} className={styles['message-icon']} />
     <span>{message}</span>
-  </div>
+  </p>
 )
 
 const MessageError = ({ message }: MessageProps): JSX.Element => (
-  <div
+  <p
     className={cn(styles['message'], styles['message-error'])}
     data-testid={`error-${message}`}
   >
     <SvgIcon src={fullErrorIcon} alt={''} className={styles['message-icon']} />
     <span>{message}</span>
-  </div>
+  </p>
 )
 
 const MessagePristine = ({ message }: MessageProps): JSX.Element => (
-  <div className={cn(styles['message'], styles['message-pristine'])}>
+  <p className={cn(styles['message'], styles['message-pristine'])}>
     <span>{message}</span>
-  </div>
+  </p>
 )

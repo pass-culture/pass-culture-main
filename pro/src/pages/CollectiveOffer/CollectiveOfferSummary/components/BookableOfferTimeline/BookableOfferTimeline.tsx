@@ -551,7 +551,7 @@ const StatusWithDate = ({
 }) => {
   return (
     <div className={styles['status']}>
-      <div
+      <p
         className={
           stepType === TimelineStepType.DISABLED
             ? styles['status-label-disabled']
@@ -559,8 +559,8 @@ const StatusWithDate = ({
         }
       >
         {status}
-      </div>
-      {date && <div className={styles['date']}>{date}</div>}
+      </p>
+      {date && <p className={styles['date']}>{date}</p>}
     </div>
   )
 }

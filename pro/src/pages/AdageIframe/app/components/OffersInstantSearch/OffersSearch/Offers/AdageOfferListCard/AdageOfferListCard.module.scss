@@ -134,6 +134,8 @@
   }
 
   &-text {
+    @include fonts.body;
+
     display: flex;
     flex-direction: column;
   }

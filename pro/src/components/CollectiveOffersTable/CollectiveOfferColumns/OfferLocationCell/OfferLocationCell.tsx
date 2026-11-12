@@ -21,12 +21,12 @@ export const OfferLocationCell = ({
 
     const { label, street, postalCode, city } = offerLocation?.location || {}
     return (
-      <div>
+      <>
         {label ? `${label} - ` : ''}
         {street} {postalCode} {city}
-      </div>
+      </>
     )
   }
 
-  return <div className={styles['location-cell']}>{getLocation()}</div>
+  return <p className={styles['location-cell']}>{getLocation()}</p>
 }

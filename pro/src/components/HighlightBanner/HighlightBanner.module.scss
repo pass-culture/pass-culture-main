@@ -11,6 +11,8 @@
   position: relative;
 
   .title {
+    @include fonts.title1;
+
     width: 85%;
     color: var(--color-text-brand-primary);
   }

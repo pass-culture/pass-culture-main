@@ -32,21 +32,23 @@ export const ExpiredBanner = ({
 
   const description = (
     <>
-      {message}
-      <span className={styles['callout-accent']}>
-        {formatDateTime(
-          bookingLimitDatetime ?? '',
-          FORMAT_DD_MM_YYYY,
-          departmentCode
-        )}
-        .
-      </span>
-      <div>
+      <p className={styles['expired-offer-description']}>
+        {message}
+        <span className={styles['callout-accent']}>
+          {formatDateTime(
+            bookingLimitDatetime ?? '',
+            FORMAT_DD_MM_YYYY,
+            departmentCode
+          )}
+          .
+        </span>
+      </p>
+      <p className={styles['expired-offer-description']}>
         Pour qu’il puisse {hasPublished ? 'préréserver' : 'réserver'} à nouveau,
         vous pouvez modifier la date limite de réservation, ce qui rendra
         automatiquement la {hasPublished ? 'préréservation' : 'réservation'}{' '}
         disponible auprès de l’enseignant.
-      </div>
+      </p>
     </>
   )
 

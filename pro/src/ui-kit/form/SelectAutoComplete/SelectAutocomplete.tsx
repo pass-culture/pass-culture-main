@@ -339,7 +339,7 @@ export const SelectAutocomplete = forwardRef(
         </div>
 
         {error && (
-          <div
+          <p
             role="alert"
             id={`error-details-${name}`}
             className={styles['field-error']}
@@ -351,7 +351,7 @@ export const SelectAutocomplete = forwardRef(
               width="16"
             />
             <span data-testid={`error-${name}`}>{error}</span>
-          </div>
+          </p>
         )}
       </div>
     )

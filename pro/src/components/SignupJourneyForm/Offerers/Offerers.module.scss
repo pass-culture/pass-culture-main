@@ -19,6 +19,8 @@
 }
 
 .wrong-offerer-title {
+  @include fonts.body;
+
   margin-bottom: var(--size-spacing-s);
   margin-top: var(--size-spacing-2xl);
 }

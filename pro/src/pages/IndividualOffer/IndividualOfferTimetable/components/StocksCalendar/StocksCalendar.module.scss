@@ -41,6 +41,8 @@
 }
 
 .count {
+  @include fonts.body;
+
   margin-bottom: var(--size-spacing-s);
 }
 

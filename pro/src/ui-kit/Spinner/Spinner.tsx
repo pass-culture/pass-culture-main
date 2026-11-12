@@ -60,7 +60,7 @@ export const Spinner = ({
         className={styles['loading-spinner-icon']}
       />
 
-      <div className={styles['content']}>{message}</div>
+      <p className={styles['content']}>{message}</p>
     </div>
   )
 }

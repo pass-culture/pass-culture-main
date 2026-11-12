@@ -24,9 +24,9 @@ export const Header = ({
 }: HeaderProps) => {
   if (isLoading) {
     return (
-      <div className={styles['bookings-header-loading']}>
+      <p className={styles['bookings-header-loading']}>
         Chargement des réservations...
-      </div>
+      </p>
     )
   } else {
     return (

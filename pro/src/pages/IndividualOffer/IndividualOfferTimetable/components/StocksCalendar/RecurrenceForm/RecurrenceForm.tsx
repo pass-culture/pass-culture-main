@@ -295,12 +295,12 @@ export const RecurrenceForm = ({
                     })}
                   </div>
                   {methods.formState.errors.days && (
-                    <div role="alert" className={styles['days-error']}>
+                    <p role="alert" className={styles['days-error']}>
                       <SvgIcon src={fullErrorIcon} alt="" width="16" />
                       <span data-testid={`error-days`}>
                         {methods.formState.errors.days.message}
                       </span>
-                    </div>
+                    </p>
                   )}
                 </>
               )}

@@ -1,9 +1,12 @@
 @use "styles/mixins/_a11y.scss" as a11y;
+@use "styles/mixins/_fonts.scss" as fonts;
 
 .opening-hours-subsubsection {
   margin-top: var(--size-spacing-2xl);
 
   &-address-input {
+    @include fonts.body;
+
     margin-bottom: var(--size-spacing-l);
   }
 }

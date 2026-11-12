@@ -69,9 +69,13 @@ export const OfferDateCell = ({ offer }: OfferEventDateCellProps) => {
   return (
     <div className={styles['offer-date']}>
       {getFormattedDatesForOffer(offer).map((date) => (
-        <span key={date} data-testid="offer-event-date">
+        <p
+          className={styles['offer-event-date']}
+          key={date}
+          data-testid="offer-event-date"
+        >
           {date}
-        </span>
+        </p>
       ))}
     </div>
   )

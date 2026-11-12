@@ -177,7 +177,8 @@ export const ModalImageUpsertOrEdit = ({
 
   useEffect(() => {
     setAlternativeText(initialAlternativeText ?? '')
-  }, [initialAlternativeText])
+    setIsInformative(Boolean(initialAlternativeText))
+  }, [initialAlternativeText, mode])
 
   const hardReset = () => {
     setImage(undefined)
@@ -187,6 +188,7 @@ export const ModalImageUpsertOrEdit = ({
     })
     setCredit('')
     setAlternativeText('')
+    setIsInformative(false)
     setScale(1)
   }
 
@@ -199,6 +201,7 @@ export const ModalImageUpsertOrEdit = ({
     })
     setCredit(initialCredit ?? '')
     setAlternativeText(initialAlternativeText ?? '')
+    setIsInformative(Boolean(initialAlternativeText))
     setScale(initialScale)
   }
   const onImageReplace = () => hardReset()
@@ -371,7 +374,13 @@ export const ModalImageUpsertOrEdit = ({
                     title="Image non conforme aux recommandations"
                     description={
                       <div>
-                        Le format recommandé :
+                        <p
+                          className={
+                            style['modal-image-crop-callout-description']
+                          }
+                        >
+                          Le format recommandé :
+                        </p>
                         <ul className={style['modal-image-crop-callout-list']}>
                           <li>Largeur minimale de l’image : 400 px</li>
                           <li>Hauteur minimale de l’image : 600 px</li>

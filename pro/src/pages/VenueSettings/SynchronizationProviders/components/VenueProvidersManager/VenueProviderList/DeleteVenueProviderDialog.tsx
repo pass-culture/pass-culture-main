@@ -44,14 +44,18 @@ export const DeleteVenueProviderDialog = ({
         ]}
       >
         <div className={style['explanation']}>
-          En supprimant la synchronisation de vos offres :
+          <p className={style['delete-synchronization-description']}>
+            En supprimant la synchronisation de vos offres :
+          </p>
           <ul className={style['explanation-list']}>
             <li>Toutes vos offres synchronisées seront désactivées</li>
             <li>Les réservations déjà en cours ne sont pas annulées</li>
           </ul>
           <br />
-          Vous aurez la possibilité de vous synchroniser avec un nouveau
-          fournisseur de données.
+          <p className={style['delete-synchronization-description']}>
+            Vous aurez la possibilité de vous synchroniser avec un nouveau
+            fournisseur de données.
+          </p>
         </div>
       </SimpleModal>
     </>

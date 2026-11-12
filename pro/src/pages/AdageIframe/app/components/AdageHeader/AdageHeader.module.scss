@@ -18,6 +18,10 @@
     justify-content: center;
     padding: var(--size-spacing-l);
     gap: var(--size-spacing-l);
+
+    &-description {
+      @include fonts.body;
+    }
   }
 
   &-nav {

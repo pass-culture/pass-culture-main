@@ -105,9 +105,9 @@ export const OfferNameCell = ({ offer, offerLink }: OfferNameCellProps) => {
             </div>
           )}
           {offer.productIsbn && (
-            <div className={styles['isbn']} data-testid="offer-isbn">
+            <p className={styles['isbn']} data-testid="offer-isbn">
               {offer.productIsbn}
-            </div>
+            </p>
           )}
         </div>
       </Link>

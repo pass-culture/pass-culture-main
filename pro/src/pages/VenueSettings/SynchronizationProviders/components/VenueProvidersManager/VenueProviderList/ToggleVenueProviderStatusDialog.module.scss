@@ -1,8 +1,16 @@
+@use "styles/mixins/_fonts.scss" as fonts;
+
 .explanation {
+  @include fonts.body;
+
   text-align: left;
 
   &-list {
     list-style: disc;
     margin-left: var(--size-spacing-2xl);
   }
+}
+
+.pause-synchronization-description {
+  @include fonts.body;
 }

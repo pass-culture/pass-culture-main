@@ -15,3 +15,7 @@
     text-align: end;
   }
 }
+
+.offer-event-date {
+  @include fonts.body-accent-xs;
+}

@@ -15,5 +15,11 @@
 }
 
 .desk-label {
+  @include fonts.body-accent-s;
+
   color: var(--color-text-subtle);
+}
+
+.desk-value {
+  @include fonts.body-accent-s;
 }
