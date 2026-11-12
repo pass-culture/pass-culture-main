@@ -151,6 +151,10 @@ def as_utc_without_timezone(d: datetime.datetime) -> datetime.datetime:
     #
     # Warning:
     # this function might add an offset when converting to UTC.
+
+    if d.tzinfo is None:
+        return d
+
     return d.astimezone(pytz.utc).replace(tzinfo=None)
 
 
