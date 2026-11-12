@@ -2232,7 +2232,7 @@ dev = [
     { name = "squawk-cli", specifier = "==2.70.0" },
     { name = "types-protobuf", specifier = "==7.35.1.20260906" },
     { name = "types-python-dateutil", specifier = "==2.9.0.20261021" },
-    { name = "types-pytz", specifier = "==2026.5.0.20261006" },
+    { name = "types-pytz", specifier = "==2026.6.0.20261031" },
     { name = "types-pyyaml", specifier = "==6.0.12.20260906" },
     { name = "types-redis", specifier = "==4.6.0.20241004" },
 ]
@@ -3464,11 +3464,11 @@ wheels = [
 
 [[package]]
 name = "types-pytz"
-version = "2026.5.0.20261006"
+version = "2026.6.0.20261031"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/ba/47/b493f47f2dd0971db06459439ebdeb114cf95029188268099b331bbc4727/types_pytz-2026.5.0.20261006.tar.gz", hash = "sha256:1a522c2ec03aad8d4baaf97105958019ad51704b1e471c882d1c6ccea3e5e64b", size = 11073, upload-time = "2026-10-06T08:15:12.87Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/67/41/d48d94925fa2e76b744628a9ac8c06002271b03181ee8e3f97bf804323f7/types_pytz-2026.6.0.20261031.tar.gz", hash = "sha256:8b559955f0c628f68159865c6f24835f4323c407a4408365b3676a074b524261", size = 11079, upload-time = "2026-10-31T07:39:13.265Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/77/38/e375026fb4ff74fed6bdb84d7d336571d0603b6b9675751579cec84cfc9b/types_pytz-2026.5.0.20261006-py3-none-any.whl", hash = "sha256:9e4a893b362a8eed4e10a348c80603ade65bdb3819419e589364afafe2ea08b1", size = 10168, upload-time = "2026-10-06T08:15:11.985Z" },
+    { url = "https://files.pythonhosted.org/packages/1c/0b/b28f2d9eb28c36b331f37cfe8c7b118fe26dfc96101b316155d7cf60bd90/types_pytz-2026.6.0.20261031-py3-none-any.whl", hash = "sha256:d0d4fbe482edfb263440421866cba41d25daba37e5584e0cff6712a3b5a9d9e9", size = 10165, upload-time = "2026-10-31T07:39:12.391Z" },
 ]
 
 [[package]]
