@@ -16,24 +16,24 @@ def test_get_nature_format_domain(client):
     assert response.json == [
         {
             "name": "BIEN",
-            "label": "Biens",
+            "label": "Bien",
             "formats": [
                 {"format": "CD", "label": "CD"},
                 {"format": "VINYLE", "label": "Vinyle"},
                 {"format": "DVD_BLU_RAY", "label": "DVD, Blu-ray"},
                 {"format": "INSTRUMENT_DE_MUSIQUE", "label": "Instrument de musique"},
-                {"format": "LIVRE_PAPIER", "label": "Livre papier"},
+                {"format": "LIVRE_PAPIER", "label": "Livre"},
                 {"format": "MATERIEL_ARTS_CREATIFS", "label": "Matériel d'art créatif"},
             ],
         },
         {
             "name": "CARTE_ABONNEMENT",
-            "label": "Cartes d'abonnement",
+            "label": "Carte ou abonnement",
             "formats": [],
         },
         {
             "name": "EVENEMENT",
-            "label": "Événements",
+            "label": "Événement",
             "formats": [],
         },
         {

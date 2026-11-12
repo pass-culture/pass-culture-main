@@ -33,7 +33,7 @@ class FieldEnum(enum.Enum):
 NFD = [
     {
         "name": NatureEnum.BIEN,
-        "label": "Biens",
+        "label": "Bien",
         "formats": [
             {
                 "format": FormatEnum.CD,
@@ -53,7 +53,7 @@ NFD = [
             },
             {
                 "format": FormatEnum.LIVRE_PAPIER,
-                "label": "Livre papier",
+                "label": "Livre",
             },
             {
                 "format": FormatEnum.MATERIEL_ARTS_CREATIFS,
@@ -63,12 +63,12 @@ NFD = [
     },
     {
         "name": NatureEnum.CARTE_ABONNEMENT,
-        "label": "Cartes d'abonnement",
+        "label": "Carte ou abonnement",
         "formats": [],
     },
     {
         "name": NatureEnum.EVENEMENT,
-        "label": "Événements",
+        "label": "Événement",
         "formats": [],
     },
     {
