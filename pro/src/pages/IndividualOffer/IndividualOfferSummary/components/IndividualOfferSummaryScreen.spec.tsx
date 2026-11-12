@@ -732,8 +732,7 @@ describe('IndividualOfferSummaryScreen', () => {
         },
       }
 
-      // TODO (tpommellet) to remove once GetIndividualOfferResponseModel is migrated to Pydantic V2
-      // @ts-expect-error
+      // @ts-expect-error:waiting for backend to migrate to pydantic v2
       renderIndividualOfferSummaryScreen({ contextValues, path })
 
       expect(await screen.findByText(/Structure/)).toBeInTheDocument()
@@ -758,8 +757,7 @@ describe('IndividualOfferSummaryScreen', () => {
     it('should render component with new sections and empty address data', async () => {
       contextValuesWithDraftOffer.offer = getIndividualOfferFactory({
         isEvent: true,
-        // TODO (tpommellet) to remove once GetIndividualOfferResponseModel is migrated to Pydantic V2
-        // @ts-expect-error
+        // @ts-expect-error:waiting for backend to migrate to pydantic v2
         location: null,
       })
       const contextValues = {

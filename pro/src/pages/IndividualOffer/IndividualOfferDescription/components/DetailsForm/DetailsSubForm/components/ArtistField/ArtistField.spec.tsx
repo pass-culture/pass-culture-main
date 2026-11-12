@@ -291,8 +291,6 @@ describe('ArtistField', () => {
     renderArtistField({
       defaultArtistOfferLinks: [
         {
-          // TODO(rchaffal): remove the @ts-expect-error once ArtistOfferLinkResponseModel is migrated
-          // to pydantic v2 and artistId can be null in generated types
           // @ts-expect-error: waiting for backend to migrate to pydantic v2
           artistId: null,
           artistName: '',
