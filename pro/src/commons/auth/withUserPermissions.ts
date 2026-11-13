@@ -12,9 +12,15 @@ export const withUserPermissions = (
   return (args: LoaderFunctionArgs) => {
     const userPermissions = getCurrentUserPermissions(rootStore.getState().user)
     if (!requireUserPermissions(userPermissions)) {
+      const venueId = args.url.searchParams.get('id-structure')
       const redirectTo = generatePath(args.pattern, args.params)
-      const searchParams = redirectTo === '/' ? '' : `?redirectTo=${redirectTo}`
-      throw redirect(getUserDefaultPath(searchParams))
+      const nextSearchParams = new URLSearchParams({
+        ...(venueId && { 'id-structure': venueId }),
+        ...(redirectTo !== '/' && { redirectTo }),
+      })
+      const search =
+        nextSearchParams.size > 0 ? `?${nextSearchParams.toString()}` : ''
+      throw redirect(getUserDefaultPath(search))
     }
 
     return loader?.(args) ?? null

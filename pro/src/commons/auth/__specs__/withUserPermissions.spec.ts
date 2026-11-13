@@ -62,6 +62,7 @@ const createMockLoaderArgs = (
     request: new Request(url),
     pattern,
     params,
+    url: new URL(url),
   }) as LoaderFunctionArgs
 
 describe('withUserPermissions', () => {
@@ -109,7 +110,7 @@ describe('withUserPermissions', () => {
 
       expect(() => guardedLoader(args)).toThrow()
       expect(reactRouter.redirect).toHaveBeenCalledWith(
-        '/mocked-default-path?redirectTo=/some-page'
+        '/mocked-default-path?redirectTo=%2Fsome-page'
       )
     })
 
@@ -126,7 +127,40 @@ describe('withUserPermissions', () => {
 
       expect(() => guardedLoader(args)).toThrow()
       expect(reactRouter.redirect).toHaveBeenCalledWith(
-        '/mocked-default-path?redirectTo=/offres/123'
+        '/mocked-default-path?redirectTo=%2Foffres%2F123'
+      )
+    })
+
+    it('should preserve the selected structure ID in the redirect', () => {
+      setupStore({ hasUser: false })
+      const permissionCheck = (_: UserPermissions) => false
+      const args = createMockLoaderArgs(
+        'http://localhost/offres/123?id-structure=456',
+        '/offres/:offerId',
+        { offerId: '123' }
+      )
+
+      const guardedLoader = withUserPermissions(permissionCheck)
+
+      expect(() => guardedLoader(args)).toThrow()
+      expect(reactRouter.redirect).toHaveBeenCalledWith(
+        '/mocked-default-path?id-structure=456&redirectTo=%2Foffres%2F123'
+      )
+    })
+
+    it('should preserve the selected structure ID without a redirect path for the root route', () => {
+      setupStore({ hasUser: false })
+      const permissionCheck = (_: UserPermissions) => false
+      const args = createMockLoaderArgs(
+        'http://localhost/?id-structure=456',
+        '/'
+      )
+
+      const guardedLoader = withUserPermissions(permissionCheck)
+
+      expect(() => guardedLoader(args)).toThrow()
+      expect(reactRouter.redirect).toHaveBeenCalledWith(
+        '/mocked-default-path?id-structure=456'
       )
     })
   })
