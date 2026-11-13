@@ -7,7 +7,7 @@ export const getUserDefaultPath = (search: string = '') => {
 
   switch (true) {
     case !userPermissions.isAuthenticated:
-      return '/connexion'
+      return `/connexion${search}`
 
     case !userPermissions.hasVenues:
       return `/inscription/structure/recherche${search}`
