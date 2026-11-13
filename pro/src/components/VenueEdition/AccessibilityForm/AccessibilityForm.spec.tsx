@@ -93,22 +93,6 @@ function renderAccessibility(
 }
 
 describe('Accessibility', () => {
-  it('should not render a callout when venue is not permanent', () => {
-    renderAccessibility(
-      {
-        accessibility: {} as AccessibilityFormValues,
-      },
-      {
-        isVenuePermanent: false,
-        externalAccessibilityId: null,
-        externalAccessibilityData: null,
-      }
-    )
-
-    const callout = screen.queryByTestId('accessibility-callout')
-    expect(callout).not.toBeInTheDocument()
-  })
-
   describe('when accessibility is defined via acceslibre', () => {
     it('should render an appropriate title and callout', () => {
       renderAccessibility(
@@ -116,7 +100,6 @@ describe('Accessibility', () => {
           accessibility: {} as AccessibilityFormValues,
         },
         {
-          isVenuePermanent: true,
           externalAccessibilityId: MOCK_DATA.externalAccessibilityId,
           externalAccessibilityData: MOCK_DATA.externalAccessibilityData,
         }
@@ -132,7 +115,6 @@ describe('Accessibility', () => {
           accessibility: {} as AccessibilityFormValues,
         },
         {
-          isVenuePermanent: true,
           externalAccessibilityId: MOCK_DATA.externalAccessibilityId,
           externalAccessibilityData: MOCK_DATA.externalAccessibilityData,
         }
@@ -151,7 +133,6 @@ describe('Accessibility', () => {
           accessibility: {} as AccessibilityFormValues,
         },
         {
-          isVenuePermanent: true,
           externalAccessibilityId: null,
           externalAccessibilityData: null,
         }
@@ -167,7 +148,6 @@ describe('Accessibility', () => {
           accessibility: {} as AccessibilityFormValues,
         },
         {
-          isVenuePermanent: true,
           externalAccessibilityId: null,
           externalAccessibilityData: null,
         }
@@ -190,7 +170,6 @@ describe('Accessibility', () => {
       }
 
       renderAccessibility(initialValues, {
-        isVenuePermanent: true,
         externalAccessibilityId: null,
         externalAccessibilityData: null,
       })
@@ -220,7 +199,6 @@ describe('Accessibility', () => {
       }
 
       renderAccessibility(initialValues, {
-        isVenuePermanent: true,
         externalAccessibilityId: null,
         externalAccessibilityData: null,
       })

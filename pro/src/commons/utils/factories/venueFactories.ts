@@ -91,7 +91,6 @@ export const makeGetVenueResponseModel = <
     isCaledonian: false,
     isOnboarded: false,
     isOpenToPublic: false,
-    isPermanent: false,
     isPricingPoint: false,
     isValidated: false,
     location: location,

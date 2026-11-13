@@ -190,7 +190,6 @@ class Returns200Test:
             "externalAccessibilityId": "accessibility-slug",
             "hasActiveIndividualOffer": True,
             "hasAtLeastOneBookableOffer": True,
-            "isPermanent": venue.isPermanent,
             "managingOfferer": {
                 "id": venue.managingOfferer.id,
                 "isValidated": venue.managingOfferer.isValidated,

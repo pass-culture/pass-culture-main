@@ -38,22 +38,12 @@ describe('AccessibilitySubSection', () => {
     expect(screen.getByText('Non accessible')).toBeVisible()
   })
 
-  it('should display the acceslibre callout for a permanent venue', () => {
+  it('should display the acceslibre callout', () => {
     renderAccessibilitySubSection({
       externalAccessibilityData: null,
-      isPermanent: true,
     })
 
     expect(screen.getByText(/Renseignez/)).toBeVisible()
-  })
-
-  it('should not display the acceslibre callout for a non-permanent venue', () => {
-    renderAccessibilitySubSection({
-      externalAccessibilityData: null,
-      isPermanent: false,
-    })
-
-    expect(screen.queryByText(/Renseignez/)).not.toBeInTheDocument()
   })
 
   it('should display the external accessibility section when acceslibre data is present', () => {
