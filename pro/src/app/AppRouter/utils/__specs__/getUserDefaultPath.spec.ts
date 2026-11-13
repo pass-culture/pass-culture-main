@@ -51,6 +51,14 @@ describe('getUserDefaultPath', () => {
     expect(getUserDefaultPath()).toBe('/connexion')
   })
 
+  it('should return /connexion with the requested path when user is not authenticated', () => {
+    setupStore({ hasUser: false })
+
+    const search = '?redirectTo=%2Foffres%2F123'
+
+    expect(getUserDefaultPath(search)).toBe(`/connexion${search}`)
+  })
+
   it('should return /inscription/structure/recherche when user has no venues', () => {
     setupStore({ hasUser: true, hasVenue: false })
 
