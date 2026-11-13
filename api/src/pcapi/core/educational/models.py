@@ -1504,13 +1504,8 @@ class EducationalDeposit(PcObject, models.Model):
         EducationalYear, foreign_keys=[educationalYearId], back_populates="deposits"
     )
 
-    # amount is the total available credit for the institution and period
-    # lastPeriodRemainingAmount is the credit that was not used during the previous period and has been added to this deposit amount
-    # lastPeriodRemainingAmount is None when there was no credit transfer from the previous period
+    # amount is the total available credit for the current institution and period
     amount: sa_orm.Mapped[decimal.Decimal] = sa_orm.mapped_column(sa.Numeric(10, 2), nullable=False)
-    lastPeriodRemainingAmount: sa_orm.Mapped[decimal.Decimal | None] = sa_orm.mapped_column(
-        sa.Numeric(10, 2), nullable=True
-    )
 
     dateCreated: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
         sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now, server_default=sa.func.now()
