@@ -124,10 +124,8 @@ describe('SignIn', () => {
   })
 
   it('should display 2 inputs and one link to account creation and one button to login', () => {
-    // When
     renderSignIn()
 
-    // Then
     expect(screen.getByLabelText('Adresse email')).toBeInTheDocument()
     expect(screen.getByLabelText('Mot de passe')).toBeInTheDocument()
     expect(screen.getByText('Se connecter')).toBeInTheDocument()
@@ -139,14 +137,13 @@ describe('SignIn', () => {
 
   describe('when user clicks on the eye on password input', () => {
     it('should reveal password', async () => {
-      // When
+      const user = userEvent.setup()
       renderSignIn()
       const eyePasswordButton = screen.getByRole('button', {
         name: 'Afficher le mot de passe',
       })
 
-      // Then
-      await userEvent.click(eyePasswordButton)
+      await user.click(eyePasswordButton)
 
       expect(screen.getByLabelText('Mot de passe')).toHaveAttribute(
         'type',
@@ -155,17 +152,15 @@ describe('SignIn', () => {
     })
 
     it('should hide password when user re-click on eye', async () => {
-      // Given
+      const user = userEvent.setup()
       renderSignIn()
       const eyePasswordButton = screen.getByRole('button', {
         name: 'Afficher le mot de passe',
       })
 
-      // When
-      await userEvent.click(eyePasswordButton)
-      await userEvent.click(eyePasswordButton)
+      await user.click(eyePasswordButton)
+      await user.click(eyePasswordButton)
 
-      //then
       expect(screen.getByLabelText('Mot de passe')).toHaveAttribute(
         'type',
         'password'
@@ -184,11 +179,12 @@ describe('SignIn', () => {
     })
 
     it('should trigger a tracking event', async () => {
+      const user = userEvent.setup()
       vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
         logEvent: mockLogEvent,
       }))
       renderSignIn()
-      await userEvent.click(
+      await user.click(
         screen.getByRole('link', {
           name: 'S’inscrire',
         })
@@ -204,6 +200,7 @@ describe('SignIn', () => {
   })
 
   it('should call submit prop when user clicks on "Se connecter"', async () => {
+    const user = userEvent.setup()
     const initializeUserSpy = vi
       .spyOn(initializeUserModule, 'initializeUser')
       .mockReturnValueOnce({ unwrap: () => Promise.resolve() } as any)
@@ -211,10 +208,10 @@ describe('SignIn', () => {
     renderSignIn()
 
     const email = screen.getByLabelText('Adresse email')
-    await userEvent.type(email, 'MonPetitEmail@example.com')
+    await user.type(email, 'MonPetitEmail@example.com')
     const password = screen.getByLabelText('Mot de passe')
-    await userEvent.type(password, 'fakePassword')
-    await userEvent.click(
+    await user.type(password, 'fakePassword')
+    await user.click(
       screen.getByRole('button', {
         name: 'Se connecter',
       })
@@ -231,6 +228,7 @@ describe('SignIn', () => {
   })
 
   it('should navigate to user default path on successful login', async () => {
+    const user = userEvent.setup()
     const mockNavigate = vi.fn()
     vi.mocked(router.useNavigate).mockReturnValue(mockNavigate)
     const mockThunk: any = () => {
@@ -244,25 +242,55 @@ describe('SignIn', () => {
 
     renderSignIn()
 
-    await userEvent.type(
+    await user.type(
       screen.getByRole('textbox', { name: 'Adresse email' }),
       'email@example.com'
     )
-    await userEvent.type(screen.getByLabelText('Mot de passe'), 'fakePassword')
-    await userEvent.click(screen.getByRole('button', { name: 'Se connecter' }))
+    await user.type(screen.getByLabelText('Mot de passe'), 'fakePassword')
+    await user.click(screen.getByRole('button', { name: 'Se connecter' }))
 
     await waitFor(() => {
       expect(mockNavigate).toHaveBeenCalledWith('/accueil')
     })
   })
 
+  it('should navigate to redirectTo path on successful login', async () => {
+    const user = userEvent.setup()
+    const mockNavigate = vi.fn()
+    vi.mocked(router.useNavigate).mockReturnValue(mockNavigate)
+    const mockThunk: any = () => {
+      const promise = Promise.resolve() as any
+      promise.unwrap = () => Promise.resolve()
+      return promise
+    }
+    vi.spyOn(initializeUserModule, 'initializeUser').mockReturnValueOnce(
+      mockThunk
+    )
+
+    renderSignIn({
+      initialRouterEntries: ['/connexion?redirectTo=%2Foffres%2F123'],
+    })
+
+    await user.type(
+      screen.getByRole('textbox', { name: 'Adresse email' }),
+      'email@example.com'
+    )
+    await user.type(screen.getByLabelText('Mot de passe'), 'fakePassword')
+    await user.click(screen.getByRole('button', { name: 'Se connecter' }))
+
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledWith('/offres/123')
+    })
+  })
+
   it('should display errors message and focus email input when login failed', async () => {
+    const user = userEvent.setup()
     renderSignIn()
 
     const email = screen.getByLabelText('Adresse email')
-    await userEvent.type(email, 'MonPetitEmail@example.com')
+    await user.type(email, 'MonPetitEmail@example.com')
     const password = screen.getByLabelText('Mot de passe')
-    await userEvent.type(password, 'fakePassword')
+    await user.type(password, 'fakePassword')
 
     vi.spyOn(api, 'signin').mockRejectedValueOnce(
       makeApiError({
@@ -271,7 +299,7 @@ describe('SignIn', () => {
       })
     )
 
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: 'Se connecter',
       })
@@ -287,12 +315,13 @@ describe('SignIn', () => {
   })
 
   it('should handle API error with non-empty errors object', async () => {
+    const user = userEvent.setup()
     renderSignIn()
 
     const email = screen.getByLabelText('Adresse email')
-    await userEvent.type(email, 'test@example.com')
+    await user.type(email, 'test@example.com')
     const password = screen.getByLabelText('Mot de passe')
-    await userEvent.type(password, 'password123')
+    await user.type(password, 'password123')
 
     vi.spyOn(api, 'signin').mockRejectedValueOnce(
       makeApiError({
@@ -304,25 +333,25 @@ describe('SignIn', () => {
       })
     )
 
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: 'Se connecter',
       })
     )
 
-    // Vérifie que Object.values(errors).length > 0 est bien couvert
     expect(
       screen.getAllByText('Identifiant ou mot de passe incorrect.')
     ).toHaveLength(2)
   })
 
   it('should display an error message when login rate limit exceeded', async () => {
+    const user = userEvent.setup()
     renderSignIn()
 
     const email = screen.getByLabelText('Adresse email')
-    await userEvent.type(email, 'MonPetitEmail@example.com')
+    await user.type(email, 'MonPetitEmail@example.com')
     const password = screen.getByLabelText('Mot de passe')
-    await userEvent.type(password, 'fakePassword')
+    await user.type(password, 'fakePassword')
 
     vi.spyOn(api, 'signin').mockRejectedValueOnce(
       makeApiError({
@@ -335,7 +364,7 @@ describe('SignIn', () => {
       })
     )
 
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: 'Se connecter',
       })
@@ -351,16 +380,17 @@ describe('SignIn', () => {
   })
 
   it('should display an error message when reCAPTCHA fails', async () => {
+    const user = userEvent.setup()
     renderSignIn()
 
     vi.spyOn(utils, 'getReCaptchaToken').mockRejectedValueOnce(RECAPTCHA_ERROR)
 
     const email = screen.getByLabelText('Adresse email')
-    await userEvent.type(email, 'MonPetitEmail@example.com')
+    await user.type(email, 'MonPetitEmail@example.com')
     const password = screen.getByLabelText('Mot de passe')
-    await userEvent.type(password, 'fakePassword')
+    await user.type(password, 'fakePassword')
 
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: 'Se connecter',
       })
@@ -372,12 +402,13 @@ describe('SignIn', () => {
   })
 
   it('should clear errors when clicking after an API error', async () => {
+    const user = userEvent.setup()
     renderSignIn()
 
     const email = screen.getByLabelText('Adresse email')
-    await userEvent.type(email, 'MonPetitEmail@example.com')
+    await user.type(email, 'MonPetitEmail@example.com')
     const password = screen.getByLabelText('Mot de passe')
-    await userEvent.type(password, 'fakePassword')
+    await user.type(password, 'fakePassword')
 
     vi.spyOn(api, 'signin').mockRejectedValueOnce(
       makeApiError({
@@ -386,7 +417,7 @@ describe('SignIn', () => {
       })
     )
 
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: 'Se connecter',
       })
@@ -400,9 +431,8 @@ describe('SignIn', () => {
     })
 
     // Simuler un clic sur le document pour déclencher le reset
-    await userEvent.click(document.body)
+    await user.click(document.body)
 
-    // Attendre que les erreurs soient effacées
     await waitFor(() => {
       expect(
         screen.queryByText('Identifiant ou mot de passe incorrect.')
@@ -418,8 +448,9 @@ describe('SignIn', () => {
     })
 
     it('should trigger a tracking event', async () => {
+      const user = userEvent.setup()
       renderSignIn()
-      await userEvent.click(
+      await user.click(
         screen.getByRole('link', {
           name: 'S’inscrire',
         })
@@ -434,9 +465,10 @@ describe('SignIn', () => {
     })
 
     it('should trigger a tracking event when user clicks forgotten password"', async () => {
+      const user = userEvent.setup()
       renderSignIn()
 
-      await userEvent.click(
+      await user.click(
         screen.getByRole('link', {
           name: 'Réinitialisez votre mot de passe',
         })
