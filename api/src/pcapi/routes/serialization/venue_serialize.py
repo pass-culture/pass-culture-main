@@ -29,7 +29,11 @@ from pcapi.utils.siren import SIRET_LENGTH
 
 
 class CriteriaEnum(enum.Enum):
-    CLOSURE_DETECTED = criteria_constants.CLOSURE_DETECTED_LABEL
+    # Not great at all, but the frontend code is generated base on the
+    # backend one and the enum handling is... complicated. Hopefully,
+    # this should be fixed soon (only use labels, as strings).
+    FERMETURE_DEMAND_E_AU_PARTENAIRE_CULTUREL = criteria_constants.CLOSURE_DETECTED_LABEL
+    D_PLACEMENT_DE_SIRET_ATTENDU = criteria_constants.SIRET_SHIFT_PENDING_LABEL
 
 
 CRITERIA_MAPPINGS = {c.value: c.value for c in CriteriaEnum}

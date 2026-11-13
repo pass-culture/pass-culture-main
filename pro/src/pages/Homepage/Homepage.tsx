@@ -56,7 +56,7 @@ export const Homepage = (): JSX.Element => {
   const individualId = useId()
   const collectiveId = useId()
   const isVenueClosureDetected = selectedPartnerVenue.criteria.includes(
-    CriteriaEnum.CLOSURE_DETECTED
+    CriteriaEnum.FERMETURE_DEMAND_E_AU_PARTENAIRE_CULTUREL
   )
 
   if (!hasIndividualTab && !hasCollectiveTab) {

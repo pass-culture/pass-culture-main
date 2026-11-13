@@ -1169,7 +1169,8 @@ export enum CreationMode {
  * CriteriaEnum
  */
 export enum CriteriaEnum {
-    CLOSURE_DETECTED = 'closure_detected'
+    FERMETURE_DEMAND_E_AU_PARTENAIRE_CULTUREL = 'Fermeture demandée au partenaire culturel',
+    D_PLACEMENT_DE_SIRET_ATTENDU = 'Déplacement de SIRET attendu'
 }
 
 /**

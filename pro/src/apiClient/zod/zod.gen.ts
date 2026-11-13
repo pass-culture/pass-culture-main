@@ -569,7 +569,7 @@ export const zCreationMode = z.enum(['manual', 'imported']);
 /**
  * CriteriaEnum
  */
-export const zCriteriaEnum = z.enum(['closure_detected']);
+export const zCriteriaEnum = z.enum(['Fermeture demandée au partenaire culturel', 'Déplacement de SIRET attendu']);
 
 /**
  * CropParamsV2
