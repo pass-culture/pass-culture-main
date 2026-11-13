@@ -414,7 +414,7 @@ describe('useFormNavigationGuard', () => {
               await screen.findByText('A Field is required.')
             ).toBeVisible()
             await waitFor(() => {
-              expect(dialog).not.toBeVisible()
+              expect(dialog).not.toHaveAttribute('open')
             })
             expect(onSubmitMock).not.toHaveBeenCalled()
           })
