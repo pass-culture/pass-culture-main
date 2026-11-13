@@ -24,7 +24,7 @@ workflows:
         - 'actions/checkout@v7.0.1'
         - 'actions/setup-node@v7.0.0'
         - 'google-github-actions/auth@v3.0.0'
-        - 'pass-culture/common-workflows@a67aba1f7a63bcb20f5b722557a4bdcba2511ab5'
+        - 'pass-culture/common-workflows@setup-pcsi/v1.0'
         - 'pnpm/action-setup@v6.1.0'
     '.github/workflows/cd_sub_deploy_app.yml':
         - 'actions/checkout@v7.0.1'
@@ -39,16 +39,16 @@ workflows:
         - 'google-github-actions/auth@v3.0.0'
         - 'google-github-actions/get-secretmanager-secrets@v3.0.0'
         - 'nick-fields/retry@v4.0.0'
-        - 'pass-culture/common-workflows@a67aba1f7a63bcb20f5b722557a4bdcba2511ab5'
         - 'pass-culture/common-workflows@setup-passdirector/v1.0.0'
+        - 'pass-culture/common-workflows@setup-pcsi/v1.0'
         - 'pnpm/action-setup@v6.1.0'
     '.github/workflows/cd_sub_deploy_front_pro_preview.yml':
         - 'actions/checkout@v7.0.1'
         - 'actions/setup-node@v7.0.0'
         - 'google-github-actions/auth@v3.0.0'
         - 'nick-fields/retry@v4.0.0'
-        - 'pass-culture/common-workflows@a67aba1f7a63bcb20f5b722557a4bdcba2511ab5'
         - 'pass-culture/common-workflows@setup-passdirector/v1.0.0'
+        - 'pass-culture/common-workflows@setup-pcsi/v1.0'
         - 'pnpm/action-setup@v6.1.0'
     '.github/workflows/cd_sub_deploy_maintenance_site.yml':
         - 'actions/checkout@v7.0.1'
@@ -78,8 +78,8 @@ workflows:
     '.github/workflows/ci_delete_firebase_preview_on_pr_closed_passdirector.yml':
         - 'actions/checkout@v7.0.1'
         - 'google-github-actions/auth@v3.0.0'
-        - 'pass-culture/common-workflows@a67aba1f7a63bcb20f5b722557a4bdcba2511ab5'
         - 'pass-culture/common-workflows@setup-passdirector/v1.0.0'
+        - 'pass-culture/common-workflows@setup-pcsi/v1.0'
     '.github/workflows/ci_deploy_pr_preview.yml':
         - 'actions/cache@v6.1.0'
         - 'actions/checkout@v7.0.1'
@@ -92,8 +92,8 @@ workflows:
         - 'actions/setup-node@v7.0.0'
         - 'google-github-actions/auth@v3.0.0'
         - 'pass-culture/common-workflows@IC-1390-create-setup-firebase-tools-action'
-        - 'pass-culture/common-workflows@a67aba1f7a63bcb20f5b722557a4bdcba2511ab5'
         - 'pass-culture/common-workflows@setup-passdirector/v1.0.0'
+        - 'pass-culture/common-workflows@setup-pcsi/v1.0'
         - 'pnpm/action-setup@v6.1.0'
     '.github/workflows/ci_ping_data_on_pr_db_changes.yml':
         - 'actions/checkout@v7.0.1'
@@ -111,7 +111,7 @@ workflows:
         - 'actions/checkout@v7.0.1'
         - 'actions/setup-node@v7.0.0'
         - 'jamesives/github-pages-deploy-action@v4.9.0'
-        - 'pass-culture/common-workflows@a67aba1f7a63bcb20f5b722557a4bdcba2511ab5'
+        - 'pass-culture/common-workflows@setup-pcsi/v1.0'
         - 'pnpm/action-setup@v6.1.0'
     '.github/workflows/ci_sub_mypy_cop.yml':
         - 'actions/checkout@v7.0.1'
@@ -126,12 +126,12 @@ workflows:
         - 'actions/setup-node@v7.0.0'
         - 'ifaxity/wait-on-action@v1.2.1'
         - 'nick-fields/retry@v4.0.0'
-        - 'pass-culture/common-workflows@a67aba1f7a63bcb20f5b722557a4bdcba2511ab5'
+        - 'pass-culture/common-workflows@setup-pcsi/v1.0'
         - 'pnpm/action-setup@v6.1.0'
     '.github/workflows/ci_sub_test_api_documentation.yml':
         - 'actions/checkout@v7.0.1'
         - 'actions/setup-node@v7.0.0'
-        - 'pass-culture/common-workflows@a67aba1f7a63bcb20f5b722557a4bdcba2511ab5'
+        - 'pass-culture/common-workflows@setup-pcsi/v1.0'
         - 'pnpm/action-setup@v6.1.0'
     '.github/workflows/ci_sub_test_backend.yml':
         - 'actions/cache@v6.1.0'
@@ -154,7 +154,7 @@ workflows:
         - 'kengotoda/actions-setup-docker-compose@v1.2.8'
         - 'nick-fields/retry@v4.0.0'
         - 'pass-culture-github-actions/cache@v1.0.0'
-        - 'pass-culture/common-workflows@a67aba1f7a63bcb20f5b722557a4bdcba2511ab5'
+        - 'pass-culture/common-workflows@setup-pcsi/v1.0'
         - 'pnpm/action-setup@v6.1.0'
     '.github/workflows/ci_sub_test_front_pro.yml':
         - 'actions/checkout@v7.0.1'
@@ -165,7 +165,7 @@ workflows:
         - 'google-github-actions/get-secretmanager-secrets@v3.0.0'
         - 'nick-fields/retry@v4.0.0'
         - 'pass-culture-github-actions/cache@v1.0.0'
-        - 'pass-culture/common-workflows@a67aba1f7a63bcb20f5b722557a4bdcba2511ab5'
+        - 'pass-culture/common-workflows@setup-pcsi/v1.0'
         - 'pnpm/action-setup@v6.1.0'
         - 'sonarsource/sonarqube-scan-action@v8.2.2'
     '.github/workflows/dev_on_workflow_check_folder_changes.yml':
@@ -389,11 +389,6 @@ dependencies:
         commit: 'sha1-e6bcac798f0e97e8071b2e87a5c6a28c9bb538f4'
         owner_id: 52448870
         repo_id: 801391899
-    'pass-culture/common-workflows@a67aba1f7a63bcb20f5b722557a4bdcba2511ab5':
-        ref: 'main'
-        commit: 'sha1-a67aba1f7a63bcb20f5b722557a4bdcba2511ab5'
-        owner_id: 52448870
-        repo_id: 801391899
     'pass-culture/common-workflows@actionlint/v0.5':
         ref: 'actionlint/v0.5'
         commit: 'sha1-8b7bfe6ee0ac243126f037802ae271d2b2ce2aea'
@@ -420,6 +415,11 @@ dependencies:
         uses:
             - 'actions/create-github-app-token@f8d387b68d61c58ab83c6c016672934102569859'
             - 'astral-sh/setup-uv@cec208311dfd045dd5311c1add060b2062131d57'
+    'pass-culture/common-workflows@setup-pcsi/v1.0':
+        ref: 'setup-pcsi/v1.0'
+        commit: 'sha1-3d060891bfebd78f808b477d773c2dc18e287f02'
+        owner_id: 52448870
+        repo_id: 801391899
     'peter-evans/create-or-update-comment@v5.0.0':
         ref: 'v5.0.0'
         commit: 'sha1-e8674b075228eee787fea43ef493e45ece1004c9'
