@@ -169,6 +169,30 @@ flask sandbox -n industrial  # setup sans docker
 pc sandbox -n industrial     # setup avec docker
 ```
 
+On peut aussi la restaurer en quelques secondes depuis un dump de ses données (`src/pcapi/sandboxes/industrial.dump`) via l'option `--restore-dump` (+ en skippant l'indexation qui ne fait rien en local sans Algolia) :
+
+```bash
+flask sandbox -n industrial --index false --restore-dump true
+```
+
+`pg_dump` et `pg_restore` sont ceux du conteneur PostgreSQL local (env : `SANDBOX_POSTGRES_CONTAINER`, default : `pc-postgres`), appelés via `docker exec` : rien à installer.
+Cela suppose de lancer `flask` sur sa machine : `pc sandbox` exécute `flask` dans le conteneur de l'API, où `docker` n'est pas disponible.
+Si la restauration échoue (ex : conteneur injoignable car PostgreSQL est installé via Brew), la commande s'arrête en erreur : relancer sans `--restore-dump true` pour exécuter les scripts.
+
+Si l'on souhaite rafraîchir le dump (pour mettre à jour les dates ou après modification de ses données), on peut le régénérer via :
+
+```bash
+flask sandbox -n industrial --update-dump true
+```
+
+Après quoi on doit le commiter.
+
+L'indexation (offres, lieux, artistes…) peut être ignorée pour accélérer la commande, avec ou sans dump :
+
+```bash
+flask sandbox -n industrial --index false
+```
+
 ## Métriques prometheus
 
 Notre backend expose des métriques prometheus. Pour pouvoir travailler avec ces métriques en local il faut deux conditions :
