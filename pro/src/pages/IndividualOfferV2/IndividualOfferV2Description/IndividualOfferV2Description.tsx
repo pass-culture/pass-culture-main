@@ -41,6 +41,8 @@ import { Select } from '@/ui-kit/form/Select/Select'
 import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
+import styles from './IndividualOfferV2Description.module.scss'
+
 const IndividualOfferV2Description = (): JSX.Element => {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
   const { nature, format } = useAppSelector((state) => state.nfd)
@@ -135,17 +137,15 @@ const IndividualOfferV2Description = (): JSX.Element => {
                   />
                 </FormLayout.Row>
               </HasCapability>
-              <HasCapability name={FieldEnum.AUTHOR}>
-                <FormLayout.Row lgSpaceAfter>
+              <div className={styles['artistic-info-inputs']}>
+                <HasCapability name={FieldEnum.AUTHOR}>
                   <ArtistField
                     readOnly={false}
                     artistType={ArtistType.AUTHOR}
                     fieldArray={artistFieldArray}
                   />
-                </FormLayout.Row>
-              </HasCapability>
-              <HasCapability name={FieldEnum.GENRE_MUSIC}>
-                <FormLayout.Row lgSpaceAfter>
+                </HasCapability>
+                <HasCapability name={FieldEnum.GENRE_MUSIC}>
                   <Select
                     label="Genre musical"
                     name="Genre musical"
@@ -159,17 +159,15 @@ const IndividualOfferV2Description = (): JSX.Element => {
                     // {...register('gtl_id')}
                     // error={errors.gtl_id?.message}
                   />
-                </FormLayout.Row>
-              </HasCapability>
-              <HasCapability name={FieldEnum.PERFORMER}>
-                <FormLayout.Row lgSpaceAfter>
+                </HasCapability>
+                <HasCapability name={FieldEnum.PERFORMER}>
                   <ArtistField
                     readOnly={false}
                     artistType={ArtistType.PERFORMER}
                     fieldArray={artistFieldArray}
                   />
-                </FormLayout.Row>
-              </HasCapability>
+                </HasCapability>
+              </div>
               <HasCapability name={FieldEnum.EAN}>
                 <FormLayout.Row>
                   <TextInput
