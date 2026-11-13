@@ -7,6 +7,7 @@ import { api } from '@/apiClient/api'
 import { HTTP_STATUS, isErrorAPIError } from '@/apiClient/helpers'
 import { claimNavigationFocus } from '@/app/App/hook/useFocus'
 import { FullLayout } from '@/app/App/layouts/FullLayout/FullLayout'
+import { getInternalRedirectUrl } from '@/app/AppRouter/utils/getInternalRedirectUrl'
 import { getUserDefaultPath } from '@/app/AppRouter/utils/getUserDefaultPath'
 import {
   RECAPTCHA_ERROR,
@@ -78,7 +79,11 @@ export const SignIn = (): JSX.Element => {
 
       await dispatch(initializeUser({ user })).unwrap()
 
-      await navigate(getUserDefaultPath())
+      const nextUrl = getInternalRedirectUrl(
+        searchParams.get('redirectTo'),
+        getUserDefaultPath()
+      )
+      await navigate(nextUrl)
     } catch (error) {
       if (isErrorAPIError(error) || error === RECAPTCHA_ERROR) {
         if (isErrorAPIError(error)) {
