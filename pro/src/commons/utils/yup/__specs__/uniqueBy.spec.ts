@@ -120,6 +120,29 @@ describe('yup.array().uniqueBy', () => {
     }
   })
 
+  it('should report the original item index when falsy values precede duplicates', () => {
+    const schema = yup
+      .array()
+      .of(nullableOptionalMixedSchema)
+      .uniqueBy('code', 'Codes must be unique')
+
+    const testData = [{ code: '' }, { code: 'A' }, { code: 'A' }]
+
+    try {
+      schema.validateSync(testData, { abortEarly: false })
+      expect.unreachable()
+    } catch (error: unknown) {
+      const validationError = error as yup.ValidationError
+      const errorPaths = (
+        validationError.inner?.length
+          ? validationError.inner
+          : [validationError]
+      ).map((errorDetail) => errorDetail.path)
+
+      expect(errorPaths).toEqual(['[2].code'])
+    }
+  })
+
   describe('with computeKey third parameter', () => {
     it('should return true when base key duplicates exist but composite key is unique', () => {
       const schema = yup

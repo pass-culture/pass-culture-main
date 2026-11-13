@@ -61,7 +61,10 @@ yup.addMethod(
 
         const duplicateIndices: number[] = []
         const seenValues = new Set<string | number>()
-        nonFalsyKeyValues.forEach((keyValue, index) => {
+        keyValues.forEach((keyValue, index) => {
+          if (!keyValue) {
+            return
+          }
           if (seenValues.has(keyValue)) {
             duplicateIndices.push(index)
           } else {
