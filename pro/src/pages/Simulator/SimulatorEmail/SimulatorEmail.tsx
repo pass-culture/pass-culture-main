@@ -5,10 +5,9 @@ import { useNavigate } from 'react-router'
 
 import { api } from '@/apiClient/api'
 import { isErrorAPIError, serializeApiErrors } from '@/apiClient/helpers'
-import {
-  type ActivityNotOpenToPublic,
-  type ActivityOpenToPublic,
-  TargetAudience,
+import type {
+  ActivityNotOpenToPublic,
+  ActivityOpenToPublic,
 } from '@/apiClient/v1'
 import { claimNavigationFocus } from '@/app/App/hook/useFocus'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
@@ -71,18 +70,9 @@ export const SimulatorEmail = (): JSX.Element => {
         (activity as ActivityOpenToPublic | ActivityNotOpenToPublic) ||
         tryRestoreActivityFromStorage(setActivity)
       const finalSiret = siret ?? tryRestoreSiretFromStorage(setSiret)
-      const finalTargetAudience =
-        targetAudiences?.individual !== undefined
-          ? targetAudiences
-          : tryRestoreTargetAudienceFromStorage(setTargetAudiences)
-
-      const targets = []
-      if (finalTargetAudience?.individual) {
-        targets.push(TargetAudience.INDIVIDUAL)
-      }
-      if (finalTargetAudience?.collective) {
-        targets.push(TargetAudience.COLLECTIVE)
-      }
+      const targets = targetAudiences?.length
+        ? targetAudiences
+        : (tryRestoreTargetAudienceFromStorage(setTargetAudiences) ?? [])
 
       if (
         !finalActivity ||

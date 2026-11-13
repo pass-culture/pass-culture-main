@@ -49,7 +49,7 @@ const contextValue = {
   setActivity: vi.fn(),
   siret: '123 456 789 00012',
   setSiret: vi.fn(),
-  targetAudiences: { individual: true, collective: false },
+  targetAudiences: [TargetAudience.INDIVIDUAL],
   setTargetAudiences: vi.fn(),
 }
 

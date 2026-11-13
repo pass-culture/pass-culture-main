@@ -2,6 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
+import { TargetAudience } from '@/apiClient/v1'
 import {
   LOCAL_STORAGE_KEY,
   localStorageManager,
@@ -160,15 +161,13 @@ describe('<SimulatorTarget />', () => {
     const stored = localStorageManager.getItem(
       LOCAL_STORAGE_KEY.SIMULATOR_TARGET_CUSTOMER
     )
-    expect(JSON.parse(stored!)).toEqual(
-      expect.objectContaining({ individual: true })
-    )
+    expect(JSON.parse(stored!)).toEqual([TargetAudience.INDIVIDUAL])
   })
 
   it('should restore checkboxes state from localStorage', async () => {
     localStorageManager.setItem(
       LOCAL_STORAGE_KEY.SIMULATOR_TARGET_CUSTOMER,
-      JSON.stringify({ individual: true, collective: false })
+      JSON.stringify([TargetAudience.INDIVIDUAL])
     )
 
     renderSimulatorTarget()

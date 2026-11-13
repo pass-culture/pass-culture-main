@@ -33,24 +33,8 @@ import {
   SignupSimulationMessageLevel,
   type SignupSimulationMessageModel,
   type SignupSimulationResponseModel,
-  TargetAudience,
 } from 'apiClient/v1'
 import styles from './SimulatorResults.module.scss'
-
-function targetAudiencesToTargets(
-  targetAudiences:
-    | Partial<Record<'individual' | 'collective', boolean | undefined>>
-    | undefined
-): TargetAudience[] {
-  const targets = []
-  if (targetAudiences?.individual) {
-    targets.push(TargetAudience.INDIVIDUAL)
-  }
-  if (targetAudiences?.collective) {
-    targets.push(TargetAudience.COLLECTIVE)
-  }
-  return targets
-}
 
 export const SimulatorResults = (): JSX.Element => {
   const {
@@ -84,12 +68,9 @@ export const SimulatorResults = (): JSX.Element => {
           (activity as ActivityOpenToPublic | ActivityNotOpenToPublic) ||
           tryRestoreActivityFromStorage(setActivity)
         const finalSiret = siret ?? tryRestoreSiretFromStorage(setSiret)
-        const finalTargetAudience =
-          targetAudiences?.individual !== undefined
-            ? targetAudiences
-            : tryRestoreTargetAudienceFromStorage(setTargetAudiences)
-
-        const targets = targetAudiencesToTargets(finalTargetAudience)
+        const targets = targetAudiences?.length
+          ? targetAudiences
+          : (tryRestoreTargetAudienceFromStorage(setTargetAudiences) ?? [])
 
         if (
           !finalActivity ||
@@ -134,13 +115,9 @@ export const SimulatorResults = (): JSX.Element => {
         ...(siret && { siret }),
       })
     )
-    if (targetAudiences) {
-      targetAudiencesToTargets(targetAudiences).forEach(
-        (item: TargetAudience) => {
-          searchParams.append('targets', String(item))
-        }
-      )
-    }
+    targetAudiences?.forEach((item) => {
+      searchParams.append('targets', item)
+    })
 
     const queryString = searchParams.toString()
 

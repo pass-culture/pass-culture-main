@@ -13,10 +13,7 @@ const mockSetActivity = vi.fn()
 const contextValue = {
   siret: undefined,
   setSiret: noop,
-  targetAudiences: {
-    individual: undefined,
-    collective: undefined,
-  },
+  targetAudiences: [],
   setTargetAudiences: noop,
   openToPublic: 'true',
   setOpenToPublic: noop,

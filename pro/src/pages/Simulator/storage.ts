@@ -1,13 +1,12 @@
 import type {
   ActivityNotOpenToPublic,
   ActivityOpenToPublic,
+  TargetAudience,
 } from '@/apiClient/v1'
 import {
   LOCAL_STORAGE_KEY,
   localStorageManager,
 } from '@/commons/utils/localStorageManager'
-
-import type { TargetAudienceObject } from './SimulatorContext'
 
 export const saveSiretToStorage = (siret: string) => {
   localStorageManager.setItem(LOCAL_STORAGE_KEY.SIMULATOR_SIRET, siret)
@@ -71,7 +70,7 @@ export const tryRestoreOpenToPublicFromStorage = (
 }
 
 export const saveTargetAudienceToStorage = (
-  targetAudiences: TargetAudienceObject
+  targetAudiences: TargetAudience[]
 ) => {
   localStorageManager.setItem(
     LOCAL_STORAGE_KEY.SIMULATOR_TARGET_CUSTOMER,
@@ -80,19 +79,21 @@ export const saveTargetAudienceToStorage = (
 }
 
 export const tryRestoreTargetAudienceFromStorage = (
-  setTargetAudiences: (targetAudienceData: TargetAudienceObject) => void
-): TargetAudienceObject | undefined => {
+  setTargetAudiences: (targetAudienceData: TargetAudience[]) => void
+): TargetAudience[] | undefined => {
   const targetAudienceStoredData = localStorageManager.getItem(
     LOCAL_STORAGE_KEY.SIMULATOR_TARGET_CUSTOMER
   )
   if (targetAudienceStoredData === null) {
     return
   }
-  const targetAudiences = JSON.parse(
-    targetAudienceStoredData
-  ) as TargetAudienceObject
+  const targetAudiences: unknown = JSON.parse(targetAudienceStoredData)
+  // Ignore data stored with a previous format
+  if (!Array.isArray(targetAudiences)) {
+    return
+  }
   setTargetAudiences(targetAudiences)
-  return targetAudiences
+  return targetAudiences as TargetAudience[]
 }
 
 export const resetSimulatorStorage = () => {

@@ -4,19 +4,15 @@ import { createContext, useContext, useMemo, useState } from 'react'
 import type {
   ActivityNotOpenToPublic,
   ActivityOpenToPublic,
+  TargetAudience,
 } from '@/apiClient/v1'
 import { noop } from '@/commons/utils/noop'
-
-import type { SimulatorTargetAudienceFormValues } from './SimulatorTarget/validationSchema'
-
-export type TargetAudienceObject =
-  SimulatorTargetAudienceFormValues['targetAudiences']
 
 interface SimulatorContextValues {
   siret: string | undefined
   setSiret: (siret: string) => void
-  targetAudiences: TargetAudienceObject | null
-  setTargetAudiences: (targetAudiences: TargetAudienceObject) => void
+  targetAudiences: TargetAudience[] | null
+  setTargetAudiences: (targetAudiences: TargetAudience[]) => void
   openToPublic: string | null
   setOpenToPublic: (openToPublic: string) => void
   activity?: ActivityOpenToPublic | ActivityNotOpenToPublic
@@ -28,10 +24,7 @@ interface SimulatorContextValues {
 export const SimulatorContext = createContext<SimulatorContextValues>({
   siret: undefined,
   setSiret: () => noop,
-  targetAudiences: {
-    individual: undefined,
-    collective: undefined,
-  },
+  targetAudiences: [],
   setTargetAudiences: () => noop,
   openToPublic: null,
   setOpenToPublic: () => noop,
@@ -55,10 +48,7 @@ export function SimulatorContextProvider({
   const [activity, setActivity] = useState<
     ActivityOpenToPublic | ActivityNotOpenToPublic
   >()
-  const [targetAudiences, setTargetAudiences] = useState<TargetAudienceObject>({
-    individual: undefined,
-    collective: undefined,
-  })
+  const [targetAudiences, setTargetAudiences] = useState<TargetAudience[]>([])
 
   const contextValues: SimulatorContextValues = useMemo(
     () => ({

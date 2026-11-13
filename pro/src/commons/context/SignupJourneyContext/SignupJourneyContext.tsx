@@ -85,22 +85,12 @@ interface SignupJourneyContextProviderProps {
   children: React.ReactNode
 }
 
-// TODO(mdesquilbet, 07-08-2026): use the same enum in simulator and signup journey
 const targetAudiencesToTarget = (audiences: TargetAudience[]): Target => {
   const hasCollective = audiences.includes(TargetAudience.COLLECTIVE)
   const hasIndividual = audiences.includes(TargetAudience.INDIVIDUAL)
 
   if (hasCollective && hasIndividual) return Target.INDIVIDUAL_AND_EDUCATIONAL
   if (hasCollective) return Target.EDUCATIONAL
-  return Target.INDIVIDUAL
-}
-
-const simulatorAudiencesToTarget = (
-  audiences: Partial<Record<'individual' | 'collective', boolean | undefined>>
-): Target => {
-  if (audiences.collective && audiences.individual)
-    return Target.INDIVIDUAL_AND_EDUCATIONAL
-  if (audiences.collective) return Target.EDUCATIONAL
   return Target.INDIVIDUAL
 }
 
@@ -127,8 +117,8 @@ function computeInitialContext(searchParams: URLSearchParams): {
     const activity = {
       ...DEFAULT_ACTIVITY_VALUES,
       ...(simulatorActivity && { activity: simulatorActivity }),
-      ...(simulatorTargets && {
-        targetCustomer: simulatorAudiencesToTarget(simulatorTargets),
+      ...(simulatorTargets?.length && {
+        targetCustomer: targetAudiencesToTarget(simulatorTargets),
       }),
       ...(urlActivity && { activity: urlActivity }),
       ...(urlTargets.length && {
