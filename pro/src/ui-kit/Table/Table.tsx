@@ -213,9 +213,11 @@ export function Table<
   return (
     <>
       <div className={classNames(styles.wrapper, className)}>
-        <p className="visually-hidden" role="status" aria-live="polite">
-          {isLoading ? 'Chargement des données du tableau en cours...' : ''}
-        </p>
+        {isLoading && (
+          <p className="visually-hidden" role="status" aria-live="polite">
+            'Chargement des données du tableau en cours...'
+          </p>
+        )}
         <table
           className={classNames(styles['table'], {
             [styles['table-separate']]: variant === TableVariant.SEPARATE,

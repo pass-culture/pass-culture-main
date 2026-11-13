@@ -47,14 +47,10 @@ export const VideoPreview = ({
       </div>
       <figcaption id={previewId} className={styles['video-description']}>
         <p>
-          {videoDescription ? (
-            <>
-              <strong>Description textuelle de la vidéo :</strong>{' '}
-              {videoDescription}
-            </>
-          ) : (
-            'Aucune description textuelle renseignée pour la vidéo'
-          )}
+          <strong>Description textuelle de la vidéo :</strong>{' '}
+          {videoDescription
+            ? videoDescription
+            : 'Aucune description textuelle renseignée'}
         </p>
       </figcaption>
     </figure>
