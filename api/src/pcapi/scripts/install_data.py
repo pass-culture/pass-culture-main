@@ -3,13 +3,12 @@ import logging
 import click
 
 import pcapi.utils.cron as cron_decorators
-from pcapi.core.permissions import models as perm_models
 from pcapi.db_utils import install_database_extensions
+from pcapi.db_utils import sync_enums_with_db
 from pcapi.models import db
 from pcapi.models import feature as feature_models
 from pcapi.models.feature import check_feature_flags_completeness
 from pcapi.models.feature import clean_feature_flags
-from pcapi.models.feature import install_feature_flags
 from pcapi.utils import requests
 from pcapi.utils.blueprint import Blueprint
 
@@ -20,14 +19,7 @@ logger = logging.getLogger(__name__)
 
 @blueprint.cli.command("install_data")
 def install_data() -> None:
-    install_feature_flags()
-    logger.info("Feature flags installed")
-
-    perm_models.sync_db_permissions(db.session)
-    logger.info("Permissions synced")
-
-    perm_models.sync_db_roles(db.session)
-    logger.info("Roles synced")
+    sync_enums_with_db()
 
 
 @blueprint.cli.command("clean_data")

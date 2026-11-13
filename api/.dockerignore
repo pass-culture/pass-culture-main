@@ -10,6 +10,9 @@ __pycache__
 # Local env
 .venv
 
+# Sandbox dump
+src/pcapi/sandboxes/industrial.dump
+
 # Tests
 local_test_env_file
 pytest.ini

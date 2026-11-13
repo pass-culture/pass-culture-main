@@ -93,7 +93,8 @@ postgres_data
 
 # Sandbox assets
 /src/pcapi/sandboxes/thumbs/mediations/
-
+# Sandbox dump
+src/pcapi/sandboxes/industrial.dump
 
 # Secret
 private
