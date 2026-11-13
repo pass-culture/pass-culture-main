@@ -36,6 +36,13 @@ Le repo `main` contient les 4 projets suivants :
 - [semgrep](https://semgrep.dev/)
   - `brew install semgrep`
 
+- [gh](https://cli.github.com/)
+  - `brew install gh`
+
+- [gh-actions-lock](https://github.com/github/gh-actions-lock)
+  - `gh extension install github/gh-actions-lock`
+
+
 ### Installer l'ensemble des projets
 
 Il vous faudra une clé SSH sur votre profil GitHub pour pouvoir cloner le repository.
