@@ -62,6 +62,7 @@ if typing.TYPE_CHECKING:
     from pcapi.routes.native.v1.serialization import account as account_serialization_v1
     from pcapi.routes.native.v1.serialization.common_models import DeviceInfo
     from pcapi.routes.native.v2.serialization.common_models import DeviceInfoV2
+    from pcapi.routes.native.v3.serialization.authentication import DeviceInfoV3
 
 
 class T_UNCHANGED(enum.Enum):
@@ -1166,7 +1167,7 @@ def validate_pro_user_email(user: models.User, author_user: models.User | None =
     offerers_api.accept_offerer_invitation_if_exists(user)
 
 
-def save_trusted_device(device_info: "DeviceInfo | DeviceInfoV2", user: models.User) -> None:
+def save_trusted_device(device_info: "DeviceInfo | DeviceInfoV2 | DeviceInfoV3", user: models.User) -> None:
     if not device_info.device_id:
         logger.info(
             "Invalid deviceId was provided for trusted device",
@@ -1192,7 +1193,7 @@ def save_trusted_device(device_info: "DeviceInfo | DeviceInfoV2", user: models.U
 
 
 def update_login_device_history(
-    device_info: "DeviceInfo | DeviceInfoV2", user: models.User
+    device_info: "DeviceInfo | DeviceInfoV2 | DeviceInfoV3", user: models.User
 ) -> models.LoginDeviceHistory | None:
     if not device_info.device_id:
         logger.info(
@@ -1220,7 +1221,9 @@ def update_login_device_history(
     return login_device
 
 
-def should_save_login_device_as_trusted_device(device_info: "DeviceInfo | DeviceInfoV2", user: models.User) -> bool:
+def should_save_login_device_as_trusted_device(
+    device_info: "DeviceInfo | DeviceInfoV2 | DeviceInfoV3", user: models.User
+) -> bool:
     if not device_info.device_id:
         return False
 
@@ -1236,7 +1239,9 @@ def should_save_login_device_as_trusted_device(device_info: "DeviceInfo | Device
     ).scalar()
 
 
-def is_login_device_a_trusted_device(device_info: "DeviceInfo | DeviceInfoV2 | None", user: models.User) -> bool:
+def is_login_device_a_trusted_device(
+    device_info: "DeviceInfo | DeviceInfoV2 | DeviceInfoV3 | None", user: models.User
+) -> bool:
     if device_info is None or not device_info.device_id:
         return False
 
@@ -1305,7 +1310,9 @@ def create_suspicious_login_email_token(
     )
 
 
-def save_device_info_and_notify_user(user: models.User, device_info: "DeviceInfo | DeviceInfoV2 | None") -> None:
+def save_device_info_and_notify_user(
+    user: models.User, device_info: "DeviceInfo | DeviceInfoV2 | DeviceInfoV3 | None"
+) -> None:
     login_history = None
     if device_info is not None:
         if should_save_login_device_as_trusted_device(device_info, user):

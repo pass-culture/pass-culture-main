@@ -98,6 +98,10 @@ class TransactionalEmail(Enum):
     UBBLE_KO_REMINDER_ID_CHECK_NOT_SUPPORTED = models.Template(id_prod=825, id_not_prod=119)
     UBBLE_KO_REMINDER_ID_CHECK_UNPROCESSABLE = models.Template(id_prod=823, id_not_prod=115)
 
+    # MULTI-FACTOR AUTHENTICATION
+    MFA_OTP_CHALLENGE = models.Template(id_prod=1743, id_not_prod=220)
+    MFA_FAILED = models.Template(id_prod=1744, id_not_prod=221)
+
     # PRO EMAIL
     BOOKING_CANCELLATION_BY_BENEFICIARY_TO_PRO = models.TemplatePro(id_prod=39, id_not_prod=38)
     BOOKING_CANCELLATION_CONFIRMATION_BY_PRO = models.TemplatePro(id_prod=40, id_not_prod=39)
