@@ -79,9 +79,10 @@ export const SignIn = (): JSX.Element => {
 
       await dispatch(initializeUser({ user })).unwrap()
 
+      const venueId = searchParams.get('id-structure')
       const nextUrl = getInternalRedirectUrl(
-        searchParams.get('redirectTo'),
-        getUserDefaultPath()
+        searchParams.get('redirectTo') ?? getUserDefaultPath(),
+        venueId ? `id-structure=${venueId}` : ''
       )
       await navigate(nextUrl)
     } catch (error) {

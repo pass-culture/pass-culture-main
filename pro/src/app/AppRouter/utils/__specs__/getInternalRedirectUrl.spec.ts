@@ -1,12 +1,8 @@
 import { getInternalRedirectUrl } from '../getInternalRedirectUrl'
 
 describe('getInternalRedirectUrl', () => {
-  it('should default to the home page when no redirect is provided', () => {
-    expect(getInternalRedirectUrl(null)).toBe('/accueil')
-  })
-
-  it('should use the provided default when no redirect is provided', () => {
-    expect(getInternalRedirectUrl(null, '/offres')).toBe('/offres')
+  it('should return the provided internal path', () => {
+    expect(getInternalRedirectUrl('/accueil')).toBe('/accueil')
   })
 
   it('should preserve the requested internal path and query string', () => {
@@ -15,8 +11,31 @@ describe('getInternalRedirectUrl', () => {
     )
   })
 
-  it('should prefer the requested redirect over the provided default', () => {
-    expect(getInternalRedirectUrl('/offres', '/accueil')).toBe('/offres')
+  it('should add search params to the requested internal path', () => {
+    expect(
+      getInternalRedirectUrl('/offres?status=active', 'id-structure=123')
+    ).toBe('/offres?status=active&id-structure=123')
+  })
+
+  it('should override matching search params with the provided values', () => {
+    expect(
+      getInternalRedirectUrl(
+        '/offres?id-structure=456&status=active',
+        'id-structure=123'
+      )
+    ).toBe('/offres?id-structure=123&status=active')
+  })
+
+  it('should add search params when the requested path has none', () => {
+    expect(getInternalRedirectUrl('/offres', 'id-structure=123')).toBe(
+      '/offres?id-structure=123'
+    )
+  })
+
+  it('should preserve the requested hash when adding search params', () => {
+    expect(getInternalRedirectUrl('/offres#details', 'id-structure=123')).toBe(
+      '/offres?id-structure=123#details'
+    )
   })
 
   it.each([
@@ -50,7 +69,7 @@ describe('getInternalRedirectUrl', () => {
         new URL(redirectToFromQuery ?? '', 'http://trusted.example').origin
       ).not.toBe('http://trusted.example')
 
-      const nextUrl = getInternalRedirectUrl(redirectToFromQuery)
+      const nextUrl = getInternalRedirectUrl(redirectToFromQuery ?? '')
 
       expect(new URL(nextUrl, 'http://trusted.example').origin).toBe(
         'http://trusted.example'

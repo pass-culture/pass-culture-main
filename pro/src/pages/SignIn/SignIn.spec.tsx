@@ -268,7 +268,9 @@ describe('SignIn', () => {
     )
 
     renderSignIn({
-      initialRouterEntries: ['/connexion?redirectTo=%2Foffres%2F123'],
+      initialRouterEntries: [
+        '/connexion?redirectTo=%2Foffres%2F123&id-structure=456',
+      ],
     })
 
     await user.type(
@@ -279,7 +281,7 @@ describe('SignIn', () => {
     await user.click(screen.getByRole('button', { name: 'Se connecter' }))
 
     await waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith('/offres/123')
+      expect(mockNavigate).toHaveBeenCalledWith('/offres/123?id-structure=456')
     })
   })
 
