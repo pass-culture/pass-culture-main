@@ -16,11 +16,11 @@ jobs:
     name: Add labels
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
       - id: label-pr
-        uses: actions/labeler@bf12e9b00b37c5c0ca2b87b79b2daf7891dbda13 # v7.0.0
+        uses: actions/labeler@v7.0.0
         with: { sync-labels: true }
 
   compute-changes:
@@ -66,7 +66,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 #v7.0.1
+        uses: actions/checkout@v7.0.1
         with:
           fetch-depth: 0
           persist-credentials: false
@@ -75,4 +75,6 @@ jobs:
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
-          semgrep scan --config auto --baseline-commit "$BASE_SHA" --error --exclude-rule=python.django.security.django-no-csrf-token.django-no-csrf-token
+          semgrep scan --config auto --baseline-commit "$BASE_SHA" --error \
+          --exclude-rule=python.django.security.django-no-csrf-token.django-no-csrf-token \
+          --exclude-rule=yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag

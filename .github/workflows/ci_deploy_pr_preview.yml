@@ -47,7 +47,7 @@ jobs:
 
     steps:
       - name: Checkout source branch
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        uses: actions/checkout@v7.0.1
         id: checkout
         with:
           fetch-tags: false
@@ -131,20 +131,20 @@ jobs:
       - deploy-pro-on-firebase-preview-env
     if: always() && !failure() && !cancelled() && inputs.front-only == false
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/checkout@v7.0.1
         with:
           ref: ${{ github.ref }}
           fetch-tags: false
           persist-credentials: false
 
-      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+      - uses: actions/cache@v6.1.0
         id: cache
         with:
           path: ~/.cache/mise
           key: ${{ runner.os }}-mise
 
       - name: Authenticate through github app ghactionci
-        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        uses: actions/create-github-app-token@v3.2.0
         id: github-token
         with:
           app-id: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
@@ -159,18 +159,18 @@ jobs:
           git config --global url."https://oauth2:${GITHUB_TOKEN}@github.com/".insteadOf "https://github.com/"
         env:
           GITHUB_TOKEN: ${{ steps.github-token.outputs.token }}
-      - uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4.3.0
+      - uses: jdx/mise-action@v4.3.0
         env:
           GITHUB_TOKEN: ${{ steps.github-token.outputs.token }}
 
       - name: Authentification to Google
-        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+        uses: google-github-actions/auth@v3.0.0
         with:
           service_account: ${{ vars.PCAPI_CI_SERVICE_ACCOUNT }}
           workload_identity_provider: ${{ vars.WORKLOAD_IDENTITY_PRD }}
 
       - name: Authenticate to GKE cluster
-        uses: google-github-actions/get-gke-credentials@3da1e46a907576cefaa90c484278bb5b259dd395 # v3.0.0
+        uses: google-github-actions/get-gke-credentials@v3.0.0
         with:
           cluster_name: ${{ vars.K8S_CLUSTER_NAME }}
           project_id: ${{ vars.PROJECT_ID }}
@@ -231,14 +231,14 @@ jobs:
           - backend
           - backoffice
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/checkout@v7.0.1
         with:
           ref: ${{ github.ref }}
           fetch-tags: false
           persist-credentials: false
 
       - name: Authenticate through github app ghactionci
-        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        uses: actions/create-github-app-token@v3.2.0
         id: github-token
         with:
           app-id: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
@@ -253,7 +253,7 @@ jobs:
           git config --global url."https://oauth2:${GITHUB_TOKEN}@github.com/".insteadOf "https://github.com/"
         env:
           GITHUB_TOKEN: ${{ steps.github-token.outputs.token }}
-      - uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4.3.0
+      - uses: jdx/mise-action@v4.3.0
         env:
           GITHUB_TOKEN: ${{ steps.github-token.outputs.token }}
       - name: Ensure ${{ matrix.service }} is ready

@@ -360,6 +360,24 @@ fi
 ## END CHECK DEPENDENCIES ##
 ###########################
 
+############################
+#### WORKFLOW LOCKFILE #####
+############################
+
+cd $DIR
+
+echo "Verifying actions.lock..."
+if ! gh extension list | grep -q 'actions-lock'; then
+  echo "Error: gh actions-lock extension is not installed." >&2
+  exit 1
+fi
+gh actions-lock --verify-local
+
+#############################
+### END WORKFLOW LOCKFILE ###
+#############################
+
+
 ########################
 ## CHECK SECRET LEAKS ##
 ########################

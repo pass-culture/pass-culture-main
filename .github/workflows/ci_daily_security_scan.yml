@@ -19,20 +19,23 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 #v7.0.1
+        uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
 
       - name: Perform Semgrep Analysis
-        run: semgrep scan --config auto . --sarif-output=semgrep-results.sarif --exclude-rule=python.django.security.django-no-csrf-token.django-no-csrf-token
+        run: |
+          semgrep scan --config auto . --sarif-output=semgrep-results.sarif \
+          --exclude-rule=python.django.security.django-no-csrf-token.django-no-csrf-token \
+          --exclude-rule=yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag
 
       - name: Save SARIF results as artifact
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a #v7.0.1
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: semgrep-scan-results
           path: semgrep-results.sarif
 
       - name: Upload SARIF result to the GitHub Security Dashboard
-        uses: github/codeql-action/upload-sarif@61817fadad823920a8924645dd5f67985d6a1d94 #v4
+        uses: github/codeql-action/upload-sarif@v4.39.1
         with:
           sarif_file: semgrep-results.sarif
