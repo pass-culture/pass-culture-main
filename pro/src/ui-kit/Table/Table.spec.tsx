@@ -89,10 +89,21 @@ describe('<Table />', () => {
   })
 
   it('renders loading skeletons when isLoading is true', () => {
-    renderTable({ data: [], isLoading: true })
+    const { container } = renderTable({ data: [], isLoading: true })
     expect(
-      screen.getAllByRole('row', { name: 'Chargement en cours' }).length
-    ).toBeGreaterThan(6)
+      container.querySelectorAll('tbody[aria-hidden="true"] tr')
+    ).toHaveLength(8)
+  })
+
+  it('renders the loading announcement outside the table', () => {
+    renderTable({ data: [], isLoading: true })
+
+    const announcement = screen.getByText(
+      'Chargement des données du tableau en cours...'
+    )
+    expect(announcement).toHaveAttribute('role', 'status')
+    expect(announcement).toHaveAttribute('aria-live', 'polite')
+    expect(announcement.closest('table')).toBeNull()
   })
 
   it('sorts rows ASC then DESC when clicking on sortable column header twice', async () => {
@@ -113,6 +124,63 @@ describe('<Table />', () => {
     rows = screen.getAllByRole('row')
     expect(within(rows[2]).getByText('2')).toBeInTheDocument()
   })
+
+  it.each([false, true])(
+    'restores the original page data after clearing sorting (with allData: %s)',
+    async (withAllData) => {
+      const user = userEvent.setup()
+      const pageData = [...data, { id: 3, name: 'Gamma', value: 3 }]
+      renderTable({
+        data: pageData,
+        allData: withAllData
+          ? [...pageData, { id: 4, name: 'Delta', value: 4 }]
+          : undefined,
+      })
+
+      const getRowNames = () =>
+        screen
+          .getAllByTestId('table-row')
+          .map((row) => within(row).getAllByRole('cell')[0].textContent)
+      const header = screen.getByRole('columnheader', { name: /Value/ })
+      expect(getRowNames()).toEqual(['Alpha', 'Beta', 'Gamma'])
+      expect(header).not.toHaveAttribute('aria-sort')
+
+      await user.click(
+        screen.getByRole('button', {
+          name: /Value\s*Trier par ordre croissant/,
+        })
+      )
+      expect(getRowNames()).toEqual(
+        withAllData
+          ? ['Beta', 'Alpha', 'Gamma', 'Delta']
+          : ['Beta', 'Alpha', 'Gamma']
+      )
+      expect(header).toHaveAttribute('aria-sort', 'ascending')
+
+      await user.click(
+        screen.getByRole('button', {
+          name: /Value\s*Trier par ordre décroissant/,
+        })
+      )
+      expect(getRowNames()).toEqual(
+        withAllData
+          ? ['Delta', 'Gamma', 'Alpha', 'Beta']
+          : ['Gamma', 'Alpha', 'Beta']
+      )
+      expect(header).toHaveAttribute('aria-sort', 'descending')
+
+      await user.click(
+        screen.getByRole('button', { name: /Value\s*Ne plus trier/ })
+      )
+      expect(getRowNames()).toEqual(['Alpha', 'Beta', 'Gamma'])
+      expect(header).not.toHaveAttribute('aria-sort')
+      expect(
+        screen.getByRole('button', {
+          name: /Value\s*Trier par ordre croissant/,
+        })
+      ).toBeInTheDocument()
+    }
+  )
 
   it('handles row selection and select‑all', async () => {
     const handleSelection = vi.fn()

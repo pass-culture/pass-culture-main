@@ -44,7 +44,6 @@ export const MultiSelectTrigger = ({
         [styles['trigger-error']]: !!error,
       })}
       onClick={toggleDropdown}
-      aria-haspopup="dialog"
       aria-label={buttonLabel}
       aria-controls={id}
       aria-expanded={isOpen}

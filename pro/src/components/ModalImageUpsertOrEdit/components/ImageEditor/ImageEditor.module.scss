@@ -9,6 +9,47 @@
   width: fit-content;
   margin: 0 auto;
 
+  &-canvas {
+    position: relative;
+    line-height: 0;
+  }
+
+  &-move-up,
+  &-move-down,
+  &-move-left,
+  &-move-right {
+    position: absolute;
+    line-height: normal;
+  }
+
+  &-move-up,
+  &-move-down {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  &-move-left,
+  &-move-right {
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  &-move-up {
+    top: var(--size-spacing-xs);
+  }
+
+  &-move-down {
+    bottom: var(--size-spacing-xs);
+  }
+
+  &-move-left {
+    left: var(--size-spacing-xs);
+  }
+
+  &-move-right {
+    right: var(--size-spacing-xs);
+  }
+
   &-label {
     @include fonts.body;
 

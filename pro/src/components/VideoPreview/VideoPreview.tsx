@@ -36,18 +36,27 @@ export const VideoPreview = ({
           alt="Prévisualisation de la vidéo"
           className={styles['video-image']}
           src={videoThumbnailUrl}
-          placeholder={<ImagePlaceholder />}
+          placeholder={
+            <ImagePlaceholder isVideo alt="Prévisualisation de la vidéo" />
+          }
         />
         <span className={styles['video-duration']}>
           <Tag label={`${getDurationInMinutes(videoDuration ?? 0)} min`} />
         </span>
         <p className={styles['video-title']}>{videoTitle}</p>
       </div>
-      {videoDescription && (
-        <figcaption className={styles['video-description']} id={previewId}>
-          <p>Description textuelle de la vidéo : {videoDescription}</p>
-        </figcaption>
-      )}
+      <figcaption id={previewId} className={styles['video-description']}>
+        <p>
+          {videoDescription ? (
+            <>
+              <strong>Description textuelle de la vidéo :</strong>{' '}
+              {videoDescription}
+            </>
+          ) : (
+            'Aucune description textuelle renseignée pour la vidéo'
+          )}
+        </p>
+      </figcaption>
     </figure>
   )
 }

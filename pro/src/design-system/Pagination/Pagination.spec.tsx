@@ -16,6 +16,27 @@ describe('<Pagination />', () => {
     expect(await axe(container)).toHaveNoViolations()
   })
 
+  it.each([
+    { currentPage: 1, disabledButtonName: 'Page précédente' },
+    { currentPage: 5, disabledButtonName: 'Page suivante' },
+  ])(
+    'keeps an accessible name for the disabled mobile button "$disabledButtonName"',
+    async ({ currentPage, disabledButtonName }) => {
+      vi.spyOn(useMediaQuery, 'useMediaQuery').mockReturnValue(true)
+
+      const { container, getByRole } = render(
+        <Pagination
+          currentPage={currentPage}
+          pageCount={5}
+          onPageClick={() => {}}
+        />
+      )
+
+      expect(getByRole('button', { name: disabledButtonName })).toBeDisabled()
+      expect(await axe(container)).toHaveNoViolations()
+    }
+  )
+
   it('should give the page number when clicking on the page', () => {
     vi.spyOn(useMediaQuery, 'useMediaQuery').mockReturnValue(false)
 
