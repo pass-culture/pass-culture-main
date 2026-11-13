@@ -40,7 +40,7 @@ jobs:
           node-version-file: "pro/package.json"
           cache-dependency-path: "pro/pnpm-lock.yaml"
 
-      - uses: pass-culture/common-workflows/actions/setup-safe-chain@a67aba1f7a63bcb20f5b722557a4bdcba2511ab5
+      - uses: pass-culture/common-workflows/actions/setup-safe-chain@setup-pcsi/v1.0
 
       - name: "Cache the node_modules"
         uses: pass-culture-github-actions/cache@v1.0.0
@@ -94,7 +94,7 @@ jobs:
           node-version-file: "pro/package.json"
           cache-dependency-path: "pro/pnpm-lock.yaml"
 
-      - uses: pass-culture/common-workflows/actions/setup-safe-chain@a67aba1f7a63bcb20f5b722557a4bdcba2511ab5
+      - uses: pass-culture/common-workflows/actions/setup-safe-chain@setup-pcsi/v1.0
 
       - uses: KengoTODA/actions-setup-docker-compose@v1.2.8
         with:
@@ -237,7 +237,7 @@ jobs:
           cache: pnpm
           node-version-file: "pro/package.json"
           cache-dependency-path: "pro/pnpm-lock.yaml"
-      - uses: pass-culture/common-workflows/actions/setup-safe-chain@a67aba1f7a63bcb20f5b722557a4bdcba2511ab5
+      - uses: pass-culture/common-workflows/actions/setup-safe-chain@setup-pcsi/v1.0
 
       - name: "Install dependencies (3 attempts)"
         uses: nick-fields/retry@v4.0.0
