@@ -3555,10 +3555,6 @@ export type GetVenueResponseModel = {
      */
     isOpenToPublic: boolean;
     /**
-     * Ispermanent
-     */
-    isPermanent: boolean | null;
-    /**
      * Ispricingpoint
      */
     isPricingPoint: boolean;

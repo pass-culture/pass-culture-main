@@ -3405,7 +3405,6 @@ export const zGetVenueResponseModel = z.object({
     isCaledonian: z.boolean(),
     isOnboarded: z.boolean(),
     isOpenToPublic: z.boolean(),
-    isPermanent: z.boolean().nullable(),
     isPricingPoint: z.boolean(),
     isValidated: z.boolean(),
     lastCollectiveDmsApplication: zDmsApplicationForEac.nullable(),

@@ -13,9 +13,7 @@ export const AccessibilitySubSection = () => {
   if (!selectedPartnerVenue.externalAccessibilityData) {
     return (
       <InternalAccessibilitySummarySection
-        callout={
-          selectedPartnerVenue.isPermanent ? <AccessibilityCallout /> : null
-        }
+        callout={<AccessibilityCallout />}
         accessibleItem={selectedPartnerVenue}
         accessibleWording="Votre établissement est accessible aux publics en situation de handicap :"
         shouldShowDivider={false}

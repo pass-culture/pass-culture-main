@@ -363,7 +363,6 @@ export const defaultGetVenue: GetVenueResponseModel = {
   visualDisabilityCompliant: true,
   isCaledonian: false,
   isValidated: true,
-  isPermanent: true,
   siret: '',
   withdrawalDetails: null,
   allowedOnAdage: true,

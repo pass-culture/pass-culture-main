@@ -95,7 +95,6 @@ class GetVenueResponseModel(HttpBodyModel):
     externalAccessibilityData: acceslibre_serializers.ExternalAccessibilityDataModel | None
     externalAccessibilityId: str | None
     isOpenToPublic: bool
-    isPermanent: bool | None
     publicName: str
     withdrawalDetails: str | None
     activity: offerers_models.DisplayableActivity | None
@@ -193,7 +192,6 @@ class GetVenueResponseModel(HttpBodyModel):
             externalAccessibilityId=external_accessibility_id,
             isOnboarded=is_onboarded,
             isOpenToPublic=venue.isOpenToPublic,
-            isPermanent=venue.isPermanent,
             publicName=venue.publicName,
             withdrawalDetails=venue.withdrawalDetails,
             dateCreated=venue.dateCreated,

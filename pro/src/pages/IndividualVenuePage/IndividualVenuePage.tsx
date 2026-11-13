@@ -9,9 +9,8 @@ export const IndividualVenuePage = () => {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
   const shouldDisplayAccessToPageWarning =
-    selectedPartnerVenue.isPermanent &&
-    (!selectedPartnerVenue.hasOffers ||
-      !selectedPartnerVenue.hasAtLeastOneBookableOffer)
+    !selectedPartnerVenue.hasOffers ||
+    !selectedPartnerVenue.hasAtLeastOneBookableOffer
 
   return (
     <>
