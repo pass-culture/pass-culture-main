@@ -13,6 +13,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import synchronize_venues_banners_with_google_places as banner_url_synchronizations
 from pcapi.core.offerers import tasks as offerers_tasks
 from pcapi.core.offerers import update_offerer_stats as offerers_stats
+from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.utils import siren as siren_utils
@@ -217,3 +218,13 @@ def detect_unexpected_venue_status(days_count: int, apply: bool = False) -> None
 def notify_tagged_venues_still_closed(days_count: int, apply: bool = False) -> None:
     offerers_api.notify_tagged_venues_still_closed(days_count)
     logger.info("notify_tagged_venues_still_closed... done. days count: %d", days_count)
+
+
+@blueprint.cli.command("force_close_venue_after_closure_tag")
+@click.option("--days-count", type=int, default=90, help="Venues tagged since at least N days will be closed")
+@click.option("--author-id", type=int)
+@click.option("--apply", is_flag=True)
+def force_close_venue_after_closure_tag(days_count: int, author_id: int, apply: bool = False) -> None:
+    author = db.session.query(users_models.User).filter_by(id=author_id).one()
+    offerers_api.force_close_venue_after_closure_tag(days_count, author, apply)
+    logger.info("force_close_venue_after_closure_tag... done. days count: %d", days_count)

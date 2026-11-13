@@ -3714,16 +3714,21 @@ def close_venue(
         send_mail,
         extra={"venue_id": venue.id, "user_id": author.id},
     )
-    closure_request_tag = criteria_api.get_siret_shift_pending_tag()
-    if venue.is_closed:
-        if closure_request_tag in venue.criteria and not venue.is_pricing_point:
-            criteria_api.unlink_criterion_from_venue(criterion=closure_request_tag, venue=venue)
-            if send_mail:
-                transactional_mails.send_venue_closed_email(venue.id)
+    siret_shift_pending_tag = criteria_api.get_siret_shift_pending_tag()
+    if venue.is_closed and siret_shift_pending_tag in venue.criteria and not venue.is_pricing_point:
+        criteria_api.unlink_criterion_from_venue(criterion=siret_shift_pending_tag, venue=venue)
+        if send_mail:
+            transactional_mails.send_venue_closed_email(venue.id)
         return
 
     venue.state = models.VenueState.CLOSED
     history_api.add_action(history_constants.ActionType.VENUE_CLOSED, author=author, venue=venue, comment=comment)
+
+    # might have been set if the venue has been identified as one that
+    # should be closed but was not at the time
+    closure_request_tag = criteria_api.get_closure_request_tag()
+    criteria_api.unlink_criterion_from_venue(closure_request_tag, venue)
+
     _update_external_venue(venue, index_with_reason=IndexationReason.VENUE_CLOSED)
     cancel_individual_bookings_on_venue_closure(venue.id, author.id)
     cancel_collective_bookings_on_venue_closure(venue.id, author.id)
@@ -3736,7 +3741,7 @@ def close_venue(
     db.session.flush()
 
     if _is_a_pricing_point_to_an_opened_venue(venue):
-        criteria_api.link_criterion_to_venue(criterion=closure_request_tag, venue=venue)
+        criteria_api.link_criterion_to_venue(criterion=siret_shift_pending_tag, venue=venue)
         if send_mail:
             transactional_mails.send_venue_closure_request_email(venue.id)
     else:
@@ -3931,3 +3936,12 @@ def notify_tagged_venues_still_closed(days_count: int) -> None:
                 },
             ),
         )
+
+
+def force_close_venue_after_closure_tag(days_count: int, author: users_models.User, apply: bool) -> None:
+    events = history_repository.get_events_regarding_venue_closure_before(days_count)
+    venues = [event.venue for event in events]
+
+    with atomic(apply=apply):
+        for venue in venues:
+            close_venue(venue, author, comment=f"Fermé automatiquement après {days_count} jours")
