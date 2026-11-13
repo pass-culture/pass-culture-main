@@ -79,9 +79,9 @@ const columns: Column<ExtendedInvoiceResponseModel>[] = [
     ordererField: 'amount',
     render: (invoice) =>
       invoice.amount >= 0 ? (
-        <span className={styles['cell-document-type']}>Remboursement</span>
+        <p className={styles['cell-document-type']}>Remboursement</p>
       ) : (
-        <span className={styles['cell-document-type']}>Note de débit</span>
+        <p className={styles['cell-document-type']}>Note de débit</p>
       ),
   },
   {
@@ -97,7 +97,7 @@ const columns: Column<ExtendedInvoiceResponseModel>[] = [
     sortable: true,
     ordererField: 'amount',
     render: (invoice: ExtendedInvoiceResponseModel) => (
-      <div
+      <p
         className={cn({
           [styles['negative-amount']]: invoice.amount < 0,
           [styles['positive-amount']]: invoice.amount > 0,
@@ -108,7 +108,7 @@ const columns: Column<ExtendedInvoiceResponseModel>[] = [
               signDisplay: 'always',
             })
           : formatPrice(invoice.amount, { signDisplay: 'always' })}
-      </div>
+      </p>
     ),
   },
   {

@@ -356,13 +356,13 @@ export const CollectiveOfferStockForm = ({
             title={
               <>
                 Prix total de votre offre :{' '}
-                <span
+                <p
                   className={cn(styles['collective-offer-stock-price'], {
                     [styles['error']]: isPriceTooHigh,
                   })}
                 >
                   {formatPrice(price)} TTC
-                </span>
+                </p>
               </>
             }
             description="Le prix total de votre offre est calculé en fonction du tarif de la prestation et des potentiels frais annexes indiqués."

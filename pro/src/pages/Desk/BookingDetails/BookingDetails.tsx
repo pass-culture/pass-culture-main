@@ -18,8 +18,8 @@ interface BookingProps {
 
 const BookingDetailsLine = ({ label, value }: BookingProps) => (
   <div className={styles['desk-line']}>
-    <div className={styles['desk-label']}>{label}</div>
-    <div>{value}</div>
+    <p className={styles['desk-label']}>{label}</p>
+    <p className={styles['desk-value']}>{value}</p>
   </div>
 )
 
@@ -84,8 +84,8 @@ export const BookingDetails = ({ booking }: BookingDetailsProps) => {
 
       {booking.quantity === 2 ? (
         <div className={styles['desk-line']}>
-          <div className={styles['desk-label']}>Prix :</div>
-          <div>{formattedPrice}</div>
+          <p className={styles['desk-label']}>Prix :</p>
+          <p className={styles['desk-value']}>{formattedPrice}</p>
           <SvgIcon src={strokeDuoIcon} alt="Réservation DUO" width="30" />
         </div>
       ) : (

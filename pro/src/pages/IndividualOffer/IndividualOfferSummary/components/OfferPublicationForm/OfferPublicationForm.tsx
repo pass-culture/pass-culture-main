@@ -8,7 +8,7 @@ import styles from './OfferPublicationForm.module.scss'
 export const OfferPublicationForm = ({ maxDate }: { maxDate: string }) => {
   const sectionTitle = (
     <div className={styles['title-container']}>
-      <span className={styles['title']}>Publication et réservation</span>
+      <p className={styles['title']}>Publication et réservation</p>
     </div>
   )
 

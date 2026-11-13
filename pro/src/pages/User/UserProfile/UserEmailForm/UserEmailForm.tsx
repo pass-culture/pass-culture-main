@@ -75,10 +75,12 @@ export const UserEmailForm = ({
 
   return (
     <>
-      <span className={styles['header-secondary']}>
-        Adresse email actuelle :
-      </span>{' '}
-      {currentUser.email}
+      <p className={styles['current-email']}>
+        <span className={styles['header-secondary']}>
+          Adresse email actuelle :
+        </span>{' '}
+        {currentUser.email}
+      </p>
       <form onSubmit={handleSubmit(onSubmit)}>
         <FormLayout mediumWidthForm>
           <FormLayout.Row mdSpaceAfter>

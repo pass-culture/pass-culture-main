@@ -19,3 +19,7 @@
     margin-right: var(--size-spacing-l);
   }
 }
+
+.offers-count {
+  @include fonts.body;
+}

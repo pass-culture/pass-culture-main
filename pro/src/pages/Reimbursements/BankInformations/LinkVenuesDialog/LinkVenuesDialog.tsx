@@ -204,14 +204,14 @@ export const LinkVenuesDialog = ({
                         : 'Tout sélectionner'
                     }
                   />
-                  <span className={styles['dialog-select-all-count']}>
+                  <p className={styles['dialog-select-all-count']}>
                     {selectedVenuesIds.length}{' '}
                     {pluralizeFr(
                       selectedVenuesIds.length,
                       'structure sélectionnée',
                       'structures sélectionnées'
                     )}
-                  </span>
+                  </p>
                 </div>
 
                 {managedVenues.map((venue) => {

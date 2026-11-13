@@ -154,11 +154,14 @@ export const DownloadBookingsModal = ({
     >
       {numberOfDates === 1 && <Divider className={style['form-divider']} />}
       <fieldset className={style['date-select-section']}>
+        <legend className={style['visually-hidden']}>
+          Sélectionner les réservations à télécharger
+        </legend>
         {numberOfDates > 1 && (
           <>
-            <div className={style['bookings-date-count']}>
+            <p className={style['bookings-date-count']}>
               {numberOfDates} {pluralizeFr(numberOfDates, 'date', 'dates')}
-            </div>
+            </p>
             <hr className={style['horizontal-line']} />
             <table className={style['date-select-table']}>
               <caption className={style['visually-hidden']}>

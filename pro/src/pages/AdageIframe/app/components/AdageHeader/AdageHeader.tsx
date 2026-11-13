@@ -67,7 +67,9 @@ export const AdageHeader = () => {
       </nav>
       {adageUser.role !== AdageFrontRoles.READONLY && !isDiscoveryPage && (
         <div className={styles['adage-header-help']}>
-          Besoin d’aide pour réserver des offres pass Culture ?
+          <p className={styles['adage-header-help-description']}>
+            Besoin d’aide pour réserver des offres pass Culture ?
+          </p>
           <Button
             as="a"
             variant={ButtonVariant.TERTIARY}

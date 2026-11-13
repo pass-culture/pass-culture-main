@@ -44,6 +44,8 @@
     }
 
     &-site {
+      @include fonts.body;
+
       display: block;
       margin-top: var(--size-spacing-2xl);
       margin-bottom: var(--size-spacing-l);
@@ -76,4 +78,8 @@
   margin: var(--size-spacing-l) 0 0 0;
   background-image: none;
   background-color: var(--separator-color-subtle);
+}
+
+.contact-description {
+  @include fonts.body;
 }

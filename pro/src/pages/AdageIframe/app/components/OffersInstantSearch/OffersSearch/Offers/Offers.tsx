@@ -196,10 +196,10 @@ export const Offers = ({
       )}
       <div className={styles['offers-view']}>
         {displayStats && (
-          <div className={styles['offers-stats']}>
+          <p className={styles['offers-stats']}>
             {new Intl.NumberFormat('fr-FR').format(nbHits)}{' '}
             {pluralizeFr(nbHits, 'offre', 'offres')} au total
-          </div>
+          </p>
         )}
       </div>
       <AccessibleScrollContainer

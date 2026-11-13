@@ -90,10 +90,10 @@ export const Header = ({ context }: Readonly<HeaderProps>) => {
       />
       <div className={styles['venue-details']}>
         <div className={styles['venue-details-main']}>
-          <div className={styles['venue-type']}>
+          <p className={styles['venue-type']}>
             {selectedPartnerVenue.activity &&
               DisplayableActivityMap.get(selectedPartnerVenue.activity)}
-          </div>
+          </p>
           <h2 className={styles['venue-name']}>
             {selectedPartnerVenue.publicName}
           </h2>

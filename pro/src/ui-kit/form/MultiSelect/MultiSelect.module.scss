@@ -160,3 +160,7 @@
 .visually-hidden {
   @include a11y.visually-hidden;
 }
+
+.search-results-count {
+  @include fonts.body;
+}

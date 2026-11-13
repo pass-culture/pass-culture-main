@@ -73,8 +73,8 @@ export const StocksProviderForm = ({
       >
         {!hasOffererProvider && (
           <div className={styles['account-section']}>
-            <div>Compte</div>
-            <div>{siret}</div>
+            <p className={styles['provider-account-detail']}>Compte</p>
+            <p className={styles['provider-account-detail']}>{siret}</p>
           </div>
         )}
         <Button

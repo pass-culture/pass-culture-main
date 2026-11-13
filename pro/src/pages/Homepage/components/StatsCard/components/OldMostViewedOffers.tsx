@@ -34,13 +34,11 @@ export const OldMostViewedOffers = ({ topOffers }: MostViewedOffersProps) => {
                   <Tag label="Offre à la une" variant={TagVariant.HEADLINE} />
                 </div>
               )}
-              <span className={styles['top-offer-title']}>
-                {topOffer.offerName}
-              </span>{' '}
-              <span className={styles['top-offer-views']}>
+              <p className={styles['top-offer-title']}>{topOffer.offerName}</p>{' '}
+              <p className={styles['top-offer-views']}>
                 {topOffer.numberOfViews.toLocaleString('fr-FR')}{' '}
                 {pluralizeFr(topOffer.numberOfViews, 'vue', 'vues')}
-              </span>
+              </p>
             </div>
           </li>
         ))}

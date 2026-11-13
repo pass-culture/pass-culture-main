@@ -155,7 +155,7 @@ export const RequestFormDialog = ({
     value: string | null | undefined,
     type?: string
   ) => (
-    <div>
+    <p className={styles['contact-description']}>
       <span className={styles['form-description']}>
         Il vous propose de le faire {description} :
       </span>
@@ -171,7 +171,7 @@ export const RequestFormDialog = ({
       ) : (
         <span className={styles['form-description-contact']}>{value}</span>
       )}
-    </div>
+    </p>
   )
 
   const renderMultiContactElement = (
@@ -183,7 +183,9 @@ export const RequestFormDialog = ({
     isCustomForm: boolean
   ) => (
     <div className={styles['form-description']}>
-      <span>Il vous propose de le faire :</span>
+      <p className={styles['contact-description']}>
+        Il vous propose de le faire :
+      </p>
       <ul className={styles['form-description-list']}>
         {contactEmail && (
           <li className={styles['form-description-list-item']}>
@@ -258,9 +260,9 @@ export const RequestFormDialog = ({
 
   const renderCustomFormElement = () => (
     <div>
-      <div className={styles['form-description-link-site']}>
+      <p className={styles['form-description-link-site']}>
         Il vous propose de le faire <i>via</i> son formulaire :
-      </div>
+      </p>
       <div className={styles['form-description-link-text']}>
         {' '}
         <Button
@@ -280,9 +282,9 @@ export const RequestFormDialog = ({
     <div>
       {userRole === AdageFrontRoles.REDACTOR || isPreview ? (
         <>
-          <span className={styles['form-description']}>
+          <p className={styles['form-description']}>
             Vous pouvez le contacter en renseignant les informations ci-dessous.
-          </span>
+          </p>
           <MandatoryInfo className={styles['form-mandatory']} />
           {isPreview && (
             <div className={styles['contact-callout']}>

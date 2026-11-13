@@ -1,7 +1,13 @@
+@use "styles/mixins/_fonts.scss" as fonts;
+
 .stocks-provider-form {
   margin-top: var(--size-spacing-l);
 }
 
 .account-section {
   margin-bottom: var(--size-spacing-l);
+}
+
+.provider-account-detail {
+  @include fonts.body;
 }

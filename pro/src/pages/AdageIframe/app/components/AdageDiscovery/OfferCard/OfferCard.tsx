@@ -91,18 +91,16 @@ export const OfferCardComponent = ({
           })}
         </div>
 
-        <div className={styles['offer-name']} data-testid="card-offer">
+        <p className={styles['offer-name']} data-testid="card-offer">
           {offer.name}
-        </div>
+        </p>
 
         <div className="offer-venue">
-          <div className={styles['offer-venue-name']}>
-            {offer.venue.publicName}
-          </div>
+          <p className={styles['offer-venue-name']}>{offer.venue.publicName}</p>
           {offerHasCoords &&
             (adageUser.lat || adageUser.lat === 0) &&
             (adageUser.lon || adageUser.lon === 0) && (
-              <div
+              <p
                 className={styles['offer-venue-distance']}
               >{`à ${getHumanizeRelativeDistance(
                 {
@@ -113,7 +111,7 @@ export const OfferCardComponent = ({
                   latitude: adageUser.lat,
                   longitude: adageUser.lon,
                 }
-              )} - ${offer.venue.city}`}</div>
+              )} - ${offer.venue.city}`}</p>
             )}
         </div>
       </Link>

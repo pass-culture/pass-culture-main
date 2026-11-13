@@ -18,16 +18,26 @@ export const IncomeNoData = ({ type }: IncomeNoDataProps) => {
     switch (type) {
       case 'venues':
       case 'income':
-        return "Aucun remboursement n'a été effectué"
+        return (
+          <p className={styles['income-no-data-message']}>
+            Aucun remboursement n'a été effectué
+          </p>
+        )
 
       case 'no-venues-selected':
-        return 'Vous devez sélectionner au moins un partenaire'
+        return (
+          <p className={styles['income-no-data-message']}>
+            Vous devez sélectionner au moins un partenaire
+          </p>
+        )
 
       case 'income-year':
         return (
           <>
-            Vous n’avez aucune réservation sur cette période
-            <div className={styles['income-no-data-text-with-link']}>
+            <p className={styles['income-no-data-message']}>
+              Vous n’avez aucune réservation sur cette période
+            </p>
+            <p className={styles['income-no-data-text-with-link']}>
               Découvrez nos{' '}
               <span
                 className={styles['income-no-data-text-with-link-buttonlink']}
@@ -45,7 +55,7 @@ export const IncomeNoData = ({ type }: IncomeNoDataProps) => {
                 />
               </span>{' '}
               pour optimiser la visibilité de vos offres.
-            </div>
+            </p>
           </>
         )
 

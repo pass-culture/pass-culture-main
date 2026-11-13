@@ -49,7 +49,7 @@ const IncomeResultsSubBox = ({ title, number, help }: IncomeSubBoxProps) => {
           </div>
         )}
       </div>
-      <div className={styles['income-results-block-number']}>{numberStr}</div>
+      <p className={styles['income-results-block-number']}>{numberStr}</p>
     </div>
   )
 }

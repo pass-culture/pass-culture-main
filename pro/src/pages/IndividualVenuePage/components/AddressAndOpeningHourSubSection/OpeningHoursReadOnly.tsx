@@ -5,6 +5,7 @@ import type {
 import { mapDayToFrench, OPENING_HOURS_DAYS } from '@/commons/utils/date'
 import { SummaryDescriptionList } from '@/ui-kit/SummaryLayout/SummaryDescriptionList'
 
+import styles from './AddressAndOpeningHourSubSection.module.scss'
 import { OpeningHoursRow } from './OpeningHoursRow'
 import { areOpeningHoursEmpty } from './utils/areOpeningHoursEmpty'
 
@@ -24,11 +25,11 @@ export const OpeningHoursReadOnly = ({
 
   if (areOpeningHoursEmpty(openingHours)) {
     return (
-      <span>
+      <p className={styles['opening-hours-unavailable']}>
         Horaires : Vos horaires d’ouverture ne sont pas affichées sur
         l'application car votre établissement est indiqué comme fermé tous les
         jours.
-      </span>
+      </p>
     )
   }
 

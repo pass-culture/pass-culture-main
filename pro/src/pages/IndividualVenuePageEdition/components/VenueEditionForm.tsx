@@ -197,13 +197,13 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
                   className={styles['opening-hours-subsubsection']}
                 >
                   <FormLayout.Row>
-                    <div
+                    <p
                       className={
                         styles['opening-hours-subsubsection-address-input']
                       }
                     >
                       {`Adresse : ${getFormattedAddress(venue.location)}`}
-                    </div>
+                    </p>
                     <div data-testid="address-callout">
                       <Banner
                         title="L'adresse de votre structure se modifie dans la page Paramètres."

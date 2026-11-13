@@ -51,6 +51,8 @@
 }
 
 .venue-provider-account-info {
+  @include fonts.body-accent-xs;
+
   margin-bottom: var(--size-spacing-s);
 }
 
@@ -83,6 +85,9 @@
 }
 
 .last-synchronisation {
+  @include fonts.body-accent-xs;
+
+
   &::before {
     background-color: var(--color-icon-success);
     border-radius: var(--size-border-radius-pill);
@@ -92,4 +97,8 @@
     margin-right: var(--size-spacing-s);
     width: rem.torem(8px);
   }
+}
+
+.import-status {
+  @include fonts.body-accent-xs;
 }

@@ -27,6 +27,8 @@
     margin-top: var(--size-spacing-l);
 
     &-text {
+      @include fonts.body;
+
       margin-bottom: var(--size-spacing-l);
     }
   }
@@ -34,4 +36,8 @@
   .banner {
     margin-bottom: var(--size-spacing-2xl);
   }
+}
+
+.timeline-step-date {
+  @include fonts.body;
 }

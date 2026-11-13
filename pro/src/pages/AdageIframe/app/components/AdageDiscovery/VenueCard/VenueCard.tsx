@@ -41,15 +41,15 @@ export const VenueCard = ({
         </div>
       )}
       <div className={styles['venue-infos']}>
-        <div
+        <p
           data-testid="venue-infos-name"
           className={styles['venue-infos-name']}
         >
           {venue.publicName}
-        </div>
-        <div
+        </p>
+        <p
           className={styles['venue-infos-distance']}
-        >{`à ${venue.distance} km - ${venue.city}`}</div>
+        >{`à ${venue.distance} km - ${venue.city}`}</p>
       </div>
     </Link>
   )

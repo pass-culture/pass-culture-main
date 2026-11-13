@@ -207,9 +207,9 @@ export const UserReviewDialog = ({
                   alt=""
                   className={styles['confirmation-dialog-icon']}
                 />
-                <div className={styles['confirmation-dialog-title']}>
+                <p className={styles['confirmation-dialog-title']}>
                   Merci beaucoup de votre participation !
-                </div>
+                </p>
               </div>
             )}
           </div>

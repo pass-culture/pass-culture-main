@@ -58,3 +58,7 @@
     gap: var(--size-spacing-l);
   }
 }
+
+.checkbox-group-error-message {
+  @include fonts.body;
+}

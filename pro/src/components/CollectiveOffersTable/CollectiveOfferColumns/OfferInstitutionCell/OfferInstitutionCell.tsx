@@ -17,10 +17,10 @@ export const OfferInstitutionCell = ({
 
   return (
     <div className={styles['institution-column']}>
-      <div className={styles['institution-label-ellipsis']}>
-        {institutionLabel}
-      </div>
-      {postalCode && <div> {postalCode}</div>}
+      <p className={styles['institution-label-ellipsis']}>{institutionLabel}</p>
+      {postalCode && (
+        <p className={styles['institution-postal-code']}> {postalCode}</p>
+      )}
     </div>
   )
 }

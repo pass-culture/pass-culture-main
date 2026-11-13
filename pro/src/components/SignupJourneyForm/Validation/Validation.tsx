@@ -206,7 +206,9 @@ export const Validation = (): JSX.Element | undefined => {
       ? {
           label: domainsLabel,
           value: (activity.culturalDomains ?? []).map((domain) => (
-            <div key={domain}>{domain}</div>
+            <p className={styles['activity-detail']} key={domain}>
+              {domain}
+            </p>
           )),
         }
       : null,
@@ -217,7 +219,11 @@ export const Validation = (): JSX.Element | undefined => {
     activity.socialUrls.length > 0
       ? {
           label: socialUrlsLabel,
-          value: activity.socialUrls.map((url) => <div key={url}>{url}</div>),
+          value: activity.socialUrls.map((url) => (
+            <p className={styles['activity-detail']} key={url}>
+              {url}
+            </p>
+          )),
         }
       : null,
     { label: 'Public cible', value: targetCustomerLabel },

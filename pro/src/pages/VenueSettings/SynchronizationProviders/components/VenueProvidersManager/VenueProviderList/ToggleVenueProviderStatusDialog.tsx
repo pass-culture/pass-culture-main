@@ -55,20 +55,24 @@ export const ToggleVenueProviderStatusDialog = ({
       >
         {isActive ? (
           <div className={style['explanation']}>
-            En mettant en pause la synchronisation de vos offres :
+            <p className={style['pause-synchronization-description']}>
+              En mettant en pause la synchronisation de vos offres :
+            </p>
             <ul className={style['explanation-list']}>
               <li>Toutes vos offres synchronisées seront désactivées</li>
               <li>Les réservations en cours ne seront pas annulées</li>
             </ul>
             <br />
-            N'oubliez pas de réactiver la synchronisation si vous souhaitez que
-            vos offres soient visibles à nouveau.
+            <p className={style['pause-synchronization-description']}>
+              N'oubliez pas de réactiver la synchronisation si vous souhaitez
+              que vos offres soient visibles à nouveau.
+            </p>
           </div>
         ) : (
-          <div className={style['explanation']}>
+          <p className={style['explanation']}>
             En réactivant la synchronisation de vos offres, toutes vos offres
             synchronisées seront publiées et visibles.
-          </div>
+          </p>
         )}
       </SimpleModal>
     </>

@@ -73,7 +73,7 @@ export function AdageOfferListCard({
             [styles['offer-headband-prebooked']]: offerPrebooked,
           })}
         >
-          <div className={styles['offer-headband-text']}>
+          <p className={styles['offer-headband-text']}>
             <span className={styles['intended-for']}>Offre destinée à :</span>
             {offer.teacher && (
               <span>{`${offer.teacher.civility} ${offer.teacher.lastName} ${offer.teacher.firstName}`}</span>
@@ -82,7 +82,7 @@ export function AdageOfferListCard({
               {offer.educationalInstitution?.institutionType}{' '}
               {offer.educationalInstitution?.name}
             </span>
-          </div>
+          </p>
 
           <PrebookingButton
             canPrebookOffers={adageUser.role === AdageFrontRoles.REDACTOR}

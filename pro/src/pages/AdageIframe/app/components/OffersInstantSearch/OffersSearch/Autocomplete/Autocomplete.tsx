@@ -428,8 +428,12 @@ export const Autocomplete = ({
               >
                 {shouldDisplayRecentSearch && (
                   <div className={styles['dialog-panel-autocomplete']}>
-                    <span className={styles['dialog-panel-autocomplete-text']}>
-                      Recherches récentes
+                    <div className={styles['dialog-panel-autocomplete-text']}>
+                      <p
+                        className={styles['dialog-panel-autocomplete-heading']}
+                      >
+                        Recherches récentes
+                      </p>
                       <div
                         className={
                           styles['dialog-panel-autocomplete-text-clean']
@@ -456,7 +460,7 @@ export const Autocomplete = ({
                           label="Effacer"
                         />
                       </div>
-                    </span>
+                    </div>
                     <ul {...autocomplete.getListProps()}>
                       {recentSearchesItems.map((item, index) => (
                         <li
@@ -481,9 +485,9 @@ export const Autocomplete = ({
                 )}
                 {shouldDisplayVenueSuggestions && (
                   <div className={styles['dialog-panel-autocomplete']}>
-                    <span className={styles['dialog-panel-autocomplete-text']}>
+                    <p className={styles['dialog-panel-autocomplete-text']}>
                       Partenaires culturels
-                    </span>
+                    </p>
 
                     <ul {...autocomplete.getListProps()}>
                       {venuesSuggestionsItems.map((item, index) => (
@@ -518,9 +522,9 @@ export const Autocomplete = ({
                 )}
                 {shouldDisplayKeywordSuggestions && (
                   <div className={styles['dialog-panel-autocomplete']}>
-                    <span className={styles['dialog-panel-autocomplete-text']}>
+                    <p className={styles['dialog-panel-autocomplete-text']}>
                       Suggestions
-                    </span>
+                    </p>
 
                     <ul {...autocomplete.getListProps()}>
                       {keywordSuggestionsItems.map((item, index) => {

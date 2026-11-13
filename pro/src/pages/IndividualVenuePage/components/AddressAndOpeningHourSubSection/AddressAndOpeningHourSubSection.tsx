@@ -18,9 +18,9 @@ export function AddressAndOpeningHourSubSection({
 }: Readonly<OpeningHoursAndAddressSubSectionProps>) {
   return (
     <SummarySubSection title="Adresse et horaires" shouldShowDivider={false}>
-      <span className={styles['opening-hours-address']}>
+      <p className={styles['opening-hours-address']}>
         {`Adresse : ${getFormattedAddress(address)}`}
-      </span>
+      </p>
 
       <OpeningHoursReadOnly openingHours={openingHours} />
     </SummarySubSection>

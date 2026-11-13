@@ -93,3 +93,7 @@
   margin-bottom: var(--size-spacing-2xl);
   overflow-wrap: anywhere;
 }
+
+.no-search-results {
+  @include fonts.body;
+}

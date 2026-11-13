@@ -1,4 +1,12 @@
+@use "styles/mixins/_fonts.scss" as fonts;
+
 .opening-hours-address {
+  @include fonts.body;
+
   display: block;
   margin-bottom: var(--size-spacing-s);
+}
+
+.opening-hours-unavailable {
+  @include fonts.body;
 }

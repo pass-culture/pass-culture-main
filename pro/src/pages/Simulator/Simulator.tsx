@@ -20,9 +20,7 @@ export const Simulator = (): JSX.Element => {
   return (
     <FullLayout>
       <div className={styles['simulator-container']}>
-        <div className={styles['step-title']}>
-          {stepTitles[location.pathname]}
-        </div>
+        <p className={styles['step-title']}>{stepTitles[location.pathname]}</p>
         <SimulatorContextProvider>
           <Outlet />
         </SimulatorContextProvider>

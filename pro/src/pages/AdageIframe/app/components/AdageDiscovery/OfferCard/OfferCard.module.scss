@@ -91,3 +91,8 @@ $offer-image-width: rem.torem(216px);
   overflow: hidden;
   margin-bottom: var(--size-spacing-l);
 }
+
+.offer-venue-name,
+.offer-venue-distance {
+  @include fonts.body;
+}

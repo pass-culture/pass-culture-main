@@ -171,11 +171,11 @@ export const TemplateCollectiveOffersScreen = ({
             <h2 className={styles['offers-table-title-heading']}>
               Liste des offres
             </h2>
-            <div>
+            <p className={styles['offers-count']}>
               {`${getOffersCountToDisplay(offers.length)} ${
                 offers.length <= 1 ? 'offre' : 'offres'
               }`}
-            </div>
+            </p>
           </div>
         )}
       </output>

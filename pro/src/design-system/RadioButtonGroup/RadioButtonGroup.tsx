@@ -93,7 +93,7 @@ export const RadioButtonGroup = ({
       <legend className={styles['radio-button-group-legend']}>{label}</legend>
       <div className={styles['radio-button-group-header']}>
         {description && (
-          <span
+          <p
             id={descriptionId}
             className={styles['radio-button-group-description']}
             // Description might change based on selection,
@@ -101,18 +101,18 @@ export const RadioButtonGroup = ({
             aria-live="polite"
           >
             {description}
-          </span>
+          </p>
         )}
         <div role="alert" id={errorId}>
           {error && (
-            <span className={styles['radio-button-group-error']}>
+            <p className={styles['radio-button-group-error']}>
               <SvgIcon
                 className={styles['radio-button-group-error-icon']}
                 src={fullErrorIcon}
                 alt="Erreur"
               />
               {error}
-            </span>
+            </p>
           )}
         </div>
       </div>

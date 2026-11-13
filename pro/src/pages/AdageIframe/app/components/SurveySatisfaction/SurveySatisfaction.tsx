@@ -55,7 +55,7 @@ export const SurveySatisfaction = ({
     <div className={styles['survey-satisfaction']}>
       <div className={styles['survey-satisfaction-infos']}>
         <div className={styles['survey-satisfaction-infos-head']}>
-          <div className={styles['survey-title']}>Enquête de satisfaction</div>
+          <p className={styles['survey-title']}>Enquête de satisfaction</p>
           <button
             onClick={onCloseSurvey}
             type="button"

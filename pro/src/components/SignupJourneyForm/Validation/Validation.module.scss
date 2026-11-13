@@ -37,3 +37,7 @@
 
   overflow-wrap: anywhere;
 }
+
+.activity-detail {
+  @include fonts.body-accent-s;
+}

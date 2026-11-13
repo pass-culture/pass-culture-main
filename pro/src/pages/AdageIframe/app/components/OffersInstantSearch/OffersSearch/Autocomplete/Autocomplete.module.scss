@@ -122,3 +122,7 @@
   inset: 0;
   background-color: var(--color-background-overlay);
 }
+
+.dialog-panel-autocomplete-heading {
+  @include fonts.body-accent-xs;
+}

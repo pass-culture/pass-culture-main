@@ -250,9 +250,9 @@ export const Offerers = (): JSX.Element => {
 
       {isLocalAuthority && (
         <>
-          <div className={styles['wrong-offerer-title']}>
+          <p className={styles['wrong-offerer-title']}>
             Vous souhaitez ajouter une nouvelle structure à cet espace ?
-          </div>
+          </p>
           <Button
             onClick={redirectToOnboarding}
             variant={ButtonVariant.TERTIARY}
