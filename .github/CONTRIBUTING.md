@@ -38,3 +38,14 @@ Il y a 3 workflows de déploiement d'une release:
 - [`cd_deploy_production.yml`](workflows/cd_deploy_production.yml) ([:arrow_forward: lancer le workflow](https://github.com/pass-culture/pass-culture-main/actions/workflows/cd_deploy_production.yml)): déploie le tag sélectionné en production
 - [`cd_deploy_staging.yml`](workflows/cd_deploy_staging.yml) ([:arrow_forward: lancer le workflow](https://github.com/pass-culture/pass-culture-main/actions/workflows/cd_deploy_staging.yml)): déploie le code d'un tag sur staging. Ce workflow se déclenche automatiquement à chaque pose de tag de version majeure.
 - [`cd_deploy_testing.yml`](workflows/cd_deploy_testing.yml) ([:arrow_forward: lancer le workflow](https://github.com/pass-culture/pass-culture-main/actions/workflows/cd_deploy_testing.yml)): déploie le code d'une branche sur testing. `master` est automatiquement déployé toutes les heures sur testing.
+
+
+## GitHub Actions lockfile
+
+Afin d'éviter les SCA (Supply Chain Attacks), il est essentiel de s'assurer que les GitHub Actions utilisées n'aient pas été empoisonnées suite à la prise de contrôle d'un repo.
+
+Nous nous assurons donc d'utiliser des SHA de commits via un fichier `actions.lockfile` cf [Workflow dependency lockfiles](https://docs.github.com/en/actions/concepts/security/workflow-dependency-lockfiles)
+On met à jour ce fichier après chaque ajout de workflow ou d'action en lançant :
+```bash
+$ gh actions-lock --migrate-local-actions
+```
