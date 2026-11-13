@@ -432,36 +432,49 @@ describe('IndividualOfferMediaScreen', () => {
       })
     })
 
-    it('should call the update offer video api when only the video description has changed', async () => {
-      vi.spyOn(api, 'getOfferVideoMetadata').mockResolvedValue({
-        videoDuration: 3,
-        videoThumbnailUrl: 'my image',
-        videoTitle: 'my title',
-        videoUrl: MOCK_DATA.videoUrl,
-      })
-      vi.spyOn(api, 'updateOfferVideo').mockResolvedValue({})
-
-      const knownOffer = getIndividualOfferFactory({
-        videoData: {
-          videoUrl: MOCK_DATA.videoUrl,
+    it.each([OFFER_WIZARD_MODE.CREATION, OFFER_WIZARD_MODE.EDITION])(
+      'should save a description-only change in %s mode',
+      async (mode) => {
+        vi.spyOn(api, 'getOfferVideoMetadata').mockResolvedValue({
           videoDuration: 3,
           videoThumbnailUrl: 'my image',
           videoTitle: 'my title',
-          videoDescription: 'Description initiale',
-        },
-      })
-      await renderIndividualOfferMediaScreen({ props: { offer: knownOffer } })
-
-      await updateVideoDescriptionAndSubmit({ text: 'Nouvelle description' })
-
-      expect(api.updateOfferVideo).toHaveBeenCalledWith({
-        path: { offer_id: knownOffer.id },
-        body: {
           videoUrl: MOCK_DATA.videoUrl,
+        })
+        vi.spyOn(api, 'updateOfferVideo').mockResolvedValue({
+          videoUrl: MOCK_DATA.videoUrl,
+          videoThumbnailUrl: 'my image',
           videoDescription: 'Nouvelle description',
-        },
-      })
-    })
+        })
+
+        const knownOffer = getIndividualOfferFactory({
+          videoData: {
+            videoUrl: MOCK_DATA.videoUrl,
+            videoDuration: 3,
+            videoThumbnailUrl: 'my image',
+            videoTitle: 'my title',
+            videoDescription: 'Description initiale',
+          },
+        })
+        await renderIndividualOfferMediaScreen({
+          props: { offer: knownOffer },
+          mode,
+        })
+
+        await updateVideoDescriptionAndSubmit({
+          text: 'Nouvelle description',
+          mode,
+        })
+
+        expect(api.updateOfferVideo).toHaveBeenCalledWith({
+          path: { offer_id: knownOffer.id },
+          body: {
+            videoUrl: MOCK_DATA.videoUrl,
+            videoDescription: 'Nouvelle description',
+          },
+        })
+      }
+    )
 
     it('should call both api handlers when the image and the video url have changed', async () => {
       vi.spyOn(api, 'getOfferVideoMetadata').mockResolvedValue({

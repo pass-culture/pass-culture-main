@@ -162,6 +162,63 @@ describe('<MultiSelect />', () => {
     expect(selectedTag).not.toBeInTheDocument()
   })
 
+  it.each(['click', 'Enter', 'Space'])(
+    'returns focus to the trigger after removing the last tag with %s',
+    async (activation) => {
+      const user = userEvent.setup()
+      renderMultiSelect({ options })
+
+      const trigger = screen.getByRole('button', { name: 'Options' })
+      await user.tab()
+      await user.tab()
+
+      for (const [index, option] of options.entries()) {
+        const tag = screen.getByRole('button', {
+          name: `Supprimer ${option.label}`,
+        })
+        expect(tag).toHaveFocus()
+
+        if (activation === 'click') {
+          await user.click(tag)
+        } else {
+          await user.keyboard(`[${activation}]`)
+        }
+
+        expect(tag).not.toBeInTheDocument()
+        if (index < options.length - 1) {
+          expect(
+            screen.getByRole('button', {
+              name: `Supprimer ${options[index + 1].label}`,
+            })
+          ).toHaveFocus()
+        }
+      }
+
+      expect(trigger).toHaveFocus()
+      expect(trigger).toHaveAttribute('aria-expanded', 'false')
+      expect(trigger).toHaveAccessibleDescription('0 élément sélectionné')
+    }
+  )
+
+  it('keeps focus on the checkbox when deselecting the last option in the panel', async () => {
+    const user = userEvent.setup()
+    renderMultiSelect({ options: [options[0]] })
+
+    const trigger = screen.getByRole('button', { name: 'Options' })
+    await user.click(trigger)
+    await user.tab()
+
+    const checkbox = screen.getByRole('checkbox', { name: 'Option 1' })
+    await user.keyboard('[Space]')
+
+    expect(checkbox).not.toBeChecked()
+    expect(checkbox).toHaveFocus()
+    expect(trigger).toHaveAttribute('aria-expanded', 'true')
+    expect(
+      screen.queryByRole('button', { name: 'Supprimer Option 1' })
+    ).not.toBeInTheDocument()
+  })
+
   it('closes the dropdown when clicked outside or when Escape key is pressed', async () => {
     renderMultiSelect({ options })
 

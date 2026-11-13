@@ -19,6 +19,7 @@ import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
+import { getIndividualOfferImage } from '@/commons/core/Offers/utils/getIndividualOfferImage'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
@@ -66,6 +67,7 @@ export const IndividualOfferSummaryScreen = ({
   const { subCategories, hasPublishedOfferWithSameEan } =
     useIndividualOfferContext()
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
+  const image = getIndividualOfferImage(offer)
 
   const getStocksQuery = useSWR(
     offer.id ? [GET_NEXT_STOCK_QUERY_KEY, offer.id] : null,
@@ -216,6 +218,9 @@ export const IndividualOfferSummaryScreen = ({
             <OfferSection conditionalFields={conditionalFields} offer={offer} />
             <MediaSection
               offerId={offer.id}
+              imageUrl={image?.url}
+              imageCredit={image?.credit}
+              imageAlternativeText={image?.alternativeText}
               videoData={offer.videoData}
               isOnCreation
             />

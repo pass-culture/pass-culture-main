@@ -80,7 +80,7 @@ export const ActivityForm = (): JSX.Element => {
   return (
     <>
       <ScrollToFirstHookFormErrorAfterSubmit />
-      <FormLayout.Section>
+      <FormLayout.Section accessibleLabel="Activité">
         <FormLayout.Row mdSpaceAfter>
           <Select
             options={[

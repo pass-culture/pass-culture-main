@@ -71,7 +71,6 @@ const IndividualOfferV2Description = (): JSX.Element => {
     label: data.label,
   }))
 
-  // TODO create a component to handle all a11y options when there are more
   const [isLargePrint, setIsLargePrint] = useState(false)
 
   const accessibilityOptions: CheckboxGroupOption[] = [

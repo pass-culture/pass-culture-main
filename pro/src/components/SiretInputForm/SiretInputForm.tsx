@@ -115,7 +115,7 @@ export const SiretInputForm = ({
   return (
     <FormLayout>
       <form onSubmit={handleSubmit(onSubmit)} data-testid="signup-offerer-form">
-        <FormLayout.Section>
+        <FormLayout.Section accessibleLabel="SIRET">
           <FormLayout.Row mdSpaceAfter>
             <TextInput
               {...register('siret')}

@@ -82,6 +82,7 @@ const renderModalImageCrop = (props: ModalImageUpsertOrEditTestProps = {}) => {
 }
 
 describe('ModalImageUpsertOrEdit', () => {
+  const user = userEvent.setup()
   beforeEach(() => {
     vi.mocked(prepareImageForUpload).mockImplementation(async (file) => file)
     fetchMock.mockResponse((request) => {
@@ -110,7 +111,7 @@ describe('ModalImageUpsertOrEdit', () => {
       renderModalImageCrop({ mode })
       await waitForRender()
 
-      await userEvent.click(screen.getByRole('button', { name: 'Importer' }))
+      await user.click(screen.getByRole('button', { name: 'Importer' }))
 
       await waitFor(() => {
         expect(onImageUpload).toHaveBeenCalledWith(
@@ -150,9 +151,7 @@ describe('ModalImageUpsertOrEdit', () => {
       height: 500,
     })
 
-    await userEvent.upload(screen.getByLabelText('Importez une image'), [
-      imageFile,
-    ])
+    await user.upload(screen.getByLabelText('Importez une image'), [imageFile])
 
     expect(
       await screen.findByText('L’image doit faire au moins 600 pixels de haut')
@@ -192,6 +191,53 @@ describe('ModalImageUpsertOrEdit', () => {
   })
 
   describe('when an image is loaded', () => {
+    it.each(['Ancien texte', ''])(
+      'restores the informative state and alternative text after cancelling (%j)',
+      async (alternativeText) => {
+        const props = {
+          ...defaultProps,
+          initialValues: {
+            ...defaultProps.initialValues,
+            alternativeText,
+          },
+        }
+        const { rerender } = renderModalImageCrop(props)
+        const checkboxName = /L’image est porteuse d’informations/
+        const checkbox = await screen.findByRole('checkbox', {
+          name: checkboxName,
+        })
+        await user.click(checkbox)
+        await user.click(screen.getByRole('button', { name: 'Annuler' }))
+        rerender(<ModalImageUpsertOrEdit {...props} open={false} />)
+        rerender(<ModalImageUpsertOrEdit {...props} open />)
+
+        const restoredCheckbox = await screen.findByRole('checkbox', {
+          name: checkboxName,
+        })
+        expect(restoredCheckbox).toHaveProperty(
+          'checked',
+          Boolean(alternativeText)
+        )
+        if (alternativeText) {
+          expect(
+            screen.getByLabelText('Texte alternatif de l’image')
+          ).toHaveValue(alternativeText)
+        } else {
+          expect(
+            screen.queryByLabelText('Texte alternatif de l’image')
+          ).not.toBeInTheDocument()
+        }
+
+        await user.click(screen.getByRole('button', { name: 'Importer' }))
+        expect(onImageUpload).toHaveBeenCalledWith(
+          expect.objectContaining({
+            alternativeText: alternativeText || null,
+          }),
+          expect.any(String)
+        )
+      }
+    )
+
     it('should render an image editor & a preview with the loaded image', async () => {
       vi.spyOn(imageUtils, 'getImageBitmap').mockResolvedValue({
         width: 500,
@@ -248,7 +294,7 @@ describe('ModalImageUpsertOrEdit', () => {
       const creditInput = screen.getByLabelText('Crédit de l’image')
       expect(creditInput).toBeInTheDocument()
 
-      await userEvent.type(creditInput, 'John Doe')
+      await user.type(creditInput, 'John Doe')
 
       expect(creditInput).toHaveValue('John Doe')
     })
@@ -267,14 +313,14 @@ describe('ModalImageUpsertOrEdit', () => {
       const informativeCheckbox = await screen.findByRole('checkbox', {
         name: /L’image est porteuse d’informations/,
       })
-      await userEvent.click(informativeCheckbox)
+      await user.click(informativeCheckbox)
 
       const alternativeTextInput = screen.getByLabelText(
         'Texte alternatif de l’image'
       )
-      await userEvent.type(alternativeTextInput, 'Le train arrive en gare')
+      await user.type(alternativeTextInput, 'Le train arrive en gare')
 
-      await userEvent.click(screen.getByRole('button', { name: 'Importer' }))
+      await user.click(screen.getByRole('button', { name: 'Importer' }))
 
       expect(onImageUpload).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -300,8 +346,8 @@ describe('ModalImageUpsertOrEdit', () => {
       })
       expect(informativeCheckbox).toBeChecked()
 
-      await userEvent.click(informativeCheckbox)
-      await userEvent.click(screen.getByRole('button', { name: 'Importer' }))
+      await user.click(informativeCheckbox)
+      await user.click(screen.getByRole('button', { name: 'Importer' }))
 
       expect(onImageUpload).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -387,7 +433,7 @@ describe('ModalImageUpsertOrEdit', () => {
         const replaceButton = screen.getByRole('button', {
           name: 'Remplacer l’image',
         })
-        await userEvent.click(replaceButton)
+        await user.click(replaceButton)
 
         expect(screen.getByLabelText('Importez une image')).toBeInTheDocument()
         expect(
@@ -408,7 +454,7 @@ describe('ModalImageUpsertOrEdit', () => {
         const replaceButton = screen.getByRole('button', {
           name: 'Remplacer l’image',
         })
-        await userEvent.click(replaceButton)
+        await user.click(replaceButton)
 
         expect(screen.getByRole('button', { name: 'Importer' })).toBeDisabled()
       })
@@ -426,13 +472,13 @@ describe('ModalImageUpsertOrEdit', () => {
         const replaceButton = screen.getByRole('button', {
           name: 'Remplacer l’image',
         })
-        await userEvent.click(replaceButton)
+        await user.click(replaceButton)
 
         const imageFile = Object.assign(imageFileFactory(), {
           width: 10,
           height: 10,
         })
-        await userEvent.upload(screen.getByLabelText('Importez une image'), [
+        await user.upload(screen.getByLabelText('Importez une image'), [
           imageFile,
         ])
         await waitFor(() => {
@@ -458,7 +504,7 @@ describe('ModalImageUpsertOrEdit', () => {
         const deleteButton = screen.getByRole('button', {
           name: 'Supprimer l’image',
         })
-        await userEvent.click(deleteButton)
+        await user.click(deleteButton)
 
         expect(onImageDelete).toHaveBeenCalled()
       })
@@ -471,7 +517,7 @@ describe('ModalImageUpsertOrEdit', () => {
         await waitForRender()
 
         const saveButton = screen.getByRole('button', { name: 'Importer' })
-        await userEvent.click(saveButton)
+        await user.click(saveButton)
 
         await waitFor(() => {
           expect(onImageUpload).toHaveBeenCalled()
@@ -500,7 +546,7 @@ describe('ModalImageUpsertOrEdit', () => {
         await waitForRender()
 
         const saveButton = screen.getByRole('button', { name: 'Importer' })
-        await userEvent.click(saveButton)
+        await user.click(saveButton)
 
         expect(onImageUpload).toHaveBeenCalledOnce()
 

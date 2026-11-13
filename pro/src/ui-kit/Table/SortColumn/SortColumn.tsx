@@ -1,3 +1,5 @@
+import { useId } from 'react'
+
 import { SortingMode } from '@/commons/hooks/useColumnSorting'
 import fullDownIcon from '@/icons/full-down.svg'
 import fullUpIcon from '@/icons/full-up.svg'
@@ -11,11 +13,21 @@ interface SortColumnProps {
   children: React.ReactNode
 }
 
+const sortingDescriptions = {
+  [SortingMode.NONE]: 'Aucun tri appliqué à cette colonne.',
+  [SortingMode.ASC]: 'Tri actuel : ordre croissant.',
+  [SortingMode.DESC]: 'Tri actuel : ordre décroissant.',
+}
+
 const withSortingMode = (sortingMode: SortingMode) => {
   return sortingMode === SortingMode.DESC ? (
-    <SvgIcon src={fullUpIcon} alt="Ne plus trier" width="10" />
+    <SvgIcon src={fullUpIcon} alt="Cliquez pour ne plus trier" width="10" />
   ) : (
-    <SvgIcon src={fullDownIcon} alt="Trier par ordre décroissant" width="10" />
+    <SvgIcon
+      src={fullDownIcon}
+      alt="Cliquez pour trier par ordre décroissant"
+      width="10"
+    />
   )
 }
 
@@ -24,22 +36,33 @@ export const SortColumn = ({
   onClick,
   children,
 }: SortColumnProps) => {
-  return (
-    <button type="button" className={styles['sorting-icons']} onClick={onClick}>
-      {children}
+  const sortingDescriptionId = useId()
 
-      {sortingMode !== SortingMode.NONE ? (
-        withSortingMode(sortingMode)
-      ) : (
-        <span className={styles['both-icons']}>
-          <SvgIcon
-            src={fullUpIcon}
-            alt="Trier par ordre croissant"
-            width="10"
-          />
-          <SvgIcon src={fullDownIcon} alt="" width="10" />
-        </span>
-      )}
-    </button>
+  return (
+    <>
+      <button
+        type="button"
+        className={styles['sorting-icons']}
+        onClick={onClick}
+        aria-describedby={sortingDescriptionId}
+      >
+        {children}{' '}
+        {sortingMode !== SortingMode.NONE ? (
+          withSortingMode(sortingMode)
+        ) : (
+          <span className={styles['both-icons']}>
+            <SvgIcon
+              src={fullUpIcon}
+              alt="Cliquez pour trier par ordre croissant"
+              width="10"
+            />
+            <SvgIcon src={fullDownIcon} alt="" width="10" />
+          </span>
+        )}
+      </button>
+      <p id={sortingDescriptionId} className={styles['visually-hidden']}>
+        {sortingDescriptions[sortingMode]}
+      </p>
+    </>
   )
 }
