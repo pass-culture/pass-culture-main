@@ -3880,6 +3880,69 @@
                 "title": "ExternalBookingResponseV2",
                 "type": "object"
             },
+            "FavoriteArtistDataResponse": {
+                "additionalProperties": false,
+                "properties": {
+                    "id": {
+                        "title": "Id",
+                        "type": "string"
+                    },
+                    "image": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Image"
+                    },
+                    "name": {
+                        "title": "Name",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "name"
+                ],
+                "title": "FavoriteArtistDataResponse",
+                "type": "object"
+            },
+            "FavoriteArtistRequest": {
+                "additionalProperties": false,
+                "properties": {
+                    "artistId": {
+                        "title": "Artistid",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "artistId"
+                ],
+                "title": "FavoriteArtistRequest",
+                "type": "object"
+            },
+            "FavoriteArtistResponse": {
+                "additionalProperties": false,
+                "properties": {
+                    "artist": {
+                        "$ref": "#/components/schemas/FavoriteArtistDataResponse"
+                    },
+                    "id": {
+                        "title": "Id",
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "id",
+                    "artist"
+                ],
+                "title": "FavoriteArtistResponse",
+                "type": "object"
+            },
             "FavoriteCoordinates": {
                 "additionalProperties": false,
                 "properties": {
@@ -3911,6 +3974,41 @@
                 "title": "FavoriteCoordinates",
                 "type": "object"
             },
+            "FavoriteCoordinatesV2": {
+                "additionalProperties": false,
+                "properties": {
+                    "latitude": {
+                        "anyOf": [
+                            {
+                                "gt": -90,
+                                "lt": 90,
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Latitude"
+                    },
+                    "longitude": {
+                        "anyOf": [
+                            {
+                                "gt": -180,
+                                "lt": 180,
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Longitude"
+                    }
+                },
+                "title": "FavoriteCoordinatesV2",
+                "type": "object"
+            },
             "FavoriteMediationResponse": {
                 "additionalProperties": false,
                 "properties": {
@@ -3935,6 +4033,147 @@
                     "url"
                 ],
                 "title": "FavoriteMediationResponse",
+                "type": "object"
+            },
+            "FavoriteOfferDataResponse": {
+                "additionalProperties": false,
+                "properties": {
+                    "bookingAllowedDatetime": {
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Bookingalloweddatetime"
+                    },
+                    "coordinates": {
+                        "$ref": "#/components/schemas/FavoriteCoordinatesV2"
+                    },
+                    "date": {
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Date"
+                    },
+                    "expenseDomains": {
+                        "items": {
+                            "$ref": "#/components/schemas/ExpenseDomain"
+                        },
+                        "title": "Expensedomains",
+                        "type": "array"
+                    },
+                    "externalTicketOfficeUrl": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Externalticketofficeurl"
+                    },
+                    "id": {
+                        "title": "Id",
+                        "type": "integer"
+                    },
+                    "image": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/FavoriteMediationResponse"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null
+                    },
+                    "isExpired": {
+                        "default": false,
+                        "title": "Isexpired",
+                        "type": "boolean"
+                    },
+                    "isReleased": {
+                        "title": "Isreleased",
+                        "type": "boolean"
+                    },
+                    "isSoldOut": {
+                        "default": false,
+                        "title": "Issoldout",
+                        "type": "boolean"
+                    },
+                    "name": {
+                        "title": "Name",
+                        "type": "string"
+                    },
+                    "price": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Price"
+                    },
+                    "startDate": {
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Startdate"
+                    },
+                    "startPrice": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Startprice"
+                    },
+                    "subcategoryId": {
+                        "$ref": "#/components/schemas/SubcategoryIdEnum"
+                    },
+                    "venueName": {
+                        "title": "Venuename",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "coordinates",
+                    "expenseDomains",
+                    "isReleased",
+                    "name",
+                    "subcategoryId",
+                    "venueName"
+                ],
+                "title": "FavoriteOfferDataResponse",
                 "type": "object"
             },
             "FavoriteOfferResponse": {
@@ -4076,6 +4315,24 @@
                     "venueName"
                 ],
                 "title": "FavoriteOfferResponse",
+                "type": "object"
+            },
+            "FavoriteOfferResponseV2": {
+                "additionalProperties": false,
+                "properties": {
+                    "id": {
+                        "title": "Id",
+                        "type": "integer"
+                    },
+                    "offer": {
+                        "$ref": "#/components/schemas/FavoriteOfferDataResponse"
+                    }
+                },
+                "required": [
+                    "id",
+                    "offer"
+                ],
+                "title": "FavoriteOfferResponseV2",
                 "type": "object"
             },
             "FavoriteRequest": {
@@ -7750,6 +8007,60 @@
                     "favorites"
                 ],
                 "title": "PaginatedFavoritesResponse",
+                "type": "object"
+            },
+            "PaginatedResponse[FavoriteArtistResponse]": {
+                "additionalProperties": false,
+                "properties": {
+                    "favorites": {
+                        "items": {
+                            "$ref": "#/components/schemas/FavoriteArtistResponse"
+                        },
+                        "title": "Favorites",
+                        "type": "array"
+                    },
+                    "nbFavorites": {
+                        "title": "Nbfavorites",
+                        "type": "integer"
+                    },
+                    "page": {
+                        "title": "Page",
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "page",
+                    "nbFavorites",
+                    "favorites"
+                ],
+                "title": "PaginatedResponse[FavoriteArtistResponse]",
+                "type": "object"
+            },
+            "PaginatedResponse[FavoriteOfferResponseV2]": {
+                "additionalProperties": false,
+                "properties": {
+                    "favorites": {
+                        "items": {
+                            "$ref": "#/components/schemas/FavoriteOfferResponseV2"
+                        },
+                        "title": "Favorites",
+                        "type": "array"
+                    },
+                    "nbFavorites": {
+                        "title": "Nbfavorites",
+                        "type": "integer"
+                    },
+                    "page": {
+                        "title": "Page",
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "page",
+                    "nbFavorites",
+                    "favorites"
+                ],
+                "title": "PaginatedResponse[FavoriteOfferResponseV2]",
                 "type": "object"
             },
             "PlaylistRequestBody": {
@@ -15096,6 +15407,270 @@
                     }
                 ],
                 "summary": "get_bookings_list <GET>",
+                "tags": []
+            }
+        },
+        "/native/v2/me/favorites/artists": {
+            "get": {
+                "description": "",
+                "operationId": "get__native_v2_me_favorites_artists",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PaginatedResponse[FavoriteArtistResponse]"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        },
+                        "description": "Unprocessable Content"
+                    }
+                },
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "summary": "get_favorite_artists <GET>",
+                "tags": []
+            },
+            "post": {
+                "description": "",
+                "operationId": "post__native_v2_me_favorites_artists",
+                "parameters": [],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/FavoriteArtistRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/FavoriteArtistResponse"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        },
+                        "description": "Unprocessable Content"
+                    }
+                },
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "summary": "create_favorite_artist <POST>",
+                "tags": []
+            }
+        },
+        "/native/v2/me/favorites/artists/{favorite_id}": {
+            "delete": {
+                "description": "",
+                "operationId": "delete__native_v2_me_favorites_artists_{favorite_id}",
+                "parameters": [
+                    {
+                        "description": "",
+                        "in": "path",
+                        "name": "favorite_id",
+                        "required": true,
+                        "schema": {
+                            "format": "int32",
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        },
+                        "description": "Unprocessable Content"
+                    }
+                },
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "summary": "delete_favorite_artist <DELETE>",
+                "tags": []
+            }
+        },
+        "/native/v2/me/favorites/offers": {
+            "get": {
+                "description": "",
+                "operationId": "get__native_v2_me_favorites_offers",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PaginatedResponse[FavoriteOfferResponseV2]"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        },
+                        "description": "Unprocessable Content"
+                    }
+                },
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "summary": "get_favorite_offers <GET>",
+                "tags": []
+            },
+            "post": {
+                "description": "",
+                "operationId": "post__native_v2_me_favorites_offers",
+                "parameters": [],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/FavoriteRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/FavoriteOfferResponseV2"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        },
+                        "description": "Unprocessable Content"
+                    }
+                },
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "summary": "create_favorite_offer <POST>",
+                "tags": []
+            }
+        },
+        "/native/v2/me/favorites/offers/{favorite_id}": {
+            "delete": {
+                "description": "",
+                "operationId": "delete__native_v2_me_favorites_offers_{favorite_id}",
+                "parameters": [
+                    {
+                        "description": "",
+                        "in": "path",
+                        "name": "favorite_id",
+                        "required": true,
+                        "schema": {
+                            "format": "int32",
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        },
+                        "description": "Unprocessable Content"
+                    }
+                },
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "summary": "delete_favorite_offer <DELETE>",
                 "tags": []
             }
         },
