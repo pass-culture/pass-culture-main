@@ -152,7 +152,7 @@ class Returns200Test:
                 "socialMedias": venue.contact.social_medias,
             },
             "comment": venue.comment,
-            "criteria": ["closure_detected"],
+            "criteria": ["Fermeture demandée au partenaire culturel", "Déplacement de SIRET attendu"],
             "pricingPoint": {
                 "id": venue_currently_used_for_pricing.id,
                 "venueName": venue_currently_used_for_pricing.publicName,

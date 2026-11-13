@@ -139,7 +139,7 @@ describe('Homepage', () => {
     it('should be displayed when closure is detected', () => {
       renderHomepage({
         ...defaultGetVenueResponseModel,
-        criteria: [CriteriaEnum.CLOSURE_DETECTED],
+        criteria: [CriteriaEnum.FERMETURE_DEMAND_E_AU_PARTENAIRE_CULTUREL],
         hasNonDraftOffers: true,
       })
 
@@ -153,7 +153,7 @@ describe('Homepage', () => {
     it('should be displayed when closure is detected and no tab is available', () => {
       renderHomepage({
         ...defaultGetVenueResponseModel,
-        criteria: [CriteriaEnum.CLOSURE_DETECTED],
+        criteria: [CriteriaEnum.FERMETURE_DEMAND_E_AU_PARTENAIRE_CULTUREL],
         allowedOnAdage: false,
         hasNonDraftOffers: false,
       })
