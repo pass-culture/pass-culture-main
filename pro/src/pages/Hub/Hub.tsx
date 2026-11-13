@@ -77,7 +77,9 @@ export const Hub = () => {
         return
       }
 
-      const nextUrl = getInternalRedirectUrl(searchParams.get('redirectTo'))
+      const nextUrl = getInternalRedirectUrl(
+        searchParams.get('redirectTo') ?? '/accueil'
+      )
       await navigate(nextUrl)
     } catch {
       setIsLoading(false)
