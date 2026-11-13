@@ -1,0 +1,4 @@
+paths:
+  ./.github/workflows/*.{yaml,yml}:
+    ignore:
+      - specifying action "\$/.+" in invalid format because ref is missing
