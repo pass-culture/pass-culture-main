@@ -8,12 +8,11 @@ import {
   TimeSeriesScale,
   Tooltip,
 } from 'chart.js'
-import { useId, useMemo, useRef, useState } from 'react'
-import { Bar } from 'react-chartjs-2'
 import 'chartjs-adapter-date-fns'
-
 import { noop } from 'commons/utils/noop'
 import { ToggleButtonGroup } from 'pages/Homepage/components/StatsCard/components/ToggleButtonGroup/ToggleButtonGroup'
+import { useId, useMemo, useRef, useState } from 'react'
+import { Bar } from 'react-chartjs-2'
 import { Table, TableVariant } from 'ui-kit/Table/Table'
 
 import { getDateTimeToFrenchText } from '@/commons/utils/date'
@@ -47,6 +46,7 @@ export const CumulatedViews = ({ periodStats }: CumulatedViewsProps) => {
   const [selectedTab, setSelectedTab] = useState<'chart' | 'table'>('chart')
 
   const chartContainerId = useId()
+  const tableContainerId = useId()
 
   const { recentViews, minViews, maxViews, firstMonth } = useMemo(() => {
     const filtered: { date: Date; views: number; rawDate: string }[] = []
@@ -120,62 +120,66 @@ export const CumulatedViews = ({ periodStats }: CumulatedViewsProps) => {
     label: 'Graphique',
     icon: strokeSignalIcon,
     handleClick: () => setSelectedTab('chart'),
+    controls: chartContainerId,
   }
   const right = {
     id: useId(),
     label: 'Tableau',
     handleClick: () => setSelectedTab('table'),
     icon: strokeTableIcon,
+    controls: tableContainerId,
   }
   return (
     <div className={styles['cumulated-views']}>
-      <ToggleButtonGroup
-        left={left}
-        right={right}
-        selected="left"
-        controls={chartContainerId}
-      />
-      <div className={styles['chart']} id={chartContainerId}>
-        {selectedTab === 'chart' && (
-          <Bar
-            ref={chartRef}
-            data={data}
-            options={graphOptions}
-            role="tabpanel"
-            aria-labelledby={left.id}
-            aria-hidden={true}
-          />
-        )}
-        {selectedTab === 'table' && (
-          <div role="tabpanel" aria-labelledby={right.id}>
-            <Table
-              title={`Nombre de vues cumulées de toutes vos offres sur les ${periodStats?.viewsByMonth.length ?? 0} derniers mois`}
-              columns={columns}
-              data={(
-                periodStats?.viewsByMonth.map((i) => ({ ...i, id: i.month })) ??
-                []
-              ).reverse()}
-              isLoading={false}
-              variant={TableVariant.COLLAPSE}
-              noResult={{
-                message: '',
+      <ToggleButtonGroup left={left} right={right} selected="left" />
+      {selectedTab === 'chart' && (
+        <div
+          className={styles['chart']}
+          role="tabpanel"
+          aria-labelledby={left.id}
+          id={chartContainerId}
+        >
+          <Bar ref={chartRef} data={data} options={graphOptions} aria-hidden />
+          <p className={styles['visually-hidden']}>
+            Les données du graphique sont disponibles dans l'onglet Tableau.
+          </p>
+        </div>
+      )}
+      {selectedTab === 'table' && (
+        <div
+          className={styles['chart']}
+          role="tabpanel"
+          aria-labelledby={right.id}
+          id={tableContainerId}
+        >
+          <Table
+            title={`Nombre de vues cumulées de toutes vos offres sur les ${periodStats?.viewsByMonth.length ?? 0} derniers mois`}
+            a11ySummary="Chaque ligne correspond à un mois de l'année. Les colonnes présentent son nom, et le nombre de vues de vos offres sur ce mois."
+            columns={columns}
+            data={(
+              periodStats?.viewsByMonth.map((i) => ({ ...i, id: i.month })) ??
+              []
+            ).reverse()}
+            isLoading={false}
+            variant={TableVariant.COLLAPSE}
+            noResult={{
+              message: '',
+              subtitle: undefined,
+              resetMessage: undefined,
+              onFilterReset: noop,
+            }}
+            noData={{
+              hasNoData: false,
+              message: {
+                icon: '',
+                title: '',
                 subtitle: undefined,
-                resetMessage: undefined,
-                onFilterReset: noop,
-              }}
-              noData={{
-                hasNoData: false,
-                message: {
-                  icon: '',
-                  title: '',
-                  subtitle: undefined,
-                  cta: undefined,
-                },
-              }}
-            />
-          </div>
-        )}
-      </div>
+                cta: undefined,
+              },
+            }}
+          />
+        </div>
+      )}
     </div>
   )
 }

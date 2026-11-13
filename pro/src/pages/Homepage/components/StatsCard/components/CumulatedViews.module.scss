@@ -20,3 +20,7 @@
   max-height: rem.torem(2000px);
   margin-top: var(--size-spacing-l);
 }
+
+.visually-hidden {
+  @include a11y.visually-hidden;
+}
