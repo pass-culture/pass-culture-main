@@ -12,14 +12,15 @@ from flask_jwt_extended import decode_token
 from flask_jwt_extended.utils import create_refresh_token
 
 from pcapi import settings
-from pcapi.connectors import apple_oauth
+from pcapi.connectors.sso import SSOUser
+from pcapi.connectors.sso.exceptions import AppleSignInException
+from pcapi.connectors.sso.exceptions import GoogleSignInException
 from pcapi.core import token as token_utils
 from pcapi.core.history import factories as history_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
-from pcapi.core.users import schemas as users_schemas
 from pcapi.core.users import testing as brevo_testing
 from pcapi.core.users.models import AccountState
 from pcapi.core.users.models import NativeUserSession
@@ -553,7 +554,7 @@ class RefreshAccessTokenTest:
 
 
 class SSOSigninTest:
-    valid_sso_user = users_schemas.SSOUser(
+    valid_sso_user = SSOUser(
         sub="100428144463745704968",
         email="docteur.cuesta@passkoultour.app",
         email_verified=True,
@@ -576,12 +577,12 @@ class SSOSigninTest:
 
         assert response.status_code == 400
 
-    @patch("pcapi.connectors.apple_oauth.get_apple_user")
+    @patch("pcapi.connectors.sso.apple.AppleSSOProvider.validate_token")
     def test_cant_fetch_apple_user(self, mocked_apple_oauth, client):
         oauth_state_token = token_utils.UUIDToken.create(
             token_utils.TokenType.OAUTH_STATE, users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME
         )
-        mocked_apple_oauth.side_effect = apple_oauth.AppleSignInException
+        mocked_apple_oauth.side_effect = AppleSignInException
 
         response = client.post(
             "/native/v2/oauth/apple/authorize",
@@ -596,7 +597,27 @@ class SSOSigninTest:
         assert response.json["code"] == "SSO_ERROR"
         assert response.json["general"] == "L'authentification a échoué"
 
-    @patch("pcapi.connectors.google_oauth.get_google_user")
+    @patch("pcapi.connectors.sso.google.GoogleSSOProvider.validate_token")
+    def test_cant_fetch_google_user(self, mocked_google_oauth, client):
+        oauth_state_token = token_utils.UUIDToken.create(
+            token_utils.TokenType.OAUTH_STATE, users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME
+        )
+        mocked_google_oauth.side_effect = GoogleSignInException
+
+        response = client.post(
+            "/native/v2/oauth/google/authorize",
+            json={
+                "authorizationCode": "4/google_code",
+                "oauthStateToken": oauth_state_token.encoded_token,
+                "device_info": self.device_info,
+            },
+        )
+
+        assert response.status_code == 401
+        assert response.json["code"] == "SSO_ERROR"
+        assert response.json["general"] == "L'authentification a échoué"
+
+    @patch("pcapi.connectors.sso.google.GoogleSSOProvider.validate_token")
     def test_account_is_active(self, mocked_google_oauth, client, caplog):
         users_factories.SingleSignOnFactory(
             ssoUserId=self.valid_sso_user.sub, user__email=self.valid_sso_user.email, user__isActive=True
@@ -620,7 +641,7 @@ class SSOSigninTest:
         assert response.json["accountState"] == AccountState.ACTIVE.value
         assert "Successful authentication attempt" in caplog.messages
 
-    @patch("pcapi.connectors.google_oauth.get_google_user")
+    @patch("pcapi.connectors.sso.google.GoogleSSOProvider.validate_token")
     def test_account_is_deleted(self, mocked_google_oauth, client):
         user = users_factories.UserFactory(email=self.valid_sso_user.email, isActive=False)
         users_factories.SingleSignOnFactory(user=user, ssoUserId=self.valid_sso_user.sub)
@@ -642,7 +663,7 @@ class SSOSigninTest:
         assert response.status_code == 400
         assert response.json["code"] == "SSO_ERROR"
 
-    @patch("pcapi.connectors.google_oauth.get_google_user")
+    @patch("pcapi.connectors.sso.google.GoogleSSOProvider.validate_token")
     def test_account_is_anonymized(self, mocked_google_oauth, client):
         user = users_factories.AnonymizedUserFactory(email=self.valid_sso_user.email)
         users_factories.SingleSignOnFactory(user=user, ssoUserId=self.valid_sso_user.sub)
@@ -663,7 +684,7 @@ class SSOSigninTest:
         assert response.status_code == 400
         assert response.json["code"] == "SSO_ERROR"
 
-    @patch("pcapi.connectors.google_oauth.get_google_user")
+    @patch("pcapi.connectors.sso.google.GoogleSSOProvider.validate_token")
     def test_account_creation_token_if_account_does_not_exist(self, mocked_google_oauth, client, caplog):
         oauth_state_token = token_utils.UUIDToken.create(
             token_utils.TokenType.OAUTH_STATE, users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME
@@ -689,14 +710,14 @@ class SSOSigninTest:
             response.json["accountCreationToken"]
         )
         assert uuid.UUID(decoded_account_creation_token.key_suffix)
-        assert users_schemas.SSOUser.model_validate(decoded_account_creation_token.data)
+        assert SSOUser.model_validate(decoded_account_creation_token.data)
         assert not decoded_account_creation_token.check(
             token_utils.TokenType.ACCOUNT_CREATION, decoded_account_creation_token.key_suffix
         )
 
     @pytest.mark.parametrize("sso_provider", ("apple", "google"))
-    @patch("pcapi.connectors.google_oauth.get_google_user")
-    @patch("pcapi.connectors.apple_oauth.get_apple_user")
+    @patch("pcapi.connectors.sso.google.GoogleSSOProvider.validate_token")
+    @patch("pcapi.connectors.sso.apple.AppleSSOProvider.validate_token")
     def test_updates_single_sign_on_email_change(self, mocked_apple_oauth, mocked_google_oauth, sso_provider, client):
         user = users_factories.UserFactory(isActive=True)
         google_sso = users_factories.SingleSignOnFactory(user=user, ssoUserId="old id", ssoProvider=sso_provider)
@@ -719,7 +740,7 @@ class SSOSigninTest:
         assert response.status_code == 200
         assert google_sso.ssoUserId == self.valid_sso_user.sub
 
-    @patch("pcapi.connectors.google_oauth.get_google_user")
+    @patch("pcapi.connectors.sso.google.GoogleSSOProvider.validate_token")
     def test_single_sign_on_inserts_sso_method_if_email_found(self, mocked_google_oauth, client):
         user = users_factories.UserFactory(email=self.valid_sso_user.email, isActive=True)
         oauth_state_token = token_utils.UUIDToken.create(
@@ -743,7 +764,7 @@ class SSOSigninTest:
         )
         assert created_sso.ssoUserId == self.valid_sso_user.sub
 
-    @patch("pcapi.connectors.google_oauth.get_google_user")
+    @patch("pcapi.connectors.sso.google.GoogleSSOProvider.validate_token")
     def test_single_sign_on_raises_if_email_not_validated(self, mocked_google_oauth, client):
         users_factories.UserFactory(email=self.valid_sso_user.email, isActive=True)
         oauth_state_token = token_utils.UUIDToken.create(
@@ -764,7 +785,7 @@ class SSOSigninTest:
 
         assert response.status_code == 400
 
-    @patch("pcapi.connectors.google_oauth.get_google_user")
+    @patch("pcapi.connectors.sso.google.GoogleSSOProvider.validate_token")
     def test_single_sign_on_validates_email_and_deletes_password(self, mocked_google_oauth, client, caplog):
         user = users_factories.UserFactory(email=self.valid_sso_user.email, isEmailValidated=False)
         oauth_state_token = token_utils.UUIDToken.create(
@@ -786,8 +807,8 @@ class SSOSigninTest:
         assert user.password is None
 
     @pytest.mark.parametrize("sso_provider", ("apple", "google"))
-    @patch("pcapi.connectors.google_oauth.get_google_user")
-    @patch("pcapi.connectors.apple_oauth.get_apple_user")
+    @patch("pcapi.connectors.sso.google.GoogleSSOProvider.validate_token")
+    @patch("pcapi.connectors.sso.apple.AppleSSOProvider.validate_token")
     def test_single_sign_on_does_not_duplicate_ssos(
         self, mocked_apple_oauth, mocked_google_oauth, sso_provider, client
     ):
@@ -848,7 +869,7 @@ class SSOSigninTest:
         assert response.status_code == 400, response.json
         assert response.json["code"] == "SSO_LOGIN_TIMEOUT"
 
-    @patch("pcapi.connectors.google_oauth.get_google_user")
+    @patch("pcapi.connectors.sso.google.GoogleSSOProvider.validate_token")
     def test_authorization_expires_oauth_state_token(self, mocked_google_oauth, client):
         users_factories.SingleSignOnFactory(
             ssoUserId=self.valid_sso_user.sub, user__email=self.valid_sso_user.email, user__isActive=True
@@ -879,7 +900,7 @@ class SSOSigninTest:
         assert uuid.UUID(oauth_state_token.key_suffix)
         assert not oauth_state_token.check(token_utils.TokenType.OAUTH_STATE, oauth_state_token.key_suffix)
 
-    @patch("pcapi.connectors.google_oauth.get_google_user")
+    @patch("pcapi.connectors.sso.google.GoogleSSOProvider.validate_token")
     def test_oauth_state_token_roundtrip(self, mocked_google_oauth, client):
         users_factories.SingleSignOnFactory(
             ssoUserId=self.valid_sso_user.sub, user__email=self.valid_sso_user.email, user__isActive=True
@@ -899,7 +920,7 @@ class SSOSigninTest:
         assert authorization_response.status_code == 200, authorization_response.json
 
     @pytest.mark.parametrize("header,is_web", [("web", True), ("", False), ("other", False)])
-    @patch("pcapi.connectors.google_oauth.get_google_user")
+    @patch("pcapi.connectors.sso.google.GoogleSSOProvider.validate_token", autospec=True)
     def test_get_platform_from_request_headers(self, mocked_google_oauth, client, header, is_web):
         users_factories.SingleSignOnFactory(
             ssoUserId=self.valid_sso_user.sub, user__email=self.valid_sso_user.email, user__isActive=True
@@ -920,7 +941,9 @@ class SSOSigninTest:
         )
 
         assert response.status_code == 200, response.json
-        mocked_google_oauth.assert_called_with("4/google_code", is_web)
+        provider, authorization_code = mocked_google_oauth.call_args.args
+        assert authorization_code == "4/google_code"
+        assert provider.client_type == ("web" if is_web else "mobile")
 
     def test_single_sign_on_fail_when_missing_device_info(self, client):
         users_factories.SingleSignOnFactory(
@@ -937,14 +960,14 @@ class SSOSigninTest:
 
         assert response.status_code == 400
 
-    @patch("pcapi.connectors.apple_oauth.get_apple_user")
+    @patch("pcapi.connectors.sso.apple.AppleSSOProvider.validate_token")
     def test_apple_denied_without_sso_link_and_without_email(self, mocked_apple_oauth, client):
         # Without an existing SSO link we cannot identify the user by sub alone: the email is
         # required to match or create an account, so the login must be denied when it is missing.
         oauth_state_token = token_utils.UUIDToken.create(
             token_utils.TokenType.OAUTH_STATE, users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME
         )
-        apple_user_without_email = users_schemas.SSOUser(
+        apple_user_without_email = SSOUser(
             sub=self.valid_sso_user.sub,
             email=None,
             email_verified=None,
@@ -953,8 +976,12 @@ class SSOSigninTest:
         mocked_apple_oauth.return_value = apple_user_without_email
 
         response = client.post(
-            "/native/v1/oauth/apple/authorize",
-            json={"authorizationCode": "4/apple_code", "oauthStateToken": oauth_state_token.encoded_token},
+            "/native/v2/oauth/apple/authorize",
+            json={
+                "authorizationCode": "4/apple_code",
+                "oauthStateToken": oauth_state_token.encoded_token,
+                "device_info": self.device_info,
+            },
         )
 
         assert response.status_code == 400
@@ -962,14 +989,19 @@ class SSOSigninTest:
 
 
 class SSORefreshTokenPersistenceTest:
-    valid_sso_user = users_schemas.SSOUser(
+    valid_sso_user = SSOUser(
         sub="100428144463745704968",
         email="docteur.cuesta@passculture.app",  # gitleaks:allow
         email_verified=True,
         extra_data={"mobile": "apple-refresh-token"},
     )
+    device_info = {
+        "os": "iOS",
+        "deviceId": "ID",
+        "source": "app",
+    }
 
-    @patch("pcapi.connectors.apple_oauth.get_apple_user")
+    @patch("pcapi.connectors.sso.apple.AppleSSOProvider.validate_token")
     def test_persists_encrypted_refresh_token(self, mocked_apple_oauth, client):
         user = users_factories.UserFactory(email=self.valid_sso_user.email, isActive=True)
         oauth_state_token = token_utils.UUIDToken.create(
@@ -978,8 +1010,12 @@ class SSORefreshTokenPersistenceTest:
         mocked_apple_oauth.return_value = self.valid_sso_user
 
         response = client.post(
-            "/native/v1/oauth/apple/authorize",
-            json={"authorizationCode": "4/apple_code", "oauthStateToken": oauth_state_token.encoded_token},
+            "/native/v2/oauth/apple/authorize",
+            json={
+                "authorizationCode": "4/apple_code",
+                "oauthStateToken": oauth_state_token.encoded_token,
+                "device_info": self.device_info,
+            },
         )
 
         assert response.status_code == 200
@@ -989,7 +1025,7 @@ class SSORefreshTokenPersistenceTest:
         assert sso.ssoExtraData is not None
         assert sso.ssoExtraData == {"mobile": "apple-refresh-token"}
 
-    @patch("pcapi.connectors.apple_oauth.get_apple_user")
+    @patch("pcapi.connectors.sso.apple.AppleSSOProvider.validate_token")
     def test_overwrite_existing_refresh_token_on_relog(self, mocked_apple_oauth, client):
         user = users_factories.UserFactory(email=self.valid_sso_user.email, isActive=True)
         users_factories.SingleSignOnFactory(
@@ -1004,8 +1040,12 @@ class SSORefreshTokenPersistenceTest:
         mocked_apple_oauth.return_value = self.valid_sso_user
 
         response = client.post(
-            "/native/v1/oauth/apple/authorize",
-            json={"authorizationCode": "4/apple_code", "oauthStateToken": oauth_state_token.encoded_token},
+            "/native/v2/oauth/apple/authorize",
+            json={
+                "authorizationCode": "4/apple_code",
+                "oauthStateToken": oauth_state_token.encoded_token,
+                "device_info": self.device_info,
+            },
         )
 
         assert response.status_code == 200
