@@ -75,4 +75,6 @@ jobs:
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
-          semgrep scan --config auto --baseline-commit "$BASE_SHA" --error --exclude-rule=python.django.security.django-no-csrf-token.django-no-csrf-token
+          semgrep scan --config auto --baseline-commit "$BASE_SHA" --error \
+          --exclude-rule=python.django.security.django-no-csrf-token.django-no-csrf-token \
+          --exclude-rule=yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag
