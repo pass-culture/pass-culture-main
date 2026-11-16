@@ -103,13 +103,7 @@ def get_favorite_artists() -> serializers.PaginatedResponse[serializers.Favorite
     return serializers.PaginatedResponse[serializers.FavoriteArtistResponse](
         page=1,
         nb_favorites=len(favorites),
-        favorites=[
-            serializers.FavoriteArtistResponse(
-                id=favorite_data.id,
-                artist=serializers.FavoriteArtistDataResponse.model_validate(favorite_data.artist),
-            )
-            for favorite_data in favorites
-        ],
+        favorites=[serializers.FavoriteArtistResponse.model_validate(favorite_data) for favorite_data in favorites],
     )
 
 
@@ -156,13 +150,7 @@ def get_favorite_venues() -> serializers.PaginatedResponse[serializers.FavoriteV
     return serializers.PaginatedResponse[serializers.FavoriteVenueResponse](
         page=1,
         nb_favorites=len(favorites),
-        favorites=[
-            serializers.FavoriteVenueResponse(
-                id=favorite_data.id,
-                venue=serializers.FavoriteVenueDataResponse.model_validate(favorite_data.venue),
-            )
-            for favorite_data in favorites
-        ],
+        favorites=[serializers.FavoriteVenueResponse.model_validate(favorite_data) for favorite_data in favorites],
     )
 
 
