@@ -68,10 +68,10 @@ test.describe('Didactic Onboarding feature', () => {
       page.getByRole('heading', { level: 2, name: 'Déposer un dossier ADAGE' })
     ).toBeVisible()
 
-    expect(
+    await expect(
       page.getByRole('link', { name: /Déposer un dossier/ })
     ).toHaveAttribute('target', '_blank')
-    expect(
+    await expect(
       page.getByRole('link', { name: /Déposer un dossier/ })
     ).toHaveAttribute(
       'href',
@@ -95,10 +95,10 @@ test.describe('Didactic Onboarding feature', () => {
       page.getByRole('heading', { level: 2, name: 'Déposer un dossier ADAGE' })
     ).toBeVisible()
 
-    expect(
+    await expect(
       page.getByRole('link', { name: /Déposer un dossier/ })
     ).toHaveAttribute('target', '_blank')
-    expect(
+    await expect(
       page.getByRole('link', { name: /Déposer un dossier/ })
     ).toHaveAttribute(
       'href',
