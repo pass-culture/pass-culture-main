@@ -24,6 +24,7 @@ export const useFormNavigationGuard = <
   form,
   isExternallyDirty = false,
   onSubmit,
+  saveAndLeaveSuccessMessage,
 }: {
   afterSubmitPath?: string | (() => string | undefined)
   /** Success message sent along the `afterSubmitPath` navigation (or shown immediately when there is none), so it isn't dismissed by a navigation racing with it. Can also be a function, resolved at submit time. */
@@ -33,6 +34,8 @@ export const useFormNavigationGuard = <
   isExternallyDirty?: boolean
   /** @returns {Promise<boolean>} `true` if there is no error (thus allowing navigation), `false` otherwise. */
   onSubmit: (transformedFormValues: TTransformedValues) => Promise<boolean>
+  /** Confirmation to show after saving from the navigation guard. */
+  saveAndLeaveSuccessMessage?: string
 }): {
   navigationGuardedSubmitHandler: () => Promise<void>
   navigationGuardDialog: JSX.Element
@@ -146,7 +149,11 @@ export const useFormNavigationGuard = <
           ? afterSubmitState()
           : afterSubmitState
 
-      if (proceedBlockedNavigationSafely(resolvedAfterSubmitState)) {
+      const blockedNavigationState = saveAndLeaveSuccessMessage
+        ? { successMessage: saveAndLeaveSuccessMessage }
+        : resolvedAfterSubmitState
+
+      if (proceedBlockedNavigationSafely(blockedNavigationState)) {
         return
       }
 

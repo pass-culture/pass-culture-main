@@ -17,6 +17,7 @@ import {
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
+import { PATCH_SUCCESS_MESSAGE } from '@/commons/core/shared/constants'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useFormNavigationGuard } from '@/commons/hooks/useFormNavigationGuard/useFormNavigationGuard'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
@@ -166,6 +167,7 @@ export const DetailsForm = ({
       afterSubmitState,
       form,
       onSubmit,
+      saveAndLeaveSuccessMessage: PATCH_SUCCESS_MESSAGE,
     })
 
   const handlePreviousStep = () => {

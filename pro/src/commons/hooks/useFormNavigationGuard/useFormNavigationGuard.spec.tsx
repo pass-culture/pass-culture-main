@@ -22,8 +22,11 @@ import {
 import { describe, expect, it, vi } from 'vitest'
 import { type InferType, object } from 'yup'
 
+import { useFocus } from '@/app/App/hook/useFocus'
+import { PATCH_SUCCESS_MESSAGE } from '@/commons/core/shared/constants'
 import { configureTestStore } from '@/commons/store/testUtils'
 import { nonEmptyStringOrNull } from '@/commons/utils/yup/nonEmptyStringOrNull'
+import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
 
 import { useFormNavigationGuard } from './useFormNavigationGuard'
 
@@ -40,6 +43,8 @@ const renderNavigationGuardedFakeForm = (initialProps: {
   afterSubmitPath?: string | (() => string)
   isExternallyDirty?: boolean
   resetFormAfterSubmit?: boolean
+  afterSubmitState?: { successMessage?: string }
+  saveAndLeaveSuccessMessage?: string
   onSubmit: () => Promise<boolean>
 }) => {
   const fakeFormSchema = object({
@@ -57,8 +62,10 @@ const renderNavigationGuardedFakeForm = (initialProps: {
     const { navigationGuardedSubmitHandler, navigationGuardDialog } =
       useFormNavigationGuard({
         afterSubmitPath: initialProps.afterSubmitPath,
+        afterSubmitState: initialProps.afterSubmitState,
         form,
         isExternallyDirty: initialProps.isExternallyDirty,
+        saveAndLeaveSuccessMessage: initialProps.saveAndLeaveSuccessMessage,
         onSubmit: async () => {
           const canProceed = await initialProps.onSubmit()
 
@@ -89,6 +96,11 @@ const renderNavigationGuardedFakeForm = (initialProps: {
     )
   }
 
+  const DestinationPage = () => {
+    useFocus()
+    return <h1>Another Page</h1>
+  }
+
   return renderHook(
     () => ({
       location: useLocation(),
@@ -112,7 +124,7 @@ const renderNavigationGuardedFakeForm = (initialProps: {
             path: '/another-page',
             Component: () => (
               <>
-                <h1>Another Page</h1>
+                <DestinationPage />
                 {children}
               </>
             ),
@@ -131,6 +143,7 @@ const renderNavigationGuardedFakeForm = (initialProps: {
         return (
           <Provider store={store}>
             <ReactRouterStub initialEntries={['/form-page']} />
+            <SnackBarContainer />
           </Provider>
         )
       },
@@ -183,6 +196,108 @@ describe('useFormNavigationGuard', () => {
       ).toBeVisible()
     })
 
+    describe('save-and-leave message', () => {
+      it('displays the message on the requested destination', async () => {
+        const user = userEvent.setup()
+        onSubmitMock.mockResolvedValueOnce(true)
+        const { result } = renderNavigationGuardedFakeForm({
+          afterSubmitPath: '/after-submit-page',
+          saveAndLeaveSuccessMessage: PATCH_SUCCESS_MESSAGE,
+          onSubmit: onSubmitMock,
+        })
+
+        await user.type(
+          screen.getByRole('textbox', { name: 'A Field' }),
+          'value'
+        )
+        await user.click(
+          screen.getByRole('link', { name: 'Go to another page' })
+        )
+        await user.click(
+          screen.getByRole('button', { name: 'Enregistrer et quitter' })
+        )
+
+        await waitFor(() => {
+          expect(result.current.location.pathname).toBe('/another-page')
+          expect(
+            screen.getByTestId('global-snack-bar-success-0')
+          ).toHaveTextContent(PATCH_SUCCESS_MESSAGE)
+        })
+      })
+
+      it('does not use the message for a normal form submission', async () => {
+        const user = userEvent.setup()
+        onSubmitMock.mockResolvedValueOnce(true)
+        renderNavigationGuardedFakeForm({
+          afterSubmitPath: '/after-submit-page',
+          saveAndLeaveSuccessMessage: PATCH_SUCCESS_MESSAGE,
+          onSubmit: onSubmitMock,
+        })
+
+        await user.type(
+          screen.getByRole('textbox', { name: 'A Field' }),
+          'value'
+        )
+        await user.click(screen.getByRole('button', { name: 'Sauvegarder' }))
+
+        await screen.findByRole('heading', { name: 'After Submit Page' })
+        expect(
+          screen.queryByTestId('global-snack-bar-success-0')
+        ).not.toBeInTheDocument()
+      })
+
+      it('does not navigate or show success when saving fails', async () => {
+        const user = userEvent.setup()
+        onSubmitMock.mockResolvedValueOnce(false)
+        const { result } = renderNavigationGuardedFakeForm({
+          saveAndLeaveSuccessMessage: PATCH_SUCCESS_MESSAGE,
+          onSubmit: onSubmitMock,
+        })
+
+        await user.type(
+          screen.getByRole('textbox', { name: 'A Field' }),
+          'value'
+        )
+        await user.click(
+          screen.getByRole('link', { name: 'Go to another page' })
+        )
+        await user.click(
+          screen.getByRole('button', { name: 'Enregistrer et quitter' })
+        )
+
+        await waitFor(() => expect(onSubmitMock).toHaveBeenCalledOnce())
+        expect(result.current.location.pathname).toBe('/form-page')
+        expect(
+          screen.queryByTestId('global-snack-bar-success-0')
+        ).not.toBeInTheDocument()
+      })
+
+      it('uses the save-and-leave message instead of the normal success message', async () => {
+        const user = userEvent.setup()
+        onSubmitMock.mockResolvedValueOnce(true)
+        renderNavigationGuardedFakeForm({
+          afterSubmitState: { successMessage: 'Message spécifique' },
+          saveAndLeaveSuccessMessage: PATCH_SUCCESS_MESSAGE,
+          onSubmit: onSubmitMock,
+        })
+
+        await user.type(
+          screen.getByRole('textbox', { name: 'A Field' }),
+          'value'
+        )
+        await user.click(
+          screen.getByRole('link', { name: 'Go to another page' })
+        )
+        await user.click(
+          screen.getByRole('button', { name: 'Enregistrer et quitter' })
+        )
+
+        expect(
+          await screen.findByTestId('global-snack-bar-success-0')
+        ).toHaveTextContent(PATCH_SUCCESS_MESSAGE)
+      })
+    })
+
     describe('when form is dirty', () => {
       let user: UserEvent
       let result: RenderHookResult<
@@ -194,6 +309,8 @@ describe('useFormNavigationGuard', () => {
           afterSubmitPath?: string | (() => string)
           isExternallyDirty?: boolean
           resetFormAfterSubmit?: boolean
+          afterSubmitState?: { successMessage?: string }
+          saveAndLeaveSuccessMessage?: string
           onSubmit: () => Promise<boolean>
         }
       >
