@@ -31,6 +31,8 @@ async function waitForSnackbarIfPresent(page: Page) {
 export async function checkAccessibility(page: Page): Promise<void> {
   const axeBuilder = new AxeBuilder({ page })
   axeBuilder.exclude('iframe[name^="a-"]')
+  // TODO: rule enabled by default since axe-core 4.14
+  axeBuilder.disableRules(['label-content-name-mismatch'])
 
   await waitForSnackbarIfPresent(page)
 
