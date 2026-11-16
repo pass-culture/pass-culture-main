@@ -376,3 +376,11 @@ if settings.SOFTDELETE_ENABLED:
 
         # Replace the statement
         state.statement = adapted
+
+
+@listens_for(sa_orm.Session, "do_orm_execute")
+def receive_do_orm_execute(orm_execute_state: sa_orm.ORMExecuteState) -> None:
+    if orm_execute_state.is_relationship_load and orm_execute_state.lazy_loaded_from:
+        relationship_path = orm_execute_state.loader_strategy_path
+
+        logger.warning("Lazy load detected on %s", relationship_path)
