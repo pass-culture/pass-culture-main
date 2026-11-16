@@ -4367,6 +4367,69 @@
                 "title": "FavoriteResponse",
                 "type": "object"
             },
+            "FavoriteVenueDataResponse": {
+                "additionalProperties": false,
+                "properties": {
+                    "id": {
+                        "title": "Id",
+                        "type": "integer"
+                    },
+                    "image": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Image"
+                    },
+                    "name": {
+                        "title": "Name",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "name",
+                    "image"
+                ],
+                "title": "FavoriteVenueDataResponse",
+                "type": "object"
+            },
+            "FavoriteVenueRequest": {
+                "additionalProperties": false,
+                "properties": {
+                    "venueId": {
+                        "title": "Venueid",
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "venueId"
+                ],
+                "title": "FavoriteVenueRequest",
+                "type": "object"
+            },
+            "FavoriteVenueResponse": {
+                "additionalProperties": false,
+                "properties": {
+                    "id": {
+                        "title": "Id",
+                        "type": "integer"
+                    },
+                    "venue": {
+                        "$ref": "#/components/schemas/FavoriteVenueDataResponse"
+                    }
+                },
+                "required": [
+                    "id",
+                    "venue"
+                ],
+                "title": "FavoriteVenueResponse",
+                "type": "object"
+            },
             "GTL": {
                 "additionalProperties": false,
                 "properties": {
@@ -8061,6 +8124,33 @@
                     "favorites"
                 ],
                 "title": "PaginatedResponse[FavoriteOfferResponseV2]",
+                "type": "object"
+            },
+            "PaginatedResponse[FavoriteVenueResponse]": {
+                "additionalProperties": false,
+                "properties": {
+                    "favorites": {
+                        "items": {
+                            "$ref": "#/components/schemas/FavoriteVenueResponse"
+                        },
+                        "title": "Favorites",
+                        "type": "array"
+                    },
+                    "nbFavorites": {
+                        "title": "Nbfavorites",
+                        "type": "integer"
+                    },
+                    "page": {
+                        "title": "Page",
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "page",
+                    "nbFavorites",
+                    "favorites"
+                ],
+                "title": "PaginatedResponse[FavoriteVenueResponse]",
                 "type": "object"
             },
             "PlaylistRequestBody": {
@@ -15671,6 +15761,138 @@
                     }
                 ],
                 "summary": "delete_favorite_offer <DELETE>",
+                "tags": []
+            }
+        },
+        "/native/v2/me/favorites/venues": {
+            "get": {
+                "description": "",
+                "operationId": "get__native_v2_me_favorites_venues",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PaginatedResponse[FavoriteVenueResponse]"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        },
+                        "description": "Unprocessable Content"
+                    }
+                },
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "summary": "get_favorite_venues <GET>",
+                "tags": []
+            },
+            "post": {
+                "description": "",
+                "operationId": "post__native_v2_me_favorites_venues",
+                "parameters": [],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/FavoriteVenueRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/FavoriteVenueResponse"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        },
+                        "description": "Unprocessable Content"
+                    }
+                },
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "summary": "create_favorite_venue <POST>",
+                "tags": []
+            }
+        },
+        "/native/v2/me/favorites/venues/{favorite_id}": {
+            "delete": {
+                "description": "",
+                "operationId": "delete__native_v2_me_favorites_venues_{favorite_id}",
+                "parameters": [
+                    {
+                        "description": "",
+                        "in": "path",
+                        "name": "favorite_id",
+                        "required": true,
+                        "schema": {
+                            "format": "int32",
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        },
+                        "description": "Unprocessable Content"
+                    }
+                },
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "summary": "delete_favorite_venue <DELETE>",
                 "tags": []
             }
         },
