@@ -9,10 +9,11 @@ from pcapi.core.favorites.api import set_artist_as_favorite
 from pcapi.core.favorites.api import set_offer_as_favorite
 from pcapi.core.favorites.repository import get_favorite_artists_for
 from pcapi.core.favorites.repository import get_favorite_offers_for
+from pcapi.core.favorites.repository import get_favorite_venues_for
+from pcapi.core.offerers.exceptions import VenueNotFoundException
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.exceptions import OfferNotFound
 from pcapi.models.api_errors import ApiErrors
-from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.models.api_errors import resource_not_found_error
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.routes.native.v2.serialization import favorites as serializers
@@ -59,14 +60,14 @@ def create_favorite_offer(body: serializers.FavoriteRequest) -> serializers.Favo
     except favorites_exceptions.MaxFavoritesReached as e:
         raise ApiErrors({"code": "MAX_FAVORITES_REACHED"}) from e
     except OfferNotFound as e:
-        raise ResourceNotFoundError() from e
+        raise resource_not_found_error() from e
     except favorites_exceptions.InactiveOffer as e:
-        raise ResourceNotFoundError() from e
+        raise resource_not_found_error() from e
 
     favorite_data = get_favorite_offers_for(current_user, offer_id=body.offer_id)
 
     if not favorite_data:
-        raise ResourceNotFoundError()
+        raise resource_not_found_error()
 
     favorite = favorite_data[0]
 
@@ -124,7 +125,7 @@ def create_favorite_artist(body: serializers.FavoriteArtistRequest) -> serialize
     except favorites_exceptions.MaxFavoritesReached as e:
         raise ApiErrors({"code": "MAX_FAVORITES_REACHED"}) from e
     except ArtistNotFound as e:
-        raise ResourceNotFoundError() from e
+        raise resource_not_found_error() from e
 
     favorite_data = get_favorite_artists_for(current_user, artist_id=body.artist_id)[0]
 
@@ -141,5 +142,63 @@ def create_favorite_artist(body: serializers.FavoriteArtistRequest) -> serialize
 def delete_favorite_artist(favorite_id: int) -> None:
     try:
         api.delete_favorite_artist(current_user, favorite_id)
+    except favorites_exceptions.FavoriteNotFound as e:
+        raise resource_not_found_error() from e
+
+
+@blueprint.native_route("/me/favorites/venues", version="v2", methods=["GET"])
+@atomic()
+@authenticated_and_active_user_required
+@spectree_serialize(response_model=serializers.PaginatedResponse[serializers.FavoriteVenueResponse], api=blueprint.api)
+def get_favorite_venues() -> serializers.PaginatedResponse[serializers.FavoriteVenueResponse]:
+    favorites = get_favorite_venues_for(current_user)
+
+    return serializers.PaginatedResponse[serializers.FavoriteVenueResponse](
+        page=1,
+        nb_favorites=len(favorites),
+        favorites=[
+            serializers.FavoriteVenueResponse(
+                id=favorite_data.id,
+                venue=serializers.FavoriteVenueDataResponse.model_validate(favorite_data.venue),
+            )
+            for favorite_data in favorites
+        ],
+    )
+
+
+@blueprint.native_route("/me/favorites/venues", version="v2", methods=["POST"])
+@atomic()
+@authenticated_and_active_user_required
+@spectree_serialize(response_model=serializers.FavoriteVenueResponse, on_error_statuses=[400], api=blueprint.api)
+def create_favorite_venue(body: serializers.FavoriteVenueRequest) -> serializers.FavoriteVenueResponse:
+    try:
+        api.set_venue_as_favorite(current_user, body.venue_id)
+    except favorites_exceptions.AlreadyAsFavorite:
+        pass
+    except favorites_exceptions.MaxFavoritesReached as e:
+        raise ApiErrors({"code": "MAX_FAVORITES_REACHED"}) from e
+    except VenueNotFoundException as e:
+        raise resource_not_found_error() from e
+
+    favorite_data = get_favorite_venues_for(current_user, venue_id=body.venue_id)
+
+    if not favorite_data:
+        raise resource_not_found_error()
+
+    favorite = favorite_data[0]
+
+    return serializers.FavoriteVenueResponse(
+        id=favorite.id,
+        venue=serializers.FavoriteVenueDataResponse.model_validate(favorite.venue),
+    )
+
+
+@blueprint.native_route("/me/favorites/venues/<int:favorite_id>", version="v2", methods=["DELETE"])
+@atomic()
+@authenticated_and_active_user_required
+@spectree_serialize(on_success_status=204, api=blueprint.api)
+def delete_favorite_venue(favorite_id: int) -> None:
+    try:
+        api.delete_favorite_venue(current_user, favorite_id)
     except favorites_exceptions.FavoriteNotFound as e:
         raise resource_not_found_error() from e

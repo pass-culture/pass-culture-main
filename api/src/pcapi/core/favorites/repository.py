@@ -181,7 +181,12 @@ def get_favorite_venues_for(
     favorite_id: int | None = None,
     venue_id: int | None = None,
 ) -> list[models.FavoriteVenue]:
-    query = sa.select(models.FavoriteVenue).where(models.FavoriteVenue.userId == user.id)
+    query = (
+        sa.select(models.FavoriteVenue)
+        .where(models.FavoriteVenue.userId == user.id)
+        # `Venue.bannerUrl` reads `googlePlacesInfo`
+        .options(sa_orm.joinedload(models.FavoriteVenue.venue).joinedload(Venue.googlePlacesInfo))
+    )
 
     if favorite_id:
         query = query.filter(models.FavoriteVenue.id == favorite_id)
