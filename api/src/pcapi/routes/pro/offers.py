@@ -28,6 +28,7 @@ from pcapi.core.videos import api as videos_api
 from pcapi.core.videos import exceptions as videos_exceptions
 from pcapi.models import api_errors
 from pcapi.models import db
+from pcapi.models import feature
 from pcapi.models.utils import first_or_404
 from pcapi.models.utils import get_or_404
 from pcapi.routes.pro.blueprint import pro_blueprint
@@ -309,10 +310,13 @@ def delete_draft_offers(body: offers_serialize.DeleteOfferRequestBody) -> None:
     api=blueprint.pro_schema,
 )
 @atomic()
-def create_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.GetIndividualOfferResponseModel:
+def create_offer(
+    body: offers_serialize.PostCombinedOfferBodyModel,
+) -> offers_serialize.GetIndividualOfferResponseModel:
+    offer_data = body.root
     venue: offerers_models.Venue = first_or_404(
         db.session.query(offerers_models.Venue)
-        .filter(offerers_models.Venue.id == body.venue_id)
+        .filter(offerers_models.Venue.id == offer_data.venue_id)
         .options(
             sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(offerers_models.OffererAddress.address),
             sa_orm.joinedload(offerers_models.Venue.managingOfferer),
@@ -321,22 +325,28 @@ def create_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.
     rest.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
     rest.check_venue_is_opened(venue)
 
-    ean_code = body.extra_data.get("ean", None) if body.extra_data is not None else None
+    ean_code = offer_data.extra_data.get("ean", None) if offer_data.extra_data is not None else None
     product = (
         db.session.query(models.Product)
         .filter(models.Product.ean == ean_code)
-        .filter(models.Product.id == body.product_id)
+        .filter(models.Product.id == offer_data.product_id)
         .one_or_none()
     )
 
-    values = body.model_dump(by_alias=True)
+    values = offer_data.model_dump(by_alias=True)
 
     values["ean"] = ean_code
 
     values.pop("productId", None)
     values.pop("venueId", None)
 
-    create_offer_schema = offers_schemas.CreateOffer(**values)
+    create_offer_schema: offers_schemas.CreateOffer | offers_schemas.CreateNFDOffer
+    if isinstance(offer_data, offers_serialize.PostOfferBodyModel):
+        create_offer_schema = offers_schemas.CreateOffer(**values)
+    else:
+        if not feature.FeatureToggle.WIP_NFD.is_active():
+            raise feature.DisabledFeatureError()
+        create_offer_schema = offers_schemas.CreateNFDOffer(**values)
 
     try:
         offer = offers_api.create_offer(create_offer_schema, venue=venue, product=product, is_from_private_api=True)

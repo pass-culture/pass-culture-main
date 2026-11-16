@@ -706,6 +706,11 @@ export const zDisplayableActivity = z.enum([
 ]);
 
 /**
+ * DomainEnum
+ */
+export const zDomainEnum = z.enum(['DANSE']);
+
+/**
  * DownloadBookingsQueryModel
  */
 export const zDownloadBookingsQueryModel = z.object({
@@ -2039,6 +2044,27 @@ export const zPostDateRangeModel = z.object({
 });
 
 /**
+ * PostNFDOfferBodyModel
+ */
+export const zPostNfdOfferBodyModel = z.object({
+    artistOfferLinks: z.array(zArtistOfferLinkBodyModelV2).nullable(),
+    audioDisabilityCompliant: z.boolean(),
+    description: z.string().nullable(),
+    domain: zDomainEnum.nullish().default(null),
+    durationMinutes: z.int().nullable(),
+    extraData: zOfferExtraDataV2.nullable(),
+    format: zFormatEnum,
+    hasCulturalOutreachClaim: z.boolean().nullable(),
+    mentalDisabilityCompliant: z.boolean(),
+    motorDisabilityCompliant: z.boolean(),
+    name: z.string().max(90),
+    nature: zNatureEnum,
+    productId: z.int().nullable(),
+    venueId: z.int(),
+    visualDisabilityCompliant: z.boolean()
+});
+
+/**
  * PostOfferBodyModel
  */
 export const zPostOfferBodyModel = z.object({
@@ -2056,6 +2082,14 @@ export const zPostOfferBodyModel = z.object({
     venueId: z.int(),
     visualDisabilityCompliant: z.boolean()
 });
+
+/**
+ * PostCombinedOfferBodyModel
+ */
+export const zPostCombinedOfferBodyModel = z.union([
+    zPostOfferBodyModel,
+    zPostNfdOfferBodyModel
+]);
 
 /**
  * PostOffererResponseModel
@@ -3498,9 +3532,11 @@ export const zPatchOfferBodyModel = z.object({
     bookingContact: z.email().nullish().default(null),
     bookingEmail: z.email().nullish().default(null),
     description: z.string().nullish().default(null),
+    domain: zDomainEnum.nullish().default(null),
     durationMinutes: z.int().nullish().default(null),
     externalTicketOfficeUrl: z.string().nullish().default(null),
     extraData: zOfferExtraDataV2.nullish().default(null),
+    format: zFormatEnum.nullish().default(null),
     hasCulturalOutreachClaim: z.boolean().nullish().default(null),
     isDuo: z.boolean().nullish().default(null),
     isNational: z.boolean().nullish().default(null),
@@ -3511,6 +3547,7 @@ export const zPatchOfferBodyModel = z.object({
     mentalDisabilityCompliant: z.boolean().nullish().default(null),
     motorDisabilityCompliant: z.boolean().nullish().default(null),
     name: z.string().max(90).nullish().default(null),
+    nature: zNatureEnum.nullish().default(null),
     publicationDatetime: z.union([
         z.iso.datetime(),
         z.literal('now')
@@ -4511,7 +4548,7 @@ export const zValidateUserPath = z.object({
  */
 export const zValidateUserResponse = z.void();
 
-export const zCreateOfferBody = zPostOfferBodyModel;
+export const zCreateOfferBody = zPostCombinedOfferBodyModel;
 
 /**
  * Created

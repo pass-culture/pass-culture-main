@@ -114,7 +114,9 @@ def before_handler(
             else:
                 message = error["msg"]
 
-            location = ".".join(str(loc) for loc in error["loc"])
+            location = ".".join(
+                str(loc) for loc in error["loc"] if loc not in ["PostOfferBodyModel", "PostNFDOfferBodyModel"]
+            )
             api_errors.add_error(location, message)
         raise api_errors
 

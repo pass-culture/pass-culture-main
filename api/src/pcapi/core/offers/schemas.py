@@ -10,6 +10,7 @@ from pydantic.v1 import HttpUrl
 from pydantic.v1 import root_validator
 from pydantic.v1 import validator
 
+from pcapi.core.nature_format_domain import nature_format_domain as nfd
 from pcapi.core.offers import models as offers_models
 from pcapi.routes.provider.individual_offers.v1 import serialization as individual_offers_v1_serialization
 from pcapi.routes.serialization import BaseModel
@@ -18,9 +19,8 @@ from pcapi.routes.serialization import artist_serialize
 from pcapi.serialization import utils as serialization_utils
 
 
-class CreateOffer(BaseModel):
+class BaseCreateOffer(BaseModel):
     name: str
-    subcategory_id: str
     audio_disability_compliant: bool
     mental_disability_compliant: bool
     motor_disability_compliant: bool
@@ -70,6 +70,16 @@ class CreateOffer(BaseModel):
     class Config:
         alias_generator = serialization_utils.to_camel
         extra = "forbid"
+
+
+class CreateOffer(BaseCreateOffer):
+    subcategory_id: str
+
+
+class CreateNFDOffer(BaseCreateOffer):
+    nature: nfd.NatureEnum | None = None
+    format: nfd.FormatEnum | None = None
+    domain: nfd.DomainEnum | None = None
 
 
 class SerializedProductsStock(typing.TypedDict):

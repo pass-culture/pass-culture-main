@@ -9,6 +9,7 @@ import pcapi.core.users.factories as users_factories
 from pcapi.core.artist import factories as artist_factories
 from pcapi.core.categories import subcategories
 from pcapi.core.cultural_outreach.constants import CULTURAL_OUTREACH_ALLOWED_ACTIVITIES
+from pcapi.core.nature_format_domain import nature_format_domain as nfd
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers.models import Offer
 from pcapi.core.testing import assert_num_queries
@@ -248,12 +249,38 @@ class CreateThingsTest(CreateOfferBase):
         with assert_changes(Offer, 1):
             with assert_num_queries(self.success_num_queries):
                 response = auth_client.post(self.endpoint, json=payload)
-                assert response.status_code == 201
+                assert response.status_code == 201, response.json
 
         offer = db.session.query(Offer).one()
 
         shared_response_json_checks(offer, response.json)
         shared_offer_checks(offer, payload)
+
+        assert not offer.isDigital
+        assert not offer.isEvent
+
+    @pytest.mark.features(WIP_NFD=True)
+    def test_create_nfd_offer_with_minimal_payload(self, auth_client, venue):
+        ref_payload = offer_minimal_shared_data(subcategories.LIVRE_PAPIER.id, venue)
+        payload = ref_payload.copy()
+        del payload["subcategoryId"]
+        payload.update(
+            {
+                "nature": nfd.NatureEnum.BIEN.name,
+                "format": nfd.FormatEnum.LIVRE_PAPIER.name,
+                "domain": None,
+            }
+        )
+
+        with assert_changes(Offer, 1):
+            with assert_num_queries(self.success_num_queries):
+                response = auth_client.post(self.endpoint, json=payload)
+                assert response.status_code == 201, response.json
+
+        offer = db.session.query(Offer).one()
+
+        shared_response_json_checks(offer, response.json)
+        shared_offer_checks(offer, ref_payload)
 
         assert not offer.isDigital
         assert not offer.isEvent
@@ -626,7 +653,7 @@ class CreateOfferErrorTest:
         with assert_no_changes(Offer):
             response = auth_client.post(self.endpoint, json=payload)
             assert response.status_code == 400
-            assert missing_key in response.json
+            assert missing_key in response.json, response.json
 
 
 class Returns200Test:

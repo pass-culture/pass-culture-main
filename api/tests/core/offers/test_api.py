@@ -1434,6 +1434,42 @@ class CreateOfferTest:
 
         assert current_app.redis_client.smembers(REDIS_EMAIL_LIST_ATTRIBUTES_TO_UPDATE) == {venue.bookingEmail}
 
+    @pytest.mark.parametrize("domain", (None, nfd.DomainEnum.DANSE))
+    def test_create_offer_by_nfd(self, domain):
+        venue = offerers_factories.VenueFactory()
+        offerer_address = offerers_factories.OfferLocationFactory(venue=venue)
+
+        body = offers_schemas.CreateNFDOffer(
+            name="A pretty good offer",
+            # subcategoryId=subcategories.SEANCE_CINE.id,
+            nature=nfd.NatureEnum.BIEN,
+            format=nfd.FormatEnum.LIVRE_PAPIER,
+            domain=domain,
+            externalTicketOfficeUrl="http://example.net",
+            audioDisabilityCompliant=True,
+            mentalDisabilityCompliant=True,
+            motorDisabilityCompliant=True,
+            visualDisabilityCompliant=True,
+        )
+        offer = api.create_offer(body, venue=venue, offerer_address=offerer_address)
+
+        assert offer.name == "A pretty good offer"
+        assert offer.venue == venue
+        assert offer.subcategoryId == subcategories.LIVRE_PAPIER.id
+        assert not offer.product
+        assert offer.externalTicketOfficeUrl == "http://example.net"
+        assert offer.audioDisabilityCompliant
+        assert offer.mentalDisabilityCompliant
+        assert offer.motorDisabilityCompliant
+        assert offer.visualDisabilityCompliant
+        assert offer.validation == models.OfferValidationStatus.DRAFT
+        assert offer.extraData == {}
+        assert offer.metaData is None
+        assert not offer.bookingEmail
+        assert db.session.query(models.Offer).count() == 1
+        assert offer.offererAddress == offerer_address
+        assert offer.offererAddress != venue.offererAddress
+
     def test_create_offer_with_id_at_provider(self):
         venue = offerers_factories.VenueFactory()
         provider = providers_factories.PublicApiProviderFactory()
