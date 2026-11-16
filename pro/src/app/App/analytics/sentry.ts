@@ -9,6 +9,7 @@ import {
 } from 'react-router'
 
 import { ApiError } from '@/apiClient/compat'
+import { isReportedAlgoliaWrapper } from '@/commons/errors/algoliaSearchErrors'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { selectCurrentUser } from '@/commons/store/user/selectors'
 import {
@@ -34,6 +35,9 @@ export const initializeSentry = () => {
     ],
     tracesSampleRate: Number.parseFloat(SENTRY_SAMPLE_RATE),
     beforeSend: (event, hint) => {
+      if (isReportedAlgoliaWrapper(hint.originalException)) {
+        return null
+      }
       // scrub the user autologin token from the url
       if (event.tags) {
         event.tags['url'] = removeTokenFromFrontURL(event.tags['url'] as string)

@@ -19,6 +19,8 @@ import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { MARSEILLE_EN_GRAND } from '../../constants'
 import { useAdageUser } from '../../hooks/useAdageUser'
+import { AlgoliaSearchErrorListener } from './AlgoliaSearchErrorListener'
+import { monitorAlgoliaSearch } from './algoliaSearchClient'
 import styles from './OffersInstantSearch.module.scss'
 import { OffersSearch } from './OffersSearch/OffersSearch'
 import {
@@ -26,7 +28,9 @@ import {
   adageFiltersToFacetFilters,
 } from './utils'
 
-const searchClient = liteClient(ALGOLIA_APP_ID, ALGOLIA_API_KEY)
+const searchClient = monitorAlgoliaSearch(
+  liteClient(ALGOLIA_APP_ID, ALGOLIA_API_KEY)
+)
 
 export const MAIN_INDEX_ID = 'main_offers_index'
 
@@ -152,6 +156,7 @@ export const OffersInstantSearch = (): JSX.Element | null => {
         searchClient={searchClient}
         future={{ preserveSharedStateOnUnmount: true }} // InstantSearch recommendation to prepare for version 8
       >
+        <AlgoliaSearchErrorListener />
         <Index
           indexName={ALGOLIA_COLLECTIVE_OFFERS_INDEX}
           indexId={MAIN_INDEX_ID}
