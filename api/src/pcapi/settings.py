@@ -77,6 +77,8 @@ DATABASE_URL = (
 DATABASE_POOL_SIZE = int(os.environ.get("DATABASE_POOL_SIZE", "20"))
 # Default matches SQLAlchemy's; tune per role with DATABASE_POOL_SIZE under gevent, where each worker can use its whole pool
 DATABASE_POOL_MAX_OVERFLOW = int(os.environ.get("DATABASE_POOL_MAX_OVERFLOW", "10"))
+# Seconds to wait for a pool connection before failing; default matches SQLAlchemy's
+DATABASE_POOL_TIMEOUT = int(os.environ.get("DATABASE_POOL_TIMEOUT", "30"))
 DATABASE_STATEMENT_TIMEOUT = int(os.environ.get("DATABASE_STATEMENT_TIMEOUT", "0"))
 DATABASE_LOCK_TIMEOUT = int(os.environ.get("DATABASE_LOCK_TIMEOUT", "0"))
 DATABASE_IDLE_IN_TRANSACTION_SESSION_TIMEOUT = int(os.environ.get("DATABASE_IDLE_IN_TRANSACTION_SESSION_TIMEOUT", "0"))

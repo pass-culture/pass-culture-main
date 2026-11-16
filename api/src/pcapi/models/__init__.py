@@ -111,6 +111,7 @@ _engine_options = {
     "json_serializer": functools.partial(json.dumps, default=json_serializer),
     "pool_size": settings.DATABASE_POOL_SIZE,
     "max_overflow": settings.DATABASE_POOL_MAX_OVERFLOW,
+    "pool_timeout": settings.DATABASE_POOL_TIMEOUT,
 }
 
 _connection_args = get_db_connection_args()
