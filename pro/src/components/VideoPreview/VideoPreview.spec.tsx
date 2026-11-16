@@ -35,7 +35,7 @@ describe('VideoPreview', () => {
 
     expect(
       screen
-        .getByText(/Aucune description textuelle renseignée pour la vidéo/)
+        .getByText(/Aucune description textuelle renseignée/)
         .closest('figcaption')
     ).toBeInTheDocument()
   })
