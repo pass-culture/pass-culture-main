@@ -61,7 +61,12 @@
       "!src/apiClient/zod",
       "!**/*.stories.tsx",
       "!docs-build",
-      "!bundleStats.html"
+      "!bundleStats.html",
+      // TODO: Biome 2.6 added SCSS/Markdown/YAML support
+      "!**/*.scss",
+      "!**/*.md",
+      "!**/*.yaml",
+      "!**/*.yml"
     ],
     "ignoreUnknown": true
   },
@@ -184,7 +189,8 @@
             "noNodejsModules": "off",
             "noUndeclaredVariables": "off",
             "useUniqueElementIds": "off",
-            "noRestrictedElements": "off"
+            "noRestrictedElements": "off",
+            "noComponentHookFactories": "off"
           },
           "style": {
             "noDefaultExport": "off",
