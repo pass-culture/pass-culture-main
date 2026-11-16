@@ -7147,6 +7147,7 @@ class BatchSuspendPublicAccountTest(PostEndpointHelper):
         )  # for each user: delete native user sessions (a 2nd time via `clear_email_by_admin`)
         expected_num_queries += len(users)  # for each user: update email with a dummy one
         expected_num_queries += len(users)  # for each user: insert email history
+        expected_num_queries += len(users)  # for each user: select single sign on from revoke_sso_access()
         expected_num_queries += 1  # select users to render the updated rows
         expected_num_queries += 3  # + selectinloaded: fraud checks, deposits, actions history
         response = self.post_to_endpoint(

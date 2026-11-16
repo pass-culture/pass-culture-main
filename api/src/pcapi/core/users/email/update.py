@@ -254,6 +254,8 @@ def request_email_update_from_admin(user: models.User, email: str, *, author: mo
     db.session.add(user)
     sessions.disconnect_native_user_sessions(user.id)
 
+    revoke_sso_access(user, SingleSignOnProviders.ALL)
+
     db.session.flush()
 
     api.request_email_confirmation(user)
@@ -293,6 +295,8 @@ def clear_email_by_admin(user: models.User, *, author: models.User) -> None:
     db.session.add(user)
 
     sessions.disconnect_native_user_sessions(user.id)
+
+    revoke_sso_access(user, SingleSignOnProviders.ALL)
 
     db.session.flush()
 
