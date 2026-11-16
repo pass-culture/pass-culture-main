@@ -7,6 +7,7 @@ from pcapi.core.mails import models
 from pcapi.core.mails.transactional.bookings import common as bookings_common
 from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.mails.transactional.utils import format_price
+from pcapi.core.offers import constants as offers_constants
 from pcapi.utils.date import get_date_formatted_for_email
 from pcapi.utils.date import get_time_formatted_for_email
 from pcapi.utils.date import utc_datetime_to_department_timezone
@@ -16,6 +17,24 @@ from pcapi.utils.urls import booking_app_link
 def send_individual_booking_confirmation_email_to_beneficiary(booking: Booking) -> None:
     data = get_booking_confirmation_to_beneficiary_email_data(booking)
     mails.send(recipients=[booking.user.email], data=data)
+
+
+def format_features_display_title(feature_names: list[str]) -> str:
+    feature_display_titles = []
+    sorted_features = (
+        list(offers_constants.LanguageFeatures)
+        + list(offers_constants.SpecialEventFeatures)
+        + list(offers_constants.VideoFeatures)
+        + list(offers_constants.AudioFeatures)
+        + list(offers_constants.AudioAccessbilityFeatures)
+        + list(offers_constants.VisualAccessbilityFeatures)
+        + list(offers_constants.MotorAccessbilityFeatures)
+        + list(offers_constants.MentalAccessbilityFeatures)
+    )
+    for feature in sorted_features:
+        if feature.value in feature_names:
+            feature_display_titles.append(feature.display_title)
+    return ", ".join(feature_display_titles)
 
 
 def get_booking_confirmation_to_beneficiary_email_data(
@@ -108,6 +127,7 @@ def get_booking_confirmation_to_beneficiary_email_data(
             "OFFER_WITHDRAWAL_DELAY": bookings_common.get_offer_withdrawal_delay(booking),
             "OFFER_WITHDRAWAL_TYPE": bookings_common.get_offer_withdrawal_type(booking),
             "FEATURES": ", ".join(stock.features),
+            "FEATURES_TITLES": format_features_display_title(stock.features),
             "OFFER_ADDRESS": offer.fullAddress,
         },
     )

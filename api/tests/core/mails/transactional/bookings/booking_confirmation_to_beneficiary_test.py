@@ -78,6 +78,7 @@ def get_expected_base_brevo_email_data(booking, mediation, **overrides):
             "OFFER_WITHDRAWAL_TYPE": None,
             "OFFER_WITHDRAWAL_DELAY": None,
             "FEATURES": "",
+            "FEATURES_TITLES": "",
             "OFFER_ADDRESS": booking.stock.offer.fullAddress,
         },
     )
@@ -225,6 +226,7 @@ def test_should_return_offer_features():
         booking,
         mediation,
         FEATURES="VO, IMAX",
+        FEATURES_TITLES="VO, IMAX",
         ALL_THINGS_NOT_VIRTUAL_THING=True,
         EVENT_DATE=None,
         EVENT_HOUR=None,
@@ -236,6 +238,32 @@ def test_should_return_offer_features():
         FORMATTED_PRICE="23,99 €",
     )
     assert email_data == expected
+
+
+@pytest.mark.parametrize(
+    "features,expected_features_titles",
+    [
+        (
+            ["DRIVE_IN", "70MM", "ATMOS", "VOST", "COGNITIF"],
+            "VOST, Drive-in, 70mm, Dolby Atmos, Accessible aux personnes en situation de handicap cognitif",
+        ),
+        (["SRTWAVOX", "VFO", "2D", "LIVE", "PMR"], "VFO, En Direct, 2D, Accès PMR"),
+        (["MOBILITE", "VO"], "VO, Accessible aux personnes en situation de handicap moteur"),
+    ],
+)
+@time_machine.travel("2032-10-15 12:48:00")
+def test_should_return_offer_features_titles(features, expected_features_titles):
+    stock = offers_factories.ThingStockFactory(
+        features=features,
+        price=23.99,
+    )
+    booking = BookingFactory(
+        dateCreated=date_utils.get_naive_utc_now(),
+        stock=stock,
+    )
+    email_data = get_booking_confirmation_to_beneficiary_email_data(booking)
+
+    assert email_data.params["FEATURES_TITLES"] == expected_features_titles
 
 
 def test_should_return_formatted_offer_price_in_xpf():
