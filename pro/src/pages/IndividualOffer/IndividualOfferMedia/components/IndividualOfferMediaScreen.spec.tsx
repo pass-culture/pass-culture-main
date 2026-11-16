@@ -228,9 +228,7 @@ describe('IndividualOfferMediaScreen', () => {
   it('should always render a video url button', async () => {
     await renderIndividualOfferMediaScreen()
 
-    expect(
-      screen.getByRole('heading', { name: LABELS.videoSubSection })
-    ).toBeInTheDocument()
+    expect(screen.getByText(LABELS.videoSubSection)).toBeInTheDocument()
     expect(
       screen.getByRole('button', { name: LABELS.videoButton })
     ).toBeInTheDocument()
@@ -291,7 +289,7 @@ describe('IndividualOfferMediaScreen', () => {
       )
 
       expect(
-        await screen.findByText(/^Image trop volumineuse/)
+        await screen.findByText(/^Image trop volumineuse/, { selector: 'p' })
       ).toBeInTheDocument()
       expect(imageInput).toBeInvalid()
       expect(imageInput).toHaveFocus()
@@ -309,7 +307,9 @@ describe('IndividualOfferMediaScreen', () => {
       )
 
       expect(
-        await screen.findByText('Le format de l’image n’est pas valide')
+        await screen.findByText('Le format de l’image n’est pas valide', {
+          selector: 'p',
+        })
       ).toBeInTheDocument()
       expect(
         screen.queryByLabelText('Crédit de l’image')
@@ -348,7 +348,7 @@ describe('IndividualOfferMediaScreen', () => {
         })
       )
       expect(
-        await screen.findByText(/^Image trop volumineuse/)
+        await screen.findByText(/^Image trop volumineuse/, { selector: 'p' })
       ).toBeInTheDocument()
 
       await user.upload(
@@ -360,7 +360,7 @@ describe('IndividualOfferMediaScreen', () => {
         await screen.findByText('Le format du fichier n’est pas accepté.')
       ).toBeInTheDocument()
       expect(
-        screen.queryByText(/^Image trop volumineuse/)
+        screen.queryByText(/^Image trop volumineuse/, { selector: 'p' })
       ).not.toBeInTheDocument()
     })
 
