@@ -26,6 +26,7 @@ import styles from './UploadZone.module.scss'
 import { getConditionsText } from './utils'
 
 const FILE_CORRUPTED_ERROR_CODE = 'file-corrupted'
+const REJECTION_ERROR_PREFIX = 'Le fichier choisi est non conforme :'
 
 export type UploadZoneLabelProps =
   | {
@@ -227,6 +228,10 @@ export const UploadZone = ({
   const formErrorIds = errorIds.filter(
     (errorId) => !rejectionErrorIds.includes(errorId)
   )
+  const errorAnnouncement = [
+    ...(rejectionErrorIds.length > 0 ? [REJECTION_ERROR_PREFIX] : []),
+    ...errors,
+  ].join(' ')
 
   // The files rejected by the zone are announced in the input name, right after
   // the label and before the native value of the input ("Aucun fichier choisi").
@@ -315,12 +320,15 @@ export const UploadZone = ({
           [styles['has-footer']]: hasError || hasFilesCounter,
         })}
       >
-        <div role="alert" className={styles['errors']}>
+        <div className={styles['errors']}>
+          <div role="alert" className={styles['visually-hidden']}>
+            {errorAnnouncement}
+          </div>
           {hasError && (
-            <div className={styles['errors-list']}>
+            <div className={styles['errors-list']} aria-hidden="true">
               {rejectionErrorIds.length > 0 && (
                 <p id={rejectionPrefixId} className={styles['visually-hidden']}>
-                  Le fichier choisi est non conforme :
+                  {REJECTION_ERROR_PREFIX}
                 </p>
               )}
               {errors.map((errorMessage, index) => (
