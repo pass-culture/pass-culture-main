@@ -8,6 +8,7 @@ from urllib.parse import urlencode
 import wtforms
 from flask import flash
 from flask_wtf import FlaskForm
+from wtforms import fields as wtforms_fields
 
 from pcapi import settings
 from pcapi.core.categories.models import EacFormat
@@ -219,7 +220,10 @@ class CollectiveOfferAdvancedSearchSubForm(forms_utils.PCForm):
     )
     boolean = fields.PCSelectField(
         "Booléen",
-        choices=(("true", "Oui"), ("false", "Non")),
+        choices=(
+            wtforms_fields.SelectChoice("true", "Oui"),
+            wtforms_fields.SelectChoice("false", "Non"),
+        ),
         default="true",
         validators=[
             wtforms.validators.Optional(""),

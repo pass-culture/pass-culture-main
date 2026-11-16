@@ -4,6 +4,7 @@ import re
 
 import wtforms
 from flask_wtf import FlaskForm
+from wtforms import fields as wtforms_fields
 
 from pcapi.core.categories import pro_categories
 from pcapi.core.categories.genres.show import SHOW_SUB_TYPES_LABEL_BY_CODE
@@ -159,7 +160,7 @@ class OfferValidationSubRuleForm(FlaskForm):
     )
     subcategories = fields.PCSelectMultipleField(
         "Sous-catégories",
-        choices=[(s.id, s.pro_label) for s in ALL_SUBCATEGORIES],
+        choices=[wtforms_fields.SelectChoice(s.id, s.pro_label) for s in ALL_SUBCATEGORIES],
         field_list_compatibility=True,
     )
     categories = fields.PCSelectMultipleField(
@@ -167,7 +168,9 @@ class OfferValidationSubRuleForm(FlaskForm):
     )
     show_sub_type = fields.PCSelectMultipleField(
         "Sous-type de spectacle",
-        choices=[(str(s), SHOW_SUB_TYPES_LABEL_BY_CODE[s]) for s in SHOW_SUB_TYPES_LABEL_BY_CODE],
+        choices=[
+            wtforms_fields.SelectChoice(str(s), SHOW_SUB_TYPES_LABEL_BY_CODE[s]) for s in SHOW_SUB_TYPES_LABEL_BY_CODE
+        ],
         field_list_compatibility=True,
     )
     formats = fields.PCSelectMultipleField(

@@ -4,6 +4,7 @@ import typing
 
 import wtforms
 from flask_wtf import FlaskForm
+from wtforms import fields as wtforms_fields
 
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import pro_categories
@@ -57,10 +58,10 @@ class BaseBookingListForm(FlaskForm):
     limit = fields.PCLimitField(
         "Nombre maximum de résultats",
         choices=(
-            (100, "Afficher 100 résultats maximum"),
-            (500, "Afficher 500 résultats maximum"),
-            (1000, "Afficher 1000 résultats maximum"),
-            (3000, "Afficher 3000 résultats maximum"),
+            wtforms_fields.SelectChoice(100, "Afficher 100 résultats maximum"),
+            wtforms_fields.SelectChoice(500, "Afficher 500 résultats maximum"),
+            wtforms_fields.SelectChoice(1000, "Afficher 1000 résultats maximum"),
+            wtforms_fields.SelectChoice(3000, "Afficher 3000 résultats maximum"),
         ),
         default="100",
         coerce=int,
@@ -90,7 +91,10 @@ class BaseBookingListForm(FlaskForm):
     )
     has_incident = fields.PCSelectMultipleField(
         "Incident comptable",
-        choices=(("true", "Avec incident"), ("false", "Sans incident")),
+        choices=(
+            wtforms_fields.SelectChoice("true", "Avec incident"),
+            wtforms_fields.SelectChoice("false", "Sans incident"),
+        ),
     )
 
     def is_empty(self) -> bool:
@@ -202,22 +206,35 @@ class GetIndividualBookingListForm(BaseBookingListForm):
     )
     is_free = fields.PCSelectMultipleField(
         "Réservation gratuite",
-        choices=(("true", "Gratuite"), ("false", "Payante")),
+        choices=(
+            wtforms_fields.SelectChoice("true", "Gratuite"),
+            wtforms_fields.SelectChoice("false", "Payante"),
+        ),
     )
     deposit = fields.PCSelectField(
         "État du crédit",
-        choices=((DEPOSIT_DEFAULT_VALUE, "Tous"), ("active", "Actif"), ("expired", "Expiré")),
+        choices=(
+            wtforms_fields.SelectChoice(DEPOSIT_DEFAULT_VALUE, "Tous"),
+            wtforms_fields.SelectChoice("active", "Actif"),
+            wtforms_fields.SelectChoice("expired", "Expiré"),
+        ),
         default=DEPOSIT_DEFAULT_VALUE,
         validators=(wtforms.validators.Optional(),),
     )
     is_duo = fields.PCSelectMultipleField(
         "Réservation Duo",
-        choices=((1, "solo"), (2, "duo")),
+        choices=(
+            wtforms_fields.SelectChoice(1, "solo"),
+            wtforms_fields.SelectChoice(2, "duo"),
+        ),
         coerce=int,
     )
     is_fraudulent = fields.PCSelectMultipleField(
         "Réservation frauduleuse",
-        choices=(("true", "Frauduleuse"), ("false", "Non frauduleuse")),
+        choices=(
+            wtforms_fields.SelectChoice("true", "Frauduleuse"),
+            wtforms_fields.SelectChoice("false", "Non frauduleuse"),
+        ),
     )
 
     def __init__(self, *args: typing.Any, **kwargs: typing.Any) -> None:

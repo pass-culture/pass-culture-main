@@ -1,11 +1,12 @@
 import enum
 import re
 import typing
-from operator import itemgetter
+from operator import attrgetter
 
 import wtforms
 from flask import url_for
 from flask_wtf import FlaskForm
+from wtforms import fields as wtforms_fields
 
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import constants as users_constants
@@ -21,18 +22,21 @@ class SuspensionUserType(enum.Enum):
 
 
 ANY_SUSPENSION_FORM_CHOICES = sorted(
-    [(opt.name, users_constants.SUSPENSION_REASON_CHOICES[opt]) for opt in users_constants.SuspensionReason],
-    key=itemgetter(1),
+    [
+        wtforms_fields.SelectChoice(opt.name, users_constants.SUSPENSION_REASON_CHOICES[opt])
+        for opt in users_constants.SuspensionReason
+    ],
+    key=attrgetter("label"),
 )
 
 PRO_SUSPENSION_FORM_CHOICES = sorted(
-    [(k.name, v) for k, v in users_constants.PRO_SUSPENSION_REASON_CHOICES.items()],
-    key=itemgetter(1),
+    [wtforms_fields.SelectChoice(k.name, v) for k, v in users_constants.PRO_SUSPENSION_REASON_CHOICES.items()],
+    key=attrgetter("label"),
 )
 
 PUBLIC_SUSPENSION_FORM_CHOICES = sorted(
-    [(k.name, v) for k, v in users_constants.PUBLIC_SUSPENSION_REASON_CHOICES.items()],
-    key=itemgetter(1),
+    [wtforms_fields.SelectChoice(k.name, v) for k, v in users_constants.PUBLIC_SUSPENSION_REASON_CHOICES.items()],
+    key=attrgetter("label"),
 )
 
 
