@@ -222,8 +222,8 @@ class AdageCollectiveOffer(pydantic_v2.BaseModel):
     numberOfTickets: int
     numberOfTeachers: int
     participants: list[models.StudentLevels]
-    price: decimal.Decimal
-    servicePrice: decimal.Decimal
+    price: float
+    servicePrice: float
     additionalFees: list[AdditionalFeeResponseV2]
     priceDetail: str | None
     venueName: str
@@ -267,8 +267,8 @@ class AdageCollectiveOffer(pydantic_v2.BaseModel):
             numberOfTickets=stock.numberOfTickets,
             numberOfTeachers=stock.numberOfTeachers,
             participants=collective_offer.students,
-            price=stock.price,
-            servicePrice=stock.servicePrice,
+            price=float(stock.price),
+            servicePrice=float(stock.servicePrice),
             additionalFees=[AdditionalFeeResponseV2.build(fee) for fee in stock.collectiveAdditionalFees],
             priceDetail=stock.priceDetail,
             venueName=venue.name,
