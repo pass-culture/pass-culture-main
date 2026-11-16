@@ -8,6 +8,7 @@ from pcapi.celery_tasks.tasks import celery_async_task
 from pcapi.core.finance import api as finance_api
 from pcapi.core.internal_notifications.transactional import notify_settlements_executed
 from pcapi.models import db
+from pcapi.utils.transaction_manager import atomic
 
 from . import models as finance_models
 
@@ -23,6 +24,7 @@ class ValidateSettlementBatchRequest(BaseModelV2):
     name="tasks.finance.default.validate_settlement_batch",
     model=ValidateSettlementBatchRequest,
 )
+@atomic()
 def settlement_batch_validation_task(payload: ValidateSettlementBatchRequest) -> None:
     settlement_batch = db.session.query(finance_models.SettlementBatch).filter_by(id=payload.batch_id).one()
 
