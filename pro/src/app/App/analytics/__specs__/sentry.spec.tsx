@@ -1,6 +1,7 @@
 import type { BrowserOptions, ErrorEvent, EventHint } from '@sentry/browser'
 import * as Sentry from '@sentry/browser'
 
+import { markAlgoliaSearchErrorReported } from '@/commons/errors/algoliaSearchErrors'
 import { makeApiError } from '@/commons/utils/factories/errorFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -54,6 +55,28 @@ describe('initializeSentry', () => {
   })
 
   describe('beforeSend', () => {
+    it('drops only the generic Algolia wrapper for an already reported error', () => {
+      const error = new Error('Algolia failed')
+      const wrapper = Object.assign(
+        new Error('Uncaught, unspecified "error" event. ([object Object])'),
+        { context: { error } }
+      )
+
+      expect(send({}, { originalException: wrapper })).not.toBeNull()
+      markAlgoliaSearchErrorReported(error)
+      expect(send({}, { originalException: wrapper })).toBeNull()
+      expect(send({}, { originalException: error })).not.toBeNull()
+      expect(
+        send(
+          {},
+          {
+            originalException: Object.assign(new Error('Other'), {
+              context: { error },
+            }),
+          }
+        )
+      ).not.toBeNull()
+    })
     it('should scrub the signup token from the event tags, request and transaction', () => {
       const event = send({
         tags: { url: SIGNUP_URL },
