@@ -340,7 +340,7 @@ export const CollectiveOfferStockForm = ({
                   disabled={!canEditDiscount}
                   error={form.formState.errors.servicePrice?.message}
                   label="Tarif de la prestation (en €)"
-                  description="(Total de la prestation x le nombre de participants)"
+                  description="(Total de la prestation pour l’ensemble des participants)"
                   min={0}
                   required
                   step={0.01}
