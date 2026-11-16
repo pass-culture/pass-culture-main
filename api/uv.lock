@@ -1244,7 +1244,7 @@ wheels = [
 
 [[package]]
 name = "google-cloud-iam"
-version = "2.26.0"
+version = "2.27.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "google-api-core", extra = ["grpc"] },
@@ -1254,9 +1254,9 @@ dependencies = [
     { name = "proto-plus" },
     { name = "protobuf" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/42/08/4f88586e9e1cc65754200fc60adf25c2ca7b7da0407a6dcf13362e69e63a/google_cloud_iam-2.26.0.tar.gz", hash = "sha256:d44a86e5cb0bbc904c459b1367bd0124eef802fe0af72ac378f87f7f8e5b2d42", size = 613465, upload-time = "2026-10-01T18:16:49.524Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/6c/b0/5be37571789b0c2924ea1b226ebbf06ca5071fcceb54fd4d60b81bb055bc/google_cloud_iam-2.27.0.tar.gz", hash = "sha256:8d2c88901bcbf66e2e52fbc9a0136a5ff2018a8ea02b0085930b0c4bf8921ecd", size = 614108, upload-time = "2026-11-05T18:40:13.116Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/e8/62/bee32ed798f52c1188c57c5ef9ec584db3829ee02b8a3b2469c6d0dcf314/google_cloud_iam-2.26.0-py3-none-any.whl", hash = "sha256:77bb8d9d8a9c94b1632196fd4d88c52c0f2ceb35075514eb91af25ed6857b300", size = 564869, upload-time = "2026-10-01T18:10:35.8Z" },
+    { url = "https://files.pythonhosted.org/packages/5d/8d/d4935375d5d31be9d35f25711f4edd0578698e930258efadb75d7a6441e1/google_cloud_iam-2.27.0-py3-none-any.whl", hash = "sha256:e6b4d4f798347f9cecf6c0aa370f32e874d071c54ecda2d708af2b1c36947e13", size = 566424, upload-time = "2026-11-05T18:39:24.955Z" },
 ]
 
 [[package]]
@@ -2157,7 +2157,7 @@ requires-dist = [
     { name = "google-api-python-client", specifier = "==2.201.0" },
     { name = "google-auth", specifier = "==2.62.1" },
     { name = "google-cloud-bigquery", specifier = "==3.47.0" },
-    { name = "google-cloud-iam", specifier = "==2.26.0" },
+    { name = "google-cloud-iam", specifier = "==2.27.0" },
     { name = "google-cloud-logging", specifier = "==3.17.0" },
     { name = "google-cloud-secret-manager", specifier = ">=2.30.0" },
     { name = "google-cloud-storage", specifier = "==3.17.1" },
