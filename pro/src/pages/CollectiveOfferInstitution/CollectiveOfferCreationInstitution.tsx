@@ -8,6 +8,7 @@ import {
 } from '@/commons/core/OfferEducational/types'
 import { extractInitialInstitutionValues } from '@/commons/core/OfferEducational/utils/extractInitialInstitutionValues'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
+import { isCollectiveInstitutionEditable } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
 import { queryParamsFromOfferer } from '@/commons/utils/queryParamsFromOfferer'
 import {
   type MandatoryCollectiveOfferFromParamsProps,
@@ -25,9 +26,10 @@ export const CollectiveOfferCreationInstitution = ({
   const location = useLocation()
   const isCreation = !location.pathname.includes('edition')
   const { requete: requestId } = queryParamsFromOfferer(location)
+  const isInstitutionEditable = isCollectiveInstitutionEditable(offer)
 
   const educationalInstitutionsQuery = useSWR(
-    [GET_EDUCATIONAL_INSTITUTIONS_QUERY_KEY],
+    isInstitutionEditable ? [GET_EDUCATIONAL_INSTITUTIONS_QUERY_KEY] : null,
     () => getEducationalInstitutions(),
     { fallbackData: [] }
   )
@@ -53,7 +55,13 @@ export const CollectiveOfferCreationInstitution = ({
       <CollectiveOfferInstitutionScreen
         mode={Mode.CREATION}
         initialValues={initialValues}
-        institutions={educationalInstitutionsQuery.data}
+        institutions={
+          isInstitutionEditable
+            ? educationalInstitutionsQuery.data
+            : offer.institution
+              ? [offer.institution]
+              : []
+        }
         isLoadingInstitutions={educationalInstitutionsQuery.isLoading}
         offer={offer}
         requestId={requestId}

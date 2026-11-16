@@ -676,6 +676,24 @@ describe('CollectiveOfferInstitution', () => {
   })
 
   describe('redactors preloading', () => {
+    it('should not preload redactors when institution is not editable', () => {
+      renderInstitutionStep({
+        ...props,
+        initialValues: {
+          ...props.initialValues,
+          educationalInstitution: '12',
+        },
+        offer: { ...offer, allowedActions: [] },
+      })
+
+      expect(
+        screen.getByLabelText(/Nom de l’établissement scolaire ou code UAI/)
+      ).toHaveValue('Collège Institution 1 - Gif-sur-Yvette - ABCDEF11')
+      expect(
+        api.getAutocompleteEducationalRedactorsForUai
+      ).not.toHaveBeenCalled()
+    })
+
     it('should preload redactors when institution is selected', async () => {
       const resultingOffer = getCollectiveOfferFactory()
       vi.spyOn(
