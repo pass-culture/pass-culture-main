@@ -202,7 +202,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_CULTURAL_OUTREACH,
     FeatureToggle.WIP_ENABLE_FINANCE_SETTLEMENTS,
     FeatureToggle.WIP_ENABLE_NEW_BREVO_RECOMMENDATION_WEBHOOK,
-    FeatureToggle.WIP_CLOSE_VENUE,
     FeatureToggle.WIP_HOME_STATS_V2,
     FeatureToggle.WIP_NFD,
     # Please keep alphabetic order
