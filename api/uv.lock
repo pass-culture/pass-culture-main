@@ -2065,6 +2065,7 @@ dependencies = [
     { name = "phonenumberslite" },
     { name = "pillow" },
     { name = "prometheus-flask-exporter" },
+    { name = "psycogreen" },
     { name = "psycopg2" },
     { name = "py7zr" },
     { name = "pycountry" },
@@ -2174,6 +2175,7 @@ requires-dist = [
     { name = "phonenumberslite", specifier = "==9.0.43" },
     { name = "pillow", specifier = "==13.0.0" },
     { name = "prometheus-flask-exporter", specifier = "==0.23.2" },
+    { name = "psycogreen", specifier = "==1.0.2" },
     { name = "psycopg2", specifier = "==2.9.13" },
     { name = "py7zr", specifier = "==1.1.4" },
     { name = "pycountry", specifier = "==26.2.16" },
@@ -2457,6 +2459,12 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/b4/90/e2159492b5426be0c1fef7acba807a03511f97c5f86b3caeda6ad92351a7/psutil-7.2.2-cp37-abi3-win_amd64.whl", hash = "sha256:eb7e81434c8d223ec4a219b5fc1c47d0417b12be7ea866e24fb5ad6e84b3d988", size = 137737, upload-time = "2026-01-28T18:15:33.849Z" },
     { url = "https://files.pythonhosted.org/packages/8c/c7/7bb2e321574b10df20cbde462a94e2b71d05f9bbda251ef27d104668306a/psutil-7.2.2-cp37-abi3-win_arm64.whl", hash = "sha256:8c233660f575a5a89e6d4cb65d9f938126312bca76d8fe087b947b3a1aaac9ee", size = 134617, upload-time = "2026-01-28T18:15:36.514Z" },
 ]
+
+[[package]]
+name = "psycogreen"
+version = "1.0.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/eb/72/4a7965cf54e341006ad74cdc72cd6572c789bc4f4e3fadc78672f1fbcfbd/psycogreen-1.0.2.tar.gz", hash = "sha256:c429845a8a49cf2f76b71265008760bcd7c7c77d80b806db4dc81116dbcd130d", size = 5411, upload-time = "2020-02-22T19:55:22.02Z" }
 
 [[package]]
 name = "psycopg"
