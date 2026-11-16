@@ -14,7 +14,7 @@ from pcapi.utils.transaction_manager import atomic
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
 
-class AtomicTest:
+class AtomicContextManagerTest:
     @pytest.mark.usefixtures("clean_database")
     def test_atomic_commits_on_success(self):
         user_session = UserSession(userId=1, uuid=uuid.uuid4(), expirationDatetime=datetime.now())
@@ -25,7 +25,7 @@ class AtomicTest:
         assert db.session.query(UserSession).count() == 1
 
     @pytest.mark.usefixtures("clean_database")
-    def test_atomic_rolls_back_on_raise(self):
+    def test_default_commit_on_exception(self):
         user_session = UserSession(userId=1, uuid=uuid.uuid4(), expirationDatetime=datetime.now())
 
         with pytest.raises(ValueError):
@@ -34,6 +34,46 @@ class AtomicTest:
                 raise ValueError()
 
         assert db.session.query(UserSession).count() == 0
+
+    @pytest.mark.parametrize(
+        "commit_on_exception",
+        (
+            False,
+            OSError,
+            (ArithmeticError, OSError),
+            [ArithmeticError, OSError],
+        ),
+    )
+    @pytest.mark.usefixtures("clean_database")
+    def test_atomic_rolls_back_on_raise(self, commit_on_exception):
+        user_session = UserSession(userId=1, uuid=uuid.uuid4(), expirationDatetime=datetime.now())
+
+        with pytest.raises(ValueError):
+            with atomic(commit_on_exception=commit_on_exception):
+                db.session.add(user_session)
+                raise ValueError()
+
+        assert db.session.query(UserSession).count() == 0
+
+    @pytest.mark.parametrize(
+        "commit_on_exception",
+        (
+            True,
+            ValueError,
+            (ValueError, OSError),
+            [ValueError, OSError],
+        ),
+    )
+    @pytest.mark.usefixtures("clean_database")
+    def test_atomic_commits_on_authorizeed_raise(self, commit_on_exception):
+        user_session = UserSession(userId=1, uuid=uuid.uuid4(), expirationDatetime=datetime.now())
+
+        with pytest.raises(ValueError):
+            with atomic(commit_on_exception=commit_on_exception):
+                db.session.add(user_session)
+                raise ValueError()
+
+        assert db.session.query(UserSession).count() == 1
 
     @pytest.mark.usefixtures("clean_database")
     def test_atomic_rolls_back_invalid_transaction(self):
@@ -76,7 +116,41 @@ class AtomicTest:
             assert db.session.query(UserSession).count() == 0
 
     @pytest.mark.usefixtures("clean_database")
-    def test_atomic_decorator_commits_on_success(self):
+    def test_context_manager_in_decorator(self):
+        @atomic()
+        def view():
+            with atomic():
+                user_session = UserSession(userId=1, uuid=uuid.uuid4(), expirationDatetime=datetime.now())
+                db.session.add(user_session)
+
+        view()
+        assert db.session.query(UserSession).count() == 1
+
+    @pytest.mark.usefixtures("clean_database")
+    def test_atomic_cleans_up_context_and_raises_on_commit_failure(self):
+        with patch("pcapi.models.db.session.commit") as mock_commit:
+            mock_commit.side_effect = SQLAlchemyError("Simulated DB Commit Crash")
+
+            with pytest.raises(SQLAlchemyError):
+                with atomic():
+                    user_session = UserSession(userId=1, uuid=uuid.uuid4(), expirationDatetime=datetime.now())
+                    db.session.add(user_session)
+
+        assert not _is_managed_session(), "FATAL: g._managed_session should be False after a crash"
+        assert getattr(g, "_session_to_commit", None) is None
+        assert getattr(g, "_atomic_contexts", []) == []
+
+        with atomic():
+            user_session_retry = UserSession(userId=2, uuid=uuid.uuid4(), expirationDatetime=datetime.now())
+            db.session.add(user_session_retry)
+
+        assert db.session.query(UserSession).filter_by(userId=1).count() == 0
+        assert db.session.query(UserSession).filter_by(userId=2).count() == 1
+
+
+class AtomicDecoratorTest:
+    @pytest.mark.usefixtures("clean_database")
+    def test_atomic_commits_on_success(self):
         @atomic()
         def view():
             user_session = UserSession(userId=1, uuid=uuid.uuid4(), expirationDatetime=datetime.now())
@@ -87,7 +161,7 @@ class AtomicTest:
         assert db.session.query(UserSession).count() == 1
 
     @pytest.mark.usefixtures("clean_database")
-    def test_atomic_decorator_rollsback_on_exception(self):
+    def test_default_commit_on_exception(self):
         @atomic()
         def view():
             user_session = UserSession(userId=1, uuid=uuid.uuid4(), expirationDatetime=datetime.now())
@@ -98,8 +172,52 @@ class AtomicTest:
             view()
         assert db.session.query(UserSession).count() == 0
 
+    @pytest.mark.parametrize(
+        "commit_on_exception",
+        (
+            False,
+            OSError,
+            (ArithmeticError, OSError),
+            [ArithmeticError, OSError],
+        ),
+    )
     @pytest.mark.usefixtures("clean_database")
-    def test_atomic_decorator_rollback_invalid_transaction(self):
+    def test_atomic_rolls_back_on_raise(self, commit_on_exception):
+        @atomic(commit_on_exception=commit_on_exception)
+        def view():
+            user_session = UserSession(userId=1, uuid=uuid.uuid4(), expirationDatetime=datetime.now())
+            db.session.add(user_session)
+            raise ValueError()
+
+        with pytest.raises(ValueError):
+            view()
+
+        assert db.session.query(UserSession).count() == 0
+
+    @pytest.mark.parametrize(
+        "commit_on_exception",
+        (
+            True,
+            ValueError,
+            (ValueError, OSError),
+            [ValueError, OSError],
+        ),
+    )
+    @pytest.mark.usefixtures("clean_database")
+    def test_atomic_commits_on_authorizeed_raise(self, commit_on_exception):
+        @atomic(commit_on_exception=commit_on_exception)
+        def view():
+            user_session = UserSession(userId=1, uuid=uuid.uuid4(), expirationDatetime=datetime.now())
+            db.session.add(user_session)
+            raise ValueError()
+
+        with pytest.raises(ValueError):
+            view()
+
+        assert db.session.query(UserSession).count() == 1
+
+    @pytest.mark.usefixtures("clean_database")
+    def test_atomic_rollback_invalid_transaction(self):
         @atomic()
         def view():
             user_session = UserSession(userId=1, uuid=uuid.uuid4(), expirationDatetime=datetime.now())
@@ -110,7 +228,7 @@ class AtomicTest:
         assert db.session.query(UserSession).count() == 0
 
     @pytest.mark.usefixtures("clean_database")
-    def test_atomic_decorator_rollback_when_not_apply(self):
+    def test_atomic_rollback_when_not_apply(self):
         @atomic(apply=False)
         def view():
             user_session = UserSession(userId=1, uuid=uuid.uuid4(), expirationDatetime=datetime.now())
@@ -118,17 +236,6 @@ class AtomicTest:
 
         view()
         assert db.session.query(UserSession).count() == 0
-
-    @pytest.mark.usefixtures("clean_database")
-    def test_context_manager_in_decorator(self):
-        @atomic()
-        def view():
-            with atomic():
-                user_session = UserSession(userId=1, uuid=uuid.uuid4(), expirationDatetime=datetime.now())
-                db.session.add(user_session)
-
-        view()
-        assert db.session.query(UserSession).count() == 1
 
     @pytest.mark.usefixtures("clean_database")
     def test_decorator_in_context_manager(self):
@@ -143,13 +250,15 @@ class AtomicTest:
 
     @pytest.mark.usefixtures("clean_database")
     def test_atomic_cleans_up_context_and_raises_on_commit_failure(self):
+        @atomic()
+        def view():
+            user_session = UserSession(userId=1, uuid=uuid.uuid4(), expirationDatetime=datetime.now())
+            db.session.add(user_session)
+
         with patch("pcapi.models.db.session.commit") as mock_commit:
             mock_commit.side_effect = SQLAlchemyError("Simulated DB Commit Crash")
-
             with pytest.raises(SQLAlchemyError):
-                with atomic():
-                    user_session = UserSession(userId=1, uuid=uuid.uuid4(), expirationDatetime=datetime.now())
-                    db.session.add(user_session)
+                view()
 
         assert not _is_managed_session(), "FATAL: g._managed_session should be False after a crash"
         assert getattr(g, "_session_to_commit", None) is None

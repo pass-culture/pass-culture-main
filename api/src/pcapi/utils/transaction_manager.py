@@ -66,8 +66,14 @@ class atomic:
     use on_commit
     """
 
-    def __init__(self, apply: bool = True) -> None:
+    def __init__(
+        self,
+        *,
+        apply: bool = True,
+        commit_on_exception: bool | type[Exception] | typing.Iterable[type[Exception]] = False,
+    ) -> None:
         self.__apply = apply
+        self.__commit_on_exception = commit_on_exception
 
     def __enter__(self) -> typing.Self:
         # In that context g is local to the thread
@@ -89,7 +95,7 @@ class atomic:
 
     def __exit__(
         self,
-        exc_type: type | None = None,
+        exc_type: type[Exception] | None = None,
         exc_value: Exception | None = None,
         traceback: TracebackType | None = None,
         /,
@@ -99,15 +105,25 @@ class atomic:
 
             db.session.autoflush = context.autoflush
 
-            if context.invalid_transaction or exc_value is not None or not self.__apply:
-                context.transaction.rollback()
-            else:
+            if _should_commit(
+                is_transaction_invalid=context.invalid_transaction,
+                apply=self.__apply,
+                exc_type=exc_type,
+                commit_on_exception=self.__commit_on_exception,
+            ):
                 context.transaction.commit()
+            else:
+                context.transaction.rollback()
 
         else:
             db.session.autoflush = True
             # if there is an exception
-            if exc_value is not None or not self.__apply:
+            if not _should_commit(
+                is_transaction_invalid=False,
+                apply=self.__apply,
+                exc_type=exc_type,
+                commit_on_exception=self.__commit_on_exception,
+            ):
                 mark_transaction_as_invalid()
             _finalize_managed_session()
         # do not suppress the exception
@@ -117,7 +133,7 @@ class atomic:
     def __call__(self, func: typing.Callable) -> typing.Callable:
         @functools.wraps(func)
         def wrapper(*args, **kwargs):  # type: ignore[no-untyped-def]
-            with atomic(apply=self.__apply):
+            with atomic(apply=self.__apply, commit_on_exception=self.__commit_on_exception):
                 return func(*args, **kwargs)
 
         return wrapper
@@ -171,6 +187,32 @@ def _finalize_managed_session() -> None:
                 if not callback():
                     break
         g.pop("_on_commit_callbacks", None)
+
+
+def _should_commit(
+    is_transaction_invalid: bool,
+    apply: bool,
+    exc_type: type[Exception] | None,
+    commit_on_exception: bool | type[Exception] | typing.Iterable[type[Exception]],
+) -> bool:
+    if is_transaction_invalid:
+        # transaction was marked as invalid
+        return False
+
+    if not apply:
+        # dry run
+        return False
+
+    if not exc_type:
+        # no exception
+        return True
+
+    if isinstance(commit_on_exception, bool):
+        # commit ignoring the exceptions
+        return commit_on_exception
+
+    exceptions = [commit_on_exception] if not isinstance(commit_on_exception, typing.Iterable) else commit_on_exception
+    return exc_type in exceptions
 
 
 def on_commit(func: typing.Callable[[], typing.Any], *, robust: bool = False) -> None:
