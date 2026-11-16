@@ -254,6 +254,7 @@ export const TemplateOffersSearchFilters = ({
       </FormLayout.Row>
       <FormLayout.Row inline mdSpaceAfter>
         <PeriodSelector
+          legend="Période de l’évènement"
           onBeginningDateChange={onBeginningDateChange}
           onEndingDateChange={onEndingDateChange}
           isDisabled={disableAllFilters}

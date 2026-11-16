@@ -31,7 +31,9 @@ export const FilterByBookingStatusPeriod = ({
 
   return (
     <fieldset className={styles['period-filter']}>
-      <legend className={styles['visually-hidden']}>Période</legend>
+      <legend className={styles['visually-hidden']}>
+        Période des réservations
+      </legend>
 
       <Select
         className={styles['period-filter-type']}
@@ -48,6 +50,7 @@ export const FilterByBookingStatusPeriod = ({
       />
 
       <PeriodSelector
+        legend="Période de la réservation"
         onBeginningDateChange={handleBookingBeginningDateChange}
         onEndingDateChange={handleBookingEndingDateChange}
         isDisabled={isDisabled}

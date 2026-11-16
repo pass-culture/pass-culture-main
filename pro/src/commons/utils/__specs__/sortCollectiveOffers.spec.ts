@@ -67,6 +67,27 @@ describe('sortCollectiveOffers', () => {
     expect(sortedOffersDesc[0].id).toEqual(1)
   })
 
+  it('should not sort offers if the column sort is cleared', () => {
+    const offers = [
+      collectiveOfferFactory({
+        id: 2,
+        dates: { start: '2024-07-16T00:00:00Z', end: '2024-08-15T00:00:00Z' },
+      }),
+      collectiveOfferFactory({
+        id: 1,
+        dates: { start: '2024-07-15T00:00:00Z', end: '2024-08-15T00:00:00Z' },
+      }),
+    ]
+
+    const sortedOffers = sortCollectiveOffers(
+      offers,
+      CollectiveOffersSortingColumn.EVENT_DATE,
+      SortingMode.NONE
+    )
+
+    expect(sortedOffers).toEqual(offers)
+  })
+
   it('should not sort offers if the dates do not exist', () => {
     const offers = [
       collectiveOfferFactory({

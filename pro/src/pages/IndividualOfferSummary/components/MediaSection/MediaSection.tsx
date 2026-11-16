@@ -22,6 +22,7 @@ export interface MediaSectionProps {
   offerId: number
   imageUrl?: string | null
   imageCredit?: string | null
+  imageAlternativeText?: string | null
   videoData?: VideoData
   isOnCreation?: boolean
 }
@@ -30,6 +31,7 @@ export const MediaSection = ({
   offerId,
   imageUrl,
   imageCredit,
+  imageAlternativeText,
   videoData,
   isOnCreation = false,
 }: MediaSectionProps) => {
@@ -37,8 +39,13 @@ export const MediaSection = ({
   const isClosed = withVenueHelpers(selectedPartnerVenue).isClosed
   const imageCreditId = useId()
 
-  const { videoDuration, videoTitle, videoThumbnailUrl, videoUrl } =
-    videoData ?? {}
+  const {
+    videoDuration,
+    videoTitle,
+    videoThumbnailUrl,
+    videoUrl,
+    videoDescription,
+  } = videoData ?? {}
 
   return (
     <SummarySection
@@ -61,7 +68,7 @@ export const MediaSection = ({
               <SafeImage
                 className={styles['image-preview']}
                 testId="image-preview"
-                alt="Prévisualisation de l’image"
+                alt={imageAlternativeText || 'Prévisualisation de l’image'}
                 src={imageUrl}
                 placeholder={<ImagePlaceholder />}
                 ariaDescribedBy={imageCredit ? imageCreditId : undefined}
@@ -75,7 +82,7 @@ export const MediaSection = ({
               ) : null}
             </figure>
           ) : (
-            <span>{'Pas d’image'}</span>
+            <p className={styles['missing-image']}>{'Pas d’image'}</p>
           )}
         </SummarySubSection>
       )}
@@ -85,6 +92,7 @@ export const MediaSection = ({
             videoDuration={videoDuration}
             videoTitle={videoTitle}
             videoThumbnailUrl={videoThumbnailUrl}
+            videoDescription={videoDescription}
           />
         ) : (
           <SummaryDescriptionList
@@ -93,6 +101,14 @@ export const MediaSection = ({
                 title: 'Lien URL de votre vidéo',
                 text: videoUrl || ' - ',
               },
+              ...(videoDescription
+                ? [
+                    {
+                      title: 'Description textuelle de la vidéo',
+                      text: videoDescription,
+                    },
+                  ]
+                : []),
             ]}
           />
         )}

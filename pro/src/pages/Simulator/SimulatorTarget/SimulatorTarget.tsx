@@ -86,7 +86,7 @@ export const SimulatorTarget = (): JSX.Element => {
         <FormProvider {...methods}>
           <form onSubmit={handleSubmit(onSubmit)}>
             <ScrollToFirstHookFormErrorAfterSubmit />
-            <FormLayout.Section>
+            <FormLayout.Section accessibleLabel="Choix du public cible">
               <FormLayout.Row className={styles['row-field-public']}>
                 <CheckboxGroup
                   label="Public cibles"

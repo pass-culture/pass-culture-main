@@ -189,6 +189,9 @@ export const MultiSelect = forwardRef(
     const handleRemoveTag = (itemId: string) => {
       const updatedItems = selectedItems.filter((item) => item.id !== itemId)
       updateSelectedItems(updatedItems)
+      if (updatedItems.length === 0) {
+        containerRef.current?.querySelector('button')?.focus()
+      }
     }
 
     useEffect(() => {

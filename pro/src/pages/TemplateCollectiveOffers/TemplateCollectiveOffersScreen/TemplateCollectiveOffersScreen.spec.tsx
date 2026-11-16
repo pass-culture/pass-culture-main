@@ -387,7 +387,9 @@ describe('TemplateCollectiveOffersScreen', () => {
     expect(firstOfferEventDate).toEqual('31/07/2024')
 
     await userEvent.click(
-      screen.getByRole('img', { name: 'Trier par ordre croissant' })
+      screen.getByRole('button', {
+        name: /Dates.*Cliquez pour trier par ordre croissant/,
+      })
     )
 
     const newFirstOfferEventDate =

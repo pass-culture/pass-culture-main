@@ -6,6 +6,7 @@ import { FormLayoutDescription } from './FormLayoutDescription'
 
 interface FormLayoutSectionProps {
   title?: React.ReactNode
+  accessibleLabel?: string
   description?: string
   children: React.ReactNode | React.ReactNode[]
   className?: string
@@ -14,6 +15,7 @@ interface FormLayoutSectionProps {
 
 export const Section = ({
   title,
+  accessibleLabel,
   description,
   children,
   className,
@@ -21,14 +23,19 @@ export const Section = ({
 }: FormLayoutSectionProps): JSX.Element => {
   return (
     <fieldset className={cn(style['form-layout-section'], className)} id={id}>
-      {title && (
+      {(title || accessibleLabel) && (
         <legend
           className={cn({
             [style['form-layout-section-legend--spaced']]:
               title && !description,
+            [style['form-layout-section-legend--visually-hidden']]: !title,
           })}
         >
-          <h2 className={style['form-layout-section-title']}>{title}</h2>
+          {title ? (
+            <h2 className={style['form-layout-section-title']}>{title}</h2>
+          ) : (
+            accessibleLabel
+          )}
         </legend>
       )}
       {description && (

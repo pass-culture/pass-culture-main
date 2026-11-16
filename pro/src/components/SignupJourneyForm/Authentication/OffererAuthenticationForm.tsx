@@ -62,7 +62,7 @@ export const OffererAuthenticationForm = (): JSX.Element => {
   return (
     <>
       <ScrollToFirstHookFormErrorAfterSubmit />
-      <FormLayout.Section>
+      <FormLayout.Section accessibleLabel="Informations du partenaire culturel">
         <FormLayout.Row mdSpaceAfter>
           <TextInput
             {...register('publicName')}

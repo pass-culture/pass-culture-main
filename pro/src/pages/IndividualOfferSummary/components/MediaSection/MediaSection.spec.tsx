@@ -58,6 +58,20 @@ describe('MediaSection', () => {
   })
 
   describe('about image', () => {
+    it('preserves the alternative text and associates the image with its credit', () => {
+      renderMediaSection({
+        imageAlternativeText: 'Une scène de théâtre',
+      })
+
+      const image = screen.getByRole('img', {
+        name: 'Une scène de théâtre',
+      })
+      expect(image).toHaveAccessibleDescription(LABELS.imageCredit)
+      expect(image.closest('figure')).toContainElement(
+        screen.getByText(LABELS.imageCredit).closest('figcaption')
+      )
+    })
+
     it('should render an image subsection with provided data by default', () => {
       renderMediaSection()
 
@@ -101,6 +115,50 @@ describe('MediaSection', () => {
   })
 
   describe('about video', () => {
+    it.each([false, true])(
+      'renders the saved description associated with the preview (creation: %s)',
+      (isOnCreation) => {
+        renderMediaSection({
+          isOnCreation,
+          videoData: {
+            videoUrl: MOCK_DATA.videoUrl,
+            videoThumbnailUrl: 'http://youtube.image.com',
+            videoDescription: 'Description enregistrée',
+          },
+        })
+
+        const image = screen.getByRole('img', {
+          name: 'Prévisualisation de la vidéo',
+        })
+        expect(image).toHaveAccessibleDescription(
+          'Description textuelle de la vidéo : Description enregistrée'
+        )
+        expect(
+          screen.getByText(/Description enregistrée/).closest('figcaption')
+        ).toBeInTheDocument()
+        expect(
+          screen.queryByText(
+            'Aucune description textuelle renseignée pour la vidéo'
+          )
+        ).not.toBeInTheDocument()
+      }
+    )
+
+    it('renders the saved description even when the thumbnail is unavailable', () => {
+      renderMediaSection({
+        videoData: {
+          videoUrl: MOCK_DATA.videoUrl,
+          videoDescription: 'Description enregistrée',
+        },
+      })
+
+      expect(screen.getByText(MOCK_DATA.videoUrl)).toBeInTheDocument()
+      expect(
+        screen.getByText('Description textuelle de la vidéo :')
+      ).toBeInTheDocument()
+      expect(screen.getByText('Description enregistrée')).toBeInTheDocument()
+    })
+
     it('should render a video subsection with provided data', () => {
       renderMediaSection({ videoData: { videoUrl: MOCK_DATA.videoUrl } })
 

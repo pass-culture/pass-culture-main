@@ -27,7 +27,10 @@ export const CollectiveOfferImagePreview = ({
       {offer.imageUrl ? (
         <figure className={styles['image-credit']}>
           <img
-            alt={offer.imageAlternativeText || `Illustration de ${offer.name}`}
+            alt={
+              offer.imageAlternativeText ||
+              `Illustration de l'offre "${offer.name}"`
+            }
             src={offer.imageUrl}
             className={styles['image-preview']}
             aria-describedby={offer.imageCredit ? imageCreditId : undefined}

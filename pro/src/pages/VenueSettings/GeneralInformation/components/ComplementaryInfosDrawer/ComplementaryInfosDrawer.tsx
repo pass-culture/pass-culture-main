@@ -147,7 +147,7 @@ export const ComplementaryInfosDrawer = ({
           className={styles['drawer-form']}
         >
           <FormLayout>
-            <FormLayout.Section>
+            <FormLayout.Section accessibleLabel="Informations complémentaires">
               <AccessibilityForm
                 externalAccessibilityId={
                   selectedPartnerVenue.externalAccessibilityId
