@@ -52,6 +52,7 @@ from pcapi.core.external.attributes.queue import REDIS_EMAIL_LIST_ATTRIBUTES_TO_
 from pcapi.core.external.batch import testing as push_testing
 from pcapi.core.highlights import factories as highlights_factories
 from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
+from pcapi.core.nature_format_domain import nature_format_domain as nfd
 from pcapi.core.offerers.schemas import VenueTypeCode
 from pcapi.core.offers import api
 from pcapi.core.offers import exceptions
@@ -5388,3 +5389,12 @@ class UpdateProductCountsTest:
         assert product_1.likesCount == 2
         assert product_2.likesCount == 2
         assert product_1.chroniclesCount == 1
+
+
+class GetSubcategoryFromNfdTest:
+    def test_basics(self) -> None:
+        assert subcategories.SUPPORT_PHYSIQUE_FILM == api.get_subcategory_from_nfd(
+            nature=nfd.NatureEnum.BIEN,
+            format=nfd.FormatEnum.DVD_BLU_RAY,
+            domain=nfd.DomainEnum.DANSE,
+        )
