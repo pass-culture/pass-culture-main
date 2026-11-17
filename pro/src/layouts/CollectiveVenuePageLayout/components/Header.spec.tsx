@@ -150,20 +150,14 @@ describe('Header', () => {
     })
   })
 
-  it('should display the preview link for a permanent venue on the partner page', () => {
-    renderHeader('partnerPage', { isPermanent: true })
+  it('should display the preview link on the partner page', () => {
+    renderHeader('partnerPage')
 
     expect(screen.getByText('Visualiser votre page')).toBeInTheDocument()
   })
 
-  it('should not display the preview link for a non-permanent venue', () => {
-    renderHeader('partnerPage', { isPermanent: false })
-
-    expect(screen.queryByText('Visualiser votre page')).not.toBeInTheDocument()
-  })
-
   it('should not display the preview link in the collective context', () => {
-    renderHeader('collective', { isPermanent: true })
+    renderHeader('collective')
 
     expect(screen.queryByText('Visualiser votre page')).not.toBeInTheDocument()
   })
@@ -200,7 +194,6 @@ describe('Header', () => {
 
   it('should not display the preview link when the venue is closed', () => {
     renderHeader('partnerPage', {
-      isPermanent: true,
       state: VenueState.CLOSED,
     })
 

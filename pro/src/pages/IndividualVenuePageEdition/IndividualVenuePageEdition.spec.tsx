@@ -160,7 +160,6 @@ vi.mock('@/commons/core/VenueEdition/getVolunteeringUrlError', () => ({
 
 const baseVenue: GetVenueResponseModel = {
   ...defaultGetVenue,
-  isPermanent: true,
 }
 
 let user: ReturnType<typeof userEvent.setup>
@@ -201,7 +200,6 @@ describe('IndividualVenuePageEdition', () => {
   it('should render without accessibility violations', async () => {
     const venue: GetVenueResponseModel = {
       ...defaultGetVenue,
-      isPermanent: true,
       hasOffers: true,
       hasAtLeastOneBookableOffer: false,
     }
@@ -217,7 +215,6 @@ describe('IndividualVenuePageEdition', () => {
   it('should display access to partner page is impossible warning', async () => {
     const venue: GetVenueResponseModel = {
       ...defaultGetVenue,
-      isPermanent: true,
       hasOffers: true,
       hasAtLeastOneBookableOffer: false,
     }
@@ -265,8 +262,8 @@ describe('IndividualVenuePageEdition', () => {
         ).not.toBeChecked()
       })
 
-      it('should display the acces libre callout for permanent venues', async () => {
-        renderForm({ ...baseVenue, isPermanent: true })
+      it('should display the acces libre callout', async () => {
+        renderForm(baseVenue)
 
         expect(
           await screen.findByText(
@@ -490,18 +487,6 @@ describe('IndividualVenuePageEdition', () => {
       expect(
         await screen.findByText('Informations de retrait de vos offres')
       ).toBeInTheDocument()
-    })
-
-    describe('when the venue is not permanent', () => {
-      it('should not display any "Horaires d\'ouverture" section', async () => {
-        renderForm({ ...baseVenue, isPermanent: false })
-
-        await waitFor(() => {
-          expect(
-            screen.queryByText(/Horaires d'ouverture/)
-          ).not.toBeInTheDocument()
-        })
-      })
     })
 
     describe('when the venue is not open to public', () => {

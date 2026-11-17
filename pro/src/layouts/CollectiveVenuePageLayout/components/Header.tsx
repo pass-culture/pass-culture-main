@@ -100,19 +100,17 @@ export const Header = ({ context }: Readonly<HeaderProps>) => {
         </div>
 
         <div className={styles['venue-details-links']}>
-          {selectedPartnerVenue.isPermanent &&
-            context === 'partnerPage' &&
-            !isClosed && (
-              <Button
-                as="a"
-                variant={ButtonVariant.SECONDARY}
-                color={ButtonColor.NEUTRAL}
-                size={ButtonSize.SMALL}
-                to={`${WEBAPP_URL}/lieu/${selectedPartnerVenue.id}`}
-                opensInNewTab
-                label="Visualiser votre page"
-              />
-            )}
+          {context === 'partnerPage' && !isClosed && (
+            <Button
+              as="a"
+              variant={ButtonVariant.SECONDARY}
+              color={ButtonColor.NEUTRAL}
+              size={ButtonSize.SMALL}
+              to={`${WEBAPP_URL}/lieu/${selectedPartnerVenue.id}`}
+              opensInNewTab
+              label="Visualiser votre page"
+            />
+          )}
           {imageValues.croppedImageUrl && !isClosed && (
             <ButtonImageEdit
               mode={UploaderModeEnum.VENUE}

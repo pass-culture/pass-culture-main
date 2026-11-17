@@ -35,7 +35,6 @@ describe('IndividualVenuePage', () => {
 
   it('should render without accessibility violations', async () => {
     const { container } = renderIndividualVenuePage({
-      isPermanent: true,
       hasOffers: true,
       hasAtLeastOneBookableOffer: false,
     })
@@ -43,9 +42,8 @@ describe('IndividualVenuePage', () => {
     expect(await axe(container)).toHaveNoViolations()
   })
 
-  it('should warn that the page is invisible when a permanent venue with offers has no active individual offer', () => {
+  it('should warn that the page is invisible when a venue with offers has no active individual offer', () => {
     renderIndividualVenuePage({
-      isPermanent: true,
       hasOffers: true,
       hasAtLeastOneBookableOffer: false,
     })
@@ -56,7 +54,6 @@ describe('IndividualVenuePage', () => {
 
   it('should not warn when the venue has an active individual offer', () => {
     renderIndividualVenuePage({
-      isPermanent: true,
       hasOffers: true,
       hasAtLeastOneBookableOffer: true,
     })
