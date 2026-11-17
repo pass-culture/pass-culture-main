@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 
 import { isError } from '@/apiClient/helpers'
-import { getSiretData } from '@/commons/core/Venue/utils/getSiretData'
+import { useGetSiretData } from '@/commons/core/Venue/hooks/useSiretData'
 import { resetReactHookFormAddressFields } from '@/commons/utils/resetAddressFields'
 import {
   humanizeSiret,
@@ -39,6 +39,7 @@ export const SiretOrCommentFields = ({
     watch,
     formState: { errors },
   } = useFormContext<VenueSettingsFormValues>()
+  const getSiretData = useGetSiretData()
   const hasComment = !formContext.withSiret
   const hasRidet = formContext.isCaledonian
 

@@ -102,11 +102,6 @@ vi.mock('@/apiClient/adresse/apiAdresse', () => ({
     ]),
 }))
 
-// Disable memoization because getSiretData value needs to change
-vi.mock('@/commons/utils/memoize', () => ({
-  memoize: (func: unknown) => func,
-}))
-
 const renderOffererScreen = (contextValue: SignupJourneyContextValues) => {
   return renderWithProviders(
     <>

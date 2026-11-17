@@ -57,7 +57,7 @@ describe('getsiretData', () => {
   })
 })
 
-describe('checkSiretRequest', () => {
+describe('checkSiret', () => {
   it('should throw an error when SIRET is empty', async () => {
     const siret = ''
 
