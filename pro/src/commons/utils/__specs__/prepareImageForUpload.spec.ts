@@ -1,6 +1,7 @@
 import {
   MAX_THUMBNAIL_WIDTH,
   MIN_COLLECTIVE_IMAGE_DIMENSIONS,
+  MIN_IMAGE_DIMENSIONS,
 } from '@/components/ImageDragAndDrop/constants'
 
 import { getImageBitmap } from '../image'
@@ -32,7 +33,9 @@ describe('prepareImageForUpload', () => {
   })
 
   it('should reduce large images while preserving the file metadata', async () => {
-    const result = await prepareImageForUpload(file)
+    const result = await prepareImageForUpload(file, {
+      minSizes: MIN_IMAGE_DIMENSIONS,
+    })
     assert(result !== undefined)
     expect(result.size).toBeLessThan(file.size)
     expect(result.name).toBe(file.name)
@@ -51,6 +54,14 @@ describe('prepareImageForUpload', () => {
       0.85
     )
     expect(close).toHaveBeenCalled()
+  })
+
+  it('should not reduce large images without min sizes', async () => {
+    const result = await prepareImageForUpload(file)
+    assert(result !== undefined)
+    expect(result.size).toBe(file.size)
+    expect(result.name).toBe(file.name)
+    expect(result.type).toBe(file.type)
   })
 
   it('should keep small images unchanged', async () => {
