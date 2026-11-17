@@ -32,10 +32,6 @@ vi.mock('@/apiClient/adresse/apiAdresse', () => ({
       },
     ]),
 }))
-// Disable memoization because getSiretData value needs to change
-vi.mock('@/commons/utils/memoize', () => ({
-  memoize: (func: unknown) => func,
-}))
 
 const mockHandleSiretData = vi.fn()
 const renderInputForm = (initialValues = DEFAULT_OFFERER_FORM_VALUES) => {

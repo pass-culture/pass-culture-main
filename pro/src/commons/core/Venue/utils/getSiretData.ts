@@ -1,6 +1,5 @@
 import { api } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
-import { memoize } from '@/commons/utils/memoize'
 import { unhumanizeSiret } from '@/commons/utils/siren'
 
 import type { StructureDataBodyModel } from 'apiClient/v1'
@@ -14,7 +13,7 @@ const validateSiret = (siret: string): string => {
   return ''
 }
 
-const getSiretDataRequest = async (
+export const getSiretData = async (
   humanSiret: string
 ): Promise<StructureDataBodyModel> => {
   const siret = unhumanizeSiret(humanSiret || '')
@@ -46,7 +45,7 @@ const getSiretDataRequest = async (
   }
 }
 
-const checkSiretRequest = async (humanSiret: string) => {
+export const checkSiret = async (humanSiret: string) => {
   if (humanSiret === '') {
     throw new Error('SIRET vide')
   }
@@ -68,8 +67,3 @@ const checkSiretRequest = async (humanSiret: string) => {
     throw new Error(message)
   }
 }
-
-// TODO (igabriele, 2026-01-20): Over-engineered custom memoization.
-export const getSiretData = memoize(getSiretDataRequest)
-
-export const checkSiret = memoize(checkSiretRequest)

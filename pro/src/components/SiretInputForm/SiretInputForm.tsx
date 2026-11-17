@@ -6,9 +6,9 @@ import type { StructureDataBodyModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import {
-  checkSiret,
-  getSiretData,
-} from '@/commons/core/Venue/utils/getSiretData'
+  useCheckSiret,
+  useGetSiretData,
+} from '@/commons/core/Venue/hooks/useSiretData'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { unhumanizeSiret } from '@/commons/utils/siren'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
@@ -45,6 +45,8 @@ export const SiretInputForm = ({
   const { logEvent } = useAnalytics()
 
   const snackBar = useSnackBar()
+  const getSiretData = useGetSiretData()
+  const checkSiret = useCheckSiret()
   const [showInvisibleBanner, setShowInvisibleBanner] = useState<boolean>(false)
 
   const hookForm = useForm({
