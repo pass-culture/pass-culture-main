@@ -1,6 +1,8 @@
 import typing
 from datetime import datetime
 
+from pydantic import Field
+
 from pcapi.core.categories.subcategories import SubcategoryIdEnum
 from pcapi.core.favorites.models import FavoriteOfferData
 from pcapi.core.finance.utils import to_cents
@@ -104,3 +106,24 @@ class PaginatedFavoriteArtistsResponse(HttpBodyModel):
     page: int
     nb_favorites: int
     favorites: list[FavoriteArtistResponse]
+
+
+class FavoriteVenueRequest(HttpBodyModel):
+    venue_id: int
+
+
+class FavoriteVenueDataResponse(HttpBodyModel):
+    id: int
+    name: str
+    bannerUrl: str | None = Field(alias="image")
+
+
+class FavoriteVenueResponse(HttpBodyModel):
+    id: int
+    venue: FavoriteVenueDataResponse
+
+
+class PaginatedFavoriteVenuesResponse(HttpBodyModel):
+    page: int
+    nb_favorites: int
+    favorites: list[FavoriteVenueResponse]
