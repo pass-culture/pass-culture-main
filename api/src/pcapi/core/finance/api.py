@@ -1838,38 +1838,55 @@ def _get_cashflows_by_bank_accounts(batch: models.CashflowBatch, only_debit_note
 
 def generate_invoices_and_debit_notes(batch: models.CashflowBatch) -> None:
     """Generate and store all invoices and debit notes."""
-    invoice_rows = [(False, row) for row in _get_cashflows_by_bank_accounts(batch)]
-    debit_note_rows = [(True, row) for row in _get_cashflows_by_bank_accounts(batch, only_debit_notes=True)]
 
-    if not invoice_rows and not debit_note_rows:
-        raise exceptions.NoInvoiceToGenerate()
+    if bool(get_redis_client().exists(conf.REDIS_PUSH_INVOICE_LOCK)):
+        # This should never happen because cron run at different time and invoices from last cutoff should already have
+        # been sent days ago. So this will raise an alert.
+        logger.error(
+            "generate_invoices_and_debit_notes ended because of lock",
+            extra={"redis_lock_value": get_redis_client().get(conf.REDIS_PUSH_INVOICE_LOCK)},
+        )
+        raise exceptions.CantGenerateInvoices()
 
-    _mark_free_pricings_as_invoiced()
+    # Ensure that we don't start pushing before all invoices are generated.
+    get_redis_client().set(conf.REDIS_PUSH_INVOICE_LOCK, "1", ex=conf.REDIS_PUSH_INVOICE_LOCK_TIMEOUT)
 
-    for is_debit_note, row in invoice_rows + debit_note_rows:
-        try:
-            with transaction():
-                extra = {"bank_account_id": row.bank_account_id}
-                message = "Generated and send debit note" if is_debit_note else "Generated and sent invoice"
-                with log_elapsed(logger, message, extra):
-                    generate_and_store_invoice(
-                        bank_account_id=row.bank_account_id,
-                        cashflow_ids=row.cashflow_ids,
-                        is_debit_note=is_debit_note,
-                    )
-        except Exception:
-            if settings.IS_RUNNING_TESTS:
-                raise
-            logger.exception(
-                "Could not generate debit note" if is_debit_note else "Could not generate invoice",
-                extra={
-                    "bank_account_id": row.bank_account_id,
-                    "cashflow_ids": row.cashflow_ids,
-                },
-            )
+    try:
+        invoice_rows = [(False, row) for row in _get_cashflows_by_bank_accounts(batch)]
+        debit_note_rows = [(True, row) for row in _get_cashflows_by_bank_accounts(batch, only_debit_notes=True)]
 
-    with log_elapsed(logger, "Generated CSV invoices file"):
-        path = generate_invoice_file(batch)
+        if not invoice_rows and not debit_note_rows:
+            raise exceptions.NoInvoiceToGenerate()
+
+        _mark_free_pricings_as_invoiced()
+
+        for is_debit_note, row in invoice_rows + debit_note_rows:
+            try:
+                with transaction():
+                    extra = {"bank_account_id": row.bank_account_id}
+                    message = "Generated and send debit note" if is_debit_note else "Generated and sent invoice"
+                    with log_elapsed(logger, message, extra):
+                        generate_and_store_invoice(
+                            bank_account_id=row.bank_account_id,
+                            cashflow_ids=row.cashflow_ids,
+                            is_debit_note=is_debit_note,
+                        )
+            except Exception:
+                if settings.IS_RUNNING_TESTS:
+                    raise
+                logger.exception(
+                    "Could not generate debit note" if is_debit_note else "Could not generate invoice",
+                    extra={
+                        "bank_account_id": row.bank_account_id,
+                        "cashflow_ids": row.cashflow_ids,
+                    },
+                )
+
+        with log_elapsed(logger, "Generated CSV invoices file"):
+            path = generate_invoice_file(batch)
+    finally:
+        get_redis_client().delete(conf.REDIS_PUSH_INVOICE_LOCK)
+
     drive_folder_name = _get_drive_folder_name(batch)
     with log_elapsed(logger, "Uploaded CSV invoices file to Google Drive"):
         _upload_files_to_google_drive(drive_folder_name, [path])
