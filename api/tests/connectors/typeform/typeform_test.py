@@ -227,6 +227,24 @@ choice B"""
         assert len(response.answers) == 1
         assert response.answers[0].text is None
 
+    def test_get_choice_response_with_other(self):
+        form_id = "OtherChoice"
+        with requests_mock.Mocker() as mocker:
+            mocker.get(
+                f"https://api.eu.typeform.com/forms/{form_id}/responses",
+                json=fixtures.RESPONSE_FORM_RESPONSE_WITH_OTHER_CHOICE,
+            )
+            responses = typeform.get_responses(form_id)
+
+        assert len(responses) == 1
+        response = responses[0]
+
+        assert len(response.answers) == 1
+        assert response.answers[0].field_id == "VjdqXQRZyK70"
+        assert response.answers[0].choice_id == "other"
+        assert response.answers[0].text is None
+        assert response.answers[0].other_text == "Le Lièvre et la Tortue"
+
     def test_get_responses_not_found(self):
         form_id = "AaAaAa"
         with requests_mock.Mocker() as mocker:

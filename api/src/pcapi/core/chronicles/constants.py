@@ -20,6 +20,7 @@ class BookClub(Enum):
     DIFFUSIBLE_PERSONAL_DATA_ANSWER_ID = "WOTBxKezQuY9"
     SOCIAL_MEDIA_QUESTION_ID = "j9l8TcDOCNN4"
     SOCIAL_MEDIA_ANSWER_ID = "1KVoMDhUVrEd"
+    OTHER_CHOICE_ID = "other"
 
 
 class CineClub(Enum):
@@ -31,6 +32,7 @@ class CineClub(Enum):
     DIFFUSIBLE_PERSONAL_DATA_ANSWER_ID = "34TU7FpVjo5b"
     SOCIAL_MEDIA_QUESTION_ID = "CiUbpTHx9qiI"
     SOCIAL_MEDIA_ANSWER_ID = "WvzWCPCSwSgZ"
+    OTHER_CHOICE_ID = "other"
 
 
 class AlbumClub(Enum):
@@ -70,3 +72,4 @@ class SceneClub(Enum):
     DIFFUSIBLE_PERSONAL_DATA_ANSWER_ID = "W3O02Ms8YzqE"
     SOCIAL_MEDIA_QUESTION_ID = "DPyzzMv09Nhk"
     SOCIAL_MEDIA_ANSWER_ID = "fFU7sSL969KT"
+    OTHER_CHOICE_ID = "other"

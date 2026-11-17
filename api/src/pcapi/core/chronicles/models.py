@@ -91,6 +91,7 @@ class Chronicle(PcObject, Model, DeactivableMixin):
     identifierChoiceId: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text(), nullable=True)
     email: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text(), nullable=False)
     firstName: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text(), nullable=True)
+    freeTextTitle: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text(), nullable=True)
     externalId: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text(), nullable=False, unique=True)
     isIdentityDiffusible: sa_orm.Mapped[bool] = sa_orm.mapped_column(
         sa.Boolean, nullable=False, server_default=sa.sql.expression.false(), default=False
@@ -107,7 +108,7 @@ class Chronicle(PcObject, Model, DeactivableMixin):
     productIdentifierType: sa_orm.Mapped[ChronicleProductIdentifierType] = sa_orm.mapped_column(
         db_utils.MagicEnum(ChronicleProductIdentifierType, use_values=True), nullable=False
     )
-    productIdentifier = sa_orm.mapped_column(sa.Text(), nullable=False, index=True)
+    productIdentifier: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text(), nullable=True, index=True)
     userId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("user.id", ondelete="SET NULL"), index=True, nullable=True
     )

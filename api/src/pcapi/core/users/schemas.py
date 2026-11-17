@@ -41,10 +41,11 @@ class GdprChronicleData(GdprSerializer):
     ean: str | None = None
     allocineId: str | None = None
     visa: str | None = None
-    productIdentifier: str
+    productIdentifier: str | None = None
     productIdentifierType: str
     email: str
     firstName: str | None = None
+    freeTextTitle: str | None = None
     isIdentityDiffusible: bool
     isSocialMediaDiffusible: bool
     productName: str | None = None
