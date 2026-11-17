@@ -69,6 +69,10 @@ class FinanceIncidentAlreadyInvoiced(FinanceException):
     pass
 
 
+class CantGenerateInvoices(FinanceException):
+    pass
+
+
 class NoInvoiceToGenerate(FinanceException):
     pass
 
