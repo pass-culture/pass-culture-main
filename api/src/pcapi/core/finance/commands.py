@@ -53,6 +53,17 @@ def generate_cashflows_and_payment_files(
     if not override_feature_flag and not flag.is_active():
         logger.info("%s is not active, cronjob will not run.", flag.name)
         return
+
+    # in case of a pod failure unrelated to the script, we delete the lock so the restart works
+    def handler(signal_number: int, stack_frame: typing.Any) -> None:
+        logger.error("Rollback and delete redis lock before restarting generate_cashflows_and_payment_files")
+        db.session.rollback()
+        time.sleep(5)
+        get_redis_client().delete(conf.REDIS_PUSH_INVOICE_LOCK)
+        sys.exit(1)
+
+    signal.signal(signal.SIGTERM, handler)
+
     if not cutoff:
         last_day = datetime.date.today() - datetime.timedelta(days=1)
         cutoff = finance_utils.get_cutoff_as_datetime(last_day)
@@ -219,7 +230,7 @@ def push_invoices(count: int, override_work_hours_check: bool = False) -> None:
         logger.info("Sync invoice cronjob with not run. ENABLE_INVOICE_SYNC feature must be activated")
         return
 
-    # in case of a pod fail unrelated to the script, we delete the lock so the restart works
+    # in case of a pod failure unrelated to the script, we delete the lock so the restart works
     def handler(signal_number: int, stack_frame: typing.Any) -> None:
         logger.error("Rollback and delete redis lock before restarting push_invoices")
         db.session.rollback()

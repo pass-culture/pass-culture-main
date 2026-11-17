@@ -6,6 +6,7 @@ from unittest.mock import patch
 
 import pytest
 import time_machine
+from flask import current_app
 
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.finance import external
@@ -19,6 +20,7 @@ from pcapi.core.finance.backend.dummy import DummyFinanceBackend
 from pcapi.core.finance.backend.dummy import bank_accounts as dummy_bank_accounts
 from pcapi.core.finance.backend.dummy import invoices as dummy_invoices
 from pcapi.core.finance.backend.dummy import invoices as test_invoices
+from pcapi.core.finance.conf import REDIS_PUSH_INVOICE_LOCK
 from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.models import db
@@ -145,6 +147,23 @@ class PushInvoicesTest:
         db.session.refresh(invoice)
 
         assert invoice.status == expected_status
+
+    def test_push_invoices_doesnt_run_when_generating_invoices(self, clear_redis, caplog):
+        invoice = finance_factories.InvoiceFactory(
+            status=finance_models.InvoiceStatus.PENDING, cashflows=[finance_factories.CashflowFactory()]
+        )
+        redis = current_app.redis_client
+        redis.set(REDIS_PUSH_INVOICE_LOCK, "1", ex=10)
+
+        with caplog.at_level(logging.INFO):
+            external.push_invoices(0)
+
+        db.session.flush()
+        db.session.refresh(invoice)
+        assert invoice.status == finance_models.InvoiceStatus.PENDING
+
+        assert len(caplog.records) == 1
+        assert caplog.records[0].message == "push_invoices ended because of lock"
 
 
 class GetSettlementsTest:
