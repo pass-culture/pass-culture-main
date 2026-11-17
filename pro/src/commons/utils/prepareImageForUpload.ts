@@ -12,7 +12,7 @@ const imageResizer = pica()
 export const prepareImageForUpload = async (
   file: File,
   {
-    minSizes = MIN_IMAGE_DIMENSIONS,
+    minSizes,
     cropWidth = 1,
   }: {
     minSizes?: { width: number; height: number }
@@ -44,11 +44,12 @@ export const prepareImageForUpload = async (
     // Convert each required width/height into a minimum longest-side size.
     // The crop must retain enough pixels for the backend's 750px thumbnail;
     // the other terms preserve the upload's minimum dimensions.
+    const thumbMinSizes = minSizes ?? MIN_IMAGE_DIMENSIONS
     const targetDimension = Math.ceil(
       Math.max(
         (MAX_THUMBNAIL_WIDTH / (width * cropWidth)) * longestSide,
-        (minSizes.width / width) * longestSide,
-        (minSizes.height / height) * longestSide
+        (thumbMinSizes.width / width) * longestSide,
+        (thumbMinSizes.height / height) * longestSide
       )
     )
 
@@ -78,9 +79,10 @@ export const prepareImageForUpload = async (
     }
 
     // Keep the original if compression would increase its size or break minimum dimensions.
-    const respectsMinimumDimensions =
-      compressedBitmap.width >= minSizes.width &&
-      compressedBitmap.height >= minSizes.height
+    const respectsMinimumDimensions = minSizes
+      ? compressedBitmap.width >= minSizes.width &&
+        compressedBitmap.height >= minSizes.height
+      : false
     compressedBitmap.close?.()
 
     return respectsMinimumDimensions ? compressedFile : file
