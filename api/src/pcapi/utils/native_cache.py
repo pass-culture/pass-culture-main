@@ -55,6 +55,7 @@ def _get_client() -> "redis.Redis[str]":
             decode_responses=True,
             socket_timeout=settings.REDIS_CACHE_SOCKET_TIMEOUT_SECONDS,
             socket_connect_timeout=settings.REDIS_CACHE_SOCKET_CONNECT_TIMEOUT_SECONDS,
+            max_connections=settings.REDIS_CACHE_MAX_CONNECTIONS,
             retry=Retry(NoBackoff(), 1),
         )
     return _client

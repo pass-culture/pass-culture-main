@@ -127,6 +127,8 @@ REDIS_CACHE_URL = secrets_utils.get("REDIS_CACHE_URL", "")
 REDIS_CACHE_TTL_SECONDS = int(os.environ.get("REDIS_CACHE_TTL_SECONDS", "0"))
 REDIS_CACHE_SOCKET_TIMEOUT_SECONDS = float(os.environ.get("REDIS_CACHE_SOCKET_TIMEOUT_SECONDS", "0.1"))
 REDIS_CACHE_SOCKET_CONNECT_TIMEOUT_SECONDS = float(os.environ.get("REDIS_CACHE_SOCKET_CONNECT_TIMEOUT_SECONDS", "0.1"))
+# Per worker; beyond it a request falls back to the database. Size it per role: threads in gthread, an explicit cap in gevent
+REDIS_CACHE_MAX_CONNECTIONS = int(os.environ.get("REDIS_CACHE_MAX_CONNECTIONS", "10"))
 
 
 # SENTRY

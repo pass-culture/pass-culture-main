@@ -121,6 +121,24 @@ class GetOrComputeTest:
         assert client.store == {}
 
 
+class GetClientTest:
+    def test_client_uses_a_bounded_pool_and_explicit_timeouts(self, monkeypatch):
+        """An unbounded pool could exhaust the cache instance; a full pool raises and falls back to the database."""
+        monkeypatch.setattr(native_cache, "_client", None)
+        monkeypatch.setattr(settings, "REDIS_CACHE_URL", "redis://cache:6379")
+        monkeypatch.setattr(settings, "REDIS_CACHE_MAX_CONNECTIONS", 7)
+
+        client = native_cache._get_client()
+
+        assert client.connection_pool.max_connections == 7
+        assert client.connection_pool.connection_kwargs["socket_timeout"] == settings.REDIS_CACHE_SOCKET_TIMEOUT_SECONDS
+        assert (
+            client.connection_pool.connection_kwargs["socket_connect_timeout"]
+            == settings.REDIS_CACHE_SOCKET_CONNECT_TIMEOUT_SECONDS
+        )
+        monkeypatch.setattr(native_cache, "_client", None)
+
+
 class BuildKeyTest:
     def test_key_format(self):
         key = native_cache.build_key("get_offer_v3", "v3", OfferResponse, 42)
