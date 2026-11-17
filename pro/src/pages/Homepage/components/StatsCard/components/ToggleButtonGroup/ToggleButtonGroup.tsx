@@ -12,20 +12,19 @@ type ToggleSideProps = {
   iconAlt?: string
   selected?: boolean
   handleClick?: () => void
+  controls: string
 }
 
 export interface ToggleButtonGroupProps {
   left: ToggleSideProps
   right: ToggleSideProps
   selected: 'left' | 'right'
-  controls: string
 }
 
 export const ToggleButtonGroup = ({
   left,
   right,
   selected,
-  controls,
 }: ToggleButtonGroupProps) => {
   const [activeState, setActiveState] = useState(
     selected === 'left' ? left.id : right.id
@@ -55,14 +54,12 @@ export const ToggleButtonGroup = ({
   }
 
   return (
-    <div
-      className={styles['btn-group']}
-      role="tablist"
-      aria-controls={controls}
-    >
+    <div className={styles['btn-group']} role="tablist">
       <button
+        id={left.id}
         type="button"
         role="tab"
+        aria-controls={left.controls}
         aria-selected={activeState === left.id}
         onClick={() => {
           if (activeState === right.id) {
@@ -86,7 +83,9 @@ export const ToggleButtonGroup = ({
         <p>{left.label}</p>
       </button>
       <button
+        id={right.id}
         role="tab"
+        aria-controls={right.controls}
         aria-selected={activeState === right.id}
         type="button"
         onClick={() => {

@@ -21,6 +21,7 @@ const defaultProps: ToggleButtonGroupProps = {
     iconAlt: undefined,
     selected: undefined,
     handleClick: mockLeftClick,
+    controls: 'form',
   },
   right: {
     id: 'right',
@@ -29,9 +30,9 @@ const defaultProps: ToggleButtonGroupProps = {
     iconAlt: undefined,
     selected: undefined,
     handleClick: mockRightClick,
+    controls: 'form_',
   },
   selected: 'left',
-  controls: 'form',
 }
 
 const render = (props: ToggleButtonGroupProps = defaultProps) =>
