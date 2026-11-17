@@ -70,6 +70,7 @@ def _get_chronicle_query() -> sa_orm.Query:
         chronicles_models.Chronicle.isSocialMediaDiffusible,
         product_subquery.label("products"),
         offer_subquery.label("offers"),
+        chronicles_models.Chronicle.providedTitle,
     )
     return query
 
@@ -131,6 +132,22 @@ def list_chronicles() -> response_utils.BackofficeResponse:
         query = query.filter(
             chronicles_models.Chronicle.isSocialMediaDiffusible.is_(form.social_media_diffusible.data[0] == "true"),
         )
+
+    if form.is_attached.data and len(form.is_attached.data) == 1:
+        has_product = (
+            sa.exists()
+            .where(chronicles_models.ProductChronicle.chronicleId == chronicles_models.Chronicle.id)
+            .correlate(chronicles_models.Chronicle)
+        )
+        has_offer = (
+            sa.exists()
+            .where(chronicles_models.OfferChronicle.chronicleId == chronicles_models.Chronicle.id)
+            .correlate(chronicles_models.Chronicle)
+        )
+        if form.is_attached.data[0] == "true":
+            query = query.filter(sa.or_(has_product, has_offer))
+        else:
+            query = query.filter(sa.not_(has_product), sa.not_(has_offer))
 
     if form.category.data and len(form.category.data) != len(chronicles_models.ChronicleClubType):
         query = query.filter(
@@ -202,7 +219,7 @@ def details(chronicle_id: int) -> response_utils.BackofficeResponse:
             if chronicle.productIdentifier == offer.id:
                 product_name = offer.name
                 break
-    else:
+    elif chronicle.productIdentifier is not None:
         for product in chronicle.products:
             product_identifier = chronicles_api.get_product_identifier(chronicle, product)
             if product_identifier == chronicle.productIdentifier:
@@ -337,8 +354,14 @@ def attach_product(chronicle_id: int) -> response_utils.BackofficeResponse:
     )
 
     chronicle_query = db.session.query(chronicles_models.Chronicle, products_subquery.label("products")).filter(
-        chronicles_models.Chronicle.productIdentifier == selected_chronicle.productIdentifier,
-        chronicles_models.Chronicle.productIdentifierType == selected_chronicle.productIdentifierType,
+        sa.or_(
+            sa.and_(
+                chronicles_models.Chronicle.productIdentifier == selected_chronicle.productIdentifier,
+                chronicles_models.Chronicle.productIdentifier.is_not(None),
+                chronicles_models.Chronicle.productIdentifierType == selected_chronicle.productIdentifierType,
+            ),
+            chronicles_models.Chronicle.id == chronicle_id,
+        )
     )
 
     match form.product_identifier_type.data:
@@ -377,10 +400,25 @@ def attach_product(chronicle_id: int) -> response_utils.BackofficeResponse:
 
     if len(products) > 1:
         product_names = ", ".join(product.name for product in products)
+        if selected_chronicle.productIdentifier is None:
+            flash(
+                Markup("Les produits <b>{product_names}</b> ont été rattachés à la chronique").format(
+                    product_names=product_names
+                ),
+                "success",
+            )
+        else:
+            flash(
+                Markup(
+                    "Les produits <b>{product_names}</b> ont été rattachés à toutes les chroniques sur la même œuvre que celle-ci"
+                ).format(product_names=product_names),
+                "success",
+            )
+    elif selected_chronicle.productIdentifier is None:
         flash(
-            Markup(
-                "Les produits <b>{product_names}</b> ont été rattachés à toutes les chroniques sur la même œuvre que celle-ci"
-            ).format(product_names=product_names),
+            Markup("Le produit <b>{product_name}</b> a été rattaché à la chronique").format(
+                product_name=products[0].name
+            ),
             "success",
         )
     else:
@@ -404,7 +442,7 @@ def detach_product(chronicle_id: int, product_id: int) -> response_utils.Backoff
             sa.or_(
                 sa.and_(
                     chronicles_models.Chronicle.productIdentifier == selected_chronicle.productIdentifier,
-                    ~chronicles_models.Chronicle.productIdentifier.is_(None),
+                    chronicles_models.Chronicle.productIdentifier.is_not(None),
                 ),
                 chronicles_models.Chronicle.id == chronicle_id,
             )
@@ -421,7 +459,9 @@ def detach_product(chronicle_id: int, product_id: int) -> response_utils.Backoff
     )
     db.session.flush()
 
-    if deleted:
+    if deleted and selected_chronicle.productIdentifier is None:
+        flash("Le produit a bien été détaché de la chronique", "success")
+    elif deleted:
         flash("Le produit a bien été détaché de toutes les chroniques sur la même œuvre que celle-ci", "success")
     else:
         mark_transaction_as_invalid()
@@ -456,8 +496,14 @@ def attach_offer(chronicle_id: int) -> response_utils.BackofficeResponse:
     )
 
     chronicle_query = db.session.query(chronicles_models.Chronicle, offers_subquery.label("offers")).filter(
-        chronicles_models.Chronicle.productIdentifier == selected_chronicle.productIdentifier,
-        chronicles_models.Chronicle.productIdentifierType == selected_chronicle.productIdentifierType,
+        sa.or_(
+            sa.and_(
+                chronicles_models.Chronicle.productIdentifier == selected_chronicle.productIdentifier,
+                chronicles_models.Chronicle.productIdentifier.is_not(None),
+                chronicles_models.Chronicle.productIdentifierType == selected_chronicle.productIdentifierType,
+            ),
+            chronicles_models.Chronicle.id == chronicle_id,
+        )
     )
 
     offer = db.session.query(offers_models.Offer).filter(offers_models.Offer.id == form.offer_id.data).one_or_none()
@@ -475,12 +521,18 @@ def attach_offer(chronicle_id: int) -> response_utils.BackofficeResponse:
 
     db.session.flush()
 
-    flash(
-        Markup(
-            "L'offre <b>{offer_name}</b> a été rattachée à toutes les chroniques sur la même œuvre que celle-ci"
-        ).format(offer_name=offer.name),
-        "success",
-    )
+    if selected_chronicle.productIdentifier is None:
+        flash(
+            Markup("L'offre <b>{offer_name}</b> a été rattachée à la chronique").format(offer_name=offer.name),
+            "success",
+        )
+    else:
+        flash(
+            Markup(
+                "L'offre <b>{offer_name}</b> a été rattachée à toutes les chroniques sur la même œuvre que celle-ci"
+            ).format(offer_name=offer.name),
+            "success",
+        )
 
     return redirect(url_for("backoffice.chronicles.details", chronicle_id=chronicle_id, active_tab="offer"), code=303)
 
@@ -495,6 +547,7 @@ def detach_offer(chronicle_id: int, offer_id: int) -> response_utils.BackofficeR
             sa.or_(
                 sa.and_(
                     chronicles_models.Chronicle.productIdentifier == selected_chronicle.productIdentifier,
+                    chronicles_models.Chronicle.productIdentifier.is_not(None),
                     chronicles_models.Chronicle.productIdentifierType == selected_chronicle.productIdentifierType,
                 ),
                 chronicles_models.Chronicle.id == chronicle_id,
@@ -512,7 +565,9 @@ def detach_offer(chronicle_id: int, offer_id: int) -> response_utils.BackofficeR
     )
     db.session.flush()
 
-    if deleted:
+    if deleted and selected_chronicle.productIdentifier is None:
+        flash("L'offre a bien été détachée de la chronique", "success")
+    elif deleted:
         flash("L'offre a bien été détachée de toutes les chroniques sur la même œuvre que celle-ci", "success")
     else:
         mark_transaction_as_invalid()

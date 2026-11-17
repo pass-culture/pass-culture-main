@@ -47,6 +47,7 @@ class ListChroniclesTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert rows[0]["ID"] == str(chronicle_2.id)
         assert rows[0]["Titres des œuvres"] == ""
+        assert rows[0]["Titre renseigné"] == ""
         assert rows[0]["Contenu"] == chronicle_2.content
         assert rows[0]["Date de création"] == chronicle_2.dateCreated.strftime("%d/%m/%Y")
         assert rows[0]["Publiée"] == "Non"
@@ -183,6 +184,33 @@ class ListChroniclesTest(GetEndpointHelper):
         assert len(rows) == 1
         assert rows[0]["ID"] == str(chronicle_to_find.id)
 
+    def test_search_by_is_attached_false(self, authenticated_client):
+        chronicle_to_find = chronicles_factories.ChronicleFactory()
+        chronicles_factories.ChronicleFactory(products=[offers_factories.ProductFactory()])
+        chronicles_factories.ChronicleFactory(offers=[offers_factories.OfferFactory()])
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(
+                url_for(self.endpoint, is_attached="false"),
+            )
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(chronicle_to_find.id)
+
+    def test_search_by_is_attached_true(self, authenticated_client):
+        chronicle_with_product = chronicles_factories.ChronicleFactory(products=[offers_factories.ProductFactory()])
+        chronicle_with_offer = chronicles_factories.ChronicleFactory(offers=[offers_factories.OfferFactory()])
+        chronicles_factories.ChronicleFactory()
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(
+                url_for(self.endpoint, is_attached="true"),
+            )
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert [row["ID"] for row in rows] == [str(chronicle_with_offer.id), str(chronicle_with_product.id)]
+
     def test_search_by_club_type(self, authenticated_client):
         chronicle_to_find = chronicles_factories.ChronicleFactory(
             clubType=chronicles_models.ChronicleClubType.CINE_CLUB
@@ -223,6 +251,16 @@ class ListChroniclesTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
 
         assert rows[0]["Titres des œuvres"] == f"{product.name}{offer.name}"
+
+    def test_chronicle_with_provided_title(self, authenticated_client):
+        chronicles_factories.ChronicleFactory(productIdentifier=None, providedTitle="Le Petit Prince")
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+
+        assert rows[0]["Titre renseigné"] == "Le Petit Prince"
 
 
 class GetChronicleDetailsTest(GetEndpointHelper):
@@ -328,10 +366,31 @@ class GetChronicleDetailsTest(GetEndpointHelper):
         assert "Ville : Non renseignée" in content_as_text
         assert f"Email : {chronicle.email}" in content_as_text
         assert "Titre de l'œuvre : Non renseigné" in content_as_text
+        assert "Titre renseigné" not in content_as_text
         assert f"EAN : {chronicle.productIdentifier}" in content_as_text
         assert "Accord diffusion réseaux sociaux : Non" in content_as_text
         assert "Accord de diffusion maison d'édition : Non" in content_as_text
         assert chronicle.content in content_as_text
+
+    def test_unidentified_product(self, authenticated_client):
+        product_without_ean = offers_factories.ProductFactory(ean=None)
+        chronicle = chronicles_factories.ChronicleFactory(
+            productIdentifier=None,
+            providedTitle="Le Petit Prince",
+            products=[product_without_ean],
+        )
+        url = url_for(self.endpoint, chronicle_id=chronicle.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        content_as_text = html_parser.content_as_text(response.data)
+
+        assert "Titre de l'œuvre : Non renseigné" in content_as_text
+        assert "Titre renseigné : Le Petit Prince" in content_as_text
+        assert "EAN : Non renseigné" in content_as_text
+        assert "None" not in content_as_text
 
 
 class GetUpdateChronicleContentFormTest(GetEndpointHelper):
@@ -405,7 +464,7 @@ class UpdateChronicleContentTest(PostEndpointHelper):
 
         # ensure that the row is rendered
         cells = html_parser.extract_plain_row(response.data, id=f"chronicle-row-{chronicle.id}")
-        assert cells[3] == "new content"
+        assert cells[4] == "new content"
 
 
 class PublishChronicleTest(PostEndpointHelper):
@@ -461,7 +520,7 @@ class PublishChronicleTest(PostEndpointHelper):
 
         # ensure that the row is rendered
         cells = html_parser.extract_plain_row(response.data, id=f"chronicle-row-{chronicle.id}")
-        assert cells[5] == "Oui"
+        assert cells[6] == "Oui"
 
         action_log = db.session.query(history_models.ActionHistory).one()
         assert action_log.actionType == history_constants.ActionType.CHRONICLE_PUBLISHED
@@ -531,7 +590,7 @@ class UnpublishChronicleTest(PostEndpointHelper):
 
         # ensure that the row is rendered
         cells = html_parser.extract_plain_row(response.data, id=f"chronicle-row-{chronicle.id}")
-        assert cells[5] == "Non"
+        assert cells[6] == "Non"
 
         action_log = db.session.query(history_models.ActionHistory).one()
         assert action_log.actionType == history_constants.ActionType.CHRONICLE_UNPUBLISHED
@@ -741,6 +800,30 @@ class AttachProductTest(PostEndpointHelper):
             f"Le produit {product_to_attach.name} a été rattaché à toutes les chroniques sur la même œuvre que celle-ci"
         ]
 
+    def test_attach_product_to_unidentified_chronicle(self, authenticated_client):
+        product = offers_factories.ProductFactory(ean="1234567891234")
+        chronicle, untouched_chronicle = chronicles_factories.ChronicleFactory.create_batch(
+            2, productIdentifier=None, providedTitle="Le Petit Prince"
+        )
+
+        response = self.post_to_endpoint(
+            follow_redirects=True,
+            expected_num_queries=self.expected_num_queries,
+            chronicle_id=chronicle.id,
+            client=authenticated_client,
+            form={
+                "product_identifier": product.ean,
+                "product_identifier_type": chronicles_models.ChronicleProductIdentifierType.EAN.name,
+            },
+        )
+        assert response.status_code == 200
+        db.session.refresh(chronicle)
+        db.session.refresh(untouched_chronicle)
+
+        assert chronicle.products == [product]
+        assert untouched_chronicle.products == []
+        assert html_parser.extract_alerts(response.data) == [f"Le produit {product.name} a été rattaché à la chronique"]
+
 
 class DetachProductTest(PostEndpointHelper):
     endpoint = "backoffice.chronicles.detach_product"
@@ -818,6 +901,27 @@ class DetachProductTest(PostEndpointHelper):
         assert html_parser.extract_alerts(response.data) == [
             "Le produit n'existe pas ou n'était pas attaché à la chronique"
         ]
+
+    def test_detach_product_from_unidentified_chronicle(self, authenticated_client, legit_user):
+        product = offers_factories.ProductFactory()
+        chronicle, untouched_chronicle = chronicles_factories.ChronicleFactory.create_batch(
+            2, productIdentifier=None, providedTitle="Le Petit Prince", products=[product]
+        )
+
+        response = self.post_to_endpoint(
+            follow_redirects=True,
+            expected_num_queries=self.expected_num_queries,
+            chronicle_id=chronicle.id,
+            product_id=product.id,
+            client=authenticated_client,
+        )
+        assert response.status_code == 200
+        db.session.refresh(chronicle)
+        db.session.refresh(untouched_chronicle)
+
+        assert chronicle.products == []
+        assert untouched_chronicle.products == [product]
+        assert html_parser.extract_alerts(response.data) == ["Le produit a bien été détaché de la chronique"]
 
 
 class CommentChronicleTest(PostEndpointHelper):
@@ -1037,6 +1141,27 @@ class DetachOfferTest(PostEndpointHelper):
         assert html_parser.extract_alerts(response.data) == [
             "L'offre n'existe pas ou n'était pas attachée à la chronique"
         ]
+
+    def test_detach_offer_from_unidentified_chronicle(self, authenticated_client, legit_user):
+        offer = offers_factories.OfferFactory()
+        chronicle, untouched_chronicle = chronicles_factories.ChronicleFactory.create_batch(
+            2, productIdentifier=None, providedTitle="Le Petit Prince", offers=[offer]
+        )
+
+        response = self.post_to_endpoint(
+            follow_redirects=True,
+            expected_num_queries=self.expected_num_queries,
+            chronicle_id=chronicle.id,
+            offer_id=offer.id,
+            client=authenticated_client,
+        )
+        assert response.status_code == 200
+        db.session.refresh(chronicle)
+        db.session.refresh(untouched_chronicle)
+
+        assert chronicle.offers == []
+        assert untouched_chronicle.offers == [offer]
+        assert html_parser.extract_alerts(response.data) == ["L'offre a bien été détachée de la chronique"]
 
 
 class CreateChronicleTest(PostEndpointHelper):

@@ -630,6 +630,128 @@ class SaveBookChroniclesTest:
         chronicle = db.session.query(models.Chronicle).filter(models.Chronicle.id != old_chronicle.id).one()
         assert chronicle.offers == [offer]
 
+    @pytest.mark.parametrize(
+        "club_constants,club_type,product_identifier_type",
+        [
+            (constants.BookClub, models.ChronicleClubType.BOOK_CLUB, models.ChronicleProductIdentifierType.EAN),
+            (constants.CineClub, models.ChronicleClubType.CINE_CLUB, models.ChronicleProductIdentifierType.ALLOCINE_ID),
+            (constants.SceneClub, models.ChronicleClubType.SCENE_CLUB, models.ChronicleProductIdentifierType.OFFER_ID),
+        ],
+    )
+    def test_save_chronicle_with_other_choice(self, club_constants, club_type, product_identifier_type):
+        old_chronicle = chronicles_factories.ChronicleFactory(
+            productIdentifier=None,
+            providedTitle="Some title",
+            productIdentifierType=product_identifier_type,
+            products=[offers_factories.ProductFactory()],
+            offers=[offers_factories.OfferFactory()],
+        )
+        form = typeform.TypeformResponse(
+            response_id=random_string(),
+            date_submitted=datetime.datetime(2024, 10, 24),
+            phone_number=None,
+            email="email@mail.test",
+            answers=[
+                typeform.TypeformAnswer(
+                    field_id=club_constants.PRODUCT_IDENTIFIER_FIELD_ID.value,
+                    choice_id="other",
+                    other_text="Some title - 1234567890123",
+                ),
+                typeform.TypeformAnswer(
+                    field_id=club_constants.CHRONICLE_ID.value,
+                    choice_id=None,
+                    text="some random chronicle description",
+                ),
+            ],
+        )
+
+        api.save_chronicle(
+            form=form,
+            club_constants=club_constants,
+            club_type=club_type,
+            product_identifier_type=product_identifier_type,
+        )
+
+        chronicle = db.session.query(models.Chronicle).filter(models.Chronicle.id != old_chronicle.id).one()
+        assert chronicle.productIdentifier is None
+        assert chronicle.productIdentifierType == product_identifier_type
+        assert chronicle.providedTitle == "Some title - 1234567890123"
+        assert chronicle.identifierChoiceId is None
+        assert chronicle.content == "some random chronicle description"
+        assert chronicle.clubType == club_type
+        assert chronicle.products == []
+        assert chronicle.offers == []
+
+    @pytest.mark.parametrize(
+        "club_constants,club_type,product_identifier_type",
+        [
+            (constants.AlbumClub, models.ChronicleClubType.ALBUM_CLUB, models.ChronicleProductIdentifierType.EAN),
+            (
+                constants.ConcertClub,
+                models.ChronicleClubType.CONCERT_CLUB,
+                models.ChronicleProductIdentifierType.OFFER_ID,
+            ),
+        ],
+    )
+    def test_do_not_save_chronicle_with_other_choice(self, club_constants, club_type, product_identifier_type):
+        form = typeform.TypeformResponse(
+            response_id=random_string(),
+            date_submitted=datetime.datetime(2024, 10, 24),
+            phone_number=None,
+            email="email@mail.test",
+            answers=[
+                typeform.TypeformAnswer(
+                    field_id=club_constants.PRODUCT_IDENTIFIER_FIELD_ID.value,
+                    choice_id="other",
+                    other_text="Some title",
+                ),
+                typeform.TypeformAnswer(
+                    field_id=club_constants.CHRONICLE_ID.value,
+                    choice_id=None,
+                    text="some random chronicle description",
+                ),
+            ],
+        )
+
+        api.save_chronicle(
+            form=form,
+            club_constants=club_constants,
+            club_type=club_type,
+            product_identifier_type=product_identifier_type,
+        )
+
+        assert db.session.query(models.Chronicle).count() == 0
+
+    @pytest.mark.parametrize("other_text", [None, ""])
+    def test_do_not_save_chronicle_with_empty_other_choice(self, other_text):
+        form = typeform.TypeformResponse(
+            response_id=random_string(),
+            date_submitted=datetime.datetime(2024, 10, 24),
+            phone_number=None,
+            email="email@mail.test",
+            answers=[
+                typeform.TypeformAnswer(
+                    field_id=constants.BookClub.PRODUCT_IDENTIFIER_FIELD_ID.value,
+                    choice_id="other",
+                    other_text=other_text,
+                ),
+                typeform.TypeformAnswer(
+                    field_id=constants.BookClub.CHRONICLE_ID.value,
+                    choice_id=None,
+                    text="some random chronicle description",
+                ),
+            ],
+        )
+
+        api.save_chronicle(
+            form=form,
+            club_constants=constants.BookClub,
+            club_type=models.ChronicleClubType.BOOK_CLUB,
+            product_identifier_type=models.ChronicleProductIdentifierType.EAN,
+        )
+
+        assert db.session.query(models.Chronicle).count() == 0
+
 
 @pytest.mark.usefixtures("db_session")
 class ExtractEanTest:
@@ -662,6 +784,23 @@ class ExtractEanTest:
             field_id=constants.BookClub.PRODUCT_IDENTIFIER_FIELD_ID.value,
             choice_id=choice_id,
             text="nothing to see here",
+        )
+        chronicles_factories.ChronicleFactory(productIdentifier=ean, identifierChoiceId=choice_id)
+
+        result = api._extract_ean(form)
+
+        assert result == ean
+
+    def test_choice_in_db_ignores_chronicle_without_product_identifier(self):
+        ean = "1234567890123"
+        choice_id = random_string()
+        form = typeform.TypeformAnswer(
+            field_id=constants.BookClub.PRODUCT_IDENTIFIER_FIELD_ID.value,
+            choice_id=choice_id,
+            text="nothing to see here",
+        )
+        chronicles_factories.ChronicleFactory(
+            productIdentifier=None, providedTitle="Some title", identifierChoiceId=choice_id
         )
         chronicles_factories.ChronicleFactory(productIdentifier=ean, identifierChoiceId=choice_id)
 
@@ -789,6 +928,23 @@ class ExtractAllocineIdTest:
 
         assert result == allocine_id
 
+    def test_choice_in_db_ignores_chronicle_without_product_identifier(self):
+        allocine_id = "1000013371"
+        choice_id = random_string()
+        form = typeform.TypeformAnswer(
+            field_id=constants.CineClub.PRODUCT_IDENTIFIER_FIELD_ID.value,
+            choice_id=choice_id,
+            text="nothing to see here",
+        )
+        chronicles_factories.ChronicleFactory(
+            productIdentifier=None, providedTitle="Some title", identifierChoiceId=choice_id
+        )
+        chronicles_factories.ChronicleFactory(productIdentifier=allocine_id, identifierChoiceId=choice_id)
+
+        result = api._extract_allocine_id(form)
+
+        assert result == allocine_id
+
 
 @pytest.mark.usefixtures("db_session")
 class ExtractOfferIdTest:
@@ -822,6 +978,23 @@ class ExtractOfferIdTest:
             field_id=constants.BookClub.PRODUCT_IDENTIFIER_FIELD_ID.value,
             choice_id=choice_id,
             text="nothing to see here",
+        )
+        chronicles_factories.ChronicleFactory(productIdentifier=offer_id, identifierChoiceId=choice_id)
+
+        result = api._extract_offer_id(form)
+
+        assert result == offer_id
+
+    def test_choice_in_db_ignores_chronicle_without_product_identifier(self):
+        offer_id = "1234567890123"
+        choice_id = random_string()
+        form = typeform.TypeformAnswer(
+            field_id=constants.BookClub.PRODUCT_IDENTIFIER_FIELD_ID.value,
+            choice_id=choice_id,
+            text="nothing to see here",
+        )
+        chronicles_factories.ChronicleFactory(
+            productIdentifier=None, providedTitle="Some title", identifierChoiceId=choice_id
         )
         chronicles_factories.ChronicleFactory(productIdentifier=offer_id, identifierChoiceId=choice_id)
 

@@ -89,7 +89,10 @@ def _extract_ean(answer: typeform.TypeformAnswer) -> str | None:
     # This case could happen if the answer was deleted by an admin in typeform.
     ean = (
         db.session.query(models.Chronicle.productIdentifier)
-        .filter(models.Chronicle.identifierChoiceId == answer.choice_id)
+        .filter(
+            models.Chronicle.identifierChoiceId == answer.choice_id,
+            models.Chronicle.productIdentifier.is_not(None),
+        )
         .limit(1)
         .scalar()
     )
@@ -108,7 +111,10 @@ def _extract_offer_id(answer: typeform.TypeformAnswer) -> str | None:
     # This case could happen if the answer was deleted by an admin in typeform.
     offer_id = (
         db.session.query(models.Chronicle.productIdentifier)
-        .filter(models.Chronicle.identifierChoiceId == answer.choice_id)
+        .filter(
+            models.Chronicle.identifierChoiceId == answer.choice_id,
+            models.Chronicle.productIdentifier.is_not(None),
+        )
         .limit(1)
         .scalar()
     )
@@ -125,7 +131,10 @@ def _extract_allocine_id(answer: typeform.TypeformAnswer) -> str | None:
             return movie_id
     movie_id = (
         db.session.query(models.Chronicle.productIdentifier)
-        .filter(models.Chronicle.identifierChoiceId == answer.choice_id)
+        .filter(
+            models.Chronicle.identifierChoiceId == answer.choice_id,
+            models.Chronicle.productIdentifier.is_not(None),
+        )
         .limit(1)
         .scalar()
     )
@@ -186,26 +195,25 @@ def save_chronicle(
             .scalar()
         )
 
-    product_choice_id = answer_dict.get(club_constants.PRODUCT_IDENTIFIER_FIELD_ID.value, EMPTY_ANSWER).choice_id
+    product_answer = answer_dict.get(club_constants.PRODUCT_IDENTIFIER_FIELD_ID.value, EMPTY_ANSWER)
+    product_choice_id = product_answer.choice_id
+    product_identifier: str | None = None
+    provided_title: str | None = None
 
-    match product_identifier_type:
-        case models.ChronicleProductIdentifierType.EAN:
-            product_identifier = _extract_ean(
-                answer_dict.get(club_constants.PRODUCT_IDENTIFIER_FIELD_ID.value, EMPTY_ANSWER)
-            )
-        case models.ChronicleProductIdentifierType.ALLOCINE_ID:
-            product_identifier = _extract_allocine_id(
-                answer_dict.get(club_constants.PRODUCT_IDENTIFIER_FIELD_ID.value, EMPTY_ANSWER)
-            )
-        case models.ChronicleProductIdentifierType.OFFER_ID:
-            product_identifier = _extract_offer_id(
-                answer_dict.get(club_constants.PRODUCT_IDENTIFIER_FIELD_ID.value, EMPTY_ANSWER)
-            )
-        case _:
-            product_identifier = None
+    if hasattr(club_constants, "OTHER_CHOICE_ID") and product_choice_id == club_constants.OTHER_CHOICE_ID.value:
+        product_choice_id = None
+        provided_title = product_answer.other_text
+    else:
+        match product_identifier_type:
+            case models.ChronicleProductIdentifierType.EAN:
+                product_identifier = _extract_ean(product_answer)
+            case models.ChronicleProductIdentifierType.ALLOCINE_ID:
+                product_identifier = _extract_allocine_id(product_answer)
+            case models.ChronicleProductIdentifierType.OFFER_ID:
+                product_identifier = _extract_offer_id(product_answer)
 
     try:
-        if content and product_identifier and form.email:
+        if content and (product_identifier or provided_title) and form.email:
             offers = get_offers(product_identifier_type, product_identifier)
             products = get_products(product_identifier_type, product_identifier)
             chronicle = models.Chronicle(
@@ -225,6 +233,7 @@ def save_chronicle(
                 isActive=False,
                 productIdentifierType=product_identifier_type,
                 productIdentifier=product_identifier,
+                providedTitle=provided_title,
                 clubType=club_type,
             )
             db.session.add(chronicle)
@@ -301,8 +310,11 @@ def get_offers(
 
 
 def get_products(
-    product_identifier_type: models.ChronicleProductIdentifierType, product_identifier: str
+    product_identifier_type: models.ChronicleProductIdentifierType, product_identifier: str | None
 ) -> list[offers_models.Product]:
+    if not product_identifier:
+        return []
+
     oldest_existing_chronicle_id = (
         db.session.query(models.Chronicle.id)
         .filter(
