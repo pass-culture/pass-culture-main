@@ -103,7 +103,7 @@ class GeoApiBackend(BaseBackend):
             response = requests.get(url, params=params, timeout=5)
         except requests.exceptions.RequestException as exc:
             msg = "Network error on Geo API"
-            logger.exception(msg, extra={"exc": exc, "url": url})
+            logger.warning(msg, extra={"exc": exc, "url": url})
             raise GeoApiException(msg) from exc
 
         if response.status_code in (500, 503):
