@@ -1,0 +1,641 @@
+<details>
+
+<summary> ⏳ Critère 1.3 - RAWeb - Pour chaque image porteuse d’information ayant une alternative textuelle, cette alternative est-elle pertinente (hors cas particuliers) ?</summary>
+
+**RAWeb** : [Critère 1.3](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-11-6)
+**Ticket** : [PC-43950](https://passculture.atlassian.net/browse/PC-43950)  
+**PR** : [#24710](https://github.com/pass-culture/pass-culture-main/pull/24710)
+
+**Problème** 😱  
+P05 → Création offre réservable (parcours 3) (5 étapes et confirmation)
+P06 → Création offre individuelle (parcours 5) (7 étapes et confirmation)
+
+La correction est OK, l'étiquette "et de zoom" n'est pas forcément vraie sur le composant, cette partie étant gérée en dehors du canvas, de plus au temps pour moi, j'ai oublié de demander une propriété role="img" sur l'élément <canvas>.
+
+Nouvelle NC : à l'étape "Aperçu" l'image est une image légendée et doit donc avoir une alternative renseignée, selon l'image et le contexte elle peut être générique (ex. "Illustration", "Affiche" etc.)
+
+**Correction** 💡  
+
+- Modification de l'éditeur d'image & de la balise canvas (ajout du role image). On garde la partie "et de zoom" du canvas car le zoom est désormais possible avec le clavier sur le canvas (cf correction critère 13.10), comme précisé dans les instructions annoncées au lecteur d'écran. Vu par mail également, cet ne constitue pas une non-conformité de toutes façons.
+- Ajout d'une alternative textuelle "placeholder" pour les images n'en ayant pas encore (image de l'étape Apercu).
+
+</details>
+
+<br>
+
+<details>
+
+<summary> ⏳ Critère 5.1 - Chaque tableau de données complexe a-t-il un résumé ?</summary>
+
+**RAWeb/RGAA** : [Critère 5.1](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-5-1)
+**Ticket** : [PC-43891](https://passculture.atlassian.net/browse/PC-43891)  
+**PR** : [#24774](https://github.com/pass-culture/pass-culture-main/pull/24774)
+
+**Problème** 😱  
+
+P10 → Les réservations individuelles  
+P13 → Les offres réservables (collectif)
+
+Les tableaux présentent des informations complexes sans résumé permettant de comprendre leur structure. Dans le tableau des réservations individuelles, l’intitulé de la colonne contenant le bouton « Détails » doit également être restitué aux technologies d’assistance pour identifier la ligne complémentaire qui lui est associée.
+
+**Correction** 💡  
+
+- Ajouter un résumé décrivant la structure et l’organisation de chaque tableau dans son élément `<caption>`, visuellement masqué lorsque nécessaire.
+- Donner à la colonne l’intitulé accessible « Détails » et associer la cellule complémentaire affichée à l’en-tête correspondant avec `headers="details"`.
+- Ne pas rendre l’élément `<caption>` en mode mobile/tablette, où le tableau est transformé.
+
+**Retours audit** 🔥  
+TBD
+
+</details>
+
+<br>
+
+<details>
+
+<summary> ⏳ Critère 7.1 - RGAA - Chaque script est-il, si nécessaire, compatible avec les technologies d'assistance ?</summary>
+
+**RAWeb/RGAA** : [Critère 7.1](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-7-1)
+
+### Critère corrigé en plusieurs tickets/PRs :
+
+#### 1
+
+**Ticket** : [PC-43906](https://passculture.atlassian.net/browse/PC-43906)  
+**PR** : [#24680](https://github.com/pass-culture/pass-culture-main/pull/24680)
+
+**Problème** 😱  
+
+- Désormais, avec Tab / Shift + Tab, le focus ne boucle plus dans les modales : il finit par atteindre les composants du navigateur, sans toutefois sortir réellement de la modale. Ce comportement est constaté sur l’ensemble des modales du site.
+- A la fermeture des modales, le focus n’est pas replacé de manière logique.
+
+**Correction** 💡  
+
+- Vu par mail : le problème provient probablement du navigateur et pas de notre implémentation.
+- Repositionner le focus de manière logique après la validation du formulaire.
+
+**Retours audit** 🔥  
+Texte
+
+#### 2
+
+**Ticket** : [PC-43907](https://passculture.atlassian.net/browse/PC-43907)  
+**PR** : [#24709](https://github.com/pass-culture/pass-culture-main/pull/24709)
+
+**Problème** 😱  
+P01 → Tuto de bienvenue
+P04 → Inscription structure
+
+- Lors de la soumission du formulaire sans avoir sélectionné de réponse à la pré-étape, le focus reste sur le bouton « Continuer » alors qu’un message d’erreur est affiché.
+
+- Les indicateurs de progression (4 étapes) sont implémentés via des éléments <div> sans restitution sémantique. Ils ne sont pas correctement exposés aux technologies d’assistance, ce qui empêche l’utilisateur de connaître sa position dans le parcours.
+
+**Correction** 💡  
+
+- Placer le focus sur l'élément en erreur lors de la soumission
+
+- Rendre le composant d'étape accessible en ajoutant « Étape 1 sur 4 », aria-current et en implémentant une liste plutôt que des divs.
+
+- Permettre une navigation cohérente dans le parcours via des contrôles adaptés (boutons ou liens d’étapes) afin de pouvoir revenir aux étapes précédentes de manière accessible avec les boutons Précédent et Suivant.
+
+**Retours audit** 🔥  
+Texte
+
+#### 3
+
+**Ticket** : [PC-43546](https://passculture.atlassian.net/browse/PC-43546)  
+**PR** : [#24686](https://github.com/pass-culture/pass-culture-main/pull/24686)
+
+**Problème** 😱  
+P11 → Contenus téléchargables
+
+Les boutons « Critères validés (ou non applicables) par le service numérique » et « Critères non validés (ou en cours) par le service numérique » du bloc « Télécharger la déclaration RGESN de l'espace partenaire » permettent d'afficher ou masquer du contenu, mais n'indiquent pas leur état d'ouverture ou de fermeture aux technologies d'assistance.
+
+**Correction** 💡  
+
+Implémenter le composant en respectant le motif de conception ARIA Disclosure :
+
+- utiliser un bouton pour contrôler l'affichage du contenu ;
+
+- ajouter l'attribut aria-expanded avec la valeur true lorsque le contenu est affiché et false lorsqu'il est masqué ;
+
+- associer le bouton au contenu contrôlé à l'aide de l'attribut aria-controls.
+
+**Retours audit** 🔥  
+Texte
+
+#### 4
+
+**Ticket** : [PC-43625](https://passculture.atlassian.net/browse/PC-43625)  
+**PR** : [#24696](https://github.com/pass-culture/pass-culture-main/pull/24696)
+
+**Problème** 😱  
+
+- Les indicateurs de progression (4 étapes) sont implémentés via des éléments <div> sans restitution sémantique. Ils ne sont pas correctement exposés aux technologies d’assistance, ce qui empêche l’utilisateur de connaître sa position dans le parcours.
+
+- RadioButtonGroup (choix du profil d’inscription) : l'état aria-invalid n’est pas transmis à l’input
+
+**Correction** 💡  
+
+- S’assurer que les composants dynamiques de l’interface (par exemple indicateur de progression des étapes) restituent correctement l’information aux technologies d’assistance. À défaut d’une sémantique native adaptée, fournir une alternative textuelle permettant d’indiquer la progression et l’étape courante (ex. « Étape 1 sur 4 ») ou utiliser des attributs ARIA appropriés (aria-current, rôle de type progressbar ou équivalent selon le contexte).
+
+- Permettre une navigation cohérente dans le parcours via des contrôles adaptés (boutons ou liens d’étapes) afin de pouvoir revenir aux étapes précédentes de manière accessible
+
+- RadioButtonGroup (choix du profil d’inscription par exemple, mais contrôler les autres occurences) : transmettre l'état aria-invalid aux input
+
+**Retours audit** 🔥  
+Texte
+
+#### 5 
+
+**Ticket** : [PC-43626](https://passculture.atlassian.net/browse/PC-43626)  
+**PR** : [#24681](https://github.com/pass-culture/pass-culture-main/pull/24681)
+
+**Problème** 😱  
+Le bouton « Profil » :
+
+- Ouvre un composant implémenté avec le rôle menu, alors qu'il s'agit d'un panneau utilisateur contenant des informations et des actions. Ce choix de pattern ARIA n'est pas adapté au comportement attendu du composant.
+
+- De plus, les éléments du menu peuvent être parcourus à l'aide des flèches directionnelles, mais ne peuvent pas être activés au clavier (Entrée ou Espace). Seule une activation à la souris est possible.
+
+- Lorsque le composant est ouvert, le bouton qui l'ouvre reçoit l'attribut aria-hidden="true", bien qu'il demeure interactif.
+
+- Le bouton n’a pas d’intitulé
+
+**Correction** 💡  
+
+- Utiliser un composant adapté à l'usage, à savoir un bouton + panel.
+
+- Supprimer l'attribut aria-hidden="true" des éléments interactifs ou susceptibles de recevoir le focus.
+
+- Veiller à ce que les rôles et attributs ARIA utilisés correspondent au comportement réel du composant.
+
+**Retours audit** 🔥  
+Texte
+
+#### 6
+
+**Ticket** : [PC-43716](https://passculture.atlassian.net/browse/PC-43716)  
+**PR** : [#24438](https://github.com/pass-culture/pass-culture-main/pull/24438)
+
+**Problème** 😱  
+P05 → Création offre réservable (5 étapes et confirmation)
+P06 → Création offre individuelle (7 étapes et confirmation)
+
+Lors du changement d'étape, la page entière est rechargée, ce qui provoque un replacement du focus sur la page entière, provoquant un certain nombre de tabulations avant de revenir à un endroit “naturel” pour le focus dans le formulaire.
+
+**Correction** 💡  
+
+Placement du focus sur le bouton d'étape active après le changement de page.
+
+**Retours audit** 🔥  
+Texte
+
+#### 7
+
+**Ticket** : [PC-43629](https://passculture.atlassian.net/browse/PC-43629)  
+**PR** : [#24423](https://github.com/pass-culture/pass-culture-main/pull/24423)
+
+**Problème** 😱  
+P05 → Création offre réservable (5 étapes et confirmation)
+P06 → Création offre individuelle (7 étapes et confirmation)
+
+Le composant « Domaine(s) d’activité » 
+
+- est annoncé comme ouvrant une listbox (aria-haspopup="listbox"), alors que le panneau affiché contient une liste de cases à cocher. Les rôles et attributs ARIA utilisés ne correspondent donc pas au comportement réel du composant.
+
+- Le bouton ouvrant le panneau ne restitue pas son état d'ouverture ou de fermeture (aria-expanded absent).
+
+**Correction** 💡  
+- Conservation du panneau avec les cases à cocher. Puis application des éléments vus dans nos échanges par mail : "Dans ce cas, je pense qu’il vaut mieux supprimer les mécanismes de fenêtre modale (dialog) et revenir à un simple panneau de type disclosure, ouvert et fermé par un bouton qui restitue son état avec aria-expanded. Ce n’est pas forcément ce qui correspond le mieux au visuel, qui ressemble davantage à une liste déroulante, mais ça permet de conserver un fonctionnement simple avec des cases à cocher natives. On peut ensuite les parcourir avec Tab et les sélectionner avec Espace."
+
+- Restitution de l'état du panneau à l'aide de l'attribut aria-expanded sur le bouton d'ouverture.
+
+- Veiller à ce que les attributs ARIA utilisés correspondent à la structure et au comportement effectifs du composant, conformément aux spécifications WAI-ARIA.
+
+**Retours audit** 🔥  
+Texte
+
+#### 8
+
+**Ticket** : [PC-43622](https://passculture.atlassian.net/browse/PC-43622)  
+**PR** : [#24423](https://github.com/pass-culture/pass-culture-main/pull/24423)
+
+**Problème** 😱  
+
+P09 → Les offres individuelles 
+P10 → Les réservations
+P13 → Les offres réservables  
+P14 → Les offres vitrines
+
+Les boutons de filtre “Statut” permettent d'afficher une liste de filtres, mais leur état d'ouverture n'est pas toujours communiqué aux technologies d'assistance.
+
+Par exemple :
+
+- Le bouton “Statut” situé dans l'en-tête de colonne de la page Réservations n'indique pas si le panneau associé est ouvert ou fermé.
+- Le bouton ne possède pas toujours de relation explicite avec le contenu affiché.
+- Les filtres “Statut” des listes d'offres réservables et vitrines n'annoncent pas le nombre d'éléments sélectionnés, alors qu'une bulle visuelle l'indique aux utilisateurs voyants.
+- Certaines icônes décoratives de boutons de filtre communiquent un texte alternatif inutile.
+
+**Correction** 💡  
+
+- Ajout de `aria-expanded` sur les boutons de filtre afin d'indiquer dynamiquement si le panneau associé est ouvert ou fermé.
+- Ajout de `aria-controls` pour associer explicitement les boutons aux panneaux de filtre correspondants.
+- Maintien de `aria-describedby` sur les filtres “Statut” des listes d'offres réservables et vitrines, y compris lorsque le panneau est fermé, afin de communiquer le nombre d'éléments sélectionnés.
+- Ajout d'un rôle explicite au panneau du composant `MultiSelect` et conservation du design existant du panneau.
+- Passage des icônes décoratives des boutons de filtre en `alt=""`.
+- Vérification que les valeurs sélectionnées du filtre “Statut” restent communiquées via les champs de sélection.
+
+**Retours audit** 🔥  
+Texte
+
+#### 9
+
+**Ticket** : [PC-43545](https://passculture.atlassian.net/browse/PC-43545)  
+**PR** : [#24432](https://github.com/pass-culture/pass-culture-main/pull/24432)
+
+**Problème** 😱  
+P05 → Création offre réservable (5 étapes et confirmation)
+
+P06 → Création offre individuelle (7 étapes et confirmation)
+
+- Le bouton “Créer une offre” communique l'état fermé mais pas l'état ouvert, et devrait être de type disclosure et non pas un menu.
+
+- Les checkbox de jours (modale horaires et stocks) utilisent aria-labelledby mais ne le lient à rien
+
+- BaseDatePicker et BaseTimePicker : la valeur n’est pas annoncée au VoiceOver
+
+**Correction** 💡  
+
+- Communiquer l’état ouvert du bouton “Créer une offre” + passer le composant en bouton/link.
+
+- Les checkbox de jours (modale horaires et stocks) devraient soit lier aria-labelledby à un label, soit ne pas présenter cet attribut
+
+- BaseDatePicker et BaseTimePicker : communiquer la valeur au VoiceOver
+
+**Retours audit** 🔥  
+Texte
+
+#### 10
+
+**Ticket** : [PC-43618](https://passculture.atlassian.net/browse/PC-43618)  
+**PR** : [#24723](https://github.com/pass-culture/pass-culture-main/pull/24723)
+
+**Problème** 😱  
+
+Le graphique « Nombre de vues cumulées de toutes vos offres sur les 6 derniers mois » est rendu à l’aide d’un élément <canvas>.
+
+Les utilisateurs ne pouvant pas exploiter la représentation graphique ne disposent donc pas d’un moyen simple d’accéder aux données représentées.
+
+**Correction** 💡  
+
+- Ajout d'un bouton pour voir le graph au format tableau.
+- Implémentation du modèle aria tabs pour passer de la vue tableau à la vue graph.
+- Masquage du graph pour les lecteurs d'écran et ajout d'un texte invitant à passer à la vue
+
+**Retours audit** 🔥  
+TBD
+
+#### 11
+
+**Ticket** : [PC-43630](https://passculture.atlassian.net/browse/PC-43630)  
+**PR** : [#24309](https://github.com/pass-culture/pass-culture-main/pull/24309)
+
+**Problème** 😱
+
+L'ajout / modification / suppression d'une image ne lit pas la snackbar de validation par la suite.
+
+**Correction** 💡  
+
+A l'ajout d'une image, placement du focus sur le bouton "Modifier" (élément interactif suivant & ordre logique)
+A la modification d'une image, placement du focus sur le bouton "Modifier" (élément interactif suivant & ordre logique)
+A la suppression d'une image, placement du focus sur l'input d'ajout d'image (élément interactif suivant & ordre logique)
+
+**Retours audit** 🔥  
+TBD
+
+#### 12
+
+**Ticket** : [PC-43716](https://passculture.atlassian.net/browse/PC-43716)  
+**PR** : [#24438](https://github.com/pass-culture/pass-culture-main/pull/24438)
+
+P05 → Création offre réservable (5 étapes et confirmation)
+P06 → Création offre individuelle (7 étapes et confirmation)
+
+**Problème** 😱
+
+Lors du changement d'étape, la page entière est rechargée, ce qui provoque un replacement du focus sur la page entière, provoquant un certain nombre de tabulations avant de revenir à un endroit “naturel” pour le focus dans le formulaire.
+
+**Correction** 💡
+
+- Au changement d’étape, replacer le focus à un endroit “naturel” en arrivant à l'étape suivante / précédente, par exemple sur l’onglet de l'étape active.
+- Après le changement d'étape, déplacer explicitement le focus vers l'élément actif d'étape en utilisant tabindex="-1".
+
+**Retours audit** 🔥  
+TBD
+
+</details>
+
+<br>
+
+<details>
+
+<summary> ⏳ Critère 7.5 - Dans chaque page web, les messages de statut sont-ils correctement restitués par les technologies d'assistance ?</summary>
+
+**RAWeb/RGAA** : [Critère 7.5](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-7-5)
+**Ticket** : [PC-43948](https://passculture.atlassian.net/browse/PC-43948)  
+**PR** : [#24639](https://github.com/pass-culture/pass-culture-main/pull/24639)
+
+**Problème** 😱
+- Un élément avec le rôle alert est bien présent pour signaler qu’un des critères de validation n’est pas respecté lors de l’import d’une image. Cependant, cet attribut est positionné sur le conteneur regroupant l’ensemble des critères. En conséquence, l’intégralité de la liste des critères est annoncée par les technologies d’assistance, y compris ceux qui ne sont pas concernés par l’erreur.
+- L'ajout d'une vidéo à l'étape « Image et vidéo » repositionne le focus en haut de la page, sans justification, obligeant l'utilisateur à parcourir de nouveau le contenu pour reprendre sa navigation.
+
+**Correction** 💡  
+- Positionner le rôle alert uniquement sur les éléments réellement en erreur, afin d’éviter la restitution globale de contenus non pertinents.
+- Placement du focus sur le bouton "Modifier" sous la vidéo suite à l'ajout d'une vidéo (le bouton étant l'élément interactif suivant et la suite logique du parcours).
+
+**Retours audit** 🔥  
+Texte
+
+</details>
+
+<br>
+
+<details>
+
+<summary> ⏳ Critère 8.9 - Dans chaque page web, les balises ne doivent pas être utilisées uniquement à des fins de présentation.</summary>
+
+**RAWeb/RGAA** : [Critère 8.9](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-8-9)
+**Ticket** : [PC-43892](https://passculture.atlassian.net/browse/PC-43892)  
+**PR** : [#24711](https://github.com/pass-culture/pass-culture-main/pull/24711)
+
+**Problème** 😱  
+P04 → Inscription structure (3 étapes et validation)
+P06 → Création offre individuelle (7 étapes et confirmation)
+
+Des éléments `<div>` et `<span>` sont utilisés pour baliser des textes dans le dropdown « Profil » et dans l’aperçu de l’offre à l’étape « Récapitulatif ».
+
+**Correction** 💡  
+- P04 : vérification du dropdown « Profil ». Le titre « Profil » et l’adresse e-mail sont déjà balisés avec des éléments `<p>`.
+- P06 : remplacement des `<div>` et `<span>` entourant les textes de l’aperçu par des éléments `<p>` : titre, description, options et détails du lieu.
+
+**Retours audit** 🔥  
+Texte
+
+</details>
+
+<br>
+
+<details>
+
+<summary> ⏳ Critère 9.2 - RAWeb - Dans chaque page web, la structure du document est-elle cohérente ?</summary>
+
+**RAWeb/RGAA** : [Critère 9.2](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-9-2)
+**Ticket** : [PC-42856](https://passculture.atlassian.net/browse/PC-42856)  
+**PR** : [#24545](https://github.com/pass-culture/pass-culture-main/pull/24545)
+
+**Problème** 😱  
+Le lien portant le logo « Pass Culture Pro, l'espace des acteurs culturels » est positionné entre les éléments `<header>` et `<main>`, sans être inclus dans un repère de page.
+
+**Correction** 💡  
+Le changement de l'ancien layout vers le nouveau `<FullLayout>` corrige de-facto ce problème, qui était lié à l'ancien `<SignUpLayout>`, le logo étant correctement positionné dans le `<header>` du nouveau layout
+
+**Retours audit** 🔥  
+TBD
+
+</details>
+
+<br>
+
+<details>
+
+<summary> ⏳ Critère 9.4 - Dans chaque page web, chaque citation est-elle correctement indiquée ?</summary>
+
+**RAWeb/RGAA** : [Critère 9.4](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-9-4)
+**Ticket** : [PC-43883](https://passculture.atlassian.net/browse/PC-43883)  
+**PR** : [#24510](https://github.com/pass-culture/pass-culture-main/pull/24510)
+
+**Problème** 😱  
+Au moins une citation n'est pas correctement identifiée.
+
+- Le texte "la personne handicapée a droit à la compensation des conséquences de son handicap, quels que soient l’origine et la nature de sa déficience, son âge ou son mode de vie."
+
+**Correction** 💡  
+- Implémenter le passage de texte "la personne handicapée a droit à la compensation des conséquences de son handicap, quels que soient l’origine et la nature de sa déficience, son âge ou son mode de vie." dans un élément `<blockquote>`.
+
+**Retours audit** 🔥  
+Texte
+
+</details>
+
+<br>
+
+<details>
+
+<summary> ⏳ Critère 10.4 - RAWeb - Dans chaque page web, le texte reste-t-il lisible lorsque la taille des caractères est augmentée jusqu’à 200 %, au moins (hors cas particuliers) ?</summary>
+
+**RAWeb/RGAA** : [Critère 10.4](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-10-4)
+**Ticket** : [PC-42858](https://passculture.atlassian.net/browse/PC-42858)  
+**PR** : [#24545](https://github.com/pass-culture/pass-culture-main/pull/24545)
+
+**Problème** 😱  
+Le contenu de l'en-tête de la page n'est plus affiché à 200 % de zoom, le `<header>` étant masqué (display: none).
+
+**Correction** 💡  
+Le changement de l'ancien layout vers le nouveau `<FullLayout>` corrige de-facto ce problème, qui était lié à l'ancien `<SignUpLayout>`. Le `<header>` reste bien visible à 200% de zoom dans le nouveau layout.
+
+**Retours audit** 🔥  
+TBD
+
+</details>
+
+<br>
+
+<details>
+
+<summary> ⏳ Critère 10.9 - Dans chaque page web, l'information ne doit pas être donnée uniquement par la forme, taille ou position.</summary>
+
+**RAWeb/RGAA** : [Critère 10.9](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-10-9)
+**Ticket** : [PC-43893](https://passculture.atlassian.net/browse/PC-43893)  
+**PR** : [#24771](https://github.com/pass-culture/pass-culture-main/pull/24771)
+
+**Problème** 😱  
+L'indication « étape en cours », positionnée hors écran, est placée en dehors de la balise <a>. Elle n'est donc pas associée au lien et risque de ne pas être restituée lors d'une navigation par les liens
+
+**Correction** 💡  
+Vu par mail, NC remontée par erreur car déjà corrigée au dernier contre-audit. Critère considéré comme conforme.
+
+**Retours audit** 🔥  
+Texte
+
+</details>
+
+<br>
+
+<details>
+
+<summary> ⏳ Critère 11.6 - Dans chaque formulaire, chaque regroupement de champs de même nature a-t-il une légende ?</summary>
+
+**RAWeb/RGAA** : [Critère 11.6](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-11-6)
+**Ticket** : [PC-43894](https://passculture.atlassian.net/browse/PC-43894)  
+**PR** : [#24675](https://github.com/pass-culture/pass-culture-main/pull/24675)
+
+**Problème** 😱  
+P09 → Les offres individuelles
+P13 → Les offres réservables (collectif)
+
+Le regroupement des champs « Date de début » et « Date de fin » dans les filtres ne possède plus de légende : l'intitulé « Période de l’évènement » a été supprimé.
+
+**Correction** 💡  
+- Ajout d'un élément `<legend>` dans le `<fieldset>` du composant partagé `PeriodSelector` pour donner un nom accessible au regroupement de champs de dates.
+- Utilisation de la légende « Période de l’évènement » pour les offres individuelles et réservables.
+- Ajout d'une légende configurable avec « Période » par défaut pour les autres usages du composant, dont les offres vitrines.
+- Masquage visuel de la légende avec le mixin d'accessibilité existant, tout en conservant sa restitution par les lecteurs d'écran.
+- Le nom accessible étant fourni par la `<legend>` du `<fieldset>`, aucun attribut `aria-label` ou `aria-labelledby` supplémentaire n'est nécessaire.
+
+**Retours audit** 🔥  
+TBD
+
+</details>
+
+<br>
+
+<details>
+
+<summary> ⏳ Critère 12.8 - Dans chaque page web, l'ordre de tabulation est-il cohérent ?</summary>
+
+**RAWeb/RGAA** : [Critère 12.8](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-12-8)
+**Ticket** : [PC-43895](https://passculture.atlassian.net/browse/PC-43895)  
+**PR** : [#24584](https://github.com/pass-culture/pass-culture-main/pull/24584)
+
+**Problème** 😱  
+L'ordre de tabulation dans la page n'est pas cohérent. 
+
+Bloc « Frais annexes » à l’étape « Dates et prix » : après avoir sélectionné « Oui », la navigation au clavier passe directement au champ « Prix (en €) » sans atteindre le champ obligatoire « Type de frais annexes ». 
+
+De plus, lorsque ce champ est en erreur, l’activation du bouton « Enregistrer et continuer » ne repositionne pas le focus sur le champ concerné.
+
+**Correction** 💡  
+Vérifier et corriger l’ordre de tabulation afin qu’il soit cohérent et permette d’atteindre l’ensemble des éléments interactifs dans l’ordre attendu.
+
+Lorsque des erreurs sont détectées après l’activation de « Enregistrer et continuer », repositionner le focus sur le premier champ en erreur.
+
+**Retours audit** 🔥  
+Texte
+
+</details>
+
+<br>
+
+<details>
+
+<summary> ⏳ Critère 13.10 - Dans chaque page web, les fonctionnalités utilisables ou disponibles au moyen d'un geste complexe peuvent-elles être également disponibles au moyen d'un geste simple ?</summary>
+
+**RAWeb/RGAA** : [Critère 13.10](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-13-10)
+**Ticket** : [PC-42865](https://passculture.atlassian.net/browse/PC-42865)  
+**PRs** : [#24779](https://github.com/pass-culture/pass-culture-main/pull/24779) & [#25136](https://github.com/pass-culture/pass-culture-main/pull/25136)
+
+P05 → Création offre réservable (5 étapes et confirmation)
+P06 → Création offre individuelle (7 étapes et confirmation)
+
+**Problème** 😱 
+
+L’éditeur d’image est implémenté via un élément <canvas> permettant le repositionnement de l’image par glisser-déposer. Cette fonctionnalité n’est pas accessible au clavier et n’est pas restituée de manière équivalente aux technologies d’assistance, empêchant certains utilisateurs de modifier le cadrage de l’image.
+
+**Correction** 💡  
+- L'éditeur d'image est dorénavant accessible via les flèches directionnelles du clavier, ainsi que via des boutons directionnels positionnés sur le canvas. Rendre l’ensemble des fonctionnalités de l’éditeur accessibles au clavier (déplacement de l’image via touches ou contrôles alternatifs).
+- La position, ainsi que le niveau de zoom, sont restitués à chaque déplacement de l'image, ainsi que sur le composant en message de statut.
+
+**Retours audit** 🔥  
+Texte
+
+</details>
+
+<br>
+
+<details>
+
+<summary> ⏳ Critère 15.1 - RAWeb - Chaque outil d’édition permet-il de définir les informations d’accessibilité nécessaires pour créer un contenu conforme aux règles d’accessibilité numérique ?</summary>
+
+**RAWeb** : [Critère 15.1](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#topic-15)
+**Ticket** : [PC-42868](https://passculture.atlassian.net/browse/PC-42866)  
+**PR** : [#24389](https://github.com/pass-culture/pass-culture-main/pull/24389)
+
+**Problème** 😱  
+P05 : Création offre réservable
+P06 : Création offre individuelle
+P08 : Page d'accueil
+P13 : Les offres réservables (collectif)
+
+IMAGE :
+
+- Lors de la création d’une offre, l’ajout d’une image ne permet pas au contributeur d’indiquer le rôle de celle-ci (image décorative ou image porteuse d’information).
+- Aucun champ ne permet de renseigner une alternative textuelle lorsque l’image apporte une information nécessaire à la compréhension du contenu.
+- Le champ permettant de renseigner un crédit photo ne permet pas de préciser la nature de cette information ni son association avec l’image.
+
+VIDÉO :
+
+- Impossible d'ajouter une alternative textuelle (transcription) sur les vidéos ajoutées par les acteurs culturels.
+
+**Correction** 💡  
+
+IMAGE :
+
+- Ajout d'un mécanisme permettant au contributeur d’indiquer si l’image est :
+      - décorative ;
+      - porteuse d’information.
+- Lorsque l’image est porteuse d’information, proposer un champ permettant de renseigner une alternative textuelle pertinente.
+- Lorsque l’image est décorative, permettre d’indiquer cette information afin de générer une image ignorée par les technologies d’assistance (alt="").
+- Ajout d'une aide à la saisie permettant aux contributeurs de comprendre la différence entre ces deux usages.
+
+VIDÉO :
+
+- Ajout de la possibilité d'ajouter une transcription à l'upload d'une vidéo.
+
+**Retours audit** 🔥  
+TBD
+
+</details>
+
+<br>
+
+<details>
+
+<summary> ⏳ Critère 15.3 - RAWeb - Conformité des contenus générés par les outils d'édition</summary>
+
+**RAWeb** : [Critère 15.3](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#topic-15)
+**Ticket** : [PC-42868](https://passculture.atlassian.net/browse/PC-42913)  
+**PR** : [#24389](https://github.com/pass-culture/pass-culture-main/pull/24389)
+
+**Problème** 😱  
+P06 : Création offre individuelle
+
+- Lorsqu’une vidéo est ajoutée lors de la création d’une offre, le contenu généré intègre uniquement le lecteur vidéo sans prévoir d’alternative permettant d’accéder aux informations véhiculées par celle-ci.
+- Aucune transcription textuelle ou autre mécanisme permettant de restituer les informations importantes de la vidéo n’est associé au contenu publié.
+
+**Correction** 💡  
+
+- Ajout de la restitution textuelle de la vidéo sous l'aperçu.
+
+**Retours audit** 🔥  
+TBD
+
+</details>
+
+<br>
+
+<details>
+
+<summary> Interne : Autres PRs de corrections</summary>
+
+[#25136](https://github.com/pass-culture/pass-culture-main/pull/25136)
+[#25139](https://github.com/pass-culture/pass-culture-main/pull/25139)
+[#25143](https://github.com/pass-culture/pass-culture-main/pull/25143)
+[#25155](https://github.com/pass-culture/pass-culture-main/pull/25155)
+[#25190](https://github.com/pass-culture/pass-culture-main/pull/25190)
+
+**Desription** 😱  
+
+Ces PRs corrigent des oublis ou régressions a11y. Les corrections apportées sont décrites dans chaque PR.
+
+</details>
