@@ -99,10 +99,8 @@
         "custom"
     ],
     "customRanking": [
-        "desc(offer.rankingWeight)",
-        "desc(offer.isEvent)",
-        "desc(offer.hasImage)",
-        "desc(offer.thumbUrl)"
+        "desc(offer.completionScore)",
+        "desc(offer.isEvent)"
     ],
     "separatorsToIndex": "+",
     "removeWordsIfNoResults": "allOptional",
