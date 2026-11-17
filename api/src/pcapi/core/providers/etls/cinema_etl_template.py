@@ -201,11 +201,16 @@ class CinemaETLProcessTemplate[APIClient: cinema_client.CinemaAPIClient | EMSSch
             db.session.add(offer)
 
             self._log(
-                logging.DEBUG,
+                logging.INFO,
                 "Step 3 - New offer to be created",
                 {
                     "id_at_provider": loadable_movie["movie_uuid"],
                     "name": loadable_movie["movie_data"].title,
+                    "offer_id": offer.id,
+                    "venue_id": offer.venueId,
+                    "product_id": product.id if product else None,
+                    "feature": "offer",
+                    "action": "created",
                 },
             )
 
