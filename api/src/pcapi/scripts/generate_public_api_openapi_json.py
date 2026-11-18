@@ -15,7 +15,7 @@ _PUBLIC_API_OPENAPI_JSON_PATH = "./documentation/static/openapi.json"
 def _fetch_openapi_json() -> dict:
     """Get Open API json from flask server"""
     # to avoid circular import
-    from pcapi.app import app
+    from pcapi.flask_app import app
 
     client = app.test_client()
     r = client.get("/openapi.json")

@@ -105,8 +105,10 @@ def _clean_g_between_requests(exc: BaseException | None = None) -> None:
 def build_backoffice_app():
     from flask_login import FlaskLoginClient
 
-    from pcapi.backoffice_app import app
-    from pcapi.backoffice_app import csrf
+    from pcapi.backoffice_app import create_app
+
+    app = create_app()
+    csrf = app.extensions["csrf"]
 
     with app.app_context():
         app.test_client_class = FlaskLoginClient
@@ -127,7 +129,9 @@ def build_backoffice_app():
 
 
 def build_main_app():
-    from pcapi.app import app
+    from pcapi.app import create_app
+
+    app = create_app()
 
     with app.app_context():
         app.config["TESTING"] = True
@@ -161,7 +165,7 @@ def init_celery(app: Flask):
 
 @pytest.fixture(scope="session", autouse=True)
 def manage_teardown(app: Flask):
-    from pcapi.flask_app import remove_db_session
+    from pcapi.flask_integration.middlewares import remove_db_session
 
     # Some tests fail without this. It's probably because of
     # pytest_flask_sqlalchemy.

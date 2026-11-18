@@ -24,7 +24,6 @@ from functools import partial
 from pydantic import BaseModel
 
 import pcapi.utils.email as email_utils
-from pcapi.app import app
 from pcapi.core import search
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.external.zendesk_sell import api as zendesk_sell_api
@@ -33,6 +32,7 @@ from pcapi.core.history import api as history_api
 from pcapi.core.history import constants as history_constants
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
+from pcapi.flask_app import app
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.utils import regions as regions_utils
