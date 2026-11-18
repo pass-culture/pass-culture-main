@@ -1,7 +1,20 @@
 from warnings import deprecated
 
+from authlib.integrations.flask_client import OAuth
+from flask import current_app
+
+from pcapi import settings
 from pcapi.core.users import schemas as users_schemas
-from pcapi.flask_app import native_app_oauth
+
+
+native_app_oauth = OAuth(current_app)
+native_app_oauth.register(
+    name="google",
+    client_id=settings.NATIVE_APP_GOOGLE_CLIENT_ID,
+    client_secret=settings.NATIVE_APP_GOOGLE_CLIENT_SECRET,
+    server_metadata_url="https://accounts.google.com/.well-known/openid-configuration",
+    client_kwargs={"scope": "openid email profile"},
+)
 
 
 @deprecated("""Use SSOProviderFactory instead.

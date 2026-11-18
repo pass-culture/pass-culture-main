@@ -1,2 +1,2 @@
-FLASK_APP=pcapi.flask_app:app
+FLASK_APP=pcapi.flask_app
 IPYTHONDIR=.ipython

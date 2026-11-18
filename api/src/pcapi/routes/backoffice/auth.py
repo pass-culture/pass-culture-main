@@ -4,6 +4,8 @@ import secrets
 
 import werkzeug
 from authlib.integrations.base_client import MismatchingStateError
+from authlib.integrations.flask_client import OAuth
+from flask import current_app
 from flask import redirect
 from flask import render_template
 from flask import url_for
@@ -17,7 +19,6 @@ from pcapi.core.users import api as users_api
 from pcapi.core.users import models as users_models
 from pcapi.core.users import repository as users_repository
 from pcapi.core.users.backoffice import api as backoffice_api
-from pcapi.flask_app import backoffice_oauth
 from pcapi.models import db
 from pcapi.routes.backoffice.utils import access_control
 from pcapi.routes.backoffice.utils import response as response_utils
@@ -27,6 +28,13 @@ from . import blueprint
 
 
 logger = logging.getLogger(__name__)
+
+backoffice_oauth = OAuth(current_app)
+backoffice_oauth.register(
+    name="google",
+    server_metadata_url="https://accounts.google.com/.well-known/openid-configuration",
+    client_kwargs={"scope": "openid email profile"},
+)
 
 
 @blueprint.backoffice.route("/login", methods=["GET"])

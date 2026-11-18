@@ -1,5 +1,7 @@
+import os
 import typing
 
+import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 
 from pcapi import models
@@ -26,3 +28,40 @@ def first_or_404(query: "sa_orm.Query[T]") -> T:
     if not obj:
         raise resource_not_found_error()
     return obj
+
+
+############## Hooks SqlAlchemy ##############
+
+
+# Invalidates connections that are being shared accross process boundaries
+# see https://docs.sqlalchemy.org/en/13/core/pooling.html#using-connection-pools-with-multiprocessing-or-os-fork
+def connect_hook(dbapi_connection: typing.Any, connection_record: typing.Any) -> None:
+    connection_record.info["pid"] = os.getpid()
+
+
+def checkout_hook(dbapi_connection: typing.Any, connection_record: typing.Any, connection_proxy: typing.Any) -> None:
+    pid = os.getpid()
+    if connection_record.info["pid"] != pid:
+        connection_record.connection = connection_proxy.connection = None
+        raise sa.exc.DisconnectionError(
+            f"Connection record belongs to pid {connection_record.info['pid']}, attempting to check out in pid {pid}"
+        )
+
+
+def soft_delete_execute_hook(state: sa_orm.ORMExecuteState) -> None:
+    import sqlalchemy_easy_softdelete.handler.rewriter as softdelete_rewriter
+
+    # TODO: check with UPDATE and SELECT in subquery. Does it still work ?
+    if not state.is_select:
+        return
+
+    # Rewrite the statement
+    global_rewriter = softdelete_rewriter.SoftDeleteQueryRewriter(
+        deleted_field_name="isSoftDeleted",
+        disable_soft_delete_option_name="include_deleted",
+        enabled_tables=[softdelete_rewriter.EnabledTable("venue", None)],
+    )
+    adapted = global_rewriter.rewrite_statement(state.statement)
+
+    # Replace the statement
+    state.statement = adapted

@@ -11,7 +11,7 @@ from pcapi.utils import requests
 @pytest.fixture(name="google_oauth")
 def google_oauth_fixture(mocker):
     """Replace the Authlib client registered on the Flask app (no call to Google)."""
-    native_app_oauth = mocker.patch("pcapi.flask_app.native_app_oauth")
+    native_app_oauth = mocker.patch("pcapi.connectors.google_oauth.native_app_oauth")
     return native_app_oauth.google
 
 
