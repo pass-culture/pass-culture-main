@@ -33,17 +33,25 @@ def generate_account() -> tuple[dict | list[dict], int]:
         transaction_manager.mark_transaction_as_invalid()
         return form.errors, 400
 
+    users_count = form.count.data
     raw_date_created = form.date_created.data
+    date_created: datetime.datetime | None = datetime.datetime(
+        raw_date_created.year, raw_date_created.month, raw_date_created.day
+    )
+    if users_count > 1 and raw_date_created == datetime.date.today():
+        # bulk generation (load tests): do not time travel to midnight today, see generate_users
+        date_created = None
+
     user_data = users_generator.GenerateUserData(
         age=form.age.data,
         birth_date=form.birth_date.data,
         credit=form.credit.data,
         id_provider=users_generator.GeneratedIdProvider[form.id_provider.data],
         step=users_generator.GeneratedSubscriptionStep[form.step.data],
-        date_created=datetime.datetime(raw_date_created.year, raw_date_created.month, raw_date_created.day),
+        date_created=date_created,
         postal_code=form.postal_code.data,
     )
-    users = users_generator.generate_users(user_data, users_count=form.count.data)
+    users = users_generator.generate_users(user_data, users_count=users_count)
 
     response_body = []
     for user in users:

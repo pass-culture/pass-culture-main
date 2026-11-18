@@ -1,6 +1,7 @@
 import datetime
 import decimal
 import re
+from unittest.mock import patch
 
 import pytest
 import time_machine
@@ -14,7 +15,9 @@ import pcapi.core.subscription.repository as subscription_repository
 import pcapi.core.subscription.schemas as subscription_schemas
 import pcapi.core.users.generator as users_generator
 import pcapi.core.users.models as users_models
+from pcapi import settings
 from pcapi.core.users import constants as users_constants
+from pcapi.utils import crypto
 from pcapi.utils import date as date_utils
 
 
@@ -285,3 +288,56 @@ class UserGeneratorTest:
 
         assert user.deposit.type == finance_models.DepositType.GRANT_17_18
         assert user.deposit.amount == decimal.Decimal("134.6")
+
+    def test_generate_multiple_users_hashes_password_once(self):
+        user_data = users_generator.GenerateUserData(step=users_generator.GeneratedSubscriptionStep.BENEFICIARY)
+
+        with patch("pcapi.utils.crypto.hash_password", wraps=crypto.hash_password) as hash_password_mock:
+            users = users_generator.generate_users(user_data, users_count=3)
+
+        hash_password_mock.assert_called_once_with(settings.TEST_DEFAULT_PASSWORD)
+        assert len(users) == 3
+        assert len({user.password for user in users}) == 1
+        for user in users:
+            self.assert_user_is_beneficiary(user)
+            assert user.checkPassword(settings.TEST_DEFAULT_PASSWORD)
+
+    def test_generate_single_user_hashes_password(self):
+        user_data = users_generator.GenerateUserData()
+
+        with patch("pcapi.utils.crypto.hash_password", wraps=crypto.hash_password) as hash_password_mock:
+            user = users_generator.generate_users(user_data)[0]
+
+        hash_password_mock.assert_called_once_with(settings.TEST_DEFAULT_PASSWORD)
+        assert user.checkPassword(settings.TEST_DEFAULT_PASSWORD)
+
+    def test_generate_multiple_users_without_date_created_does_not_time_travel(self):
+        user_data = users_generator.GenerateUserData(step=users_generator.GeneratedSubscriptionStep.BENEFICIARY)
+
+        with patch("pcapi.core.users.generator.time_machine.travel", wraps=time_machine.travel) as travel_mock:
+            users = users_generator.generate_users(user_data, users_count=2)
+
+        travel_mock.assert_not_called()
+        assert len(users) == 2
+
+    def test_generate_multiple_users_with_date_created_time_travels(self):
+        date_in_the_past = date_utils.get_naive_utc_now() - relativedelta(months=5)
+        user_data = users_generator.GenerateUserData(
+            step=users_generator.GeneratedSubscriptionStep.BENEFICIARY, date_created=date_in_the_past
+        )
+
+        with patch("pcapi.core.users.generator.time_machine.travel", wraps=time_machine.travel) as travel_mock:
+            users = users_generator.generate_users(user_data, users_count=2)
+
+        travel_mock.assert_called_once_with(date_in_the_past)
+        for user in users:
+            assert user.dateCreated - date_in_the_past < datetime.timedelta(seconds=1)
+            assert user.deposit.dateCreated - date_in_the_past < datetime.timedelta(seconds=1)
+
+    def test_generate_single_user_without_date_created_time_travels(self):
+        user_data = users_generator.GenerateUserData()
+
+        with patch("pcapi.core.users.generator.time_machine.travel", wraps=time_machine.travel) as travel_mock:
+            users_generator.generate_users(user_data)
+
+        travel_mock.assert_called_once()
