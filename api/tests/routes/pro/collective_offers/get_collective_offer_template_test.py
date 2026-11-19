@@ -76,9 +76,7 @@ class Returns200Test:
     def test_location_address_venue(self, client):
         venue = offerers_factories.VenueFactory()
         # Venue has its location, the offer has another one but they should appear as venue location
-        oa = offerers_factories.OfferLocationFactory(
-            venue=venue, address=venue.offererAddress.address, label=venue.publicName
-        )
+        oa = offerers_factories.OfferLocationFactory(venue=venue, address=venue.offererAddress.address, label=None)
 
         offer = educational_factories.CollectiveOfferTemplateFactory(
             venue=venue,

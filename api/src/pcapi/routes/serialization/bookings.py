@@ -54,10 +54,11 @@ def get_booking_response(booking: Booking) -> GetBookingResponse:
         user_name=booking.userName,
         first_name=booking.user.firstName,
         last_name=booking.user.lastName,
-        # TODO bdalbianco 02/06/2025: CLEAN_OA remove check when no virtual venue
-        offer_address=booking.stock.offer.offererAddress.address.street if booking.stock.offer.offererAddress else None,
+        offer_address=booking.stock.offer.offererAddress.address.street
+        if booking.stock.offer.offererAddress
+        else booking.stock.offer.venue.offererAddress.address.street,
         offer_department_code=booking.stock.offer.offererAddress.address.departmentCode
         if booking.stock.offer.offererAddress
-        else None,
+        else booking.stock.offer.venue.offererAddress.address.departmentCode,
         venue_name=booking.venue.name,
     )
