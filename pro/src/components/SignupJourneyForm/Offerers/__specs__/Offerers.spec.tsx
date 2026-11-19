@@ -10,7 +10,6 @@ import {
 } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
-import type { LOCAL_STORAGE_KEY as LocalStorageKeyType } from '@/commons/utils/localStorageManager'
 import { noop } from '@/commons/utils/noop'
 import {
   type RenderWithProvidersOptions,
@@ -39,23 +38,15 @@ const initialAddress = {
 
 vi.mock('@/commons/utils/localStorageManager', async () => {
   const actual = await vi.importActual('@/commons/utils/localStorageManager')
+  const { createInMemoryStorageManagerMock } = await import(
+    '@/commons/utils/tests/mocks/storageManager'
+  )
 
   return {
     ...actual,
-    localStorageManager: {
-      getItem: vi.fn((key: LocalStorageKeyType) => {
-        return inMemoryLocalStorage.get(key) ?? null
-      }),
-      setItem: vi.fn((key: LocalStorageKeyType, value: string) => {
-        inMemoryLocalStorage.set(key, value)
-      }),
-      removeItem: vi.fn((key: LocalStorageKeyType) => {
-        inMemoryLocalStorage.delete(key)
-      }),
-      clear: vi.fn(() => {
-        inMemoryLocalStorage.clear()
-      }),
-    },
+    localStorageManager: createInMemoryStorageManagerMock(
+      () => inMemoryLocalStorage
+    ),
   }
 })
 

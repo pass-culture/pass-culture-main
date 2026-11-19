@@ -1,6 +1,9 @@
 import { api } from '@/apiClient/api'
 import { toISOStringWithoutMilliseconds } from '@/commons/utils/date'
-import { storageAvailable } from '@/commons/utils/storageAvailable'
+import {
+  LOCAL_STORAGE_KEY,
+  localStorageManager,
+} from '@/commons/utils/localStorageManager'
 
 export enum Consents {
   FIREBASE = 'firebase',
@@ -8,8 +11,6 @@ export enum Consents {
   BEAMER = 'beamer',
   SENTRY = 'sentry',
 }
-
-export const LOCAL_STORAGE_DEVICE_ID_KEY = 'DEVICE_ID'
 
 const mandatoryCookies = new Set(['sentry'])
 
@@ -46,9 +47,9 @@ export const orejimeConfig = {
               return app
             }),
         },
-        deviceId: storageAvailable('localStorage')
-          ? (localStorage.getItem(LOCAL_STORAGE_DEVICE_ID_KEY) ?? 'NODEVICEID')
-          : 'NODEVICEID',
+        deviceId:
+          localStorageManager.getItem(LOCAL_STORAGE_KEY.DEVICE_ID) ??
+          'NODEVICEID',
       }
 
       // l’api orejime n’est pas asynchrone

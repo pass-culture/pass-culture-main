@@ -1,4 +1,3 @@
-import type { LOCAL_STORAGE_KEY as LocalStorageKeyType } from 'commons/utils/localStorageManager'
 import {
   resetSimulatorStorage,
   saveActivityToStorage,
@@ -18,20 +17,15 @@ let inMemoryLocalStorage = new Map<string, string>()
 
 vi.mock('@/commons/utils/localStorageManager', async () => {
   const actual = await vi.importActual('@/commons/utils/localStorageManager')
+  const { createInMemoryStorageManagerMock } = await import(
+    '@/commons/utils/tests/mocks/storageManager'
+  )
 
   return {
     ...actual,
-    localStorageManager: {
-      getItem: vi.fn((key: LocalStorageKeyType) => {
-        return inMemoryLocalStorage.get(key) ?? null
-      }),
-      setItem: vi.fn((key: LocalStorageKeyType, value: string) => {
-        inMemoryLocalStorage.set(key, value)
-      }),
-      removeItem: vi.fn((key: LocalStorageKeyType) => {
-        inMemoryLocalStorage.delete(key)
-      }),
-    },
+    localStorageManager: createInMemoryStorageManagerMock(
+      () => inMemoryLocalStorage
+    ),
   }
 })
 

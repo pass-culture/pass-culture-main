@@ -62,10 +62,9 @@ export const Offerer = (): JSX.Element => {
     // Check here if the siret we've just submitted is the same as already stored in localStorage
     // In that case, we don't need to fetch the siret data again and we can immediately redirect the user to the next step
     try {
-      const offererStoredData = JSON.parse(
-        localStorageManager.getItem(LOCAL_STORAGE_KEY.NEW_STRUCTURE_OFFERER) ??
-          '{}'
-      ) as unknown as OffererType
+      const offererStoredData = localStorageManager.getJSON<OffererType>(
+        LOCAL_STORAGE_KEY.NEW_STRUCTURE_OFFERER
+      )
 
       if (
         offererStoredData?.siret?.trim() === formValues.siret.trim() &&
@@ -75,7 +74,7 @@ export const Offerer = (): JSX.Element => {
         return false
       }
     } catch {
-      // Any error while parsing localStorage is considered as a fallback to the normal flow
+      // Any error while reading the stored data is considered as a fallback to the normal flow
     }
     return true
   }
@@ -94,10 +93,9 @@ export const Offerer = (): JSX.Element => {
 
       // Covers when the user came BACK there after having reached the "activity" step once.
       // When back here, he decides to set ANOTHER siret, we must then clear the previous context data and storage as it's outdated
-      const offererStoredData = JSON.parse(
-        localStorageManager.getItem(LOCAL_STORAGE_KEY.NEW_STRUCTURE_OFFERER) ??
-          '{}'
-      ) as unknown as OffererType
+      const offererStoredData = localStorageManager.getJSON<OffererType>(
+        LOCAL_STORAGE_KEY.NEW_STRUCTURE_OFFERER
+      )
       if (
         offererStoredData?.siret?.trim() !== formValues.siret.trim() &&
         offererStoredData?.siren // we have a siren if we already validated the siret step (this step)
