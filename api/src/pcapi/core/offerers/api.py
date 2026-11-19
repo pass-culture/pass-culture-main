@@ -3947,10 +3947,9 @@ def notify_tagged_venues_still_closed(days_count: int) -> None:
         )
 
 
-def force_close_venue_after_closure_tag(days_count: int, apply: bool) -> None:
+def force_close_venue_after_closure_tag(days_count: int) -> None:
     events = history_repository.get_events_regarding_venue_closure_before(days_count)
     venues = [event.venue for event in events]
 
-    with atomic(apply=apply):
-        for venue in venues:
-            close_venue(venue, comment=f"Fermé automatiquement après {days_count} jours")
+    for venue in venues:
+        close_venue(venue, comment=f"Fermé automatiquement après {days_count} jours")

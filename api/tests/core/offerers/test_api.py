@@ -5432,7 +5432,7 @@ class ForceCloseVenueAfterClosureTagTest:
             venueId=venue.id, actionType=history_constants.ActionType.VENUE_ADD_CLOSURE_TAG, actionDate=six_months_ago
         )
 
-        offerers_api.force_close_venue_after_closure_tag(days_count=90, apply=True)
+        offerers_api.force_close_venue_after_closure_tag(days_count=90)
 
         db.session.refresh(venue)
         assert venue.is_closed
@@ -5446,7 +5446,7 @@ class ForceCloseVenueAfterClosureTagTest:
             venueId=venue.id, actionType=history_constants.ActionType.VENUE_ADD_CLOSURE_TAG, actionDate=yesterday
         )
 
-        offerers_api.force_close_venue_after_closure_tag(days_count=90, apply=True)
+        offerers_api.force_close_venue_after_closure_tag(days_count=90)
 
         db.session.refresh(venue)
         assert not venue.is_closed
@@ -5455,7 +5455,7 @@ class ForceCloseVenueAfterClosureTagTest:
     def test_untagged_venue_is_ignored(self):
         venue = offerers_factories.VenueFactory(state=None)
 
-        offerers_api.force_close_venue_after_closure_tag(days_count=90, apply=True)
+        offerers_api.force_close_venue_after_closure_tag(days_count=90)
 
         db.session.refresh(venue)
         assert not venue.is_closed
