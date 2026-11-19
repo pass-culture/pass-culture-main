@@ -257,7 +257,7 @@ addopts = [
 filterwarnings = [
   # Mark warnings as errors
   "error",
-  "default::pydantic.warnings.PydanticDeprecatedSince20",
+  "ignore::pydantic.warnings.PydanticDeprecatedSince20",
   "ignore::FutureWarning:wtforms",
   "ignore::DeprecationWarning:weasyprint.text.ffi",
   "ignore::DeprecationWarning:flask_login.login_manager",
