@@ -223,5 +223,6 @@ def notify_tagged_venues_still_closed(days_count: int, apply: bool = False) -> N
 @click.option("--days-count", type=int, default=90, help="Venues tagged since at least N days will be closed")
 @click.option("--apply", is_flag=True)
 def force_close_venue_after_closure_tag(days_count: int, apply: bool = False) -> None:
-    offerers_api.force_close_venue_after_closure_tag(days_count, apply)
+    with atomic(apply=apply):
+        offerers_api.force_close_venue_after_closure_tag(days_count)
     logger.info("force_close_venue_after_closure_tag... done. days count: %d", days_count)
