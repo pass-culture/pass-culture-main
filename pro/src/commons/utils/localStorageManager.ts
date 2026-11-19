@@ -18,7 +18,9 @@ export enum LOCAL_STORAGE_KEY {
   HIDE_FINANCE_BANNER = 'PASS_CULTURE_HIDE_FINANCE_BANNER',
   DUPLICATE_OFFER_MODAL_SEEN = 'PASS_CULTURE_DUPLICATE_OFFER_MODAL_SEEN',
   DIFFUSE_HELP_ADAGE_SEEN = 'PASS_CULTURE_DIFFUSE_HELP_ADAGE_SEEN',
-  ADAGE_RECENT_SEARCHES = 'PASS_CULTURE_AUTOCOMPLETE_RECENT_SEARCHES:RECENT_SEARCH',
+  // Not prefixed: must match the key read by Algolia's `createLocalStorageRecentSearchesPlugin`
+  // (`AUTOCOMPLETE_RECENT_SEARCHES` + `:` + the `key` option given in `Autocomplete.tsx`).
+  ADAGE_RECENT_SEARCHES = 'AUTOCOMPLETE_RECENT_SEARCHES:RECENT_SEARCH',
   // Not prefixed: renaming it would regenerate the device ID of every existing user.
   DEVICE_ID = 'DEVICE_ID',
 }
