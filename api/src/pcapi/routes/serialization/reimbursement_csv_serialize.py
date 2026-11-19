@@ -14,7 +14,7 @@ import pcapi.core.finance.repository as finance_repository
 import pcapi.core.finance.utils as finance_utils
 from pcapi.core.bookings.exports import serialize_offer_type_educational_or_individual
 from pcapi.routes.serialization import HttpQueryParamsModel
-from pcapi.serialization.exceptions import PydanticError
+from pcapi.serialization.utils import ArgsAsListBeforeValidator
 from pcapi.utils.date import MONTHS_IN_FRENCH
 from pcapi.utils.date import utc_datetime_to_department_timezone
 from pcapi.utils.string import u_nbsp
@@ -266,14 +266,5 @@ def find_reimbursement_details_by_invoices(
 
 
 class ReimbursementCsvByInvoicesModel(HttpQueryParamsModel):
-    # `unique_items` has been deprecated in pydantic V2, that's why we have to use a set
-    # to implement unicity (https://github.com/pydantic/pydantic-core/issues/296)
-    invoicesReferences: typing.Annotated[set[str], pydantic_v2.Field(max_length=75)]
-
-    @pydantic_v2.field_validator("invoicesReferences", mode="before")
-    def ensure_invoices_references_is_a_set(cls, v: typing.Any) -> set[str]:
-        if isinstance(v, str):
-            return {v}
-        if isinstance(v, list):
-            return set(v)
-        raise PydanticError("Invalid value")
+    # use a set to implement unicity (https://github.com/pydantic/pydantic-core/issues/296)
+    invoicesReferences: typing.Annotated[set[str], ArgsAsListBeforeValidator] = pydantic_v2.Field(max_length=75)

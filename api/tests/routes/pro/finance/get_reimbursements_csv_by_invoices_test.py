@@ -254,7 +254,8 @@ def test_return_only_searched_invoice(client: TestClient):
     queries += 1  # select booking and related items
     queries += 1  # select educational redactor
     with testing.assert_num_queries(queries):
-        response = client.get(f"{URL}?invoicesReferences={invoice_reference}")
+        # put the invoice reference twice to check that the unicity works
+        response = client.get(f"{URL}?invoicesReferences={invoice_reference}&invoicesReferences={invoice_reference}")
         assert response.status_code == 200
 
     assert response.headers["Content-type"] == "text/csv; charset=utf-8;"
@@ -317,3 +318,58 @@ def test_booking_with_empty_use_date_should_be_ok(client: TestClient):
     assert len(rows) == 1
     row = rows[0]
     assert row["Date de validation de la réservation"] == ""
+
+
+@pytest.mark.parametrize("status", [finance_models.InvoiceStatus.PENDING, finance_models.InvoiceStatus.PENDING_PAYMENT])
+def test_pending_invoice(client: TestClient, status: finance_models.InvoiceStatus):
+    offerer = offerers_factories.OffererFactory()
+    venue = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point="self")
+    pro = users_factories.ProFactory()
+    offerers_factories.UserOffererFactory(user=pro, offerer=venue.managingOfferer)
+
+    bank_account = finance_factories.BankAccountFactory(offerer=venue.managingOfferer)
+    invoice = finance_factories.InvoiceFactory(bankAccount=bank_account, status=status)
+    batch = finance_factories.CashflowBatchFactory()
+    cashflow = finance_factories.CashflowFactory(batch=batch, bankAccount=bank_account, invoices=[invoice])
+    pricing = finance_factories.PricingFactory(
+        booking__stock__offer__venue=venue, status=finance_models.PricingStatus.INVOICED, cashflows=[cashflow]
+    )
+    booking = pricing.booking
+    offer = booking.stock.offer
+
+    client = client.with_session_auth(pro.email)
+    response = client.get(f"{URL}?invoicesReferences={invoice.reference}&invoicesReferences={invoice.reference}")
+
+    assert response.status_code == 200
+    assert response.headers["Content-type"] == "text/csv; charset=utf-8;"
+    assert response.headers["Content-Disposition"] == "attachment; filename=remboursements_pass_culture.csv"
+    reader = csv.DictReader(StringIO(response.data.decode("utf-8-sig")), delimiter=";")
+    assert reader.fieldnames == ReimbursementDetails.get_csv_headers()
+
+    rows = list(reader)
+    assert len(rows) == 1
+    row = rows[0]
+
+    assert row["Date du justificatif"] == invoice.date.strftime("%Y-%m-%d")
+    assert row["N° du justificatif"] == invoice.reference
+    assert row["N° de virement"] == batch.label
+    assert row["Intitulé du compte bancaire"] == bank_account.label
+    assert row["SIRET de la structure"] == venue.siret
+    assert row["IBAN"] == bank_account.iban
+    assert row["Raison sociale de la structure"] == venue.name
+    assert row["Adresse de l'offre"] == venue.offererAddress.address.fullAddress
+    assert row["SIRET de la structure"] == venue.siret
+    assert row["Nom de l'offre"] == offer.name
+    assert row["N° de réservation (offre collective)"] == ""
+    assert row["Nom (offre collective)"] == ""
+    assert row["Prénom (offre collective)"] == ""
+    assert row["Nom de l'établissement (offre collective)"] == ""
+    assert row["Date de l'évènement (offre collective)"] == ""
+    assert row["Contremarque"] == booking.token
+    assert row["Date de validation de la réservation"] == utc_datetime_to_department_timezone(
+        booking.dateUsed, venue.offererAddress.address.departmentCode
+    ).strftime("%Y-%m-%d %H:%M:%S%:z")
+    assert row["Intitulé du tarif"] == ""
+    assert row["Montant de la réservation"] == str(booking.amount).replace(".", ",")
+    assert row["Barème"].replace("\xa0", " ") == "100 %"
+    assert row["Montant remboursé"] == f"{-pricing.amount / 100:.2f}".replace(".", ",")
