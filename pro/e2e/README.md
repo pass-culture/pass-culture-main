@@ -45,6 +45,32 @@ pnpm test:e2e:debug # pour faciliter le debug via les outils de playwright
 
 Par défaut, les résultats sont dans le dossier `pro/test-results`.
 
+## Exécution en CI
+
+Le build front E2E et l'image backend sont préparés en parallèle. Les tests ne
+démarrent que lorsque les deux builds ont réussi.
+
+Les tests Chromium sont répartis par fichier sur quatre shards GitHub Actions.
+Chaque shard conserve un seul worker et son propre backend, PostgreSQL et Redis,
+afin de ne pas exécuter simultanément des tests qui partagent les mêmes données.
+Les tests d'un même fichier restent exécutés dans leur ordre actuel.
+
+La durée de la commande Playwright et son code de sortie sont affichés pour
+chaque shard dans le résumé du workflow. Les durées des étapes GitHub Actions
+permettent de distinguer la préparation de l'environnement du temps des tests.
+Les rapports des quatre shards sont fusionnés dans l'artefact HTML final, qui
+permet d'identifier les scénarios les plus longs.
+
+Pour lister les tests d'un shard sans les exécuter :
+
+```bash
+pnpm test:e2e:ci --list --shard=1/4
+```
+
+Le passage de deux à quatre shards augmente le nombre de runners et de backends
+utilisés en parallèle ; le gain de temps réel dépend de leur disponibilité et
+de la répartition des fichiers de test.
+
 ## Structure
 ```
 e2e/

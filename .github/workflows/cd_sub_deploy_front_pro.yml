@@ -146,6 +146,7 @@ jobs:
           NODE_OPTIONS: --max_old_space_size=4096
           ENV: ${{ inputs.ENV }}
           VITE_APP_VERSION: ${{ inputs.version }}
+          BUILD_SOURCEMAP: ${{ inputs.PUSH_RELEASE_TO_SENTRY }}
 
       - name: "Create SaaS Sentry release"
         if: ${{ inputs.PUSH_RELEASE_TO_SENTRY }}

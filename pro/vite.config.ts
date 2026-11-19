@@ -12,7 +12,8 @@ export default defineConfig(({ mode }) => {
     root: './src',
     build: {
       outDir: '../build',
-      sourcemap: true,
+      sourcemap: process.env.BUILD_SOURCEMAP === 'true',
+      reportCompressedSize: process.env.ANALYZE_BUNDLE === 'true',
       emptyOutDir: true,
       assetsInlineLimit: 0,
     },
@@ -28,7 +29,9 @@ export default defineConfig(({ mode }) => {
         minify: true,
         inject: { data: { mode } },
       }),
-      visualizer({ filename: 'bundleStats.html' }),
+      ...(process.env.ANALYZE_BUNDLE === 'true'
+        ? [visualizer({ filename: 'bundleStats.html' })]
+        : []),
       htmlPlugin(),
     ],
     server: { port: 3001 },

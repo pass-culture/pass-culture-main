@@ -56,11 +56,7 @@ export async function doLogin(
     throw new Error(`Login failed: ${signinResponse.status()}`)
   }
 
-  await page.waitForResponse((response) =>
-    response.url().includes('/offerers/names')
-  )
-  await page.waitForResponse((response) => response.url().includes('/venues'))
-
+  // SignIn navigates only after initializeUser has loaded the offerers and venues.
   await expect(page).not.toHaveURL(/\/connexion/)
   await expect(page.getByTestId('spinner')).toHaveCount(0)
 }

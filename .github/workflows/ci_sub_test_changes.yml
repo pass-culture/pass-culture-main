@@ -70,13 +70,19 @@ jobs:
     if: ${{inputs.pro-changed || inputs.github-changed}}
     uses: ./.github/workflows/ci_sub_test_front_pro.yml
 
-  test-e2e:
-    name: E2E
-    needs: build-backend-image
-    uses: ./.github/workflows/ci_sub_test_e2e.yml
-    if: ${{ always() && !cancelled() && (inputs.api-changed || inputs.pro-changed || inputs.github-changed) }}
+  build-e2e-front:
+    name: Build E2E front
+    uses: ./.github/workflows/ci_sub_build_e2e_front.yml
+    if: ${{ inputs.api-changed || inputs.pro-changed || inputs.github-changed }}
     with:
       ENV: "development"
+
+  test-e2e:
+    name: E2E
+    needs: [build-backend-image, build-e2e-front]
+    uses: ./.github/workflows/ci_sub_test_e2e.yml
+    if: ${{ !cancelled() && needs.build-backend-image.result == 'success' && needs.build-e2e-front.result == 'success' }}
+    with:
       tag: ${{ github.sha }}
 
   # If the following jobs have failed: lint-github-actions, test_pro_result, test_backend_result
@@ -87,6 +93,7 @@ jobs:
     needs:
       - lint-github-actions
       - test-pro
+      - build-e2e-front
       - test-e2e
       - test-backend
       - check-api-client-update
@@ -95,7 +102,7 @@ jobs:
     env:
       lint_github_actions_result: ${{contains(needs.lint-github-actions.result, 'failure') && 'GitHub actions' || ''}}
       test_pro_result: ${{contains(needs.test-pro.result, 'failure') && 'Front Pro' || ''}}
-      test_e2e_result: ${{contains(needs.test-e2e.result, 'failure') && 'E2E' || ''}}
+      test_e2e_result: ${{(contains(needs.build-e2e-front.result, 'failure') || contains(needs.test-e2e.result, 'failure')) && 'E2E' || ''}}
       test_backend_result: ${{contains(needs.test-backend.result, 'failure') && 'Backend' || ''}}
       test_api_client_result: ${{contains(needs.check-api-client-update.result, 'failure') && 'Client API Front' || ''}}
       test_api_documentation: ${{contains(needs.test-api-documentation.result, 'failure') && 'Documentation API' || ''}}

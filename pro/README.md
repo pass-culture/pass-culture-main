@@ -15,6 +15,7 @@ Ce dossier `/pro` contient l’ensemble de la configuration et les sources de l'
   - [Sandbox](#sandbox)
 - [Développer](#développer)
   - [Configurer son éditeur](#configurer-son-éditeur)
+  - [Build de production](#build-de-production)
   - [Les tests](#les-tests)
   - [Storybook](#storybook)
   - [Adage](#adage)
@@ -176,6 +177,28 @@ Une fois les données générées, on peut se connecter au portail pro avec un c
 # Développer
 
 Conseils et recommandations pour développer sur le projet.
+
+## Build de production
+
+Depuis le dossier `pro`, lancer `pnpm build:production` pour générer le build
+dans `build/`.
+
+Par défaut, le build ne génère ni sourcemaps ni rapport d'analyse et ne calcule
+pas les tailles gzip affichées dans les logs. Ce dernier calcul ne compresse
+pas les fichiers déployés et n'affecte pas la compression HTTP de l'hébergement.
+
+```bash
+# Générer les sourcemaps pour le débogage
+BUILD_SOURCEMAP=true pnpm build:production
+
+# Générer bundleStats.html et afficher les tailles gzip
+ANALYZE_BUNDLE=true pnpm build:production
+```
+
+Les deux options sont combinables et disponibles pour les autres modes de
+build. Le workflow de déploiement active automatiquement `BUILD_SOURCEMAP`
+lorsque `PUSH_RELEASE_TO_SENTRY` est activé, afin de conserver les sourcemaps
+des releases envoyées à Sentry.
 
 ## Configurer son éditeur
 
