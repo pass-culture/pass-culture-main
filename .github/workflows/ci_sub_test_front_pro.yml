@@ -49,9 +49,8 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm lint:dead-code
       - run: pnpm lint:dead-code:production
-      - run: pnpm lint:js
-      - run: pnpm lint:scss
-      - run: pnpm lint:scss:checkunused
+      - run: pnpm lint
+      - run: pnpm lint:scss-checkunused
 
   run-unit-tests:
     name: Unit tests

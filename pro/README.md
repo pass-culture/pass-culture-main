@@ -348,7 +348,7 @@ Pour plus de détails sur le fonctionnement des templates, voir la [documentatio
 ## Linter les fichiers TypeScript
 
 ```bash
-pnpm lint:js
+pnpm lint
 ```
 
 ## Identifier du code mort

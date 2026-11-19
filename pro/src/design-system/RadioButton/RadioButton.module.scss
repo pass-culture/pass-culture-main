@@ -252,7 +252,9 @@
         }
 
         &:active {
-          > .radio-button-label {
+          border-color: var(--color-border-subtle);
+
+          & > .radio-button-label {
             .radio-button-input {
               border-color: var(--color-border-brand-primary);
               background-color: var(--color-background-brand-primary);
@@ -262,15 +264,6 @@
               color: var(--color-text-default);
             }
           }
-        }
-      }
-
-      &:active {
-        border-color: var(--color-border-subtle);
-
-        &.is-checked,
-        &:has(:checked) {
-          border-color: var(--color-border-brand-primary);
         }
       }
     }
