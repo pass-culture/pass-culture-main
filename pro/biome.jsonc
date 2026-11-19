@@ -91,7 +91,16 @@
         "noCommonJs": "error", // not part of the recommended rules
         "noDefaultExport": "error", // not part of the recommended rules
         "noNamespace": "error", // not part of the recommended rules
-        "noRestrictedTypes": "error" // not part of the recommended rules
+        "noRestrictedTypes": "error", // not part of the recommended rules
+        "noRestrictedGlobals": {
+          "level": "error",
+          "options": {
+            "deniedGlobals": {
+              "localStorage": "Use `localStorageManager` from `@/commons/utils/localStorageManager` instead (safe when storage is unavailable).",
+              "sessionStorage": "Use `sessionStorageManager` from `@/commons/utils/sessionStorageManager` instead (safe when storage is unavailable)."
+            }
+          }
+        }
       },
 
       "suspicious": {
@@ -132,6 +141,23 @@
   },
 
   "overrides": [
+    // -------------------------------------------------------------------------
+    // Web Storage: only these files may access `localStorage` / `sessionStorage` directly
+
+    {
+      "includes": [
+        "src/commons/utils/storageAvailable.ts",
+        "src/commons/utils/storageManager.ts"
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedGlobals": "off"
+          }
+        }
+      }
+    },
+
     // -------------------------------------------------------------------------
     // package.json
 
@@ -195,7 +221,8 @@
           "style": {
             "noDefaultExport": "off",
             "noNamespace": "off",
-            "noNonNullAssertion": "off"
+            "noNonNullAssertion": "off",
+            "noRestrictedGlobals": "off"
           },
           "suspicious": {
             "noEmptyBlockStatements": "off",
