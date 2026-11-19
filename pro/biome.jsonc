@@ -53,6 +53,7 @@
       "!**/*.svg",
       "!build",
       "!built",
+      "!test-results",
       "!coverage",
       "!scripts/customRequest.ts",
       "!src/apiClient/adage",
@@ -62,8 +63,6 @@
       "!**/*.stories.tsx",
       "!docs-build",
       "!bundleStats.html",
-      // TODO: Biome 2.6 added SCSS/Markdown/YAML support
-      "!**/*.scss",
       "!**/*.md",
       "!**/*.yaml",
       "!**/*.yml"
@@ -73,7 +72,7 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true,
+      "preset": "recommended",
       "complexity": {
         "noUselessFragments": "warn", // default: "info"
         "useLiteralKeys": "off" // default: "info" (because we use that everywhere for `className={styles['...']}`)
@@ -85,7 +84,20 @@
           "options": {
             "excludedComponents": ["h1", "main"]
           }
-        }
+        },
+
+        // CSS rules
+        "noInvalidDirectionInLinearGradient": "error",
+        "noInvalidGridAreas": "error",
+        "noInvalidPositionAtImportRule": "error",
+        "noMissingVarFunction": "error",
+        "noUnknownMediaFeatureName": "error",
+        "noUnknownProperty": "error",
+        "noUnknownPseudoClass": "error",
+        "noUnknownPseudoElement": "error",
+        "noUnknownTypeSelector": "error",
+        "noUnknownUnit": "error",
+        "noUnmatchableAnbSelector": "error"
       },
       "style": {
         "noCommonJs": "error", // not part of the recommended rules
@@ -130,6 +142,12 @@
     },
     "globals": ["assert"]
   },
+  "css": {
+    "formatter": {
+      "quoteStyle": "double"
+    },
+    "globals": ["assert"]
+  },
 
   "overrides": [
     // -------------------------------------------------------------------------
@@ -149,9 +167,35 @@
 
     {
       "includes": ["**/*.css", "**/*.scss"],
-      "javascript": {
-        "formatter": {
-          "quoteStyle": "double"
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noInvalidDirectionInLinearGradient": "error",
+            "noInvalidGridAreas": "error",
+            "noInvalidPositionAtImportRule": "error",
+            "noMissingVarFunction": "error",
+            "noUnknownMediaFeatureName": "error",
+            "noUnknownProperty": "error",
+            "noUnknownPseudoClass": "error",
+            "noUnknownPseudoElement": "error",
+            "noUnknownTypeSelector": "error",
+            "noUnknownUnit": "error",
+            "noUnmatchableAnbSelector": "error"
+          },
+          "suspicious": {
+            "noDeprecatedMediaType": "error",
+            "noDuplicateAtImportRules": "error",
+            "noDuplicateCustomProperties": "error",
+            "noDuplicateFontNames": "error",
+            "noDuplicateProperties": "error",
+            "noDuplicateSelectors": "error",
+            "noDuplicateSelectorsKeyframeBlock": "error",
+            "noEmptyBlock": "error",
+            "noEmptySource": "error",
+            "noImportantInKeyframe": "error",
+            "noIrregularWhitespace": "error",
+            "noShorthandPropertyOverrides": "error"
+          }
         }
       }
     },
