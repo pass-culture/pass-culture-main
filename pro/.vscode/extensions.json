@@ -1,8 +1,6 @@
 {
   "recommendations": [
-    "esbenp.prettier-vscode",
     "vitest.explorer",
-    "stylelint.vscode-stylelint",
     "biomejs.biome",
     "vunguyentuan.vscode-css-variables"
   ]

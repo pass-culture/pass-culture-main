@@ -6,12 +6,12 @@
   &-breadcrumb {
     display: none;
     margin-bottom: var(--size-spacing-2xl);
-    padding: 0 rem.torem(8px);
+    padding: 0px rem.torem(8px);
   }
 
   &-fallback {
     text-align: center;
-    padding: 0 rem.torem(20px) rem.torem(20px);
+    padding: 0px rem.torem(20px) rem.torem(20px);
 
     &-svg {
       color: var(--color-icon-subtle);
@@ -22,7 +22,7 @@
 @media (min-width: size.$tablet) {
   .offers-info-breadcrumb {
     display: block;
-    padding: 0 rem.torem(24px);
+    padding: 0px rem.torem(24px);
   }
 }
 

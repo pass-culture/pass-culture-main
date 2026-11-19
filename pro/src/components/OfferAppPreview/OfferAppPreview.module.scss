@@ -48,7 +48,7 @@
   .offer-title {
     @include fonts.title4;
 
-    margin: 0 0 rem.torem(22px);
+    margin: 0 0px rem.torem(22px);
     max-width: rem.torem(224px);
     overflow-wrap: anywhere;
     text-align: center;

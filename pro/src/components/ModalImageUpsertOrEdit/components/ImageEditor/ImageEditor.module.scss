@@ -83,7 +83,7 @@
     &-disabled {
       @include fonts.body-xs;
 
-      padding: 0 rem.torem(16px);
+      padding: 0px rem.torem(16px);
       text-align: center;
     }
   }
