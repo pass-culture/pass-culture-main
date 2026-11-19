@@ -2,6 +2,10 @@ import copy
 import json
 import logging
 
+from flask import current_app as app
+
+from pcapi.core.users.sessions import install_routed_login
+from pcapi.routes import install_all_routes
 from pcapi.utils.blueprint import Blueprint
 
 
@@ -14,9 +18,9 @@ NATIVE_API_OPENAPI_JSON_PATH = "./tests/files/native_openapi.json"
 
 def _fetch_openapi_json() -> dict:
     """Get Open API json from flask server"""
-    # to avoid circular import
-    from pcapi.flask_app import app
 
+    install_all_routes(app)
+    install_routed_login()
     client = app.test_client()
     r = client.get("/native/openapi.json")
 

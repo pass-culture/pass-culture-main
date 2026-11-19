@@ -32,7 +32,7 @@ from pcapi.core.history import api as history_api
 from pcapi.core.history import constants as history_constants
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
-from pcapi.flask_app import app
+from pcapi.flask_app import create_app
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.utils import regions as regions_utils
@@ -343,7 +343,7 @@ def update_zendesk_offerer(offerer_id: int) -> None:
 
 
 if __name__ == "__main__":
-    app.app_context().push()
+    create_app().app_context().push()
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--apply", action="store_true")

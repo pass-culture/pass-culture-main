@@ -17,7 +17,6 @@ from pcapi.core.finance import utils as finance_utils
 from pcapi.flask_integration import middlewares
 from pcapi.models import db
 from pcapi.models import install_models
-from pcapi.scripts.install import install_commands
 from pcapi.utils import jwt
 from pcapi.utils.json_encoder import EnumJSONEncoder
 from pcapi.utils.logging import install_logging
@@ -80,7 +79,6 @@ class AppBuilder:
         celery_init_app(app)
 
     def install_routes(self, app: Flask) -> None:
-        install_commands(app)
         finance_utils.install_template_filters(app)
 
     def install_handlers(self, app: Flask) -> None:
@@ -94,7 +92,6 @@ class AppBuilder:
         app.after_request(middlewares.mark_4xx_as_invalid)
         app.teardown_request(middlewares.remove_db_session)
         app.teardown_request(middlewares.teardown_atomic)
-        app.shell_context_processor(middlewares.get_shell_extra_context)
 
     def finalize_startup(self, app: Flask) -> None:
         connect_redis()
