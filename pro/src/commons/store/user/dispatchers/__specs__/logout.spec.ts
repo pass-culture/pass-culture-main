@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import * as handleErrorModule from '@/commons/errors/handleError'
 import { LOCAL_STORAGE_KEY } from '@/commons/utils/localStorageManager'
+import { SESSION_STORAGE_KEY } from '@/commons/utils/sessionStorageManager'
 
 import { logout } from '../logout'
 
@@ -25,6 +26,10 @@ describe('logout', () => {
 
     localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID, '2')
     localStorage.setItem('homepageSelectedOffererId', '1')
+    sessionStorage.setItem(
+      SESSION_STORAGE_KEY.INDIVIDUAL_OFFERS_FILTER_CONFIG,
+      '{"storedVenueId":2}'
+    )
   })
 
   it('should call signout, clear localStorage, and reset related slices when shouldCallSignout=true', async () => {
@@ -42,6 +47,11 @@ describe('logout', () => {
 
     expect(localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID)).toBeNull()
     expect(localStorage.getItem('homepageSelectedOffererId')).toBeNull()
+    expect(
+      sessionStorage.getItem(
+        SESSION_STORAGE_KEY.INDIVIDUAL_OFFERS_FILTER_CONFIG
+      )
+    ).toBeNull()
   })
 
   it('should handle signout error gracefully and still reset state', async () => {

@@ -1,6 +1,7 @@
 import { handleError } from '@/commons/errors/handleError'
 import { API_URL } from '@/commons/utils/config'
 import { localStorageManager } from '@/commons/utils/localStorageManager'
+import { sessionStorageManager } from '@/commons/utils/sessionStorageManager'
 
 export async function logout(): Promise<never>
 export async function logout(redirect: true): Promise<never>
@@ -8,6 +9,7 @@ export async function logout(redirect: false): Promise<undefined>
 
 export async function logout(redirect = true) {
   localStorageManager.clear()
+  sessionStorageManager.clear()
 
   try {
     // we use fetch directly to avoid a circular import with request.ts
