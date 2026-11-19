@@ -11,17 +11,19 @@ import { Component as IndividualOfferV2NatureFormatDomain } from './IndividualOf
 
 const natures = [
   {
-    formats: [{ format: FormatEnum.DVD_BLU_RAY, label: 'DVD ou Blu-ray' }],
+    formats: [
+      { format: FormatEnum.DVD_BLU_RAY, label: 'DVD ou Blu-ray', domains: [] },
+    ],
     label: 'Événement',
-    name: NatureEnum.EVENEMENT,
+    nature: NatureEnum.EVENEMENT,
   },
   {
     formats: [
-      { format: FormatEnum.LIVRE_PAPIER, label: 'Livre' },
-      { format: FormatEnum.CD, label: 'CD' },
+      { format: FormatEnum.LIVRE_PAPIER, label: 'Livre', domains: [] },
+      { format: FormatEnum.CD, label: 'CD', domains: [] },
     ],
     label: 'Bien culturel',
-    name: NatureEnum.BIEN,
+    nature: NatureEnum.BIEN,
   },
 ]
 
@@ -215,7 +217,7 @@ describe('<IndividualOfferV2NatureFormatDomain />', () => {
         ...natures[0],
         formats: [
           ...natures[0].formats,
-          { format: FormatEnum.LIVRE_PAPIER, label: 'Livre' },
+          { format: FormatEnum.LIVRE_PAPIER, label: 'Livre', domains: [] },
         ],
       },
       natures[1],
