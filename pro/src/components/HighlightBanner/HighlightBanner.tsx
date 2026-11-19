@@ -1,7 +1,10 @@
 import cn from 'classnames'
 import { useState } from 'react'
 
-import { storageAvailable } from '@/commons/utils/storageAvailable'
+import {
+  type LOCAL_STORAGE_KEY,
+  localStorageManager,
+} from '@/commons/utils/localStorageManager'
 import fullClearIcon from '@/icons/full-clear.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
@@ -10,7 +13,7 @@ import styles from './HighlightBanner.module.scss'
 interface HighlightBannerProps {
   title: string
   description: string
-  localStorageKey: string
+  localStorageKey: LOCAL_STORAGE_KEY
   img?: JSX.Element | string
   cta?: JSX.Element
 }
@@ -22,13 +25,15 @@ export const HighlightBanner = ({
   img,
   cta,
 }: HighlightBannerProps) => {
-  const isLocalStorageAvailable = storageAvailable('localStorage')
+  // Without storage, the banner could not be dismissed for good: never show it.
   const [shouldHideHighlightBanner, setShouldHideHighlightBanner] = useState(
-    !isLocalStorageAvailable || Boolean(localStorage.getItem(localStorageKey))
+    () =>
+      !localStorageManager.isAvailable() ||
+      localStorageManager.getItem(localStorageKey) === 'true'
   )
 
   const onCloseHighlightBanner = () => {
-    localStorage.setItem(localStorageKey, 'true')
+    localStorageManager.setItem(localStorageKey, 'true')
     setShouldHideHighlightBanner(true)
   }
 

@@ -1,7 +1,9 @@
 import { act, renderHook } from '@testing-library/react'
 import * as router from 'react-router'
 
-import { Consents, LOCAL_STORAGE_DEVICE_ID_KEY } from '../orejimeConfig'
+import { LOCAL_STORAGE_KEY } from '@/commons/utils/localStorageManager'
+
+import { Consents } from '../orejimeConfig'
 
 vi.mock('react-router', () => ({
   ...vi.importActual('react-router'),
@@ -201,13 +203,13 @@ describe('useOrejime', () => {
       renderHook(() => useOrejime())
       await act(() => vi.runAllTimers())
 
-      expect(localStorage.getItem(LOCAL_STORAGE_DEVICE_ID_KEY)).toBe(
+      expect(localStorage.getItem(LOCAL_STORAGE_KEY.DEVICE_ID)).toBe(
         'fake-uuid-v4'
       )
     })
 
     it('should not overwrite existing device ID', async () => {
-      localStorage.setItem(LOCAL_STORAGE_DEVICE_ID_KEY, 'existing-id')
+      localStorage.setItem(LOCAL_STORAGE_KEY.DEVICE_ID, 'existing-id')
       const manager = createMockManager()
       setupLoadOrejime(manager)
       mockLocation('/some-page')
@@ -216,7 +218,7 @@ describe('useOrejime', () => {
       renderHook(() => useOrejime())
       await act(() => vi.runAllTimers())
 
-      expect(localStorage.getItem(LOCAL_STORAGE_DEVICE_ID_KEY)).toBe(
+      expect(localStorage.getItem(LOCAL_STORAGE_KEY.DEVICE_ID)).toBe(
         'existing-id'
       )
     })
@@ -234,7 +236,7 @@ describe('useOrejime', () => {
       renderHook(() => useOrejime())
       await act(() => vi.runAllTimers())
 
-      expect(localStorage.getItem(LOCAL_STORAGE_DEVICE_ID_KEY)).toBeNull()
+      expect(localStorage.getItem(LOCAL_STORAGE_KEY.DEVICE_ID)).toBeNull()
     })
   })
 
