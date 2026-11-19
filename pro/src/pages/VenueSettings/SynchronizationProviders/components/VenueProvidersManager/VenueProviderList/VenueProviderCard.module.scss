@@ -87,7 +87,6 @@
 .last-synchronisation {
   @include fonts.body-accent-xs;
 
-
   &::before {
     background-color: var(--color-icon-success);
     border-radius: var(--size-border-radius-pill);

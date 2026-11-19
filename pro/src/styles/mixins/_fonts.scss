@@ -42,7 +42,9 @@
 
 @mixin body-italic-accent() {
   font-family:
-    var(--typography-body-italic-accent-font-family), system-ui, sans-serif;
+    var(--typography-body-italic-accent-font-family),
+    system-ui,
+    sans-serif;
   font-size: var(--typography-body-italic-accent-font-size);
   line-height: var(--typography-body-italic-accent-line-height);
 }
@@ -55,7 +57,9 @@
 
 @mixin body-accent-s() {
   font-family:
-    var(--typography-body-accent-s-font-family), system-ui, sans-serif;
+    var(--typography-body-accent-s-font-family),
+    system-ui,
+    sans-serif;
   font-size: var(--typography-body-accent-s-font-size);
   line-height: var(--typography-body-accent-s-line-height);
 }
@@ -68,7 +72,9 @@
 
 @mixin body-accent-xs() {
   font-family:
-    var(--typography-body-accent-xs-font-family), system-ui, sans-serif;
+    var(--typography-body-accent-xs-font-family),
+    system-ui,
+    sans-serif;
   font-size: var(--typography-body-accent-xs-font-size);
   line-height: var(--typography-body-accent-xs-line-height);
 }

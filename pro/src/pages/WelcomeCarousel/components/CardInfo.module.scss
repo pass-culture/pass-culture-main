@@ -11,7 +11,7 @@
   border-radius: var(--size-border-radius-m);
 
   &-icon-wrapper {
-    aspect-ratio: 1/1;
+    aspect-ratio: 1 / 1;
     width: rem.torem(24px);
     height: rem.torem(24px);
     background-color: var(--color-background-brand-primary);
@@ -27,7 +27,7 @@
   }
 
   &-icon {
-    aspect-ratio: 1/1;
+    aspect-ratio: 1 / 1;
     width: rem.torem(14px);
     height: rem.torem(14px);
     color: var(--color-icon-inverted);

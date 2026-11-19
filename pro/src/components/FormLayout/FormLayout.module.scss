@@ -131,9 +131,7 @@ $info-box-margin-left: rem.torem(24px);
       width: $info-box-width;
       position: absolute;
       top: 0;
-      right: calc(
-        -#{$info-box-margin-left} - $info-box-width
-      ); // calc(-margin-left - width)
+      right: calc(-#{$info-box-margin-left} - $info-box-width); // calc(-margin-left - width)
 
       &-inner {
         position: absolute;

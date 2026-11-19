@@ -36,7 +36,13 @@ $rem-px-only: false !default;
   $separator: rem-separator($values);
 
   @each $value in $values {
-    @if meta.type-of($value) == "number" and math.unit($value) == "rem" and $to == "px" {
+    @if meta.type-of($value) ==
+      "number" and
+      math.unit($value) ==
+      "rem" and
+      $to ==
+      "px"
+    {
       $result: list.append(
         $result,
         math.div($value, 1rem) * $rem-baseline,
@@ -65,7 +71,10 @@ $rem-px-only: false !default;
     }
   }
 
-  @return if(sass(list.length($result) == 1): list.nth($result, 1); else: $result);
+  @return if(
+    sass(list.length($result) == 1): list.nth($result, 1);
+    else: $result;
+  );
 }
 
 @function torem($values...) {
