@@ -45,28 +45,10 @@ def apply_for_quotient_familial_bonus_task(payload: BonusTaskPayload) -> None:
         logger.error("Trying to call apply_for_quotient_familial_bonus_task with disabled FF")
         return
 
-    fraud_check = (
-        db.session.query(subscription_models.BeneficiaryFraudCheck)
-        .filter(
-            subscription_models.BeneficiaryFraudCheck.id == payload.fraud_check_id,
-        )
-        .options(sa.orm.joinedload(subscription_models.BeneficiaryFraudCheck.user))
-        .one_or_none()
+    fraud_check, should_handle_fraud_check = _get_bonus_fraud_check(
+        payload.fraud_check_id, subscription_models.FraudCheckType.QF_BONUS_CREDIT
     )
-    if fraud_check is None:
-        logger.warning("fraud check %s was deleted before a celery worker could pick it up", payload.fraud_check_id)
-        return
-
-    if fraud_check.type != subscription_models.FraudCheckType.QF_BONUS_CREDIT:
-        logger.error(
-            "Trying to fetch FraudCheck #%s of type BONUS_CREDIT resulted in a FraudCheck of type %s",
-            fraud_check.id,
-            fraud_check.type,
-        )
-        return
-
-    if fraud_check.status != subscription_models.FraudCheckStatus.STARTED:
-        logger.warning("Trying to handle already processed bonus fraud check #%s", payload.fraud_check_id)
+    if not fraud_check or not should_handle_fraud_check:
         return
 
     user = fraud_check.user
@@ -75,12 +57,16 @@ def apply_for_quotient_familial_bonus_task(payload: BonusTaskPayload) -> None:
     except (sa.orm.exc.ObjectDeletedError, sa.orm.exc.StaleDataError):
         if not user.received_bonus_credit:
             raise
-    except Exception:
+    except Exception as e:
         with atomic():
             if not fraud_check.resultContent:
                 fraud_check.resultContent = {}
 
-            fraud_check.resultContent["next_retry_at"] = date_utils.get_naive_utc_now() + relativedelta(hours=23)
+            should_give_up = _should_give_up(fraud_check, e)
+            if should_give_up:
+                fraud_check.status = subscription_models.FraudCheckStatus.ERROR
+            else:
+                fraud_check.resultContent["next_retry_at"] = date_utils.get_naive_utc_now() + relativedelta(hours=23)
 
         raise
 
@@ -98,28 +84,10 @@ def apply_for_adult_disability_bonus_task(payload: BonusTaskPayload) -> None:
         logger.error("Trying to call apply_for_adult_disability_bonus_task with disabled FF")
         return
 
-    fraud_check = (
-        db.session.query(subscription_models.BeneficiaryFraudCheck)
-        .filter(
-            subscription_models.BeneficiaryFraudCheck.id == payload.fraud_check_id,
-        )
-        .options(sa.orm.joinedload(subscription_models.BeneficiaryFraudCheck.user))
-        .one_or_none()
+    fraud_check, should_handle_fraud_check = _get_bonus_fraud_check(
+        payload.fraud_check_id, subscription_models.FraudCheckType.AAH_BONUS_CREDIT
     )
-    if fraud_check is None:
-        logger.warning("fraud check %s was deleted before a celery worker could pick it up", payload.fraud_check_id)
-        return
-
-    if fraud_check.type != subscription_models.FraudCheckType.AAH_BONUS_CREDIT:
-        logger.error(
-            "Trying to fetch FraudCheck #%s of type AAH_BONUS_CREDIT resulted in a FraudCheck of type %s",
-            fraud_check.id,
-            fraud_check.type,
-        )
-        return
-
-    if fraud_check.status != subscription_models.FraudCheckStatus.STARTED:
-        logger.warning("Trying to handle already processed bonus fraud check #%s", payload.fraud_check_id)
+    if not fraud_check or not should_handle_fraud_check:
         return
 
     user = fraud_check.user
@@ -128,12 +96,16 @@ def apply_for_adult_disability_bonus_task(payload: BonusTaskPayload) -> None:
     except (sa.orm.exc.ObjectDeletedError, sa.orm.exc.StaleDataError):
         if not user.received_bonus_credit:
             raise
-    except Exception:
+    except Exception as e:
         with atomic():
             if not fraud_check.resultContent:
                 fraud_check.resultContent = {}
 
-            fraud_check.resultContent["next_retry_at"] = date_utils.get_naive_utc_now() + relativedelta(hours=23)
+            should_give_up = _should_give_up(fraud_check, e)
+            if should_give_up:
+                fraud_check.status = subscription_models.FraudCheckStatus.ERROR
+            else:
+                fraud_check.resultContent["next_retry_at"] = date_utils.get_naive_utc_now() + relativedelta(hours=23)
 
         raise
 
@@ -151,28 +123,10 @@ def apply_for_disabled_child_education_bonus_task(payload: BonusTaskPayload) -> 
         logger.error("Trying to call apply_for_disabled_child_education_bonus_task with disabled FF")
         return
 
-    fraud_check = (
-        db.session.query(subscription_models.BeneficiaryFraudCheck)
-        .filter(
-            subscription_models.BeneficiaryFraudCheck.id == payload.fraud_check_id,
-        )
-        .options(sa.orm.joinedload(subscription_models.BeneficiaryFraudCheck.user))
-        .one_or_none()
+    fraud_check, should_handle_fraud_check = _get_bonus_fraud_check(
+        payload.fraud_check_id, subscription_models.FraudCheckType.AEEH_BONUS_CREDIT
     )
-    if fraud_check is None:
-        logger.warning("fraud check %s was deleted before a celery worker could pick it up", payload.fraud_check_id)
-        return
-
-    if fraud_check.type != subscription_models.FraudCheckType.AEEH_BONUS_CREDIT:
-        logger.error(
-            "Trying to fetch FraudCheck #%s of type AEEH_BONUS_CREDIT resulted in a FraudCheck of type %s",
-            fraud_check.id,
-            fraud_check.type,
-        )
-        return
-
-    if fraud_check.status != subscription_models.FraudCheckStatus.STARTED:
-        logger.warning("Trying to handle already processed bonus fraud check #%s", payload.fraud_check_id)
+    if not fraud_check or not should_handle_fraud_check:
         return
 
     user = fraud_check.user
@@ -181,15 +135,70 @@ def apply_for_disabled_child_education_bonus_task(payload: BonusTaskPayload) -> 
     except (sa.orm.exc.ObjectDeletedError, sa.orm.exc.StaleDataError):
         if not user.received_bonus_credit:
             raise
-
-    except Exception:
+    except Exception as e:
         with atomic():
             if not fraud_check.resultContent:
                 fraud_check.resultContent = {}
 
-            fraud_check.resultContent["next_retry_at"] = date_utils.get_naive_utc_now() + relativedelta(hours=23)
+            should_give_up = _should_give_up(fraud_check, e)
+            if should_give_up:
+                fraud_check.status = subscription_models.FraudCheckStatus.ERROR
+            else:
+                fraud_check.resultContent["next_retry_at"] = date_utils.get_naive_utc_now() + relativedelta(hours=23)
 
         raise
+
+
+def _get_bonus_fraud_check(
+    fraud_check_id: int, expected_type: subscription_models.FraudCheckType
+) -> tuple[subscription_models.BeneficiaryFraudCheck | None, bool]:
+    fraud_check = (
+        db.session.query(subscription_models.BeneficiaryFraudCheck)
+        .filter(
+            subscription_models.BeneficiaryFraudCheck.id == fraud_check_id,
+        )
+        .options(sa.orm.joinedload(subscription_models.BeneficiaryFraudCheck.user))
+        .one_or_none()
+    )
+    if fraud_check is None:
+        logger.warning("fraud check %s was deleted before a celery worker could pick it up", fraud_check_id)
+        return None, False
+
+    should_handle_fraud_check = True
+    if fraud_check.type != expected_type:
+        logger.error(
+            "Trying to fetch FraudCheck #%s of type %s resulted in a FraudCheck of type %s",
+            fraud_check.id,
+            expected_type.name,
+            fraud_check.type,
+        )
+        should_handle_fraud_check = False
+
+    if fraud_check.status != subscription_models.FraudCheckStatus.STARTED:
+        logger.warning("Trying to handle already processed bonus fraud check #%s", fraud_check_id)
+        should_handle_fraud_check = False
+
+    return fraud_check, should_handle_fraud_check
+
+
+def _should_give_up(fraud_check: subscription_models.BeneficiaryFraudCheck, exception: Exception) -> bool:
+    if isinstance(
+        exception, (api_particulier.ParticulierApiRequestConflict, api_particulier.ParticulierApiRateLimitExceeded)
+    ):
+        return False
+
+    if not fraud_check.resultContent:
+        fraud_check.resultContent = {}
+
+    previous_error_code = fraud_check.resultContent.get("error_code")
+    previous_retry_at = fraud_check.resultContent.get("next_retry_at")
+
+    has_already_failed = previous_error_code is not None
+    return (
+        has_already_failed
+        and previous_retry_at is not None
+        and (datetime.datetime.fromisoformat(previous_retry_at) - fraud_check.dateCreated) > datetime.timedelta(days=7)
+    )
 
 
 def recover_started_bonus_credit_applications(
