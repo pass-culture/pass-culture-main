@@ -125,7 +125,7 @@ export const CollectiveOfferLayout = ({
       <div className={styles['headings-wrapper']}>
         {isTemplate && <Tag label="Offre vitrine" />}
         <h1 className={styles['title']}>{getTitle()}</h1>
-        {subTitle && <h2 className={styles['subtitle']}>{subTitle}</h2>}
+        {subTitle && <p className={styles['subtitle']}>{subTitle}</p>}
       </div>
       {!isClosed && (
         <>

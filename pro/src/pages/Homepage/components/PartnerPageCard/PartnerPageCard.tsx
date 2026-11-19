@@ -1,3 +1,5 @@
+import { useId } from 'react'
+
 import type { BannerMetaModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events, HomepageEvents } from '@/commons/core/FirebaseEvents/constants'
@@ -35,6 +37,7 @@ export const PartnerPageCard = ({
   venueBannerMeta,
   variant,
 }: PartnerPageProps) => {
+  const pageAccessId = useId()
   const { logEvent } = useAnalytics()
   const logPartnerPageClick = useFunctionOnce(() =>
     logEvent(HomepageEvents.CLICKED_PARTNER_PAGE)
@@ -79,11 +82,13 @@ export const PartnerPageCard = ({
           hideActionButtons
           onImageDropOrSelected={logButtonAddClick}
           disabled={isReadOnly}
+          focusTargetId={pageAccessId}
         />
         <h3 className={styles['venue-name']}>{venueName}</h3>
       </Card.Content>
       <Card.Footer>
         <Button
+          id={pageAccessId}
           label="Compléter ma page"
           variant={ButtonVariant.SECONDARY}
           color={ButtonColor.NEUTRAL}

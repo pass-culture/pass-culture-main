@@ -16,6 +16,7 @@ import { getIndividualOfferImage } from '@/commons/core/Offers/utils/getIndividu
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import { isOfferProductBasedButNotSynchronized } from '@/commons/core/Offers/utils/typology'
+import { PATCH_SUCCESS_MESSAGE } from '@/commons/core/shared/constants'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useFormNavigationGuard } from '@/commons/hooks/useFormNavigationGuard/useFormNavigationGuard'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
@@ -286,6 +287,7 @@ export const IndividualOfferMediaScreen = ({
       form,
       isExternallyDirty: isFormDirty,
       onSubmit,
+      saveAndLeaveSuccessMessage: PATCH_SUCCESS_MESSAGE,
     })
 
   const logOnImageDropOrSelected = () => {
@@ -456,7 +458,7 @@ export const IndividualOfferMediaScreen = ({
                 </FormLayout.Row>
                 <FormLayout.Row className={styles['media-cell']}>
                   <div className={styles['media-wrapper']}>
-                    <h3 className={styles['media-title']}>Ajoutez une vidéo</h3>
+                    <p className={styles['media-title']}>Ajoutez une vidéo</p>
                     <VideoUploader uploadTipsId={tipsVideoUploaderId} />
                     {!videoData?.videoThumbnailUrl && (
                       <div id={tipsVideoUploaderId}>

@@ -12,6 +12,7 @@ import {
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import { isOfferSynchronized } from '@/commons/core/Offers/utils/typology'
+import { PATCH_SUCCESS_MESSAGE } from '@/commons/core/shared/constants'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useFormNavigationGuard } from '@/commons/hooks/useFormNavigationGuard/useFormNavigationGuard'
@@ -127,6 +128,7 @@ export const IndividualOfferLocationScreen = ({
       afterSubmitState,
       form,
       onSubmit: updateOffer,
+      saveAndLeaveSuccessMessage: PATCH_SUCCESS_MESSAGE,
     })
 
   const handlePreviousStep = () => {

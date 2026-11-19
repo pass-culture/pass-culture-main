@@ -121,9 +121,9 @@ const showcaseOfferWithShareLink = (
   title: 'Créer une offre',
   description: (
     <>
-      <p className={styles['confirmation-title']}>
+      <h2 className={styles['confirmation-title']}>
         Votre offre a été publiée sur ADAGE
-      </p>
+      </h2>
       <div className={styles['confirmation-description']}>
         <p>
           Aidez les enseignants à retrouver votre offre plus facilement sur
@@ -174,7 +174,7 @@ const CollectiveOfferConfirmation = ({
   return (
     <ContentLayout>
       <h1 className={styles['title']}>{confirmationData.title}</h1>
-      <h2 className={styles['subtitle']}>{offer.name}</h2>
+      <p className={styles['subtitle']}>{offer.name}</p>
       <div className={styles['confirmation-wrapper']}>
         <div className={styles['confirmation']}>
           {confirmationData.icon}

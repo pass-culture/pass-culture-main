@@ -17,7 +17,10 @@ import {
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
-import { SENT_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
+import {
+  PATCH_SUCCESS_MESSAGE,
+  SENT_DATA_ERROR_MESSAGE,
+} from '@/commons/core/shared/constants'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useFormNavigationGuard } from '@/commons/hooks/useFormNavigationGuard/useFormNavigationGuard'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
@@ -163,6 +166,7 @@ export const IndividualOfferPracticalInfosScreen = ({
       afterSubmitState,
       form,
       onSubmit,
+      saveAndLeaveSuccessMessage: PATCH_SUCCESS_MESSAGE,
     })
 
   return (

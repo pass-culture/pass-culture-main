@@ -1,4 +1,10 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import {
+  fireEvent,
+  isInaccessible,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
@@ -142,6 +148,7 @@ describe('UploadZone', () => {
 
     await waitFor(() => expect(onFilesAdded).toHaveBeenCalledWith([file]))
     expect(screen.getByRole('alert')).toBeEmptyDOMElement()
+    expect(screen.getByRole('alert')).not.toHaveAttribute('aria-labelledby')
   })
 
   it('should change its instruction while a file is dragged over', async () => {
@@ -183,8 +190,16 @@ describe('UploadZone', () => {
 
     fireEvent.drop(input, getDataTransfer([file]))
 
-    expect(await screen.findByText(message)).toBeInTheDocument()
-    expect(screen.getByRole('alert')).toHaveTextContent(message)
+    const errorMessage = await screen.findByText(message)
+    expect(errorMessage).toBeVisible()
+    expect(isInaccessible(errorMessage)).toBe(true)
+    expect(
+      isInaccessible(screen.getByText('Le fichier choisi est non conforme :'))
+    ).toBe(true)
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      `Le fichier choisi est non conforme : ${message}`
+    )
+    expect(isInaccessible(screen.getByRole('alert'))).toBe(false)
     // Announced right after the label, before the native value of the input.
     expect(input).toHaveAccessibleName(
       `Justificatifs Le fichier choisi est non conforme : ${message}`
@@ -232,6 +247,9 @@ describe('UploadZone', () => {
       await screen.findByText('Le format du fichier n’est pas accepté.')
     ).toBeInTheDocument()
     expect(screen.getByText('Le fichier est trop lourd.')).toBeInTheDocument()
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'Le fichier choisi est non conforme : Le format du fichier n’est pas accepté. Le fichier est trop lourd.'
+    )
     expect(screen.getByLabelText('Justificatifs')).toHaveAccessibleName(
       'Justificatifs Le fichier choisi est non conforme : Le format du fichier n’est pas accepté. Le fichier est trop lourd.'
     )
@@ -298,6 +316,31 @@ describe('UploadZone', () => {
     expect(input).toHaveAccessibleDescription(
       'Formats acceptés : PDF. Poids maximum : 5 Mo. Veuillez ajouter un fichier'
     )
+  })
+
+  it('should keep the live region mounted when errors appear, change and clear', () => {
+    const { rerender } = renderUploadZone()
+    const alert = screen.getByRole('alert')
+    expect(alert).toBeEmptyDOMElement()
+
+    for (const error of ['Veuillez ajouter un fichier', 'Fichier invalide']) {
+      rerender(<UploadZone {...defaultProps} error={error} />)
+
+      expect(screen.getByRole('alert')).toBe(alert)
+      expect(alert).toHaveTextContent(error)
+      expect(isInaccessible(alert)).toBe(false)
+      expect(
+        screen.getByLabelText('Justificatifs')
+      ).toHaveAccessibleDescription(
+        `Formats acceptés : PDF. Poids maximum : 5 Mo. ${error}`
+      )
+    }
+
+    rerender(<UploadZone {...defaultProps} />)
+
+    expect(screen.getByRole('alert')).toBe(alert)
+    expect(alert).toBeEmptyDOMElement()
+    expect(screen.getByLabelText('Justificatifs')).toBeValid()
   })
 
   it('should disable the file input', () => {
