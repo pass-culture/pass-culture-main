@@ -64,7 +64,7 @@ dependencies = [
   "pyproj==3.8.0",
   "pysaml2 ==7.5.0",
   # Used for iris importation
-  "pyshp==3.1.7",
+  "pyshp==3.1.8",
   "python-dateutil ==2.9.0.post0",
   "python-dotenv==1.2.4",
   "pytz==2026.6",
