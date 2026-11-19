@@ -10,6 +10,18 @@ export const TABS = {
 
 export type TabKey = (typeof TABS)[keyof typeof TABS]
 
+type LastTabsByVenue = Partial<Record<number, TabKey>>
+
+const getLastTabsByVenue = (): LastTabsByVenue => {
+  const lastTabsByVenue = localStorageManager.getJSON<LastTabsByVenue>(
+    LOCAL_STORAGE_KEY.LAST_VISITED_HOMEPAGE_TABS
+  )
+
+  return typeof lastTabsByVenue === 'object' && lastTabsByVenue !== null
+    ? lastTabsByVenue
+    : {}
+}
+
 export const getInitialTab = (
   venueId: number,
   hasIndividual: boolean,
@@ -21,12 +33,7 @@ export const getInitialTab = (
   // (so it does not see tabs)
   if (hasCollective && hasIndividual) {
     // We only use localStorage if tabs are displayed
-    const lastTabsByVenue = JSON.parse(
-      localStorageManager.getItem(
-        LOCAL_STORAGE_KEY.LAST_VISITED_HOMEPAGE_TABS
-      ) ?? '{}'
-    )
-    const lastVisitedTab = lastTabsByVenue[venueId]
+    const lastVisitedTab = getLastTabsByVenue()[venueId]
     initialTab = lastVisitedTab || TABS.INDIVIDUAL
     if (!lastVisitedTab) {
       onNewTabSelected(initialTab, venueId)
@@ -44,13 +51,10 @@ export const onNewTabSelected = (
   newSelectedTab: TabKey,
   venueId: number
 ): void => {
-  const lastTabsByVenue = JSON.parse(
-    localStorageManager.getItem(LOCAL_STORAGE_KEY.LAST_VISITED_HOMEPAGE_TABS) ??
-      '{}'
-  )
+  const lastTabsByVenue = getLastTabsByVenue()
   lastTabsByVenue[venueId] = newSelectedTab
-  localStorageManager.setItem(
+  localStorageManager.setJSON(
     LOCAL_STORAGE_KEY.LAST_VISITED_HOMEPAGE_TABS,
-    JSON.stringify(lastTabsByVenue)
+    lastTabsByVenue
   )
 }

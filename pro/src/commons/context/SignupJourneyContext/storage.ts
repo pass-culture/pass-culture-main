@@ -18,13 +18,12 @@ export const RESTORE_ERRORS = {
 export const tryRestoreOffererFromStorage = (
   setOfferer: (offererData: Offerer) => void
 ): Offerer => {
-  const offererStoredData = localStorageManager.getItem(
+  const offerer = localStorageManager.getJSON<Offerer>(
     LOCAL_STORAGE_KEY.NEW_STRUCTURE_OFFERER
   )
-  if (offererStoredData === null) {
+  if (offerer === null) {
     throw new Error(RESTORE_ERRORS.NO_OFFERER_DATA_IN_STORAGE)
   }
-  const offerer = JSON.parse(offererStoredData) as Offerer
   setOfferer(offerer)
   return offerer
 }
@@ -32,13 +31,12 @@ export const tryRestoreOffererFromStorage = (
 export const tryRestoreInitialAddressFromStorage = (
   setInitialAddress: (initialAddress: InitialAddress) => void
 ): InitialAddress => {
-  const initialAddressStoredData = localStorageManager.getItem(
+  const initialAddress = localStorageManager.getJSON<InitialAddress>(
     LOCAL_STORAGE_KEY.NEW_STRUCTURE_OFFERER_INITIAL_ADDRESS
   )
-  if (initialAddressStoredData === null) {
+  if (initialAddress === null) {
     throw new Error(RESTORE_ERRORS.NO_INITIAL_ADDRESS_DATA_IN_STORAGE)
   }
-  const initialAddress = JSON.parse(initialAddressStoredData) as InitialAddress
   setInitialAddress(initialAddress)
   return initialAddress
 }
@@ -46,35 +44,31 @@ export const tryRestoreInitialAddressFromStorage = (
 export const tryRestoreActivityFromStorage = (
   setActivity: (offererData: ActivityContext) => void
 ): ActivityContext => {
-  const activityStored = localStorageManager.getItem(
+  const activity = localStorageManager.getJSON<ActivityContext>(
     LOCAL_STORAGE_KEY.NEW_STRUCTURE_ACTIVITY
   )
-  if (activityStored === null) {
+  if (activity === null) {
     throw new Error(RESTORE_ERRORS.NO_ACTIVITY_DATA_IN_STORAGE)
   }
-  const activity = JSON.parse(activityStored) as ActivityContext
   setActivity(activity)
   return activity
 }
 
 export const saveOffererToStorage = (offerer: Offerer) => {
-  localStorageManager.setItem(
-    LOCAL_STORAGE_KEY.NEW_STRUCTURE_OFFERER,
-    JSON.stringify(offerer)
-  )
+  localStorageManager.setJSON(LOCAL_STORAGE_KEY.NEW_STRUCTURE_OFFERER, offerer)
 }
 
 export const saveInitialAddressToStorage = (initialAddress: InitialAddress) => {
-  localStorageManager.setItem(
+  localStorageManager.setJSON(
     LOCAL_STORAGE_KEY.NEW_STRUCTURE_OFFERER_INITIAL_ADDRESS,
-    JSON.stringify(initialAddress)
+    initialAddress
   )
 }
 
 export const saveActivityToStorage = (activity: ActivityContext) => {
-  localStorageManager.setItem(
+  localStorageManager.setJSON(
     LOCAL_STORAGE_KEY.NEW_STRUCTURE_ACTIVITY,
-    JSON.stringify(activity)
+    activity
   )
 }
 

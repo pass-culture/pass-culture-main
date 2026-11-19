@@ -2,14 +2,13 @@ import { type Dispatch, type SetStateAction, useEffect, useState } from 'react'
 import { useLocation } from 'react-router'
 import { v4 as uuidv4 } from 'uuid'
 
-import { sendSentryCustomError } from '@/commons/utils/sendSentryCustomError'
-import { storageAvailable } from '@/commons/utils/storageAvailable'
-
 import {
-  Consents,
-  LOCAL_STORAGE_DEVICE_ID_KEY,
-  orejimeConfig,
-} from './orejimeConfig'
+  LOCAL_STORAGE_KEY,
+  localStorageManager,
+} from '@/commons/utils/localStorageManager'
+import { sendSentryCustomError } from '@/commons/utils/sendSentryCustomError'
+
+import { Consents, orejimeConfig } from './orejimeConfig'
 
 // biome-ignore lint/suspicious/noExplicitAny: Orejime comes from a loaded script
 export const orejimeRef = { current: null as any }
@@ -53,11 +52,8 @@ function initOrejimeConsent(
       return
     }
 
-    if (
-      storageAvailable('localStorage') &&
-      localStorage.getItem(LOCAL_STORAGE_DEVICE_ID_KEY) === null
-    ) {
-      localStorage.setItem(LOCAL_STORAGE_DEVICE_ID_KEY, uuidv4())
+    if (localStorageManager.getItem(LOCAL_STORAGE_KEY.DEVICE_ID) === null) {
+      localStorageManager.setItem(LOCAL_STORAGE_KEY.DEVICE_ID, uuidv4())
     }
 
     try {

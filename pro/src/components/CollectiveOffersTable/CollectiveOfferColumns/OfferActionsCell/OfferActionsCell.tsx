@@ -28,8 +28,10 @@ import {
   isActionAllowedOnCollectiveOffer,
   isCollectiveOfferEditable,
 } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
-import { PASS_CULTURE_PREFIX } from '@/commons/utils/localStorageManager'
-import { storageAvailable } from '@/commons/utils/storageAvailable'
+import {
+  LOCAL_STORAGE_KEY,
+  localStorageManager,
+} from '@/commons/utils/localStorageManager'
 import { ArchiveConfirmationModal } from '@/components/ArchiveConfirmationModal/ArchiveConfirmationModal'
 import { CancelCollectiveBookingModal } from '@/components/CancelCollectiveBookingModal/CancelCollectiveBookingModal'
 import { ShareLinkDrawer } from '@/components/CollectiveOffer/ShareLinkDrawer/ShareLinkDrawer'
@@ -60,8 +62,6 @@ export interface OfferActionsCellProps {
   offer: CollectiveOffer
 }
 
-const LOCAL_STORAGE_HAS_SEEN_MODAL_KEY = `${PASS_CULTURE_PREFIX}DUPLICATE_OFFER_MODAL_SEEN`
-
 export const OfferActionsCell = ({ offer }: OfferActionsCellProps) => {
   const isMarseilleActive = useActiveFeature('ENABLE_MARSEILLE')
 
@@ -76,10 +76,10 @@ export const OfferActionsCell = ({ offer }: OfferActionsCellProps) => {
     useState(false)
   const [isArchivedModalOpen, setIsArchivedModalOpen] = useState(false)
   const [isShareLinkDrawerOpen, setIsShareLinkDrawerOpen] = useState(false)
-  const isLocalStorageAvailable = storageAvailable('localStorage')
   const shouldDisplayModal =
-    !isLocalStorageAvailable ||
-    localStorage.getItem(LOCAL_STORAGE_HAS_SEEN_MODAL_KEY) !== 'true'
+    localStorageManager.getItem(
+      LOCAL_STORAGE_KEY.DUPLICATE_OFFER_MODAL_SEEN
+    ) !== 'true'
 
   const dropdownTriggerRef = useRef<HTMLButtonElement>(null)
   const isTemplateTable = !isCollectiveOfferBookable(offer)
@@ -108,8 +108,11 @@ export const OfferActionsCell = ({ offer }: OfferActionsCellProps) => {
       offerType: 'collective',
       offerStatus: offer.displayedStatus,
     })
-    if (shouldNotDisplayModalAgain && isLocalStorageAvailable) {
-      localStorage.setItem(LOCAL_STORAGE_HAS_SEEN_MODAL_KEY, 'true')
+    if (shouldNotDisplayModalAgain) {
+      localStorageManager.setItem(
+        LOCAL_STORAGE_KEY.DUPLICATE_OFFER_MODAL_SEEN,
+        'true'
+      )
     }
     await createOfferFromTemplate(
       navigate,

@@ -65,23 +65,15 @@ vi.mock('@/commons/context/SignupJourneyContext/storage', async () => {
 
 vi.mock('@/commons/utils/localStorageManager', async () => {
   const actual = await vi.importActual('@/commons/utils/localStorageManager')
+  const { createInMemoryStorageManagerMock } = await import(
+    '@/commons/utils/tests/mocks/storageManager'
+  )
 
   return {
     ...actual,
-    localStorageManager: {
-      getItem: vi.fn((key: LOCAL_STORAGE_KEY) => {
-        return inMemoryLocalStorage.get(key) ?? null
-      }),
-      setItem: vi.fn((key: LOCAL_STORAGE_KEY, value: string) => {
-        inMemoryLocalStorage.set(key, value)
-      }),
-      removeItem: vi.fn((key: LOCAL_STORAGE_KEY) => {
-        inMemoryLocalStorage.delete(key)
-      }),
-      clear: vi.fn(() => {
-        inMemoryLocalStorage.clear()
-      }),
-    },
+    localStorageManager: createInMemoryStorageManagerMock(
+      () => inMemoryLocalStorage
+    ),
   }
 })
 

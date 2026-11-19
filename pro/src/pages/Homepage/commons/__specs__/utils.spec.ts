@@ -7,11 +7,11 @@ import { getInitialTab, onNewTabSelected } from '../utils'
 
 function getLocalStorageManagerMock(initialValue?: Record<string, unknown>) {
   return {
-    getItem: vi
-      .spyOn(localStorageManager, 'getItem')
-      .mockReturnValue(initialValue ? JSON.stringify(initialValue) : null),
+    getJSON: vi
+      .spyOn(localStorageManager, 'getJSON')
+      .mockReturnValue(initialValue ?? null),
 
-    setItem: vi.spyOn(localStorageManager, 'setItem'),
+    setJSON: vi.spyOn(localStorageManager, 'setJSON'),
   }
 }
 
@@ -24,8 +24,8 @@ describe('getInitialTab', () => {
 
     getInitialTab(CURRENT_VENUE_ID, false, true)
 
-    expect(localStorageManagerMock.getItem).not.toHaveBeenCalled()
-    expect(localStorageManagerMock.setItem).not.toHaveBeenCalled()
+    expect(localStorageManagerMock.getJSON).not.toHaveBeenCalled()
+    expect(localStorageManagerMock.setJSON).not.toHaveBeenCalled()
   })
 
   it('should read the local storage and write the new value when venue does both', () => {
@@ -33,12 +33,12 @@ describe('getInitialTab', () => {
 
     getInitialTab(CURRENT_VENUE_ID, true, true)
 
-    expect(localStorageManagerMock.getItem).toHaveBeenCalledWith(
+    expect(localStorageManagerMock.getJSON).toHaveBeenCalledWith(
       LOCAL_STORAGE_KEY.LAST_VISITED_HOMEPAGE_TABS
     )
-    expect(localStorageManagerMock.setItem).toHaveBeenCalledWith(
+    expect(localStorageManagerMock.setJSON).toHaveBeenCalledWith(
       LOCAL_STORAGE_KEY.LAST_VISITED_HOMEPAGE_TABS,
-      expect.stringMatching(`{"${CURRENT_VENUE_ID}":"tab-.*"}`)
+      { [CURRENT_VENUE_ID]: expect.stringMatching(/^tab-/) }
     )
   })
 
@@ -106,10 +106,22 @@ describe('onNewTabSelected', () => {
   it('should update the tab in local storage when a venueId is given', () => {
     const localStorageManagerMock = getLocalStorageManagerMock()
     onNewTabSelected('tab-individual', CURRENT_VENUE_ID)
-    expect(localStorageManagerMock.getItem).toHaveBeenCalledOnce()
-    expect(localStorageManagerMock.setItem).toHaveBeenCalledExactlyOnceWith(
+    expect(localStorageManagerMock.getJSON).toHaveBeenCalledOnce()
+    expect(localStorageManagerMock.setJSON).toHaveBeenCalledExactlyOnceWith(
       LOCAL_STORAGE_KEY.LAST_VISITED_HOMEPAGE_TABS,
-      `{"${CURRENT_VENUE_ID}":"tab-individual"}`
+      { [CURRENT_VENUE_ID]: 'tab-individual' }
+    )
+  })
+
+  it('should start from an empty object when the stored value is not an object', () => {
+    vi.spyOn(localStorageManager, 'getJSON').mockReturnValue('corrupted')
+    const setJSONSpy = vi.spyOn(localStorageManager, 'setJSON')
+
+    onNewTabSelected('tab-collective', CURRENT_VENUE_ID)
+
+    expect(setJSONSpy).toHaveBeenCalledExactlyOnceWith(
+      LOCAL_STORAGE_KEY.LAST_VISITED_HOMEPAGE_TABS,
+      { [CURRENT_VENUE_ID]: 'tab-collective' }
     )
   })
 })
