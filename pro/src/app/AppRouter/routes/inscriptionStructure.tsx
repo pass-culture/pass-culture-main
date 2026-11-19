@@ -6,10 +6,21 @@ import { Offerer } from '@/components/SignupJourneyForm/Offerer/Offerer'
 import { Offerers as SignupJourneyOfferers } from '@/components/SignupJourneyForm/Offerers/Offerers'
 import { Validation } from '@/components/SignupJourneyForm/Validation/Validation'
 
-import type { CustomRouteGroupChild } from './types'
-import { mustBeAuthenticated } from './utils'
+import type { CustomRouteGroupChild } from '../types'
+import { mustBeAuthenticated } from '../utils'
 
-export const routesSignupJourney: CustomRouteGroupChild[] = [
+export const INSCRIPTION_STRUCTURE_ROUTES = {
+  INSCRIPTION_STRUCTURE: '/inscription/structure',
+  INSCRIPTION_STRUCTURE_RECHERCHE: '/inscription/structure/recherche',
+  INSCRIPTION_STRUCTURE_RATTACHEMENT: '/inscription/structure/rattachement',
+  INSCRIPTION_STRUCTURE_CONFIRMATION_RATTACHEMENT:
+    '/inscription/structure/rattachement/confirmation-rattachement',
+  INSCRIPTION_STRUCTURE_IDENTIFICATION: '/inscription/structure/identification',
+  INSCRIPTION_STRUCTURE_ACTIVITE: '/inscription/structure/activite',
+  INSCRIPTION_STRUCTURE_CONFIRMATION: '/inscription/structure/confirmation',
+} as const
+
+export const inscriptionStructureRoutes: CustomRouteGroupChild[] = [
   {
     element: <Offerer />,
     loader: withUserPermissions(mustBeAuthenticated),

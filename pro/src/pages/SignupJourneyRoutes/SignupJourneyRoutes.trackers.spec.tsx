@@ -4,7 +4,7 @@ import { Route, Routes } from 'react-router'
 import { axe } from 'vitest-axe'
 
 import * as useAnalytics from '@/app/App/analytics/firebase'
-import { routesSignupJourney } from '@/app/AppRouter/subroutesSignupJourneyMap'
+import { inscriptionStructureRoutes } from '@/app/AppRouter/routes/inscriptionStructure'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import * as logoutModule from '@/commons/store/user/dispatchers/logout'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
@@ -16,7 +16,7 @@ const renderSignupJourneyRoutes = () => {
   return renderWithProviders(
     <Routes>
       <Route path="/inscription/structure" element={<SignupJourneyRoutes />}>
-        {routesSignupJourney.map((route) => (
+        {inscriptionStructureRoutes.map((route) => (
           <Route key={route.path} path={route.path} element={route.element} />
         ))}
       </Route>

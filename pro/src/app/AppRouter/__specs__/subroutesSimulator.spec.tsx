@@ -1,8 +1,8 @@
 import { matchRoutes } from 'react-router'
 
-import { routesSimulator } from '../subroutesSimulator'
+import { inscriptionPreparationRoutes } from '../routes/inscriptionPreparation'
 
-describe('routesSimulator', () => {
+describe('inscriptionPreparationRoutes', () => {
   it.each([
     '/inscription/preparation',
     '/inscription/preparation/siret',
@@ -15,7 +15,12 @@ describe('routesSimulator', () => {
   ])('should have the path %s', (path) => {
     expect(
       matchRoutes(
-        [{ path: '/inscription/preparation', children: routesSimulator }],
+        [
+          {
+            path: '/inscription/preparation',
+            children: inscriptionPreparationRoutes,
+          },
+        ],
         path
       )
     ).not.toBeNull()

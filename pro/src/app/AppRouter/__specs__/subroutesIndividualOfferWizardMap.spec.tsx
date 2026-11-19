@@ -1,9 +1,7 @@
 import { matchRoutes } from 'react-router'
 
-import {
-  routesIndividualOfferWizard,
-  routesOnboardingIndividualOfferWizard,
-} from '../subroutesIndividualOfferWizardMap'
+import { offreIndividuelleRoutes } from '../routes/offreIndividuelle'
+import { onboardingOffreIndividuelleRoutes } from '../routes/onboardingOffreIndividuelle'
 
 describe('routesIndividualOfferWizard', () => {
   it.each([
@@ -33,7 +31,7 @@ describe('routesIndividualOfferWizard', () => {
         [
           {
             path: '/offre/individuelle',
-            children: routesIndividualOfferWizard,
+            children: offreIndividuelleRoutes,
           },
         ],
         path
@@ -60,7 +58,7 @@ describe('routesOnboardingIndividualOfferWizard', () => {
         [
           {
             path: '/onboarding/offre/individuelle',
-            children: routesOnboardingIndividualOfferWizard,
+            children: onboardingOffreIndividuelleRoutes,
           },
         ],
         path

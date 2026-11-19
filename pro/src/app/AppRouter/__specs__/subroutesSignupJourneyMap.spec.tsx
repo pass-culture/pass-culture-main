@@ -1,8 +1,8 @@
 import { matchRoutes } from 'react-router'
 
-import { routesSignupJourney } from '../subroutesSignupJourneyMap'
+import { inscriptionStructureRoutes } from '../routes/inscriptionStructure'
 
-describe('routesSignupJourney', () => {
+describe('inscriptionStructureRoutes', () => {
   it.each([
     '/inscription/structure/recherche',
     '/inscription/structure/rattachement',
@@ -13,7 +13,12 @@ describe('routesSignupJourney', () => {
   ])('should have the path %s', (path) => {
     expect(
       matchRoutes(
-        [{ path: '/inscription/structure', children: routesSignupJourney }],
+        [
+          {
+            path: '/inscription/structure',
+            children: inscriptionStructureRoutes,
+          },
+        ],
         path
       )
     ).not.toBeNull()

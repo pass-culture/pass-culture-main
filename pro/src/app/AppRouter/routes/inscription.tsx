@@ -10,16 +10,26 @@ import { noop } from '@/commons/utils/noop'
 import { SignupConfirmation } from '@/pages/Signup/SignupConfirmation/SignupConfirmation'
 import { SignupContainer } from '@/pages/Signup/SignupContainer/SignupContainer'
 
-import { validateSignupActivation } from './middlewares/validateSignupActivation'
-import type { CustomRouteGroup } from './types'
-import { mustBeUnauthenticated } from './utils'
+import { validateSignupActivation } from '../middlewares/validateSignupActivation'
+import type { CustomRouteGroup } from '../types'
+import { mustBeUnauthenticated } from '../utils'
+
+export const INSCRIPTION_ROUTES = {
+  INSCRIPTION: '/inscription',
+  INSCRIPTION_COMPTE_CREATION: '/inscription/compte/creation',
+  INSCRIPTION_COMPTE_CONFIRMATION: '/inscription/compte/confirmation',
+  INSCRIPTION_COMPTE_CONFIRMATION_TOKEN:
+    '/inscription/compte/confirmation/:token',
+  INSCRIPTION_VALIDATION_TOKEN: '/inscription/validation/:token',
+  INSCRIPTION_CONFIRMATION: '/inscription/confirmation',
+} as const
 
 const NavigateWithParams = ({ to, ...props }: NavigateProps) => {
   const params = useParams()
   return <Navigate {...props} to={generatePath(to as string, params)} />
 }
 
-export const routesSignup: CustomRouteGroup['children'] = [
+export const inscriptionRoutes: CustomRouteGroup['children'] = [
   {
     index: true,
     element: <Navigate to="/bienvenue" />,
