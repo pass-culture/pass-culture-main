@@ -99,6 +99,7 @@ jobs:
           TEMP: ${{ runner.temp }}
         run: |
           rm -f "$TEMP/docker-load.exit"
+          # shellcheck disable=SC2016
           nohup bash -c '
             docker load --input "$TEMP/$IMAGE-$TAG.tar"
             echo $? > "$TEMP/docker-load.exit"
