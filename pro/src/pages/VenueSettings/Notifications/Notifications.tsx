@@ -2,14 +2,17 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { useId } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 
+import { useActiveStep } from '@/commons/hooks/useActiveStep'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useFormNavigationGuard } from '@/commons/hooks/useFormNavigationGuard/useFormNavigationGuard'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
+import { STEP_NAMES } from '@/components/SettingsTabs/constants'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { VenueFormActionBar } from '@/components/VenueEdition/VenueFormActionBar/VenueFormActionBar'
 import { TextInput } from '@/design-system/TextInput/TextInput'
+import { getPanelId, getTabId } from '@/ui-kit/Tabs/Tabs'
 import { TipsBanner } from '@/ui-kit/TipsBanner/TipsBanner'
 
 import { scrollToTop } from '../../../commons/utils/scrollToTop'
@@ -22,6 +25,7 @@ import {
 const Notifications = () => {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
   const isClosed = withVenueHelpers(selectedPartnerVenue).isClosed
+  const activeStep = useActiveStep(STEP_NAMES)
 
   const form = useForm<VenueSettingsNotificationsFormValues>({
     defaultValues: {
@@ -62,7 +66,11 @@ const Notifications = () => {
   const notificationId = useId()
 
   return (
-    <>
+    <div
+      id={getPanelId(activeStep)}
+      role="tabpanel"
+      aria-labelledby={getTabId(activeStep)}
+    >
       <FormProvider {...form}>
         <form onSubmit={navigationGuardedSubmitHandler} noValidate>
           <ScrollToFirstHookFormErrorAfterSubmit />
@@ -98,7 +106,7 @@ const Notifications = () => {
       </FormProvider>
 
       {navigationGuardDialog}
-    </>
+    </div>
   )
 }
 

@@ -1,4 +1,4 @@
-import { generatePath, useLocation } from 'react-router'
+import { generatePath, useLocation, useNavigate } from 'react-router'
 
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
@@ -15,6 +15,7 @@ import styles from './IndividualOfferNavigation.module.scss'
 import { getSteps, type StepPattern } from './utils/getSteps'
 
 export const IndividualOfferNavigation = () => {
+  const navigate = useNavigate()
   const { pathname } = useLocation()
   const isOnboarding = pathname.includes('onboarding')
   const { offer, isEvent } = useIndividualOfferContext()
@@ -48,6 +49,13 @@ export const IndividualOfferNavigation = () => {
     })
   )
 
+  const handleTabClick = (selectedStep: string) => {
+    const tab = stepList.find((s) => s.id === selectedStep)
+    if (tab?.url) {
+      navigate(tab.url)
+    }
+  }
+
   return (
     <>
       {mode === OFFER_WIZARD_MODE.CREATION ? (
@@ -57,7 +65,6 @@ export const IndividualOfferNavigation = () => {
       ) : (
         <div className={styles.tabs}>
           <Tabs
-            type="links"
             navLabel="Sous menu - offre individuelle"
             items={stepList.map(({ id, label, url }) => ({
               key: id,
@@ -65,6 +72,7 @@ export const IndividualOfferNavigation = () => {
               url: url || '#',
             }))}
             selectedKey={activeStep}
+            onClick={handleTabClick}
           />
         </div>
       )}

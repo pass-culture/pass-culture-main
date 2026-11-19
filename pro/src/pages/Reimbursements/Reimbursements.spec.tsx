@@ -17,7 +17,14 @@ const reimbursementsRoutes = [
     children: [
       {
         index: true,
-        element: <div data-testid="reimbursements-outlet" />,
+        element: (
+          <div
+            data-testid="reimbursements-outlet"
+            id="panel-justificatifs"
+            role="tabpanel"
+            aria-labelledby="tab-justificatifs"
+          />
+        ),
         handle: { title: 'Gestion financière - justificatifs' },
       },
     ],

@@ -2,19 +2,10 @@ import { render, screen } from '@testing-library/react'
 
 import { Tabs } from './Tabs'
 
-vi.mock('./TabItems/TabItems', () => ({
-  TabItems: vi.fn(() => <div>Mocked TabItems</div>),
-}))
-
-vi.mock('./NavLinkItems/NavLinkItems', () => ({
-  NavLinkItems: vi.fn(() => <div>Mocked NavLinkItems</div>),
-}))
-
 describe('Tabs', () => {
-  it('should render NavLinkItems when given type="links"', () => {
+  it('should render tabs with URL property', () => {
     render(
       <Tabs
-        type="links"
         selectedKey="individual"
         items={[
           {
@@ -33,14 +24,17 @@ describe('Tabs', () => {
       />
     )
 
-    expect(screen.getByText(/NavLinkItems/)).toBeInTheDocument()
-    expect(screen.queryByText(/TabItems/)).not.toBeInTheDocument()
+    expect(
+      screen.getByRole('tab', { name: /Offres individuelles/ })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('tab', { name: /Offres collectives/ })
+    ).toBeInTheDocument()
   })
 
-  it('should render TabItems when given type="tabs"', () => {
+  it('should render tabs with button behavior (no URL)', () => {
     render(
       <Tabs
-        type="tabs"
         selectedKey="individual"
         items={[
           {
@@ -57,7 +51,9 @@ describe('Tabs', () => {
       />
     )
 
-    expect(screen.getByText(/TabItems/)).toBeInTheDocument()
-    expect(screen.queryByText(/NavLinkItems/)).not.toBeInTheDocument()
+    expect(
+      screen.getByRole('tab', { name: /Individuelles/ })
+    ).toBeInTheDocument()
+    expect(screen.getByRole('tab', { name: /Collectives/ })).toBeInTheDocument()
   })
 })

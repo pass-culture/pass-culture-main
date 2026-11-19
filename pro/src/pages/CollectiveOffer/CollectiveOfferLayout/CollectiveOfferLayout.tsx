@@ -15,6 +15,7 @@ import {
   getCollectiveOfferActiveStep,
   getCollectiveOfferTemplateActiveStep,
 } from '@/pages/CollectiveOffer/CollectiveOfferLayout/utils/getActiveStep'
+import { getPanelId, getTabId } from '@/ui-kit/Tabs/Tabs'
 
 import styles from './CollectiveOfferLayout.module.scss'
 import { CollectiveOfferCreationNavigation } from './CollectiveOfferNavigation/CollectiveOfferCreationNavigation'
@@ -120,6 +121,11 @@ export const CollectiveOfferLayout = ({
   const isTemplateOffer =
     (!offer && isTemplate) || isCollectiveOfferTemplate(offer)
 
+  // Get the active step for ARIA attributes
+  const activeStep = isTemplateOffer
+    ? getCollectiveOfferTemplateActiveStep(pathname)
+    : getCollectiveOfferActiveStep(pathname)
+
   return (
     <ContentLayout>
       <div className={styles['headings-wrapper']}>
@@ -146,7 +152,13 @@ export const CollectiveOfferLayout = ({
                 }))}
         </>
       )}
-      {children}
+      <div
+        id={getPanelId(activeStep.toLowerCase())}
+        role="tabpanel"
+        aria-labelledby={getTabId(activeStep.toLowerCase())}
+      >
+        {children}
+      </div>
     </ContentLayout>
   )
 }

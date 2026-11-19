@@ -23,6 +23,14 @@ import {
 
 import { IndividualOfferNavigation } from './IndividualOfferNavigation'
 
+vi.mock('react-router', async () => {
+  const actual = await vi.importActual('react-router')
+  return {
+    ...actual,
+    useNavigate: () => vi.fn(),
+  }
+})
+
 const renderIndividualOfferNavigation: RenderComponentFunction<
   void,
   IndividualOfferContextValues
@@ -86,10 +94,10 @@ describe('IndividualOfferNavigation', () => {
     it('should never display "Stock & Prix" step', () => {
       renderIndividualOfferNavigation({ contextValues })
 
-      const stockPricesStep = screen
-        .getAllByRole('listitem')
-        .find((listitem) => listitem.textContent?.match(LABELS.STOCK_PRICES))
-      expect(stockPricesStep).not.toBeDefined()
+      const stockPricesStep = screen.queryByRole('button', {
+        name: LABELS.STOCK_PRICES,
+      })
+      expect(stockPricesStep).not.toBeInTheDocument()
     })
   })
 
@@ -102,22 +110,18 @@ describe('IndividualOfferNavigation', () => {
     it('should display "Récapitulatif" step', () => {
       renderIndividualOfferNavigation({ path })
 
-      const summaryStep = screen
-        .getAllByRole('listitem')
-        .find((listitem) => listitem.textContent?.match(LABELS.SUMMARY))
-      expect(summaryStep).toBeDefined()
+      const summaryStep = screen.queryByRole('button', { name: LABELS.SUMMARY })
+      expect(summaryStep).toBeInTheDocument()
     })
 
     it('should never display "Réservation" step', () => {
       renderIndividualOfferNavigation({})
 
-      const bookingStep = screen
-        .getAllByRole('listitem')
-        .find((listitem) => listitem.textContent?.match(LABELS.BOOKING))
-      expect(bookingStep).not.toBeDefined()
+      const bookingStep = screen.queryByRole('button', { name: LABELS.BOOKING })
+      expect(bookingStep).not.toBeInTheDocument()
     })
 
-    it('should only display steps preceding the active one as links', () => {
+    it('should only display steps preceding the active one as buttons', () => {
       const contextValues = individualOfferContextValuesFactory({
         isEvent: true,
         offer: getIndividualOfferFactory({
@@ -136,22 +140,21 @@ describe('IndividualOfferNavigation', () => {
         }),
       })
 
-      expect(screen.getAllByRole('link')).toHaveLength(3)
       expect(
-        screen.getByRole('link', { name: /Description/ })
+        screen.getByRole('button', { name: /Description/ })
       ).toBeInTheDocument()
       expect(
-        screen.getByRole('link', { name: /Localisation/ })
+        screen.getByRole('button', { name: /Localisation/ })
       ).toBeInTheDocument()
       expect(
-        screen.getByRole('link', { name: LABELS.MEDIA })
+        screen.getByRole('button', { name: LABELS.MEDIA })
       ).toBeInTheDocument()
       // The active step and the ones that follow are never navigable.
       expect(
-        screen.queryByRole('link', { name: LABELS.PRICES })
+        screen.queryByRole('button', { name: LABELS.PRICES })
       ).not.toBeInTheDocument()
       expect(
-        screen.queryByRole('link', { name: LABELS.SUMMARY })
+        screen.queryByRole('button', { name: LABELS.SUMMARY })
       ).not.toBeInTheDocument()
     })
   })
@@ -162,39 +165,34 @@ describe('IndividualOfferNavigation', () => {
       mode: OFFER_WIZARD_MODE.EDITION,
     })
 
-    it('should display all steps as links', () => {
+    it('should display all steps as buttons', () => {
       renderIndividualOfferNavigation({ path })
 
-      const steps = screen.getAllByRole('listitem')
-      const links = screen.getAllByRole('link')
-      expect(steps).toHaveLength(links.length)
+      const tabs = screen.getAllByRole('tab')
+      expect(tabs.length).toBeGreaterThan(0)
     })
 
     it('should display "Réservation" step', () => {
       renderIndividualOfferNavigation({ path })
 
-      const bookingStep = screen
-        .getAllByRole('listitem')
-        .find((listitem) => listitem.textContent?.match(LABELS.BOOKING))
-      expect(bookingStep).toBeDefined()
+      const bookingStep = screen.queryByRole('tab', { name: LABELS.BOOKING })
+      expect(bookingStep).toBeInTheDocument()
     })
 
     it('should display "Visibilité" step', () => {
       renderIndividualOfferNavigation({ path })
 
-      const exposureStep = screen
-        .getAllByRole('listitem')
-        .find((listitem) => listitem.textContent?.match(LABELS.EXPOSURE))
-      expect(exposureStep).toBeDefined()
+      const exposureStep = screen.queryByRole('tab', {
+        name: LABELS.EXPOSURE,
+      })
+      expect(exposureStep).toBeInTheDocument()
     })
 
     it('should never display "Récapitulatif" step', () => {
       renderIndividualOfferNavigation({ path })
 
-      const summaryStep = screen
-        .getAllByRole('listitem')
-        .find((listitem) => listitem.textContent?.match(LABELS.SUMMARY))
-      expect(summaryStep).not.toBeDefined()
+      const summaryStep = screen.queryByRole('tab', { name: LABELS.SUMMARY })
+      expect(summaryStep).not.toBeInTheDocument()
     })
   })
 

@@ -1,3 +1,5 @@
+import { useNavigate } from 'react-router'
+
 import type { GetOffererResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { FinanceEvents } from '@/commons/core/FirebaseEvents/constants'
@@ -5,7 +7,7 @@ import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useActiveStep } from '@/commons/hooks/useActiveStep'
 import fullErrorIcon from '@/icons/full-error.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
-import type { NavLinkItem } from '@/ui-kit/Tabs/NavLinkItems/NavLinkItems'
+import type { TabItem } from '@/ui-kit/Tabs/Tabs'
 import { Tabs } from '@/ui-kit/Tabs/Tabs'
 
 import {
@@ -16,6 +18,14 @@ import {
   STEP_NAMES,
 } from './constants'
 import styles from './ReimbursementsTabs.module.scss'
+
+const URL_BY_STEP = {
+  [STEP_ID_INVOICES]: '/administration/gestion-financiere/justificatifs',
+  [STEP_ID_SETTLEMENTS]: '/administration/gestion-financiere/virements',
+  [STEP_ID_BANK_INFORMATIONS]:
+    '/administration/gestion-financiere/informations-bancaires',
+  [STEP_ID_INCOMES]: '/administration/gestion-financiere/chiffre-d-affaires',
+} as const
 
 const EVENT_BY_STEP = {
   [STEP_ID_SETTLEMENTS]: FinanceEvents.CLICKED_SETTLEMENTS_TAB,
@@ -33,6 +43,7 @@ type ReimbursementsTabsProps = {
 export const ReimbursementsTabs = ({
   selectedOfferer,
 }: ReimbursementsTabsProps) => {
+  const navigate = useNavigate()
   const { logEvent } = useAnalytics()
   const isNewSettlementsActivated = useActiveFeature(
     'WIP_ENABLE_FINANCE_SETTLEMENTS'
@@ -45,16 +56,17 @@ export const ReimbursementsTabs = ({
     false
 
   const getSteps = () => {
-    const steps = [
+    const steps: Array<{
+      id: Step
+      label: React.ReactNode
+    }> = [
       {
         id: STEP_ID_INVOICES,
         label: 'Justificatifs',
-        url: '/administration/gestion-financiere/justificatifs',
       },
       {
         id: STEP_ID_SETTLEMENTS,
         label: 'Virements',
-        url: '/administration/gestion-financiere/virements',
       },
       {
         id: STEP_ID_BANK_INFORMATIONS,
@@ -71,12 +83,10 @@ export const ReimbursementsTabs = ({
             )}
           </>
         ),
-        url: '/administration/gestion-financiere/informations-bancaires',
       },
       {
         id: STEP_ID_INCOMES,
-        label: 'Chiffre d’affaires',
-        url: '/administration/gestion-financiere/chiffre-d-affaires',
+        label: "Chiffre d'affaires",
       },
     ]
 
@@ -85,20 +95,21 @@ export const ReimbursementsTabs = ({
     )
   }
 
-  const tabs: NavLinkItem<string>[] = getSteps().map(({ id, label, url }) => ({
+  const tabs: TabItem<string>[] = getSteps().map(({ id, label }) => ({
     key: id,
     label,
-    url,
+    url: URL_BY_STEP[id],
   }))
 
   const onTabClick = (selectedTab: string) => {
     const event = EVENT_BY_STEP[selectedTab as Step]
     logEvent(event)
+    const url = URL_BY_STEP[selectedTab as Step]
+    navigate(url)
   }
 
   return (
     <Tabs
-      type="links"
       items={tabs}
       selectedKey={activeStep}
       navLabel="Sous menu - Gestion financière"

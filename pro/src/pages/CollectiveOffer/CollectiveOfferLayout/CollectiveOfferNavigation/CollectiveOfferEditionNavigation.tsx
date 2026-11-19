@@ -1,6 +1,7 @@
 import cn from 'classnames'
+import { useNavigate } from 'react-router'
 
-import type { NavLinkItem } from '@/ui-kit/Tabs/NavLinkItems/NavLinkItems'
+import type { TabItem } from '@/ui-kit/Tabs/Tabs'
 import { Tabs } from '@/ui-kit/Tabs/Tabs'
 
 import styles from './CollectiveOfferNavigation.module.scss'
@@ -15,7 +16,9 @@ export const CollectiveOfferEditionNavigation = ({
   activeStep,
   offerId = 0,
 }: CollectiveOfferEditionNavigationProps): JSX.Element => {
-  const tabs: NavLinkItem<string>[] = [
+  const navigate = useNavigate()
+
+  const tabs: TabItem<string>[] = [
     {
       key: CollectiveOfferStep.DETAILS,
       label: "Détails de l'offre",
@@ -40,12 +43,19 @@ export const CollectiveOfferEditionNavigation = ({
 
   const allTabs = tabs.map((t) => t.key)
 
+  const handleTabClick = (selectedStep: string) => {
+    const tab = tabs.find((t) => t.key === selectedStep)
+    if (tab?.url) {
+      navigate(tab.url)
+    }
+  }
+
   return (
     <Tabs
-      type="links"
       items={tabs}
       selectedKey={activeStep}
       navLabel="Sous menu - offre collective"
+      onClick={handleTabClick}
       className={cn(styles['tabs'], {
         [styles['tabs-active']]: allTabs.includes(activeStep),
       })}
