@@ -708,7 +708,36 @@ export const zDisplayableActivity = z.enum([
 /**
  * DomainEnum
  */
-export const zDomainEnum = z.enum(['DANSE']);
+export const zDomainEnum = z.enum([
+    'BIBLIOTHEQUE_MEDIATHEQUE',
+    'LITTERATURE',
+    'CINEMA',
+    'MUSEE_PATRIMOINE_ARCHITECTURE',
+    'ART_VISUEL',
+    'CULTURE_SCIENTIFIQUE',
+    'MEDIA_PRESSE_RADIO',
+    'MUSIQUE',
+    'MULTI_DOMAINES_CARTE_JEUNE',
+    'CIRQUE_ARTS_RUE',
+    'COMEDIE_MUSICALE',
+    'STAND_UP',
+    'DANSE',
+    'OPERA',
+    'THEATRE',
+    'JEUX_VIDEO',
+    'SANS_DOMAINE',
+    'STREAMING_MUSIQUE',
+    'VOD',
+    'MEDIA_PRESSE_RADIO_EN_LIGNE'
+]);
+
+/**
+ * DomainResponseModel
+ */
+export const zDomainResponseModel = z.object({
+    domain: zDomainEnum,
+    label: z.string()
+});
 
 /**
  * DownloadBookingsQueryModel
@@ -912,18 +941,38 @@ export const zFieldEnum = z.enum([
  * FormatEnum
  */
 export const zFormatEnum = z.enum([
+    'ABONNEMENT',
+    'ATELIER',
+    'CARTE',
     'CD',
-    'VINYLE',
+    'CONCERT',
+    'CONFERENCE',
     'DVD_BLU_RAY',
+    'EVENEMENT_NUMERIQUE',
+    'FESTIVAL',
     'INSTRUMENT_DE_MUSIQUE',
+    'JEUX_EN_LIGNE',
     'LIVRE_PAPIER',
-    'MATERIEL_ARTS_CREATIFS'
+    'LIVRE_NUMERIQUE',
+    'MATERIEL_ARTS_CREATIFS',
+    'MEDIA',
+    'PODCAST',
+    'SALON',
+    'SEANCE_CINEMA',
+    'SEANCE_ESSAI',
+    'SPECTACLE',
+    'VISITE_GUIDEE',
+    'VINYLE',
+    'VISITE_LIBRE',
+    'VISITE_VIRTUELLE',
+    'VOD'
 ]);
 
 /**
  * FormatResponseModel
  */
 export const zFormatResponseModel = z.object({
+    domains: z.array(zDomainResponseModel),
     format: zFormatEnum,
     label: z.string()
 });
@@ -1730,7 +1779,7 @@ export const zGetCapabilitiesQueryModel = z.object({
 export const zNatureFormatDomainResponseModel = z.object({
     formats: z.array(zFormatResponseModel),
     label: z.string(),
-    name: zNatureEnum
+    nature: zNatureEnum
 });
 
 /**

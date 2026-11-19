@@ -208,6 +208,7 @@ export {
   type DetachedVenueResponseModel,
   DisplayableActivity,
   DomainEnum,
+  type DomainResponseModel,
   type DownloadBookingsQueryModel,
   EacFormat,
   type EditVenueBodyModel,
