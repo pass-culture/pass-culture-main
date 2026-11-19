@@ -208,7 +208,9 @@ def detect_unexpected_venue_status(days_count: int, apply: bool = False) -> None
     with atomic(apply=apply):
         offerers_api.detect_unexpected_venue_status(apply, days_count)
         on_commit(
-            partial(logger.info, "detect_unexpected_venue_status... done. apply: %b, days count: %d", apply, days_count)
+            partial(
+                logger.info, "detect_unexpected_venue_status... done", extra={"apply": apply, "days_count": days_count}
+            )
         )
 
 
