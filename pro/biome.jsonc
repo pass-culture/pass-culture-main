@@ -93,7 +93,12 @@
         "noMissingVarFunction": "error",
         "noUnknownMediaFeatureName": "error",
         "noUnknownProperty": "error",
-        "noUnknownPseudoClass": "error",
+        "noUnknownPseudoClass": {
+          "level": "error",
+          "options": {
+            "ignore": ["-internal-autofill-selected"]
+          }
+        },
         "noUnknownPseudoElement": "error",
         "noUnknownTypeSelector": "error",
         "noUnknownUnit": "error",
@@ -195,6 +200,9 @@
             "noImportantInKeyframe": "error",
             "noIrregularWhitespace": "error",
             "noShorthandPropertyOverrides": "error"
+          },
+          "style": {
+            "noDescendingSpecificity": "off"
           }
         }
       }
