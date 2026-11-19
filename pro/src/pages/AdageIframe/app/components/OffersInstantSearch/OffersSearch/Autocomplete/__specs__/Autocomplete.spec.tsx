@@ -6,6 +6,7 @@ import { axe } from 'vitest-axe'
 import { SuggestionType } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
 import { defaultAdageUser } from '@/commons/utils/factories/adageFactories'
+import { LOCAL_STORAGE_KEY } from '@/commons/utils/localStorageManager'
 import {
   type RenderWithProvidersOptions,
   renderWithProviders,
@@ -263,9 +264,16 @@ describe('Autocomplete', () => {
 
     await userEvent.click(inputElement)
 
+    expect(
+      localStorage.getItem(LOCAL_STORAGE_KEY.ADAGE_RECENT_SEARCHES)
+    ).toContain('test query')
+
     await userEvent.click(screen.getByText('Effacer'))
 
     expect(dialogElement).not.toHaveAttribute('open')
+    expect(
+      localStorage.getItem(LOCAL_STORAGE_KEY.ADAGE_RECENT_SEARCHES)
+    ).toBeNull()
   })
 
   it('should disable saved history when cookies are disabled', async () => {
@@ -420,7 +428,7 @@ describe('Autocomplete', () => {
 
       await waitFor(() => {
         expect(setItemSpy).toHaveBeenCalledWith(
-          'PASS_CULTURE_AUTOCOMPLETE_RECENT_SEARCHES:RECENT_SEARCH',
+          LOCAL_STORAGE_KEY.ADAGE_RECENT_SEARCHES,
           expect.stringContaining('Mock Venue 1')
         )
       })
@@ -447,7 +455,7 @@ describe('Autocomplete', () => {
       })
 
       expect(setItemSpy).not.toHaveBeenCalledWith(
-        'AUTOCOMPLETE_RECENT_SEARCHES:RECENT_SEARCH',
+        LOCAL_STORAGE_KEY.ADAGE_RECENT_SEARCHES,
         expect.stringContaining('Mock Venue 1')
       )
 
