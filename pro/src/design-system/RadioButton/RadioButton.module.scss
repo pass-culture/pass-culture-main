@@ -56,7 +56,7 @@
       .radio-button-input {
         border-color: var(--color-border-brand-primary);
         background-color: var(--color-icon-brand-primary);
-        box-shadow: inset 0 0 0 rem.torem(3px) var(--color-background-default);
+        box-shadow: inset 0 0 0px rem.torem(3px) var(--color-background-default);
       }
     }
   }
@@ -183,7 +183,7 @@
       border-color: var(--color-border-brand-primary);
 
       > .radio-button-label .radio-button-input {
-        box-shadow: inset 0 0 0 rem.torem(3px)
+        box-shadow: inset 0 0 0px rem.torem(3px)
           var(--color-background-brand-primary-selected);
       }
 
@@ -236,7 +236,7 @@
           color: var(--color-text-brand-primary-hover);
 
           .radio-button-input {
-            box-shadow: inset 0 0 0 rem.torem(3px)
+            box-shadow: inset 0 0 0px rem.torem(3px)
               var(--color-background-brand-primary-selected);
             border-color: var(--color-border-brand-primary-hover);
             background-color: var(--color-icon-brand-primary-hover);

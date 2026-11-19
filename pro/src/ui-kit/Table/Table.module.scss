@@ -12,7 +12,7 @@
 
   width: 100%;
   border-collapse: separate;
-  border-spacing: 0 rem.torem(24px);
+  border-spacing: 0px rem.torem(24px);
 
   &-pagination {
     margin-top: var(--size-spacing-2xl);
@@ -21,7 +21,7 @@
 
 .table-separate {
   border-collapse: separate;
-  border-spacing: 0 rem.torem(24px);
+  border-spacing: 0px rem.torem(24px);
 
   &-cell {
     padding: var(--size-spacing-s);
@@ -45,7 +45,7 @@
 
 .table-collapse {
   border-collapse: collapse;
-  border-spacing: 0 rem.torem(24px);
+  border-spacing: 0px rem.torem(24px);
 
   &-cell {
     padding: var(--size-spacing-s);

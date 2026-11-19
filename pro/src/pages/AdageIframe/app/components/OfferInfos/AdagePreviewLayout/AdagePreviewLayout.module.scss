@@ -12,7 +12,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 rem.torem(10px);
+    padding: 0px rem.torem(10px);
 
     &-logo {
       max-height: 100%;
@@ -35,7 +35,7 @@
     box-shadow: var(--shadow-overlay);
 
     &-header {
-      padding: 0 rem.torem(16px);
+      padding: 0px rem.torem(16px);
       color: var(--color-text-brand-primary);
       box-shadow: var(--shadow-overlay);
       height: rem.torem(48px);

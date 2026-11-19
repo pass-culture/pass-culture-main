@@ -16,7 +16,7 @@
   border: solid size.$input-border-width var(--color-border-default);
   border-radius: var(--size-border-radius-m);
   background-color: var(--color-background-default);
-  padding: 0 rem.torem(16px);
+  padding: 0px rem.torem(16px);
   color: var(--color-text-default);
   transition:
     background 150ms ease,
@@ -50,7 +50,9 @@
 
   &:-webkit-autofill,
   &:-internal-autofill-selected {
+    // biome-ignore lint: ignore important
     background-color: var(--color-background-default) !important;
+    // biome-ignore lint: ignore important
     color: var(--color-text-default) !important;
   }
 }

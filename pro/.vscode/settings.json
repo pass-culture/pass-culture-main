@@ -5,7 +5,6 @@
     "source.addMissingImports": "always",
     "source.fixAll.biome": "explicit"
   },
-  "stylelint.validate": ["css", "scss"],
   "[html]": {
     "editor.defaultFormatter": "biomejs.biome"
   },
@@ -16,7 +15,7 @@
     "editor.defaultFormatter": "biomejs.biome"
   },
   "[scss]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "biomejs.biome"
   },
   "[typescript]": {
     "editor.defaultFormatter": "biomejs.biome"
