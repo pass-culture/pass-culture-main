@@ -1,8 +1,11 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import type { ComponentProps } from 'react'
+import { Provider } from 'react-redux'
 import * as reactRouterModule from 'react-router'
 import { describe, expect, it, vi } from 'vitest'
 
+import { configureTestStore } from '@/commons/store/testUtils'
 import { makeUseLocationReturn } from '@/commons/utils/tests/mocks/react-router'
 
 import { type NavItem, SideNavLinks } from './SideNavLinks'
@@ -67,6 +70,19 @@ const navItems: NavItem[] = [
   { key: '3', group: 'footer', type: 'link', title: 'Footer 1' },
 ]
 
+const renderSideNavLinks = (
+  props: ComponentProps<typeof SideNavLinks>,
+  sideNavOpenSection: string | null = null
+) => {
+  const store = configureTestStore({ nav: { sideNavOpenSection } })
+  render(
+    <Provider store={store}>
+      <SideNavLinks {...props} />
+    </Provider>
+  )
+  return store
+}
+
 describe('SideNavLinks', () => {
   const useLocationMock = vi.fn()
 
@@ -77,7 +93,7 @@ describe('SideNavLinks', () => {
   })
 
   it('renders main nav items and footer items', () => {
-    render(<SideNavLinks navItems={navItems} />)
+    renderSideNavLinks({ navItems })
 
     const mainItems = screen.getAllByTestId('render-nav-item')
 
@@ -89,7 +105,7 @@ describe('SideNavLinks', () => {
   })
 
   it('should forward isAdminSpace=false to UserReviewDialog by default', () => {
-    render(<SideNavLinks navItems={navItems} />)
+    renderSideNavLinks({ navItems })
 
     expect(screen.getByTestId('user-review-mock')).toHaveAttribute(
       'data-is-admin-space',
@@ -98,7 +114,7 @@ describe('SideNavLinks', () => {
   })
 
   it('should forward isAdminSpace=true to UserReviewDialog when set', () => {
-    render(<SideNavLinks isAdminSpace navItems={navItems} />)
+    renderSideNavLinks({ isAdminSpace: true, navItems })
 
     expect(screen.getByTestId('user-review-mock')).toHaveAttribute(
       'data-is-admin-space',
@@ -108,9 +124,8 @@ describe('SideNavLinks', () => {
 
   it('should toggle active section correctly', async () => {
     const user = userEvent.setup()
-    sessionStorage.clear()
 
-    render(<SideNavLinks navItems={navItems} />)
+    const store = renderSideNavLinks({ navItems })
 
     const toggleBtn1 = screen.getByTestId('toggle-1')
     const toggleBtn2 = screen.getByTestId('toggle-2')
@@ -123,6 +138,7 @@ describe('SideNavLinks', () => {
     await user.click(toggleBtn1)
     expect(toggleBtn1).toHaveTextContent('OPEN')
     expect(toggleBtn2).toHaveTextContent('CLOSED')
+    expect(store.getState().nav.sideNavOpenSection).toBe('1')
 
     // Ouvrir la section 2 ferme la section 1
     await user.click(toggleBtn2)
@@ -132,6 +148,13 @@ describe('SideNavLinks', () => {
     // Cliquer à nouveau sur la section 2 la ferme
     await user.click(toggleBtn2)
     expect(toggleBtn2).toHaveTextContent('CLOSED')
+  })
+
+  it('should reopen the last open section kept in the store when no section matches the route', () => {
+    renderSideNavLinks({ navItems }, '2')
+
+    expect(screen.getByTestId('toggle-1')).toHaveTextContent('CLOSED')
+    expect(screen.getByTestId('toggle-2')).toHaveTextContent('OPEN')
   })
 
   it('should open the section matching the current route (individual)', () => {
@@ -174,7 +197,7 @@ describe('SideNavLinks', () => {
         ],
       },
     ]
-    render(<SideNavLinks navItems={navItems} />)
+    const store = renderSideNavLinks({ navItems })
 
     expect(screen.getByText('Section individuel')).toBeInTheDocument()
     expect(screen.getByText('Section collective')).toBeInTheDocument()
@@ -184,6 +207,7 @@ describe('SideNavLinks', () => {
 
     expect(toggleBtnIndividual).toHaveTextContent('OPEN') // Mocked route is /offres
     expect(toggleBtnCollective).toHaveTextContent('CLOSED')
+    expect(store.getState().nav.sideNavOpenSection).toBe('individual')
   })
 
   it('should open the section matching the current route (collective)', () => {
@@ -226,7 +250,7 @@ describe('SideNavLinks', () => {
         ],
       },
     ]
-    render(<SideNavLinks navItems={navItems} />)
+    renderSideNavLinks({ navItems })
 
     expect(screen.getByText('Section individuel')).toBeInTheDocument()
     expect(screen.getByText('Section collective')).toBeInTheDocument()
