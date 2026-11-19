@@ -101,7 +101,9 @@ class E2EAccountTest:
         assert len(response.json) == 10
 
     def test_create_multiple_accounts_returns_valid_tokens_and_password(self, auth_client):
-        response = auth_client.post("/e2e/account", {"age": 18, "step": "EMAIL_VALIDATION", "count": 3})
+        response = auth_client.post(
+            "/e2e/account", {"age": 18, "step": "EMAIL_VALIDATION", "id_provider": "UBBLE", "count": 3}
+        )
         assert response.status_code == 200
 
         users_by_id = {user.id: user for user in db.session.query(users_models.User).all()}
@@ -118,7 +120,9 @@ class E2EAccountTest:
 
     def test_create_multiple_accounts_hashes_password_once(self, auth_client):
         with patch("pcapi.utils.crypto.hash_password", wraps=crypto.hash_password) as hash_password_mock:
-            response = auth_client.post("/e2e/account", {"age": 18, "step": "BENEFICIARY", "count": 5})
+            response = auth_client.post(
+                "/e2e/account", {"age": 18, "step": "BENEFICIARY", "id_provider": "UBBLE", "count": 5}
+            )
 
         assert response.status_code == 200
         assert len(response.json) == 5
@@ -126,7 +130,9 @@ class E2EAccountTest:
 
     def test_create_multiple_accounts_does_not_time_travel_by_default(self, auth_client):
         with patch("pcapi.core.users.generator.time_machine.travel", wraps=time_machine.travel) as travel_mock:
-            response = auth_client.post("/e2e/account", {"age": 18, "step": "BENEFICIARY", "count": 2})
+            response = auth_client.post(
+                "/e2e/account", {"age": 18, "step": "BENEFICIARY", "id_provider": "UBBLE", "count": 2}
+            )
 
         assert response.status_code == 200
         travel_mock.assert_not_called()
@@ -139,7 +145,13 @@ class E2EAccountTest:
         with patch("pcapi.core.users.generator.time_machine.travel", wraps=time_machine.travel) as travel_mock:
             response = auth_client.post(
                 "/e2e/account",
-                {"age": 18, "step": "BENEFICIARY", "count": 2, "date_created": f"{date_created:%Y-%m-%d}"},
+                {
+                    "age": 18,
+                    "step": "BENEFICIARY",
+                    "id_provider": "UBBLE",
+                    "count": 2,
+                    "date_created": f"{date_created:%Y-%m-%d}",
+                },
             )
 
         assert response.status_code == 200
@@ -155,7 +167,7 @@ class E2EAccountTest:
 
     def test_create_single_account_still_time_travels(self, auth_client):
         with patch("pcapi.core.users.generator.time_machine.travel", wraps=time_machine.travel) as travel_mock:
-            response = auth_client.post("/e2e/account", {"age": 18, "step": "EMAIL_VALIDATION"})
+            response = auth_client.post("/e2e/account", {"age": 18, "step": "EMAIL_VALIDATION", "id_provider": "UBBLE"})
 
         assert response.status_code == 200
         today = datetime.date.today()
