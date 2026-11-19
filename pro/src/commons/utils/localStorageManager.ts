@@ -1,7 +1,8 @@
-import { storageAvailable } from './storageAvailable'
+import { createStorageManager } from './storageManager'
 
 /**
- * **IMPORTANT**: Always prefix keys with `PASS_CULTURE_` to ease automatic cleanup of old keys.
+ * **IMPORTANT**: Always prefix keys with `PASS_CULTURE_` to identify them as ours.
+ * Exceptions are documented next to the key.
  */
 export enum LOCAL_STORAGE_KEY {
   SELECTED_VENUE_ID = 'PASS_CULTURE_SELECTED_VENUE_ID',
@@ -23,38 +24,5 @@ export enum COOKIES {
 
 export const PASS_CULTURE_PREFIX = 'PASS_CULTURE_'
 
-export const localStorageManager = {
-  getItem: (key: LOCAL_STORAGE_KEY): string | null => {
-    if (!storageAvailable('localStorage')) {
-      return null
-    }
-
-    return localStorage.getItem(key)
-  },
-
-  setItem: (key: LOCAL_STORAGE_KEY, value: string): void => {
-    if (!storageAvailable('localStorage')) {
-      return
-    }
-
-    localStorage.setItem(key, value)
-  },
-
-  removeItem: (key: LOCAL_STORAGE_KEY): void => {
-    if (!storageAvailable('localStorage')) {
-      return
-    }
-
-    localStorage.removeItem(key)
-  },
-
-  clear: (): void => {
-    if (!storageAvailable('localStorage')) {
-      return
-    }
-
-    Object.keys(localStorage).forEach((key) => {
-      localStorage.removeItem(key)
-    })
-  },
-}
+export const localStorageManager =
+  createStorageManager<LOCAL_STORAGE_KEY>('localStorage')
