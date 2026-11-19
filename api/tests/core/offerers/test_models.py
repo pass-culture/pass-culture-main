@@ -31,15 +31,6 @@ class VenueModelConstraintsTest:
             db.session.flush()
         assert "check_has_siret_or_comment" in str(err.value)
 
-    # TODO (prouzet, 2025-12-02) CLEAN_OA How can we add such a constraint now with inverted relationship?
-    @pytest.mark.skip(reason="How can we add such a constraint now with inverted relationship?")
-    def test_physical_venue_must_have_an_offerer_address(self):
-        with pytest.raises(IntegrityError) as err:
-            factories.VenueFactory(offererAddress=None)
-        assert """null value in column "offererAddressId" of relation "venue" violates not-null constraint""" in str(
-            err.value
-        )
-
 
 class VenueBannerUrlTest:
     def test_can_set_banner_url_when_none(self, db_session):
