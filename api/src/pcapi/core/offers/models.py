@@ -987,6 +987,12 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
             "publicationDatetime",
             postgresql_include=["id"],
         ),
+        # Offers not synchronized with a provider
+        sa.Index(
+            "ix_offer_venueId_lastProviderId_null",
+            "venueId",
+            postgresql_where=sa.text('"lastProviderId" IS NULL'),
+        ),
     )
 
     @property
