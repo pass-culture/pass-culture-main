@@ -1,0 +1,1 @@
+import{t as e}from"./iframe-DN_F-P5f.js";e();
