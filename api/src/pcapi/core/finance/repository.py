@@ -298,7 +298,6 @@ def _get_sent_pricings_for_individual_bookings(
         .join(bookings_models.Booking.venue)
     )
 
-    # TODO bdalbianco 06/06/2025 CLEAN_OA ne garder que venue/offer apres la regul
     sub = sa.select(
         offerers_models.OffererAddress.id,
         offerers_models.OffererAddress.venueId,
@@ -467,7 +466,6 @@ def _get_individual_booking_reimbursement_data(query: sa_orm.Query) -> list[tupl
         .join(bookings_models.Booking.venue)
         .order_by(bookings_models.Booking.dateUsed.desc(), bookings_models.Booking.id.desc())
     )
-    # TODO bdalbianco 06/06/2025 CLEAN_OA retirer offerer après la regul
     sub = sa.select(
         offerers_models.OffererAddress.id,
         offerers_models.OffererAddress.venueId,

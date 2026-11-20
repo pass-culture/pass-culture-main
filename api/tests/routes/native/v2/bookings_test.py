@@ -174,8 +174,7 @@ class GetBookingsTest:
                         },
                         "name": used2.venue.name,
                         "publicName": used2.venue.publicName,
-                        # FIXME bdalbianco 28/04/2025 CLEAN_OA: check timezone relevance after regul venue
-                        "timezone": "Europe/Paris",
+                        "timezone": used2.venue.offererAddress.address.timezone,
                         "bannerUrl": None,
                         "isOpenToPublic": False,
                     },

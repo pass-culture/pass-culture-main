@@ -53,9 +53,12 @@ class GetBookingResponse(serialization.HttpBodyModel):
             offer_id=booking.stock.offer.id,
             stock_id=booking.stock.id,
             offer_name=booking.stock.offer.name,
-            # TODO bdalbianco 02/06/2025: CLEAN_OA remove check when no virtual venue
-            offer_address=offerer_address.address.street if offerer_address else None,
-            offer_department_code=offerer_address.address.departmentCode if offerer_address else None,
+            offer_address=offerer_address.address.street
+            if offerer_address
+            else booking.stock.offer.venue.offererAddress.address.street,
+            offer_department_code=offerer_address.address.departmentCode
+            if offerer_address
+            else booking.stock.offer.venue.offererAddress.address.departmentCode,
             offer_ean=booking.stock.offer.ean,
             venue_id=booking.venue.id,
             venue_name=booking.venue.name,
