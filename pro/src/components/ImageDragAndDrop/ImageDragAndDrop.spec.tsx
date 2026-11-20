@@ -1,8 +1,8 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { imageFileFactory } from '@/commons/utils/factories/imageUploadArgsFactories'
+import { MAX_FILE_SIZE } from '@/commons/utils/imageUpload/constants'
 
-import { MAX_FILE_SIZE } from './constants'
 import { ImageDragAndDrop } from './ImageDragAndDrop'
 
 function mockData(files: File[]) {
@@ -19,7 +19,7 @@ function mockData(files: File[]) {
   }
 }
 
-vi.mock('./getImageDimensions', () => ({
+vi.mock('@/commons/utils/imageUpload/getImageDimensions', () => ({
   getImageDimensions: vi.fn((file) => {
     return Promise.resolve({
       width: (file as any).width || 0,

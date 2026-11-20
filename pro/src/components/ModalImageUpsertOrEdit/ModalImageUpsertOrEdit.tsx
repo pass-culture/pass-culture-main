@@ -14,11 +14,11 @@ import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useGetImageBitmap } from '@/commons/hooks/useGetBitmap'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
+import { MIN_COLLECTIVE_IMAGE_DIMENSIONS } from '@/commons/utils/imageUpload/constants'
 import {
   UploaderModeEnum,
   type UploadImageValues,
 } from '@/commons/utils/imageUploadTypes'
-import { MIN_COLLECTIVE_IMAGE_DIMENSIONS } from '@/components/ImageDragAndDrop/constants'
 import { ImageDragAndDrop } from '@/components/ImageDragAndDrop/ImageDragAndDrop'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import { Button } from '@/design-system/Button/Button'

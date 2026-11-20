@@ -32,7 +32,7 @@ const bannerMeta = {
   },
 }
 
-vi.mock('@/components/ImageDragAndDrop/getImageDimensions', () => ({
+vi.mock('@/commons/utils/imageUpload/getImageDimensions', () => ({
   getImageDimensions: vi.fn((file) =>
     Promise.resolve({
       width: (file as any).width || 0,
