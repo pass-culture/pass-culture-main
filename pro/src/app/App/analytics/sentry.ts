@@ -1,5 +1,6 @@
 import * as Sentry from '@sentry/browser'
 import { reactRouterBrowserTracingIntegration } from '@sentry/react'
+import { hasProperty } from 'commons/utils/types'
 import { useEffect } from 'react'
 import {
   createRoutesFromChildren,
@@ -18,6 +19,8 @@ import {
   SENTRY_SERVER_URL,
   VITE_APP_VERSION,
 } from '@/commons/utils/config'
+
+const RECAPTCHA_REGEXP = /https:\/\/www\.gstatic\.com\/recaptcha\//
 
 export const initializeSentry = () => {
   Sentry.init({
@@ -55,11 +58,21 @@ export const initializeSentry = () => {
             event.sdkProcessingMetadata.normalizedRequest.url
           )
       }
+
+      const hasNsErrorMessage =
+        hasProperty(hint.originalException, 'message') &&
+        hint.originalException.message === 'NS_ERROR_NOT_INITIALIZED'
+      const isErrorInRecaptcha =
+        hasProperty(hint.originalException, 'stack') &&
+        RECAPTCHA_REGEXP.test(hint.originalException.stack as string)
+
       // To ignore a google recaptcha issue
       // and Google analytics issue
       if (
         hint.originalException === 'Timeout' ||
-        hint.originalException === 'Timeout (u)'
+        hint.originalException === 'Timeout (u)' ||
+        // Recaptcha issue on firefox
+        (hasNsErrorMessage && isErrorInRecaptcha)
       ) {
         return null
       }
