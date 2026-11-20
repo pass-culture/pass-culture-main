@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
-import type { getFinanceInvoicesData } from '@/apiClient/v1'
+import { type getFinanceInvoicesData, InvoiceStatus } from '@/apiClient/v1'
 import {
   GET_INVOICES_QUERY_KEY,
   GET_OFFERER_BANK_ACCOUNTS_AND_ATTACHED_VENUES_QUERY_KEY,
@@ -18,16 +18,30 @@ import {
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { BannerReimbursementsInfo } from './BannerReimbursementsInfo'
-import { DEFAULT_INVOICES_FILTERS } from './constants'
+import { DEFAULT_INVOICES_FILTERS, STATUS_FILTER } from './constants'
 import { InvoicesFilters } from './InvoicesFilters'
 import { InvoicesServerError } from './InvoicesServerError'
 import { InvoiceTable } from './InvoiceTable/InvoiceTable'
+
+function extractStatusFilter(status: string | null): InvoiceStatus[] | null {
+  if (status === STATUS_FILTER.PAID) {
+    return [InvoiceStatus.PAID]
+  }
+
+  if (status === STATUS_FILTER.PENDING) {
+    return [InvoiceStatus.PENDING, InvoiceStatus.PENDING_PAYMENT]
+  }
+
+  return null
+}
 
 function extractFilters(
   urlParams: URLSearchParams
 ): Omit<getFinanceInvoicesData['query'], 'offererId'> {
   const amountPositiveOnly = urlParams.get('amountPositiveOnly')
   const amountNegativeOnly = urlParams.get('amountNegativeOnly')
+  const status = extractStatusFilter(urlParams.get('status'))
+
   return {
     periodBeginningDate:
       urlParams.get('periodBeginningDate') ??
@@ -41,6 +55,7 @@ function extractFilters(
     ...(amountPositiveOnly && {
       amountPositiveOnly: amountPositiveOnly === 'true',
     }),
+    ...(status && { status }),
   }
 }
 

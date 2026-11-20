@@ -15,3 +15,11 @@ export const DOWNLOAD_INVOICE_LABEL = 'Télécharger le justificatif (.pdf)'
 
 export const DOWNLOAD_REIMBURSEMENTS_LABEL =
   'Télécharger les remboursements (.csv)'
+
+export const STATUS_FILTER = {
+  ALL_STATUS: 'ALL_STATUS',
+  PAID: 'PAID',
+  PENDING: 'PENDING',
+} as const
+
+export type STATUS_FILTER = keyof typeof STATUS_FILTER
