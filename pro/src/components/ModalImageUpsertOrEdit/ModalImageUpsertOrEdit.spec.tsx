@@ -151,14 +151,19 @@ describe('ModalImageUpsertOrEdit', () => {
       height: 500,
     })
 
-    await user.upload(screen.getByLabelText('Importez une image'), [imageFile])
+    const input = screen.getByLabelText('Importez ou déposez le fichier ici')
+    await user.upload(input, [imageFile])
 
-    expect(
-      await screen.findByText('L’image doit faire au moins 600 pixels de haut')
-    ).toBeVisible()
-    expect(
-      screen.queryByText('L’image doit faire au moins 400 pixels de large')
-    ).not.toBeInTheDocument()
+    await waitFor(() => {
+      expect(input).toHaveAccessibleDescription(
+        expect.stringContaining(
+          'L’image doit faire au moins 400 pixels de large et 600 pixels de haut'
+        )
+      )
+    })
+    expect(input).toBeInvalid()
+    expect(input).toHaveFocus()
+    expect(screen.queryByLabelText("Editeur d'image")).not.toBeInTheDocument()
   })
 
   it('should render a spinner until the image is loaded', async () => {
@@ -420,7 +425,7 @@ describe('ModalImageUpsertOrEdit', () => {
     })
 
     describe('when the replace button is clicked', () => {
-      it('should render the image drag and drop component', async () => {
+      it('should render the upload zone', async () => {
         const mockImageUrl = 'http://example.com/image.jpg'
         renderModalImageCrop({
           initialValues: {
@@ -435,7 +440,9 @@ describe('ModalImageUpsertOrEdit', () => {
         })
         await user.click(replaceButton)
 
-        expect(screen.getByLabelText('Importez une image')).toBeInTheDocument()
+        expect(
+          screen.getByLabelText('Importez ou déposez le fichier ici')
+        ).toBeInTheDocument()
         expect(
           screen.queryByLabelText("Editeur d'image")
         ).not.toBeInTheDocument()
@@ -478,14 +485,15 @@ describe('ModalImageUpsertOrEdit', () => {
           width: 10,
           height: 10,
         })
-        await user.upload(screen.getByLabelText('Importez une image'), [
-          imageFile,
-        ])
+        await user.upload(
+          screen.getByLabelText('Importez ou déposez le fichier ici'),
+          [imageFile]
+        )
         await waitFor(() => {
           expect(screen.getByLabelText("Editeur d'image")).toBeInTheDocument()
         })
         expect(
-          screen.queryByLabelText('Importez une image')
+          screen.queryByLabelText('Importez ou déposez le fichier ici')
         ).not.toBeInTheDocument()
       })
     })
