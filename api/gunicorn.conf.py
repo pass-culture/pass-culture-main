@@ -14,7 +14,11 @@ if worker_class == "gevent":
     import gevent.monkey
 
     gevent.monkey.patch_all()
-    print("Detected gevent worker class: Monkey patch applied.")
+
+    from pcapi.utils.worker_runtime import patch_for_gevent
+
+    patch_for_gevent()
+    print("Detected gevent worker class: Monkey patch, psycopg2 and gRPC gevent hooks applied.")
 else:
     print(f"Using {worker_class} worker class: Skipping gevent patch.")
 
@@ -28,9 +32,11 @@ import prometheus_client
 from prometheus_client import multiprocess
 from prometheus_flask_exporter.multiprocess import GunicornPrometheusMetrics
 
+from pcapi import settings
 from pcapi.flask_app import app
 from pcapi.models import db
 from pcapi.utils import kubernetes as kubernetes_utils
+from pcapi.utils.worker_runtime import get_worker_concurrency
 
 
 FLASK_PROMETHEUS_EXPORTER_PORT = int(os.environ.get("FLASK_PROMETHEUS_EXPORTER_PORT", "5002"))
@@ -110,7 +116,13 @@ def post_fork(server, worker):
         return
 
     # Use livesum so only live worker processes contribute, even if stale files exist.
-    threads = int(worker.cfg.settings["threads"].value or 1)
+    # gevent ignores `threads`: report the limit that actually bounds concurrent requests.
+    threads = get_worker_concurrency(
+        worker_class,
+        threads=int(worker.cfg.settings["threads"].value or 1),
+        worker_connections=int(worker.cfg.settings["worker_connections"].value),
+        db_pool_capacity=settings.DATABASE_POOL_SIZE + settings.DATABASE_POOL_MAX_OVERFLOW,
+    )
 
     worker.total_threads = prometheus_client.Gauge(
         "gunicorn_total_threads",
