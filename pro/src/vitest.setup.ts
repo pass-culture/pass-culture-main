@@ -8,6 +8,8 @@ import failOnConsole from 'vitest-fail-on-console'
 import createFetchMock from 'vitest-fetch-mock'
 import 'vitest-canvas-mock'
 
+import { resetStorageAvailabilityCache } from '@/commons/utils/storageAvailable'
+
 expect.extend(matchers)
 
 // jsdom cannot compute color contrast (no real layout/paint),
@@ -89,6 +91,12 @@ failOnConsole()
 // @testing-library/user-event v14 to throw
 beforeEach(() => {
   document.body.style.pointerEvents = ''
+})
+
+// `storageAvailable` caches its probe result: reset it so that a test simulating
+// an unavailable storage is not affected by a previous test (and vice versa).
+beforeEach(() => {
+  resetStorageAvailabilityCache()
 })
 
 // Mock the dialog behavior not implemented in jsdom (showModal, close, open attribute)

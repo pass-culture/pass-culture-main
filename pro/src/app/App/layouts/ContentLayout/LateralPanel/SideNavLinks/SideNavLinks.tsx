@@ -1,10 +1,14 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router'
 
+import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import {
   LAPTOP_MEDIA_QUERY,
   useMediaQuery,
 } from '@/commons/hooks/useMediaQuery'
+import { setSideNavOpenSection } from '@/commons/store/nav/reducer'
+import { sideNavOpenSectionSelector } from '@/commons/store/nav/selectors'
 
 import { HelpDropdownNavItem } from './components/HelpDropdownNavItem'
 import { RenderNavItem } from './components/SideNavLink'
@@ -36,41 +40,39 @@ export const SideNavLinks = ({
 
   const isMobileScreen = useMediaQuery(LAPTOP_MEDIA_QUERY)
   const location = useLocation()
+  const dispatch = useAppDispatch()
+  const lastOpenSection = useAppSelector(sideNavOpenSectionSelector)
 
   const sections = mainItems.filter((i) => i.type === 'section')
   const firstSectionKey = sections[0]?.key ?? null
 
-  // BasicLayout remounts on every navigation so we use pathName to keep the right section open
-  const getSectionFromRoute = (): string | null => {
-    const sectionMatchingCurrentRoute = sections.find((section) =>
+  // BasicLayout remounts on every navigation so we use pathName to keep the right section open,
+  // and fall back to the last open section (kept in the store) when no section matches the route
+  const sectionMatchingCurrentRoute =
+    sections.find((section) =>
       section.children?.some((child) => child.to === location.pathname)
-    )
+    )?.key ?? null
 
-    if (sectionMatchingCurrentRoute) {
-      sessionStorage.setItem(
-        'sideNavOpenSection',
-        sectionMatchingCurrentRoute.key
-      )
-      return sectionMatchingCurrentRoute.key
-    }
-
-    const lastOpenSection = sessionStorage.getItem('sideNavOpenSection')
-    if (lastOpenSection) {
-      return lastOpenSection
-    }
-    return null
-  }
-
-  const [openSection, setOpenSection] = useState<string | null>(
-    isAdminSpace ? firstSectionKey : getSectionFromRoute
+  const [openSection, setOpenSection] = useState<string | null>(() =>
+    isAdminSpace
+      ? firstSectionKey
+      : (sectionMatchingCurrentRoute ?? lastOpenSection)
   )
+
+  useEffect(() => {
+    if (!isAdminSpace && sectionMatchingCurrentRoute) {
+      dispatch(setSideNavOpenSection(sectionMatchingCurrentRoute))
+    }
+  }, [dispatch, isAdminSpace, sectionMatchingCurrentRoute])
 
   const isSectionActive = (item: NavItem) =>
     item.type === 'section' && openSection === item.key
 
   const handleExpandSection = (sectionKey: string) => {
     const next = openSection === sectionKey ? null : sectionKey
-    if (next) sessionStorage.setItem('sideNavOpenSection', next)
+    if (next) {
+      dispatch(setSideNavOpenSection(next))
+    }
     setOpenSection(next)
   }
 

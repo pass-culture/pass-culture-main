@@ -4,6 +4,7 @@ import { Provider } from 'react-redux'
 import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { configureTestStore } from '@/commons/store/testUtils'
 import { isEqual } from '@/commons/utils/isEqual'
+import { SESSION_STORAGE_KEY } from '@/commons/utils/sessionStorageManager'
 import type { IndividualOffersFilters } from '@/pages/IndividualOffers/common/types'
 
 import { getStoredFilterConfig, useStoredFilterConfig } from './utils'
@@ -46,7 +47,7 @@ describe('getStoredFilterConfig', () => {
         storedFilters: MOCKED_FILTERS,
       }
       window.sessionStorage.setItem(
-        'INDIVIDUAL_OFFERS_FILTER_CONFIG',
+        SESSION_STORAGE_KEY.INDIVIDUAL_OFFERS_FILTER_CONFIG,
         JSON.stringify(storedValue)
       )
 
@@ -72,7 +73,7 @@ describe('getStoredFilterConfig', () => {
         storedVenueId: 'venue-id',
       }
       window.sessionStorage.setItem(
-        'INDIVIDUAL_OFFERS_FILTER_CONFIG',
+        SESSION_STORAGE_KEY.INDIVIDUAL_OFFERS_FILTER_CONFIG,
         JSON.stringify(storedValue)
       )
 
@@ -92,7 +93,7 @@ describe('getStoredFilterConfig', () => {
         storedVenueId: 'venue-id',
       }
       window.sessionStorage.setItem(
-        'INDIVIDUAL_OFFERS_FILTER_CONFIG',
+        SESSION_STORAGE_KEY.INDIVIDUAL_OFFERS_FILTER_CONFIG,
         JSON.stringify(storedValue)
       )
 
@@ -127,6 +128,19 @@ describe('getStoredFilterConfig', () => {
       )
       expect(isEqual(filtersAfterVenueChange, {})).toBeTruthy()
     })
+  })
+
+  it('should return an empty config when the stored value is corrupted', () => {
+    window.sessionStorage.setItem(
+      SESSION_STORAGE_KEY.INDIVIDUAL_OFFERS_FILTER_CONFIG,
+      '{not json'
+    )
+
+    const { filtersVisibility, storedFilters } =
+      getStoredFilterConfig('individual')
+
+    expect(filtersVisibility).toBe(false)
+    expect(isEqual(storedFilters, {})).toBeTruthy()
   })
 
   describe('when session storage is not available', () => {
@@ -172,7 +186,7 @@ describe('useStoredFilterConfig', () => {
         storedVenueId: 1,
       }
       window.sessionStorage.setItem(
-        'INDIVIDUAL_OFFERS_FILTER_CONFIG',
+        SESSION_STORAGE_KEY.INDIVIDUAL_OFFERS_FILTER_CONFIG,
         JSON.stringify(storedValue)
       )
 

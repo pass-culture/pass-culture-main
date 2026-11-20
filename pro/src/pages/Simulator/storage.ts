@@ -73,24 +73,21 @@ export const tryRestoreOpenToPublicFromStorage = (
 export const saveTargetAudienceToStorage = (
   targetAudiences: TargetAudienceObject
 ) => {
-  localStorageManager.setItem(
+  localStorageManager.setJSON(
     LOCAL_STORAGE_KEY.SIMULATOR_TARGET_CUSTOMER,
-    JSON.stringify(targetAudiences)
+    targetAudiences
   )
 }
 
 export const tryRestoreTargetAudienceFromStorage = (
   setTargetAudiences: (targetAudienceData: TargetAudienceObject) => void
 ): TargetAudienceObject | undefined => {
-  const targetAudienceStoredData = localStorageManager.getItem(
+  const targetAudiences = localStorageManager.getJSON<TargetAudienceObject>(
     LOCAL_STORAGE_KEY.SIMULATOR_TARGET_CUSTOMER
   )
-  if (targetAudienceStoredData === null) {
+  if (targetAudiences === null) {
     return
   }
-  const targetAudiences = JSON.parse(
-    targetAudienceStoredData
-  ) as TargetAudienceObject
   setTargetAudiences(targetAudiences)
   return targetAudiences
 }

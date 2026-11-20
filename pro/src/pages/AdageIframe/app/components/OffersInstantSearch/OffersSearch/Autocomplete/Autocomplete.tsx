@@ -31,8 +31,10 @@ import {
   ALGOLIA_COLLECTIVE_OFFERS_INDEX,
   ALGOLIA_COLLECTIVE_OFFERS_SUGGESTIONS_INDEX,
 } from '@/commons/utils/config'
-import { PASS_CULTURE_PREFIX } from '@/commons/utils/localStorageManager'
-import { storageAvailable } from '@/commons/utils/storageAvailable'
+import {
+  LOCAL_STORAGE_KEY,
+  localStorageManager,
+} from '@/commons/utils/localStorageManager'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullClearIcon from '@/icons/full-clear.svg'
@@ -68,20 +70,20 @@ const ALGOLIA_NUMBER_RECENT_SEARCHES = 5
 const ALGOLIA_NUMBER_VENUES_SUGGESTIONS = 6
 const DEFAULT_GEO_RADIUS = 30000000 // 30 000 km ensure that we get all the results
 const ALGOLIA_NUMBER_QUERY_SUGGESTIONS = 5
-const AUTOCOMPLETE_LOCAL_STORAGE_KEY = `${PASS_CULTURE_PREFIX}AUTOCOMPLETE_RECENT_SEARCHES:RECENT_SEARCH`
+type RecentSearchItem = { id: string; label: string }
 
 const addSuggestionToHistory = (suggestion: string) => {
-  const currentHistory = localStorage.getItem(AUTOCOMPLETE_LOCAL_STORAGE_KEY)
-  const currentHistoryParsed = currentHistory ? JSON.parse(currentHistory) : []
-  if (
-    !currentHistoryParsed.some((item: { id: string }) => item.id === suggestion)
-  ) {
-    currentHistoryParsed.unshift({ id: suggestion, label: suggestion })
+  const storedHistory = localStorageManager.getJSON<RecentSearchItem[]>(
+    LOCAL_STORAGE_KEY.ADAGE_RECENT_SEARCHES
+  )
+  const currentHistory = Array.isArray(storedHistory) ? storedHistory : []
+  if (!currentHistory.some((item) => item.id === suggestion)) {
+    currentHistory.unshift({ id: suggestion, label: suggestion })
   }
 
-  localStorage.setItem(
-    AUTOCOMPLETE_LOCAL_STORAGE_KEY,
-    JSON.stringify(currentHistoryParsed)
+  localStorageManager.setJSON(
+    LOCAL_STORAGE_KEY.ADAGE_RECENT_SEARCHES,
+    currentHistory
   )
 }
 
@@ -115,7 +117,7 @@ export const Autocomplete = ({
   const { adageUser } = useAdageUser()
   const KEYWORD_QUERY_SUGGESTIONS_SOURCE_ID = 'KeywordQuerySuggestionsSource'
 
-  const isLocalStorageEnabled = storageAvailable('localStorage')
+  const isLocalStorageEnabled = localStorageManager.isAvailable()
 
   const logAutocompleteSuggestionClick = (
     suggestionType: SuggestionType,
@@ -444,11 +446,9 @@ export const Autocomplete = ({
                           color={ButtonColor.BRAND}
                           icon={fullClearIcon}
                           onClick={() => {
-                            if (storageAvailable('localStorage')) {
-                              localStorage.removeItem(
-                                AUTOCOMPLETE_LOCAL_STORAGE_KEY
-                              )
-                            }
+                            localStorageManager.removeItem(
+                              LOCAL_STORAGE_KEY.ADAGE_RECENT_SEARCHES
+                            )
                             autocomplete.setIsOpen(false)
                           }}
                           onKeyDown={(e) => {

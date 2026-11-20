@@ -1,7 +1,8 @@
-import { storageAvailable } from './storageAvailable'
+import { createStorageManager } from './storageManager'
 
 /**
- * **IMPORTANT**: Always prefix keys with `PASS_CULTURE_` to ease automatic cleanup of old keys.
+ * **IMPORTANT**: Always prefix keys with `PASS_CULTURE_` to identify them as ours.
+ * Exceptions are documented next to the key.
  */
 export enum LOCAL_STORAGE_KEY {
   SELECTED_VENUE_ID = 'PASS_CULTURE_SELECTED_VENUE_ID',
@@ -15,46 +16,18 @@ export enum LOCAL_STORAGE_KEY {
   SIMULATOR_OPEN_TO_PUBLIC = 'PASS_CULTURE_SIMULATOR_OPEN_TO_PUBLIC',
   SIMULATOR_TARGET_CUSTOMER = 'PASS_CULTURE_SIMULATOR_TARGET_CUSTOMER',
   HIDE_FINANCE_BANNER = 'PASS_CULTURE_HIDE_FINANCE_BANNER',
+  DUPLICATE_OFFER_MODAL_SEEN = 'PASS_CULTURE_DUPLICATE_OFFER_MODAL_SEEN',
+  DIFFUSE_HELP_ADAGE_SEEN = 'PASS_CULTURE_DIFFUSE_HELP_ADAGE_SEEN',
+  // Not prefixed: must match the key read by Algolia's `createLocalStorageRecentSearchesPlugin`
+  // (`AUTOCOMPLETE_RECENT_SEARCHES` + `:` + the `key` option given in `Autocomplete.tsx`).
+  ADAGE_RECENT_SEARCHES = 'AUTOCOMPLETE_RECENT_SEARCHES:RECENT_SEARCH',
+  // Not prefixed: renaming it would regenerate the device ID of every existing user.
+  DEVICE_ID = 'DEVICE_ID',
 }
 
 export enum COOKIES {
   DID_SKIP_ONBOARDING = 'DID_SKIP_ONBOARDING',
 }
 
-export const PASS_CULTURE_PREFIX = 'PASS_CULTURE_'
-
-export const localStorageManager = {
-  getItem: (key: LOCAL_STORAGE_KEY): string | null => {
-    if (!storageAvailable('localStorage')) {
-      return null
-    }
-
-    return localStorage.getItem(key)
-  },
-
-  setItem: (key: LOCAL_STORAGE_KEY, value: string): void => {
-    if (!storageAvailable('localStorage')) {
-      return
-    }
-
-    localStorage.setItem(key, value)
-  },
-
-  removeItem: (key: LOCAL_STORAGE_KEY): void => {
-    if (!storageAvailable('localStorage')) {
-      return
-    }
-
-    localStorage.removeItem(key)
-  },
-
-  clear: (): void => {
-    if (!storageAvailable('localStorage')) {
-      return
-    }
-
-    Object.keys(localStorage).forEach((key) => {
-      localStorage.removeItem(key)
-    })
-  },
-}
+export const localStorageManager =
+  createStorageManager<LOCAL_STORAGE_KEY>('localStorage')
