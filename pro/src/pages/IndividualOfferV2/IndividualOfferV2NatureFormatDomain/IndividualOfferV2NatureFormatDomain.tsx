@@ -77,18 +77,18 @@ const IndividualOfferV2NatureFormatDomain = (): JSX.Element => {
         },
       }),
       label: item.label,
-      value: item.name,
-      checked: nature === item.name,
+      value: item.nature,
+      checked: nature === item.nature,
       asset: {
         variant: 'icon' as const,
-        src: natureIcon[item.name],
+        src: natureIcon[item.nature],
       },
     }))
     .sort((a, b) => a.label.localeCompare(b.label, 'fr'))
 
   const formatOptions =
     natures
-      .find((item) => item.name === nature)
+      .find((item) => item.nature === nature)
       ?.formats.map((item) => ({
         ...form.register('format', {
           required: 'Veuillez sélectionner un format',

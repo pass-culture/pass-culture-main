@@ -708,7 +708,36 @@ export const zDisplayableActivity = z.enum([
 /**
  * DomainEnum
  */
-export const zDomainEnum = z.enum(['DANSE']);
+export const zDomainEnum = z.enum([
+    'BIBLIOTHEQUE_MEDIATHEQUE',
+    'LITTERATURE',
+    'CINEMA',
+    'MUSEE_PATRIMOINE_ARCHITECTURE',
+    'ART_VISUEL',
+    'CULTURE_SCIENTIFIQUE',
+    'MEDIA_PRESSE_RADIO',
+    'MUSIQUE',
+    'MULTI_DOMAINES_CARTE_JEUNE',
+    'CIRQUE_ARTS_RUE',
+    'COMEDIE_MUSICALE',
+    'STAND_UP',
+    'DANSE',
+    'OPERA',
+    'THEATRE',
+    'JEUX_VIDEO',
+    'SANS_DOMAINE',
+    'STREAMING_MUSIQUE',
+    'VOD',
+    'MEDIA_PRESSE_RADIO_EN_LIGNE'
+]);
+
+/**
+ * DomainResponseModel
+ */
+export const zDomainResponseModel = z.object({
+    domain: zDomainEnum,
+    label: z.string()
+});
 
 /**
  * DownloadBookingsQueryModel
@@ -898,32 +927,90 @@ export const zFeatureResponseModel = z.object({
  * FieldEnum
  */
 export const zFieldEnum = z.enum([
-    'TITLE',
-    'DESCRIPTION',
-    'IMAGE',
-    'GENRE_MUSIC',
-    'PERFORMER',
-    'EAN',
+    'PICKUP_30_DAYS',
+    'TITLE_BIEN',
+    'DESCRIPTION_ABONNEMENT',
+    'DESCRIPTION_CARTE',
+    'DIGITAL_COMPULSORY',
+    'TITLE_CARTE',
+    'TITLE_ABONNEMENT',
+    'ACCESSIBILITY_ATTRIBUTE_LARGE_PRINT',
+    'ACCESSIBILITY_VENUE',
+    'ACTIVATION_CODE',
     'AUTHOR',
-    'ACCESSIBILITY_ATTRIBUTE_LARGE_PRINT'
+    'BOOK_REFUND',
+    'BOOKING_LIMIT',
+    'BOOKING_OPENING_DATE',
+    'COMPLEMENTARY_INFO',
+    'COUNTERMARK',
+    'DESCRIPTION',
+    'EAN',
+    'EMAIL_NOTIFICATION',
+    'GENRE_MUSIC',
+    'IMAGE',
+    'LOCATION',
+    'NO_CREDIT_LINK',
+    'NO_REFUND',
+    'OFFER_URL',
+    'PERFORMER',
+    'PRICE',
+    'PROGRAM_PUBLICATION',
+    'STANDARD_REFUND',
+    'STOCK',
+    'TITLE',
+    'WITHDRAWAL_TYPES',
+    'ACCESSIBILITY_VENUE_ATELIER',
+    'ACCESSIBILITY_VENUE_SPECTACLE',
+    'ACCESSIBILITY_VENUE_VISITE',
+    'ALLOCINE_GENRE',
+    'CONTACT_EMAIL',
+    'DIRECTOR',
+    'DUO_OFFER',
+    'DURATION',
+    'EXPLOITATION_VISA',
+    'INTERVENANT',
+    'IS_MEDIATION',
+    'IS_MULTIPRICE',
+    'START_DATE',
+    'VIDEO'
 ]);
 
 /**
  * FormatEnum
  */
 export const zFormatEnum = z.enum([
+    'ABONNEMENT',
+    'ATELIER',
+    'CARTE',
     'CD',
-    'VINYLE',
+    'CONCERT',
+    'CONFERENCE',
     'DVD_BLU_RAY',
+    'EVENEMENT_NUMERIQUE',
+    'FESTIVAL',
     'INSTRUMENT_DE_MUSIQUE',
+    'JEUX_EN_LIGNE',
     'LIVRE_PAPIER',
-    'MATERIEL_ARTS_CREATIFS'
+    'LIVRE_NUMERIQUE',
+    'MATERIEL_ARTS_CREATIFS',
+    'MEDIA',
+    'PODCAST',
+    'SALON',
+    'SEANCE_CINEMA',
+    'SEANCE_ESSAI',
+    'SPECTACLE',
+    'VISITE_GUIDEE',
+    'VINYLE',
+    'VISITE_LIBRE',
+    'VISITE_VIRTUELLE',
+    'VOD'
 ]);
 
 /**
  * FormatResponseModel
  */
 export const zFormatResponseModel = z.object({
+    domains: z.array(zDomainResponseModel),
     format: zFormatEnum,
     label: z.string()
 });
@@ -1730,7 +1817,7 @@ export const zGetCapabilitiesQueryModel = z.object({
 export const zNatureFormatDomainResponseModel = z.object({
     formats: z.array(zFormatResponseModel),
     label: z.string(),
-    name: zNatureEnum
+    nature: zNatureEnum
 });
 
 /**

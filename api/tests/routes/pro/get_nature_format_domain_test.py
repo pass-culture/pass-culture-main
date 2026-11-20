@@ -1,6 +1,7 @@
 import pytest
 
 from pcapi.core import testing
+from pcapi.core.nature_format_domain import nature_format_domain
 from pcapi.core.users import factories as users_factories
 
 
@@ -13,35 +14,43 @@ def test_get_nature_format_domain(client):
         response = client.get("/nature-format-domain")
 
     assert response.status_code == 200
-    assert response.json == [
-        {
-            "name": "BIEN",
-            "label": "Bien",
-            "formats": [
-                {"format": "CD", "label": "CD"},
-                {"format": "VINYLE", "label": "Vinyle"},
-                {"format": "DVD_BLU_RAY", "label": "DVD, Blu-ray"},
-                {"format": "INSTRUMENT_DE_MUSIQUE", "label": "Instrument de musique"},
-                {"format": "LIVRE_PAPIER", "label": "Livre"},
-                {"format": "MATERIEL_ARTS_CREATIFS", "label": "Matériel d'art créatif"},
-            ],
-        },
-        {
-            "name": "CARTE_ABONNEMENT",
-            "label": "Carte ou abonnement",
-            "formats": [],
-        },
-        {
-            "name": "EVENEMENT",
-            "label": "Événement",
-            "formats": [],
-        },
-        {
-            "name": "NUMERIQUE",
-            "label": "Offre numérique",
-            "formats": [],
-        },
+    natures_by_name = {nature["nature"]: nature for nature in response.json}
+    formats_by_nature = {
+        nature_name: {format_["format"]: format_ for format_ in nature["formats"]}
+        for nature_name, nature in natures_by_name.items()
+    }
+
+    assert set(natures_by_name) == {nature.value for nature in nature_format_domain.NatureEnum}
+    assert formats_by_nature["BIEN"]["CD"]["domains"] == []
+    assert formats_by_nature["NUMERIQUE"]["MEDIA"] == {
+        "format": "MEDIA",
+        "label": "Média",
+        "domains": [],
+    }
+
+    expected_domains = [
+        {"domain": "ART_VISUEL", "label": "Art visuel"},
+        {"domain": "BIBLIOTHEQUE_MEDIATHEQUE", "label": "Bibliothèque, Médiathèque"},
+        {"domain": "CINEMA", "label": "Cinéma"},
+        {"domain": "CIRQUE_ARTS_RUE", "label": "Cirque et Arts de la rue"},
+        {"domain": "COMEDIE_MUSICALE", "label": "Comédie musicale"},
+        {"domain": "CULTURE_SCIENTIFIQUE", "label": "Culture scientifique"},
+        {"domain": "DANSE", "label": "Danse"},
+        {"domain": "JEUX_VIDEO", "label": "Jeux vidéo"},
+        {"domain": "LITTERATURE", "label": "Littérature"},
+        {"domain": "MEDIA_PRESSE_RADIO", "label": "Média, Presse, Radio"},
+        {"domain": "MEDIA_PRESSE_RADIO_EN_LIGNE", "label": "Média, Presse, Radio en ligne"},
+        {"domain": "MULTI_DOMAINES_CARTE_JEUNE", "label": "Multi-domaines (carte jeune)"},
+        {"domain": "MUSEE_PATRIMOINE_ARCHITECTURE", "label": "Musée, Patrimoine, Architecture"},
+        {"domain": "MUSIQUE", "label": "Musique"},
+        {"domain": "OPERA", "label": "Opéra"},
+        {"domain": "STAND_UP", "label": "Stand up"},
+        {"domain": "STREAMING_MUSIQUE", "label": "Streaming de musique"},
+        {"domain": "THEATRE", "label": "Théâtre"},
+        {"domain": "VOD", "label": "Vidéo à la demande"},
     ]
+    assert formats_by_nature["CARTE_ABONNEMENT"]["CARTE"]["domains"] == expected_domains
+    assert formats_by_nature["CARTE_ABONNEMENT"]["ABONNEMENT"]["domains"] == expected_domains
 
 
 @pytest.mark.usefixtures("db_session")

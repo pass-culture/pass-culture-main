@@ -10,11 +10,11 @@ import {
 
 describe('hasCapability', () => {
   it('should return whether the capability is in the list', () => {
-    expect(hasCapability([FieldEnum.TITLE, FieldEnum.EAN], FieldEnum.EAN)).toBe(
-      true
-    )
     expect(
-      hasCapability([FieldEnum.TITLE, FieldEnum.EAN], FieldEnum.AUTHOR)
+      hasCapability([FieldEnum.TITLE_BIEN, FieldEnum.EAN], FieldEnum.EAN)
+    ).toBe(true)
+    expect(
+      hasCapability([FieldEnum.TITLE_BIEN, FieldEnum.EAN], FieldEnum.AUTHOR)
     ).toBe(false)
   })
 })
@@ -22,7 +22,9 @@ describe('hasCapability', () => {
 describe('HasCapability', () => {
   it('should render children when the capability is present', () => {
     render(
-      <OfferCapabilityProvider capabilities={[FieldEnum.TITLE, FieldEnum.EAN]}>
+      <OfferCapabilityProvider
+        capabilities={[FieldEnum.TITLE_BIEN, FieldEnum.EAN]}
+      >
         <HasCapability name={FieldEnum.EAN}>
           <span>EAN field</span>
         </HasCapability>
@@ -34,7 +36,7 @@ describe('HasCapability', () => {
 
   it('should not render children when the capability is missing', () => {
     render(
-      <OfferCapabilityProvider capabilities={[FieldEnum.TITLE]}>
+      <OfferCapabilityProvider capabilities={[FieldEnum.TITLE_BIEN]}>
         <HasCapability name={FieldEnum.AUTHOR}>
           <span>Author field</span>
         </HasCapability>
@@ -46,7 +48,7 @@ describe('HasCapability', () => {
 
   it('should not render children without provider', () => {
     render(
-      <HasCapability name={FieldEnum.TITLE}>
+      <HasCapability name={FieldEnum.TITLE_BIEN}>
         <span>Title field</span>
       </HasCapability>
     )
