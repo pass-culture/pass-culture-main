@@ -1,7 +1,17 @@
 import { useEffect, useId, useRef, useState } from 'react'
 
+import { useAnalytics } from '@/app/App/analytics/firebase'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
 import type { IndividualOfferImage } from '@/commons/core/Offers/types'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
+import {
+  ALLOWED_IMAGE_TYPES_TO_EXTENSIONS,
+  MAX_FILE_SIZE,
+} from '@/commons/utils/imageUpload/constants'
+import {
+  getImageConditionsText,
+  validateImage,
+} from '@/commons/utils/imageUpload/validateImage'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
 import {
   ModalImageUpsertOrEdit,
@@ -23,6 +33,8 @@ import { buildInitialValues } from '@/pages/IndividualOffer/IndividualOfferMedia
 
 import styles from './IndividualOfferV2DescriptionImage.module.scss'
 
+const IMAGE_CONDITIONS_TEXT = getImageConditionsText()
+
 type IndividualOfferV2DescriptionImageProps = {
   displayedImage?: IndividualOfferImage | OnImageUploadArgs
   onImageUpload: (args: OnImageUploadArgs) => void
@@ -36,7 +48,7 @@ export const IndividualOfferV2DescriptionImage = ({
   onImageDelete,
   isReadOnly,
 }: IndividualOfferV2DescriptionImageProps): JSX.Element => {
-  // const { logEvent } = useAnalytics()
+  const { logEvent } = useAnalytics()
   const snackBar = useSnackBar()
 
   const uploadZoneId = useId()
@@ -66,25 +78,23 @@ export const IndividualOfferV2DescriptionImage = ({
 
   const imageUrl = croppedImageUrl || originalImageUrl
   const hasImage = !!imageUrl
-  // Once UploadZone migration is merged, uncomment these and add the imports back
-  // const IMAGE_CONDITIONS_TEXT = getImageConditionsText()
 
-  // const handleImageAdded = async (file: File) => {
-  //   const { image, error } = await validateImage(file)
-  //   setImageError(error)
+  const handleImageAdded = async (file: File) => {
+    const { image, error } = await validateImage(file)
+    setImageError(error)
 
-  //   if (error) {
-  //     uploadZoneRef.current?.focus({ preventScroll: true })
-  //     return
-  //   }
+    if (error) {
+      uploadZoneRef.current?.focus({ preventScroll: true })
+      return
+    }
 
-  //   logEvent(Events.DRAG_OR_SELECTED_IMAGE, {
-  //     imageType: UploaderModeEnum.OFFER,
-  //     imageCreationStage: 'add image',
-  //   })
-  //   setDraftImage(image)
-  //   setIsModalImageOpen(true)
-  // }
+    logEvent(Events.DRAG_OR_SELECTED_IMAGE, {
+      imageType: UploaderModeEnum.OFFER,
+      imageCreationStage: 'add image',
+    })
+    setDraftImage(image)
+    setIsModalImageOpen(true)
+  }
 
   const onImageUploadHandler = (
     values: OnImageUploadArgs,
@@ -149,15 +159,15 @@ export const IndividualOfferV2DescriptionImage = ({
           key={uploadZoneKey}
           ref={uploadZoneRef}
           id={uploadZoneId}
-          label="Ajoutez une image"
+          label="Image"
           icon={strokePictureIcon}
-          // accept={ALLOWED_IMAGE_TYPES_TO_EXTENSIONS}
-          // maxSize={MAX_FILE_SIZE}
-          // conditionsText={IMAGE_CONDITIONS_TEXT}
+          accept={ALLOWED_IMAGE_TYPES_TO_EXTENSIONS}
+          maxSize={MAX_FILE_SIZE}
+          conditionsText={IMAGE_CONDITIONS_TEXT}
           maxFiles={1}
           disabled={isReadOnly}
           error={imageError}
-          // onFilesAdded={([file]) => void handleImageAdded(file)}
+          onFilesAdded={([file]) => void handleImageAdded(file)}
           // The zone displays its own errors: the one of a previous image is outdated.
           onFilesRejected={() => setImageError(undefined)}
         />

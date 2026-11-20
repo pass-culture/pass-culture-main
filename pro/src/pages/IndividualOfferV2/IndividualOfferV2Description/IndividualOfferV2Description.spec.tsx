@@ -89,7 +89,7 @@ describe('<IndividualOfferV2Description />', () => {
       FieldEnum.IMAGE,
     ])
 
-    const input = await screen.findByLabelText(/Ajoutez une image/)
+    const input = await screen.findByLabelText('Image')
     expect(input).toHaveAttribute('type', 'file')
     expect(input).not.toHaveAttribute('multiple')
   })
