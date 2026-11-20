@@ -1,6 +1,9 @@
 import enum
 import typing
 
+from pcapi.core.nature_format_domain.nfd_capabilities import *
+from pcapi.core.nature_format_domain.nfd_fields import FieldEnum
+
 
 class NatureEnum(enum.Enum):
     BIEN = "BIEN"
@@ -58,20 +61,6 @@ class DomainEnum(enum.Enum):
     STREAMING_MUSIQUE = "STREAMING_MUSIQUE"
     VOD = "VOD"
     MEDIA_PRESSE_RADIO_EN_LIGNE = "MEDIA_PRESSE_RADIO_EN_LIGNE"
-
-
-# Média, radio, presse
-
-
-class FieldEnum(enum.Enum):
-    TITLE = "TITLE"
-    DESCRIPTION = "DESCRIPTION"
-    IMAGE = "IMAGE"
-    GENRE_MUSIC = "GENRE_MUSIC"
-    PERFORMER = "PERFORMER"
-    EAN = "EAN"
-    AUTHOR = "AUTHOR"
-    ACCESSIBILITY_ATTRIBUTE_LARGE_PRINT = "ACCESSIBILITY_ATTRIBUTE_LARGE_PRINT"
 
 
 class DomainLabel(typing.TypedDict):
@@ -352,60 +341,200 @@ class FormatFields(typing.TypedDict):
 
 FIELDS_BIEN: typing.Final[dict[FormatEnum, FormatFields]] = {
     FormatEnum.CD: {
-        "capabilities": [
-            FieldEnum.TITLE,
-            FieldEnum.DESCRIPTION,
-            FieldEnum.IMAGE,
-            FieldEnum.GENRE_MUSIC,
-            FieldEnum.PERFORMER,
-            FieldEnum.EAN,
-        ],
-        "mandatory_fields": [FieldEnum.TITLE, FieldEnum.GENRE_MUSIC],
+        "capabilities": COMMON_CAPABILITIES
+        + BIEN_CAPABILITIES
+        + [FieldEnum.GENRE_MUSIC, FieldEnum.PERFORMER, FieldEnum.STANDARD_REFUND],
+        "mandatory_fields": COMMON_MANDATORY_FIELDS
+        + BIEN_MANDATORY_FIELDS
+        + [FieldEnum.GENRE_MUSIC, FieldEnum.STANDARD_REFUND],
     },
     FormatEnum.VINYLE: {
-        "capabilities": [
-            FieldEnum.TITLE,
-            FieldEnum.DESCRIPTION,
-            FieldEnum.IMAGE,
+        "capabilities": COMMON_CAPABILITIES
+        + BIEN_CAPABILITIES
+        + [
             FieldEnum.GENRE_MUSIC,
             FieldEnum.PERFORMER,
-            FieldEnum.EAN,
+            FieldEnum.STANDARD_REFUND,
         ],
-        "mandatory_fields": [FieldEnum.TITLE, FieldEnum.GENRE_MUSIC],
+        "mandatory_fields": COMMON_MANDATORY_FIELDS
+        + BIEN_MANDATORY_FIELDS
+        + [FieldEnum.GENRE_MUSIC, FieldEnum.STANDARD_REFUND],
     },
     FormatEnum.DVD_BLU_RAY: {
-        "capabilities": [FieldEnum.TITLE, FieldEnum.DESCRIPTION, FieldEnum.IMAGE, FieldEnum.EAN],
-        "mandatory_fields": [FieldEnum.TITLE],
+        "capabilities": COMMON_CAPABILITIES + BIEN_CAPABILITIES + [FieldEnum.STANDARD_REFUND],
+        "mandatory_fields": COMMON_MANDATORY_FIELDS + BIEN_MANDATORY_FIELDS + [FieldEnum.STANDARD_REFUND],
     },
     FormatEnum.INSTRUMENT_DE_MUSIQUE: {
-        "capabilities": [FieldEnum.TITLE, FieldEnum.DESCRIPTION, FieldEnum.IMAGE, FieldEnum.EAN],
-        "mandatory_fields": [FieldEnum.TITLE],
+        "capabilities": COMMON_CAPABILITIES + BIEN_CAPABILITIES + [FieldEnum.STANDARD_REFUND],
+        "mandatory_fields": COMMON_MANDATORY_FIELDS + BIEN_MANDATORY_FIELDS + [FieldEnum.STANDARD_REFUND],
     },
     FormatEnum.LIVRE_PAPIER: {
-        "capabilities": [
-            FieldEnum.TITLE,
-            FieldEnum.DESCRIPTION,
-            FieldEnum.IMAGE,
-            FieldEnum.EAN,
-            FieldEnum.AUTHOR,
-            FieldEnum.ACCESSIBILITY_ATTRIBUTE_LARGE_PRINT,
-        ],
-        "mandatory_fields": [FieldEnum.TITLE],
+        "capabilities": COMMON_CAPABILITIES
+        + BIEN_CAPABILITIES
+        + [FieldEnum.AUTHOR, FieldEnum.ACCESSIBILITY_ATTRIBUTE_LARGE_PRINT, FieldEnum.BOOK_REFUND],
+        "mandatory_fields": COMMON_MANDATORY_FIELDS + BIEN_MANDATORY_FIELDS,
     },
     FormatEnum.MATERIEL_ARTS_CREATIFS: {
-        "capabilities": [FieldEnum.TITLE, FieldEnum.DESCRIPTION, FieldEnum.IMAGE, FieldEnum.EAN],
-        "mandatory_fields": [FieldEnum.TITLE],
+        "capabilities": COMMON_CAPABILITIES + BIEN_CAPABILITIES + [FieldEnum.STANDARD_REFUND],
+        "mandatory_fields": COMMON_MANDATORY_FIELDS + BIEN_MANDATORY_FIELDS + [FieldEnum.STANDARD_REFUND],
+    },
+}
+
+FIELDS_EVENEMENT: typing.Final[dict[FormatEnum, FormatFields]] = {
+    FormatEnum.SEANCE_CINEMA: {
+        "capabilities": COMMON_CAPABILITIES
+        + EVENEMENT_CAPABILITIES
+        + [
+            FieldEnum.AUTHOR,
+            FieldEnum.EXPLOITATION_VISA,
+            FieldEnum.ACCESSIBILITY_VENUE,
+            FieldEnum.ALLOCINE_GENRE,
+        ],
+        "mandatory_fields": COMMON_MANDATORY_FIELDS + EVENEMENT_MANDATORY_FIELDS + [FieldEnum.ALLOCINE_GENRE],
+    },
+    FormatEnum.CONCERT: {
+        "capabilities": COMMON_CAPABILITIES
+        + EVENEMENT_CAPABILITIES
+        + [FieldEnum.PERFORMER, FieldEnum.ACCESSIBILITY_VENUE_SPECTACLE, FieldEnum.GENRE_MUSIC],
+        "mandatory_fields": COMMON_MANDATORY_FIELDS + EVENEMENT_MANDATORY_FIELDS,
+    },
+    FormatEnum.ATELIER: {
+        "capabilities": COMMON_CAPABILITIES + EVENEMENT_CAPABILITIES + [FieldEnum.ACCESSIBILITY_VENUE_ATELIER],
+        "mandatory_fields": COMMON_MANDATORY_FIELDS + EVENEMENT_MANDATORY_FIELDS,
+    },
+    FormatEnum.SEANCE_ESSAI: {
+        "capabilities": COMMON_CAPABILITIES + EVENEMENT_CAPABILITIES + [FieldEnum.ACCESSIBILITY_VENUE_ATELIER],
+        "mandatory_fields": COMMON_MANDATORY_FIELDS + EVENEMENT_MANDATORY_FIELDS,
+    },
+    FormatEnum.FESTIVAL: {
+        "capabilities": COMMON_CAPABILITIES
+        + EVENEMENT_CAPABILITIES
+        + [FieldEnum.INTERVENANT, FieldEnum.ACCESSIBILITY_VENUE_VISITE],
+        "mandatory_fields": COMMON_MANDATORY_FIELDS + EVENEMENT_MANDATORY_FIELDS,
+    },
+    FormatEnum.SALON: {
+        "capabilities": COMMON_CAPABILITIES
+        + EVENEMENT_CAPABILITIES
+        + [FieldEnum.INTERVENANT, FieldEnum.ACCESSIBILITY_VENUE_VISITE],
+        "mandatory_fields": COMMON_MANDATORY_FIELDS + EVENEMENT_MANDATORY_FIELDS,
+    },
+    FormatEnum.CONFERENCE: {
+        "capabilities": COMMON_CAPABILITIES
+        + EVENEMENT_CAPABILITIES
+        + [FieldEnum.INTERVENANT, FieldEnum.ACCESSIBILITY_VENUE_VISITE],
+        "mandatory_fields": COMMON_MANDATORY_FIELDS + EVENEMENT_MANDATORY_FIELDS,
+    },
+    FormatEnum.VISITE_LIBRE: {
+        "capabilities": COMMON_CAPABILITIES
+        + EVENEMENT_CAPABILITIES
+        + [FieldEnum.INTERVENANT, FieldEnum.ACCESSIBILITY_VENUE_VISITE],
+        "mandatory_fields": COMMON_MANDATORY_FIELDS + EVENEMENT_MANDATORY_FIELDS,
+    },
+    FormatEnum.SPECTACLE: {
+        "capabilities": COMMON_CAPABILITIES
+        + EVENEMENT_CAPABILITIES
+        + [
+            FieldEnum.AUTHOR,
+            FieldEnum.EXPLOITATION_VISA,
+            FieldEnum.DIRECTOR,
+            FieldEnum.PERFORMER,
+            FieldEnum.ACCESSIBILITY_VENUE_SPECTACLE,
+        ],
+        "mandatory_fields": COMMON_MANDATORY_FIELDS + EVENEMENT_MANDATORY_FIELDS,
+    },
+    FormatEnum.VISITE_GUIDEE: {
+        "capabilities": COMMON_CAPABILITIES
+        + EVENEMENT_CAPABILITIES
+        + [FieldEnum.INTERVENANT, FieldEnum.ACCESSIBILITY_VENUE_VISITE],
+        "mandatory_fields": COMMON_MANDATORY_FIELDS + EVENEMENT_MANDATORY_FIELDS,
+    },
+}
+
+FIELDS_CARTE: typing.Final[dict[FormatEnum, FormatFields]] = {
+    FormatEnum.CARTE: {
+        "capabilities": COMMON_CAPABILITIES + CARTE_CAPABILITIES + [FieldEnum.TITLE_CARTE, FieldEnum.DESCRIPTION_CARTE],
+        "mandatory_fields": COMMON_MANDATORY_FIELDS + CARTE_MANDATORY_FIELDS,
+    },
+    FormatEnum.ABONNEMENT: {
+        "capabilities": COMMON_CAPABILITIES
+        + CARTE_CAPABILITIES
+        + [FieldEnum.TITLE_ABONNEMENT, FieldEnum.DESCRIPTION_ABONNEMENT],
+        "mandatory_fields": COMMON_MANDATORY_FIELDS + CARTE_MANDATORY_FIELDS,
+    },
+}
+
+FIELDS_NUMERIQUE: typing.Final[dict[FormatEnum, FormatFields]] = {
+    FormatEnum.VOD: {
+        "capabilities": COMMON_CAPABILITIES + NUMERIQUE_CAPABILITIES + [FieldEnum.NO_REFUND, FieldEnum.ACTIVATION_CODE],
+        "mandatory_fields": COMMON_MANDATORY_FIELDS,
+    },
+    FormatEnum.JEUX_EN_LIGNE: {
+        "capabilities": COMMON_CAPABILITIES + NUMERIQUE_CAPABILITIES + [FieldEnum.NO_REFUND, FieldEnum.ACTIVATION_CODE],
+        "mandatory_fields": COMMON_MANDATORY_FIELDS,
+    },
+    FormatEnum.VISITE_VIRTUELLE: {
+        "capabilities": COMMON_CAPABILITIES + NUMERIQUE_CAPABILITIES + [FieldEnum.NO_REFUND, FieldEnum.ACTIVATION_CODE],
+        "mandatory_fields": COMMON_MANDATORY_FIELDS,
+    },
+    FormatEnum.PODCAST: {
+        "capabilities": COMMON_CAPABILITIES + NUMERIQUE_CAPABILITIES + [FieldEnum.NO_REFUND, FieldEnum.ACTIVATION_CODE],
+        "mandatory_fields": COMMON_MANDATORY_FIELDS,
+    },
+    FormatEnum.MEDIA: {
+        "capabilities": COMMON_CAPABILITIES
+        + NUMERIQUE_CAPABILITIES
+        + [FieldEnum.STANDARD_REFUND, FieldEnum.ACTIVATION_CODE],
+        "mandatory_fields": COMMON_MANDATORY_FIELDS,
+    },
+    FormatEnum.LIVRE_NUMERIQUE: {
+        "capabilities": COMMON_CAPABILITIES
+        + NUMERIQUE_CAPABILITIES
+        + [
+            FieldEnum.BOOK_REFUND,
+            FieldEnum.AUTHOR,
+            FieldEnum.EAN,
+            FieldEnum.ACCESSIBILITY_ATTRIBUTE_LARGE_PRINT,
+            FieldEnum.ACTIVATION_CODE,
+        ],
+        "mandatory_fields": COMMON_MANDATORY_FIELDS,
+    },
+    FormatEnum.EVENEMENT_NUMERIQUE: {
+        "capabilities": COMMON_CAPABILITIES + NUMERIQUE_CAPABILITIES + [FieldEnum.STANDARD_REFUND],
+        "mandatory_fields": COMMON_MANDATORY_FIELDS,
     },
 }
 
 
-def get_capabilities(nature: NatureEnum, format: FormatEnum) -> list[FieldEnum]:
+def get_capabilities(nature: NatureEnum, format: FormatEnum, domain: str | None = None) -> list[FieldEnum]:
     if nature == NatureEnum.BIEN:
         return FIELDS_BIEN[format]["capabilities"]
+    if nature == NatureEnum.EVENEMENT:
+        return FIELDS_EVENEMENT[format]["capabilities"]
+    if nature == NatureEnum.CARTE_ABONNEMENT:
+        capabilities = FIELDS_CARTE[format]["capabilities"]
+        if domain in CARTE_NO_REFUND_DOMAINS:
+            capabilities = capabilities + [FieldEnum.NO_REFUND, FieldEnum.DIGITAL_COMPULSORY]
+        elif domain in CARTE_REFUND_DOMAINS:
+            capabilities = capabilities + [FieldEnum.STANDARD_REFUND, FieldEnum.WITHDRAWAL_TYPES]
+        return capabilities
+    if nature == NatureEnum.NUMERIQUE:
+        return FIELDS_NUMERIQUE[format]["capabilities"]
     return []
 
 
-def get_mandatory_fields(nature: NatureEnum, format: FormatEnum) -> list[FieldEnum]:
+def get_mandatory_fields(nature: NatureEnum, format: FormatEnum, domain: str | None = None) -> list[FieldEnum]:
     if nature == NatureEnum.BIEN:
         return FIELDS_BIEN[format]["mandatory_fields"]
+    if nature == NatureEnum.EVENEMENT:
+        return FIELDS_EVENEMENT[format]["mandatory_fields"]
+    if nature == NatureEnum.CARTE_ABONNEMENT:
+        mandatory = FIELDS_CARTE[format]["mandatory_fields"]
+        # Apply domain-specific variations
+        if domain in CARTE_NO_REFUND_DOMAINS:
+            mandatory = mandatory + [FieldEnum.DIGITAL_COMPULSORY]
+        elif domain in CARTE_REFUND_DOMAINS:
+            mandatory = mandatory + [FieldEnum.WITHDRAWAL_TYPES]
+        return mandatory
+    if nature == NatureEnum.NUMERIQUE:
+        return FIELDS_NUMERIQUE[format]["mandatory_fields"]
     return []
