@@ -2,7 +2,7 @@ import { useRef } from 'react'
 import type { UseFormReturn } from 'react-hook-form'
 
 import { isErrorAPIError, serializeApiErrors } from '@/apiClient/helpers'
-import type { GetIndividualOfferResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferResponseModelV2 } from '@/apiClient/v1'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
@@ -21,7 +21,7 @@ export const useSaveOfferPriceTable = ({
   offer,
 }: {
   form: UseFormReturn<PriceTableFormValues>
-  offer: GetIndividualOfferResponseModel
+  offer: GetIndividualOfferResponseModelV2
 }): {
   save: (formValues: PriceTableFormValues) => Promise<boolean>
   /** Set on a successful save; read by `afterSubmitState` so the message is

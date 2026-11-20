@@ -13,7 +13,6 @@ describe('isOfferSynchronized', () => {
 
   it('should return false when lastProvider is null', () => {
     const offer = getIndividualOfferFactory({
-      // @ts-expect-error:waiting for backend to migrate to pydantic v2
       lastProvider: null,
     })
 

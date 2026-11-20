@@ -6,7 +6,8 @@ import useSWR, { useSWRConfig } from 'swr'
 import { api } from '@/apiClient/api'
 import type {
   CategoryResponseModel,
-  GetIndividualOfferResponseModel,
+  GetIndividualOfferResponseModelV2,
+  OfferExtraDataV2,
   SubcategoryResponseModel,
 } from '@/apiClient/v1'
 import {
@@ -14,7 +15,6 @@ import {
   GET_CATEGORIES_QUERY_KEY,
   GET_OFFER_QUERY_KEY,
 } from '@/commons/config/swrQueryKeys'
-import type { OfferExtraData } from '@/commons/core/Offers/types'
 import { isOfferProductBasedButNotSynchronized } from '@/commons/core/Offers/utils/typology'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
@@ -22,7 +22,7 @@ import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 export interface IndividualOfferContextValues {
   // TODO (igabriele, 2025-09-09): We should be able to ensure a defined `offer` by setting aside the only case where offer is null (1st creation step).
-  offer: GetIndividualOfferResponseModel | null
+  offer: GetIndividualOfferResponseModelV2 | null
   offerId: number | null
   categories: CategoryResponseModel[]
   subCategories: SubcategoryResponseModel[]
@@ -88,7 +88,7 @@ export const IndividualOfferContextProvider = ({
     }
   )
   const offer = offerQuery.data
-  const extraData = offer?.extraData as OfferExtraData | undefined
+  const extraData = offer?.extraData as OfferExtraDataV2 | undefined
   const offerEan = extraData?.ean
 
   //  Get the offer on the venue with the same EAN if it exists
