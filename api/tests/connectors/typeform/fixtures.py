@@ -1570,6 +1570,53 @@ RESPONSE_FORM_RESPONSE_WITHOUT_LABELS = {
 }
 
 
+RESPONSE_FORM_RESPONSE_WITH_OTHER_CHOICE = {
+    "items": [
+        {
+            "landing_id": "k3v8q2xw7mz4yb1nk3v8q2xwr5t9ja6e",
+            "response_id": "k3v8q2xw7mz4yb1nk3v8q2xwr5t9ja6e",
+            "response_type": "completed",
+            "landed_at": "2025-01-16T09:10:12Z",
+            "submitted_at": "2025-01-16T09:11:45Z",
+            "metadata": {
+                "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+                "platform": "other",
+                "referer": "https://passculture.typeform.com/to/OtherChoice",
+                "network_id": "02caf8bf57",
+                "browser": "default",
+            },
+            "hidden": {},
+            "calculated": {"score": 0},
+            "answers": [
+                {
+                    "field": {
+                        "id": "roLXsK1FpiIW",
+                        "type": "phone_number",
+                        "ref": "a4691847-bb60-4dbc-a7da-073eedc4bc03",
+                    },
+                    "type": "phone_number",
+                    "phone_number": "+33123456789",
+                },
+                {
+                    "field": {
+                        "id": "VjdqXQRZyK70",
+                        "type": "multiple_choice",
+                        "ref": "d762eb05-42f9-4925-9300-cd61f0b5ef86",
+                    },
+                    "type": "choice",
+                    "choice": {
+                        "id": "other",
+                        "other": "Le Lièvre et la Tortue",
+                    },
+                },
+            ],
+        }
+    ],
+    "total_items": 1,
+    "page_count": 1,
+}
+
+
 RESPONSE_FORM_404_NOT_FOUND = {"code": "FORM_NOT_FOUND", "description": "Non existing form with id AaAaAa"}
 
 RESPONSE_FORM_RESPONSES_404_NOT_FOUND = {"code": "NOT_FOUND", "description": "Endpoint not found"}

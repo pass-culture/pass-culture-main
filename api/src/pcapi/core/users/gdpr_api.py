@@ -715,11 +715,12 @@ def _extract_gdpr_chronicles(user: models.User) -> list[schemas.GdprChronicleDat
     chronicles = []
     for chronicle in chronicles_data:
         product_name = None
-        for product in chronicle.products:
-            product_identifier = chronicles_api.get_product_identifier(chronicle, product)
-            if chronicle.productIdentifier and product_identifier == chronicle.productIdentifier:
-                product_name = product.name
-                break
+        if chronicle.productIdentifier:
+            for product in chronicle.products:
+                product_identifier = chronicles_api.get_product_identifier(chronicle, product)
+                if product_identifier == chronicle.productIdentifier:
+                    product_name = product.name
+                    break
         chronicles.append(
             schemas.GdprChronicleData(
                 age=chronicle.age,
@@ -739,6 +740,7 @@ def _extract_gdpr_chronicles(user: models.User) -> list[schemas.GdprChronicleDat
                 productIdentifierType=chronicle.productIdentifierType.value,
                 email=chronicle.email,
                 firstName=chronicle.firstName,
+                freeTextTitle=chronicle.freeTextTitle,
                 isIdentityDiffusible=chronicle.isIdentityDiffusible,
                 isSocialMediaDiffusible=chronicle.isSocialMediaDiffusible,
                 productName=product_name,

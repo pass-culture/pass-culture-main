@@ -48,6 +48,7 @@ class TypeformAnswer(BaseModel):
     field_id: str
     choice_id: str | None = None
     text: str | None = None
+    other_text: str | None = None
 
 
 class TypeformResponse(BaseModel):
@@ -304,6 +305,7 @@ class TypeformBackend(BaseBackend):
                                 field_id=answer["field"]["id"],
                                 text=answer["choice"].get("label"),
                                 choice_id=answer["choice"]["id"],
+                                other_text=_strip(answer["choice"].get("other")),
                             )
                         )
                     case "choices":

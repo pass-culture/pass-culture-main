@@ -45,6 +45,7 @@
         {% for offer in chronicle.offers %}<div>{{ offer }}</div>{% endfor %}
       {% endif %}
     </td>
+    <td>{{ chronicle.freeTextTitle | empty_string_if_null }}</td>
     <td class="pc-mw-50-vw">{{ collapsable_text(chronicle.id, chronicle.short_content|trim, chronicle.content|trim) }}</td>
     <td>{{ chronicle.dateCreated | format_date }}</td>
     <td>{{ chronicle.isActive | format_bool_badge }}</td>
