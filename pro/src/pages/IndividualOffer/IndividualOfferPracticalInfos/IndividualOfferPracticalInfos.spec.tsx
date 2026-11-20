@@ -53,6 +53,26 @@ describe('IndividialOfferPracticalInfos', () => {
     const { container } = renderIndividualOfferMedia()
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    // Add tab panels required by aria-controls validation
+    ;[
+      'panel-visibilite',
+      'panel-description',
+      'panel-localisation',
+      'panel-media',
+      'panel-tarifs',
+      'panel-horaires',
+      'panel-informations_pratiques',
+      'panel-recapitulatif',
+      'panel-confirmation',
+      'panel-reservations',
+    ].forEach((panelId) => {
+      const panel = document.createElement('div')
+      panel.id = panelId
+      panel.setAttribute('role', 'tabpanel')
+      container.appendChild(panel)
+    })
+
     expect(await axe(container)).toHaveNoViolations()
   })
 

@@ -8,6 +8,7 @@ import {
 } from '@/apiClient/v1'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
+import { useActiveStep } from '@/commons/hooks/useActiveStep'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
@@ -19,6 +20,7 @@ import {
 } from '@/design-system/Button/types'
 import fullTrashIcon from '@/icons/full-trash.svg'
 import { IndividualOfferTitle } from '@/pages/IndividualOfferWizard/IndividualOfferTitle/IndividualOfferTitle'
+import { getPanelId, getTabId } from '@/ui-kit/Tabs/Tabs'
 
 import { IndividualOfferNavigation } from './components/IndividualOfferNavigation/IndividualOfferNavigation'
 import { OfferPublicationEdition } from './components/OfferPublicationEdition/OfferPublicationEdition'
@@ -38,6 +40,7 @@ export const IndividualOfferLayout = ({
 }: IndividualOfferLayoutProps) => {
   const { hasPublishedOfferWithSameEan } = useIndividualOfferContext()
   const mode = useOfferWizardMode()
+  const activeStep = useActiveStep()
 
   // All offer's publication dates can be manually edited except for:
   // - rejected offers
@@ -68,13 +71,23 @@ export const IndividualOfferLayout = ({
       await api.deleteDraftOffers({ body: { ids: [offer.id] } })
     } catch {
       snackBar.error(
-        'Une erreur s’est produite lors de la suppression de l’offre'
+        "Une erreur s'est produite lors de la suppression de l'offre"
       )
       return
     }
     snackBar.success('Votre brouillon a bien été supprimé')
     await navigate('/offres')
   }
+
+  // Only add ARIA attributes in EDITION mode (when Tabs are displayed)
+  const contentDivProps: Record<string, string> =
+    mode === OFFER_WIZARD_MODE.EDITION
+      ? {
+          id: getPanelId(activeStep),
+          role: 'tabpanel',
+          ['aria-labelledby']: getTabId(activeStep),
+        }
+      : {}
 
   return (
     <>
@@ -129,7 +142,9 @@ export const IndividualOfferLayout = ({
       )}
       <IndividualOfferNavigation />
 
-      <div className={styles.content}>{children}</div>
+      <div className={styles.content} {...contentDivProps}>
+        {children}
+      </div>
     </>
   )
 }

@@ -24,12 +24,13 @@ export const NavLinksMode: StoryObj<typeof Tabs> = {
         key: 'collective',
       },
     ],
+    navLabel: 'Navigation example',
+    onClick: (key) => console.log(`Clicked: ${key}`),
   },
 }
 
 export const TabMode: StoryObj<typeof Tabs> = {
   args: {
-    type: 'tabs',
     selectedKey: 'tab1',
     items: [{
       key: 'tab1',
@@ -37,8 +38,9 @@ export const TabMode: StoryObj<typeof Tabs> = {
     }, {
       key: 'tab2',
       label: 'Tab 2'
-    }]
+    }],
+    navLabel: 'Tabs example',
+    onClick: (key) => console.log(`Clicked: ${key}`),
   }
 }
-
 

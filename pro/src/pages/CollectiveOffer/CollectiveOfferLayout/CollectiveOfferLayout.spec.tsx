@@ -52,6 +52,23 @@ describe('CollectiveOfferLayout', () => {
       {}
     )
 
+    // Add tab panels required by aria-controls validation
+    const panelContainer = container
+    ;[
+      'panel-DETAILS',
+      'panel-STOCKS',
+      'panel-INFORMATION',
+      'panel-INSTITUTION',
+      'panel-SUMMARY',
+      'panel-PREVIEW',
+      'panel-CONFIRMATION',
+    ].forEach((panelId) => {
+      const panel = document.createElement('div')
+      panel.id = panelId
+      panel.setAttribute('role', 'tabpanel')
+      panelContainer.appendChild(panel)
+    })
+
     expect(await axe(container)).toHaveNoViolations()
   })
 

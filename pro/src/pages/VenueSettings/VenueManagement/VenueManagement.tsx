@@ -1,6 +1,7 @@
 import { useId, useRef, useState } from 'react'
 
 import { api } from '@/apiClient/api'
+import { useActiveStep } from '@/commons/hooks/useActiveStep'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { useSyncVenueCache } from '@/commons/hooks/useSyncVenueCache'
@@ -9,8 +10,10 @@ import {
   ensureSelectedPartnerVenue,
 } from '@/commons/store/user/selectors'
 import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
+import { STEP_NAMES } from '@/components/SettingsTabs/constants'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
+import { getPanelId, getTabId } from '@/ui-kit/Tabs/Tabs'
 
 import { CloseVenueModal } from './CloseVenueModal/CloseVenueModal'
 import { ConfirmVenueClosedModal } from './ConfirmVenueClosedModal/ConfirmVenueClosedModal'
@@ -22,6 +25,7 @@ const VenueManagement = () => {
   const isClosed = withVenueHelpers(selectedPartnerVenue).isClosed
   const snackBar = useSnackBar()
   const { syncVenue } = useSyncVenueCache()
+  const activeStep = useActiveStep(STEP_NAMES)
   const isLastOpenedVenue =
     selectedOfferer.managedVenues.filter(
       (venue) => !withVenueHelpers(venue).isClosed
@@ -63,7 +67,11 @@ const VenueManagement = () => {
   }
 
   return (
-    <>
+    <div
+      id={getPanelId(activeStep)}
+      role="tabpanel"
+      aria-labelledby={getTabId(activeStep)}
+    >
       <div className={styles['banner']} ref={bannerRef} tabIndex={-1}>
         <div className={styles['banner-container']}>
           <h2 className={styles['banner-title']}>Fermeture de la structure</h2>
@@ -95,7 +103,7 @@ const VenueManagement = () => {
         isOpen={isConfirmVenueClosedModalOpen}
         refToFocusOnClose={bannerRef}
       />
-    </>
+    </div>
   )
 }
 
