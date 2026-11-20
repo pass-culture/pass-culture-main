@@ -5,12 +5,15 @@ import { routesWelcomeCarousel } from '@/app/AppRouter/subroutesWelcomeCarousel'
 import { withUserPermissions } from '@/commons/auth/withUserPermissions'
 import { noop } from '@/commons/utils/noop'
 import { parse } from '@/commons/utils/query-string'
+import { AdministrationLayout } from '@/layouts/AdministrationLayout/AdministrationLayout'
+import { VenuePageLayout } from '@/layouts/VenuePageLayout/VenuePageLayout'
+import { VenueSettings } from '@/pages/VenueSettings/VenueSettings'
 
-import { administrationRouteGroup } from './routes/administrationRouteGroup'
+import { administrationRoutes } from './routes/administration'
+import { ecoconceptionRoutes } from './routes/ecoconception'
+import { parametresRoutes } from './routes/parametres'
+import { partenaireRoutes } from './routes/partenaire'
 import { partnerRouteGroup } from './routes/partnerRouteGroup'
-import { venuePageRouteSubgroup } from './routes/venuePageRouteSubgroup'
-import { venueSettingsRouteSubgroup } from './routes/venueSettingsRouteSubgroup'
-import { routesEcoDesign } from './subroutesEcoDesignMap'
 import { routesIndividualOfferV2 } from './subroutesIndividualOfferV2'
 import {
   routesIndividualOfferWizard,
@@ -24,6 +27,8 @@ import {
   mustBeOnboardedWithActiveSelectedPartnerVenue,
   mustBeOnboardedWithSelectedPartnerVenue,
   mustBeUnauthenticated,
+  mustHaveSelectedAdminOfferer,
+  mustHaveSelectedPartnerVenue,
   mustNotBeOnboardedWithSelectedPartnerVenue,
 } from './utils'
 
@@ -48,10 +53,28 @@ export const routes: CustomRouteTree = [
       title: 'Espace acteurs culturels',
     },
   },
-  administrationRouteGroup,
+  {
+    path: '/administration',
+    loader: withUserPermissions(mustHaveSelectedAdminOfferer),
+    Component: AdministrationLayout,
+    children: administrationRoutes,
+  },
   partnerRouteGroup,
-  venuePageRouteSubgroup,
-  venueSettingsRouteSubgroup,
+  {
+    path: '/partenaire',
+    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+    Component: VenuePageLayout,
+    children: partenaireRoutes,
+  },
+  {
+    path: '/parametres',
+    loader: withUserPermissions(mustHaveSelectedPartnerVenue),
+    handle: {
+      title: 'Paramètres',
+    },
+    Component: VenueSettings,
+    children: parametresRoutes,
+  },
   {
     lazy: () => import('@/pages/Hub/Hub'),
     loader: withUserPermissions(mustBeAuthenticated),
@@ -493,7 +516,7 @@ export const routes: CustomRouteTree = [
     handle: {
       title: 'Déclaration d’écoconception de l’espace partenaire',
     },
-    children: routesEcoDesign,
+    children: ecoconceptionRoutes,
   },
   {
     lazy: () =>
