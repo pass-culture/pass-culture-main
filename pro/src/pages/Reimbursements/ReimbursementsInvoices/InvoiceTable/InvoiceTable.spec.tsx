@@ -4,7 +4,10 @@ import { vi } from 'vitest'
 import { axe } from 'vitest-axe'
 
 import * as apiModule from '@/apiClient/api'
-import { type InvoiceResponseModel, InvoiceStatus } from '@/apiClient/v1'
+import {
+  InvoiceDisplayedStatus,
+  type InvoiceResponseModel,
+} from '@/apiClient/v1'
 import * as analyticsHook from '@/app/App/analytics/firebase'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -52,14 +55,14 @@ const invoices: InvoiceResponseModel[] = [
     reference: 'INV-001',
     date: '2024-06-01',
     amount: 150,
-    status: InvoiceStatus.PAID,
+    status: InvoiceDisplayedStatus.PAID,
     url: '',
   },
   {
     reference: 'INV-002',
     date: '2024-05-15',
     amount: -50,
-    status: InvoiceStatus.PAID,
+    status: InvoiceDisplayedStatus.PAID,
     url: '',
   },
 ]
@@ -169,7 +172,7 @@ describe('InvoiceTable', () => {
         reference: `INV-${i + 1}`,
         date: '2024-06-01',
         amount: 100,
-        status: InvoiceStatus.PAID,
+        status: InvoiceDisplayedStatus.PAID,
         url: '',
       })
     )

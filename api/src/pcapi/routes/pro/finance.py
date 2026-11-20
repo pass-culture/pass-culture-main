@@ -60,10 +60,11 @@ def get_invoices(query: finance_serialize.InvoiceListQueryModel) -> finance_seri
 
     invoices = repository.get_invoices_query(
         current_user,
+        offerer_id=query.offerer_id,
         bank_account_id=query.bank_account_id,
+        status_list=query.get_status_list(),
         date_from=query.period_beginning_date,
         date_until=query.period_ending_date,
-        offerer_id=query.offerer_id,
         # see the comment about amounts in src/pcapi/core/finance/models.py docstring
         amount_lower_than=0 if query.amount_positive_only else None,
         amount_greater_than_equal=0 if query.amount_negative_only else None,

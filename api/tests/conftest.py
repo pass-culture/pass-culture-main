@@ -429,7 +429,7 @@ class TestClient:
         headers = headers or {}
         kwargs = {}
         if params:
-            kwargs["query_string"] = urllib.parse.urlencode(params)
+            kwargs["query_string"] = urllib.parse.urlencode(params, doseq=True)
         result = self.client.get(
             route,
             headers={**self.auth_header, **headers},

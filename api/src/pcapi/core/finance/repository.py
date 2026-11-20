@@ -574,8 +574,9 @@ def convert_to_datetime(date: datetime.date) -> datetime.datetime:
 
 def get_invoices_query(
     user: users_models.User,
-    bank_account_id: int | None = None,
     offerer_id: int | None = None,
+    bank_account_id: int | None = None,
+    status_list: list[models.InvoiceStatus] | None = None,
     date_from: datetime.date | None = None,
     date_until: datetime.date | None = None,
     amount_lower_than: int | None = None,
@@ -611,6 +612,9 @@ def get_invoices_query(
         )
         .order_by(models.Invoice.date.desc())
     )
+
+    if status_list:
+        invoices = invoices.filter(models.Invoice.status.in_(status_list))
 
     if date_from:
         datetime_from = convert_to_datetime(date_from)

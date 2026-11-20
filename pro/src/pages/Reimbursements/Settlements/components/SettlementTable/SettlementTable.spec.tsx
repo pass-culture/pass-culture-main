@@ -5,7 +5,7 @@ import { vi } from 'vitest'
 import { axe } from 'vitest-axe'
 
 import {
-  InvoiceStatus,
+  InvoiceDisplayedStatus,
   SettlementDisplayedStatus,
   type SettlementResponseModel,
 } from '@/apiClient/v1'
@@ -78,21 +78,21 @@ const baseSettlement = {
       date: '2024-06-01',
       amount: 100,
       url: 'J123456789.invoice',
-      status: InvoiceStatus.PAID,
+      status: InvoiceDisplayedStatus.PAID,
     },
     {
       reference: 'J666666666',
       date: '2024-06-01',
       amount: -50,
       url: 'J666666666.invoice',
-      status: InvoiceStatus.PAID,
+      status: InvoiceDisplayedStatus.PAID,
     },
     {
       reference: 'J987654321',
       date: '2024-06-01',
       amount: 100,
       url: 'J987654321.invoice',
-      status: InvoiceStatus.PAID,
+      status: InvoiceDisplayedStatus.PAID,
     },
   ],
   resolvedBy: [],
@@ -162,7 +162,7 @@ describe('<SettlementTable />', () => {
               date: '2024-06-01',
               amount: -150,
               url: 'J123456789.invoice',
-              status: InvoiceStatus.PAID,
+              status: InvoiceDisplayedStatus.PAID,
             },
           ],
           resolvedBy: [],
@@ -375,7 +375,7 @@ describe('<SettlementTable />', () => {
               date: '2024-06-02',
               amount: 200,
               url: 'J000000000.invoice',
-              status: InvoiceStatus.PAID,
+              status: InvoiceDisplayedStatus.PAID,
             },
           ],
         },

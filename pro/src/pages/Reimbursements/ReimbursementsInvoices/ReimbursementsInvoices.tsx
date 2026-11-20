@@ -3,7 +3,10 @@ import { useSearchParams } from 'react-router'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
-import type { getFinanceInvoicesData } from '@/apiClient/v1'
+import {
+  type getFinanceInvoicesData,
+  InvoiceDisplayedStatus,
+} from '@/apiClient/v1'
 import {
   GET_INVOICES_QUERY_KEY,
   GET_OFFERER_BANK_ACCOUNTS_AND_ATTACHED_VENUES_QUERY_KEY,
@@ -23,11 +26,23 @@ import { InvoicesFilters } from './InvoicesFilters'
 import { InvoicesServerError } from './InvoicesServerError'
 import { InvoiceTable } from './InvoiceTable/InvoiceTable'
 
+function extractStatusFilter(
+  status: string | null
+): InvoiceDisplayedStatus | null {
+  if (status && Object.keys(InvoiceDisplayedStatus).includes(status)) {
+    return status as InvoiceDisplayedStatus
+  }
+
+  return null
+}
+
 function extractFilters(
   urlParams: URLSearchParams
 ): Omit<getFinanceInvoicesData['query'], 'offererId'> {
   const amountPositiveOnly = urlParams.get('amountPositiveOnly')
   const amountNegativeOnly = urlParams.get('amountNegativeOnly')
+  const status = extractStatusFilter(urlParams.get('status'))
+
   return {
     periodBeginningDate:
       urlParams.get('periodBeginningDate') ??
@@ -41,6 +56,7 @@ function extractFilters(
     ...(amountPositiveOnly && {
       amountPositiveOnly: amountPositiveOnly === 'true',
     }),
+    ...(status && { status }),
   }
 }
 
