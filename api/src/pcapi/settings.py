@@ -291,6 +291,7 @@ UBBLE_USER_JOURNEY_ID_DN = os.environ.get("UBBLE_USER_JOURNEY_ID_DN")
 
 # EHP SANDBOX
 CAN_RUN_SANDBOX = bool(int(os.environ.get("CAN_RUN_SANDBOX", "0")))
+SANDBOX_POSTGRES_CONTAINER = os.environ.get("SANDBOX_POSTGRES_CONTAINER", "pc-postgres")
 # Sandbox users and unit tests default password - overridden by a secret password on cloud environments
 TEST_DEFAULT_PASSWORD = secrets_utils.get("TEST_DEFAULT_PASSWORD", "user@AZERTY123")
 ENABLE_LOCAL_DEV_MODE_FOR_STORAGE = bool(int(os.environ.get("ENABLE_LOCAL_DEV_MODE_FOR_STORAGE", "0")))

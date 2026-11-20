@@ -1,3 +1,4 @@
+import logging
 import typing
 
 import sqlalchemy as sa
@@ -37,6 +38,9 @@ from pcapi.models.feature import Feature
 from pcapi.models.feature import install_feature_flags
 
 
+logger = logging.getLogger(__name__)
+
+
 def install_database_extensions() -> None:
     _create_text_search_configuration_if_not_exists()
     _create_index_btree_gist_extension()
@@ -68,6 +72,15 @@ def _create_index_btree_gist_extension() -> None:
 def _create_postgis_extension() -> None:
     with db.engine.begin() as connection:
         connection.execute(text("CREATE EXTENSION IF NOT EXISTS postgis;"))
+
+
+def sync_enums_with_db() -> None:
+    install_feature_flags()
+    logger.info("Feature flags installed")
+    perm_models.sync_db_permissions(db.session)
+    logger.info("Permissions synced")
+    perm_models.sync_db_roles(db.session)
+    logger.info("Roles synced")
 
 
 # Order of table to clean matters because of foreign key constraints
@@ -204,9 +217,14 @@ tables_to_clean: list[type[Model]] = [
 ]
 
 
-def clean_all_database(*args: typing.Any, reset_ids: bool = False, **kwargs: typing.Any) -> None:
+def check_environment_allows_database_cleaning() -> None:
+    """Raise `ValueError` on the environments whose database must never be cleaned."""
     if settings.ENV not in ("development", "testing", "ops"):
         raise ValueError(f"You cannot do this on this environment: '{settings.ENV}'")
+
+
+def clean_all_database(*args: typing.Any, reset_ids: bool = False, **kwargs: typing.Any) -> None:
+    check_environment_allows_database_cleaning()
 
     for table in tables_to_clean:
         try:
@@ -231,7 +249,5 @@ def clean_all_database(*args: typing.Any, reset_ids: bool = False, **kwargs: typ
             pass
 
     db.session.commit()
-    install_feature_flags()
+    sync_enums_with_db()
     install_local_providers()
-    perm_models.sync_db_permissions(db.session)
-    perm_models.sync_db_roles(db.session)
