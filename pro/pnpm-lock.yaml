@@ -219,8 +219,8 @@ importers:
   .:
     dependencies:
       '@algolia/autocomplete-core':
-        specifier: 1.19.12
-        version: 1.19.12(@algolia/client-search@5.64.0)(algoliasearch@5.64.0)(search-insights@2.17.3)
+        specifier: 1.19.13
+        version: 1.19.13(@algolia/client-search@5.64.0)(algoliasearch@5.64.0)(search-insights@2.17.3)
       '@algolia/autocomplete-plugin-query-suggestions':
         specifier: 1.19.12
         version: 1.19.12(@algolia/client-search@5.64.0)(algoliasearch@5.64.0)(search-insights@2.17.3)

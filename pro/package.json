@@ -37,7 +37,7 @@
     "knip": "knip"
   },
   "dependencies": {
-    "@algolia/autocomplete-core": "1.19.12",
+    "@algolia/autocomplete-core": "1.19.13",
     "@algolia/autocomplete-plugin-query-suggestions": "1.19.12",
     "@algolia/autocomplete-plugin-recent-searches": "1.19.13",
     "@algolia/autocomplete-preset-algolia": "1.19.12",
