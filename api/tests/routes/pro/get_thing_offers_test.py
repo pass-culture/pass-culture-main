@@ -127,7 +127,7 @@ class Returns200Test:
     def test_passes_the_filters_to_the_repository(self, mocked_get_paginated_thing_offer_ids, _mocked, client):
         pro, venue = _create_pro_with_venue()
         cursor = offers_repository.ThingOffersCursor(name="Batman", id=12)
-        encoded_cursor = offers_serialize.encode_thing_offers_cursor(cursor)
+        encoded_cursor = offers_serialize.encode_offers_cursor(cursor)
 
         authenticated_client = client.with_session_auth(email=pro.email)
         response = authenticated_client.get(
@@ -257,6 +257,6 @@ class Returns404Test:
 def test_cursor_encoding_round_trip():
     cursor = offers_repository.ThingOffersCursor(name="L'été à Noël & co ?/+", id=123)
 
-    encoded_cursor = offers_serialize.encode_thing_offers_cursor(cursor)
+    encoded_cursor = offers_serialize.encode_offers_cursor(cursor)
 
     assert offers_serialize.decode_thing_offers_cursor(encoded_cursor) == cursor
