@@ -65,7 +65,7 @@ function renderAdditionalFeesForm({
 
     return (
       <FormProvider {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
+        <form noValidate onSubmit={form.handleSubmit(onSubmit)}>
           {scrollToError && <ScrollToFirstHookFormErrorAfterSubmit />}
           <AdditionalFeesForm canEditDiscount={canEditDiscount} />
           <button type="submit">Enregistrer</button>
@@ -354,12 +354,19 @@ describe('AdditionalFeesForm', () => {
   })
 
   it.each([
-    ['unselected type', '' as CollectiveAdditionalFeeType],
-    ['missing custom label', CollectiveAdditionalFeeType.OTHER],
+    {
+      name: 'unselected type',
+      type: '' as CollectiveAdditionalFeeType,
+    },
+    {
+      name: 'missing custom label',
+      type: CollectiveAdditionalFeeType.OTHER,
+    },
   ])(
-    'should focus the fee type with %s and empty amount on submit',
-    async (_, type) => {
+    'should focus the fee type with $name and empty amount on submit',
+    async ({ type }) => {
       const user = userEvent.setup()
+      const onSubmit = vi.fn()
       const scrollIntoView = vi.fn()
       Element.prototype.scrollIntoView = scrollIntoView
       renderAdditionalFeesForm({
@@ -368,15 +375,21 @@ describe('AdditionalFeesForm', () => {
           collectiveAdditionalFees: [{ type, label: '', amount: 0 }],
         },
         scrollToError: true,
+        onSubmit,
       })
 
-      await user.clear(screen.getByLabelText(/Prix \(en €\)/))
+      const typeInput = screen.getByLabelText(/Type de frais annexes/)
+      const amountInput = screen.getByLabelText(/Prix \(en €\)/)
+      await user.clear(amountInput)
       await user.click(screen.getByRole('button', { name: 'Enregistrer' }))
-
       await waitFor(() => {
-        expect(scrollIntoView).toHaveBeenCalled()
-        expect(screen.getByLabelText(/Prix \(en €\)/)).toHaveFocus()
+        expect(typeInput).toHaveAttribute('aria-invalid', 'true')
+        expect(amountInput).toHaveAttribute('aria-invalid', 'true')
       })
+
+      expect(typeInput).toHaveFocus()
+      expect(scrollIntoView).toHaveBeenCalled()
+      expect(onSubmit).not.toHaveBeenCalled()
     }
   )
 
