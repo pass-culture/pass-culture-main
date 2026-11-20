@@ -774,12 +774,6 @@ def _get_offers_by_ids(
                 users_models.User.firstName,
                 users_models.User.lastName,
             ),
-            sa_orm.joinedload(offers_models.Offer.instructor).load_only(
-                users_models.User.id,
-                users_models.User.firstName,
-                users_models.User.lastName,
-                users_models.User.email,
-            ),
             sa_orm.joinedload(offers_models.Offer.compliance),
             sa_orm.selectinload(offers_models.Offer.lastProvider).load_only(
                 providers_models.Provider.name,
