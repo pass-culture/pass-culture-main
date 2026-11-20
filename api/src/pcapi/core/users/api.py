@@ -30,7 +30,9 @@ import pcapi.utils.date as date_utils
 import pcapi.utils.email as email_utils
 import pcapi.utils.postal_code as postal_code_utils
 from pcapi import settings
-from pcapi.connectors.apple_oauth import revoke_apple_user
+from pcapi.connectors.sso import SSOProviderFactory
+from pcapi.connectors.sso import SSOProviderName
+from pcapi.connectors.sso.models import SSOUser
 from pcapi.core import mails as mails_api
 from pcapi.core import token as token_utils
 from pcapi.core.external.attributes import api as external_attributes_api
@@ -919,7 +921,7 @@ def create_oauth_state_token() -> str:
     return token.encoded_token
 
 
-def create_account_creation_token(sso_user: users_schemas.SSOUser) -> str:
+def create_account_creation_token(sso_user: SSOUser | users_schemas.SSOUser) -> str:
     token = token_utils.UUIDToken.create(
         token_utils.TokenType.ACCOUNT_CREATION,
         constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME,
@@ -1545,14 +1547,15 @@ def revoke_sso_access(
             # Trying to revoke Apple SSO from pc-api.
             # Revocation on Apple could fail, due to bad refresh_token, but user
             # can do it on their side (follow doc linked in revoke_apple_user function)
+            extra_data: dict[str, str] = sso.ssoExtraData or {}
 
-            if sso.ssoExtraData is None:
-                continue
-
-            for client_type, token in sso.ssoExtraData.items():
+            for client_type, token in extra_data.items():
                 is_web_client = client_type == "web"
+
                 try:
-                    revoke_apple_user(token, is_web_client)
+                    sso_provider = SSOProviderFactory.create(SSOProviderName.APPLE, is_web_client)
+                    sso_provider.revoke_access(token)
+
                 except Exception as exc:
                     logger.warning(
                         "Could not revoke Apple SSO",
