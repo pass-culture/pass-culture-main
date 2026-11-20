@@ -1,5 +1,6 @@
 import argparse
 import pathlib
+import typing
 
 
 IMPORTANT = (
@@ -54,7 +55,7 @@ def check_migration(file_name: str, operation_level: str = "important") -> list[
     return operations
 
 
-def detect_changes(file_names) -> str | None:
+def detect_changes(file_names: typing.Iterable[str]) -> str | None:
     important_changes = []
     notable_changes = []
     for file_name in file_names:
@@ -74,7 +75,7 @@ def detect_changes(file_names) -> str | None:
     return None
 
 
-def main(file_names):
+def main(file_names: typing.Iterable[str]) -> None:
     print(detect_changes(file_names))
 
 
