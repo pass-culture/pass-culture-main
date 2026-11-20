@@ -1,6 +1,7 @@
 import logging
 from datetime import datetime
 from datetime import timedelta
+from unittest import mock
 
 import pytest
 import time_machine
@@ -24,9 +25,12 @@ from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.reactions.factories import ReactionFactory
 from pcapi.core.reactions.models import ReactionTypeEnum
 from pcapi.core.testing import assert_num_queries
+from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.routes.native.v1.serialization.offers import MAX_PREVIEW_CHRONICLES
+from pcapi.routes.native.v3.serialization.offers import OfferResponse
 from pcapi.utils import date as date_utils
+from pcapi.utils import native_cache
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -1173,3 +1177,63 @@ class OffersStocksV3Test:
             "specialEventType": "AVANT_PREMIERE",
             "video": "IMAX",
         }
+
+
+class OffersV3CacheTest:
+    @pytest.fixture(name="cache_store")
+    def cache_store_fixture(self, monkeypatch):
+        store = {}
+
+        class FakeRedis:
+            def get(self, key):
+                return store.get(key)
+
+            def set(self, key, value, ex=None):
+                store[key] = value
+
+        monkeypatch.setattr(native_cache, "_get_client", FakeRedis)
+        return store
+
+    @pytest.mark.settings(REDIS_CACHE_URL="")
+    def test_unconfigured_cache_does_not_read_feature_flags(self, client):
+        """Without a cache URL, the route must not pay the feature flag query on every request."""
+        offer = offers_factories.ThingOfferFactory()
+
+        with mock.patch.object(FeatureToggle, "is_active") as is_active:
+            response = client.get(f"/native/v3/offer/{offer.id}")
+
+        assert response.status_code == 200
+        is_active.assert_not_called()
+
+    @pytest.mark.settings(REDIS_CACHE_URL="redis://cache:6379", REDIS_CACHE_TTL_SECONDS=30)
+    def test_flag_off_does_not_use_cache(self, client, cache_store):
+        offer = offers_factories.ThingOfferFactory()
+
+        response = client.get(f"/native/v3/offer/{offer.id}")
+
+        assert response.status_code == 200
+        assert cache_store == {}
+
+    @pytest.mark.settings(REDIS_CACHE_URL="redis://cache:6379", REDIS_CACHE_TTL_SECONDS=30)
+    def test_hit_serves_the_body_computed_without_cache(self, client, cache_store, features):
+        """A cached response must be byte for byte the one served when the cache is off."""
+        offer = offers_factories.ThingOfferFactory()
+        offers_factories.StockFactory(offer=offer)
+        offer_id = offer.id
+        without_cache = client.get(f"/native/v3/offer/{offer_id}")
+
+        features.ENABLE_NATIVE_CACHE_GET_OFFER_V3 = True
+        miss = client.get(f"/native/v3/offer/{offer_id}")
+        hit = client.get(f"/native/v3/offer/{offer_id}")
+
+        assert without_cache.status_code == miss.status_code == hit.status_code == 200
+        assert list(cache_store) == [native_cache.build_key("get_offer_v3", "v3", OfferResponse, offer_id)]
+        assert miss.data == hit.data == without_cache.data
+
+    @pytest.mark.settings(REDIS_CACHE_URL="redis://cache:6379", REDIS_CACHE_TTL_SECONDS=30)
+    @pytest.mark.features(ENABLE_NATIVE_CACHE_GET_OFFER_V3=True)
+    def test_not_found_is_not_cached(self, client, cache_store):
+        response = client.get("/native/v3/offer/0")
+
+        assert response.status_code == 404
+        assert cache_store == {}

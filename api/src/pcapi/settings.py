@@ -122,6 +122,13 @@ REDIS_ARTIST_IDS_FOR_OFFERS_CHUNK_SIZE = int(os.environ.get("REDIS_ARTIST_IDS_FO
 REDIS_ARTIST_IDS_CHUNK_SIZE = int(os.environ.get("REDIS_ARTIST_IDS_CHUNK_SIZE", "10"))
 REDIS_VENUE_IDS_FOR_OFFERS_CHUNK_SIZE = int(os.environ.get("REDIS_VENUE_IDS_FOR_OFFERS_CHUNK_SIZE", "1000"))
 REDIS_VENUE_IDS_CHUNK_SIZE = int(os.environ.get("REDIS_VENUE_IDS_CHUNK_SIZE", "1000"))
+# Dedicated cache for native API responses: disabled unless both the URL and a positive TTL are set
+REDIS_CACHE_URL = secrets_utils.get("REDIS_CACHE_URL", "")
+REDIS_CACHE_TTL_SECONDS = int(os.environ.get("REDIS_CACHE_TTL_SECONDS", "0"))
+REDIS_CACHE_SOCKET_TIMEOUT_SECONDS = float(os.environ.get("REDIS_CACHE_SOCKET_TIMEOUT_SECONDS", "0.1"))
+REDIS_CACHE_SOCKET_CONNECT_TIMEOUT_SECONDS = float(os.environ.get("REDIS_CACHE_SOCKET_CONNECT_TIMEOUT_SECONDS", "0.1"))
+# Per worker; beyond it a request falls back to the database. Size it per role: threads in gthread, an explicit cap in gevent
+REDIS_CACHE_MAX_CONNECTIONS = int(os.environ.get("REDIS_CACHE_MAX_CONNECTIONS", "10"))
 
 
 # SENTRY
