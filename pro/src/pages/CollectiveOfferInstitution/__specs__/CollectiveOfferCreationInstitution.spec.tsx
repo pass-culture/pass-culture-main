@@ -1,6 +1,12 @@
-import { screen, waitForElementToBeRemoved } from '@testing-library/react'
+import {
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+} from '@testing-library/react'
 import { axe } from 'vitest-axe'
 
+import { api } from '@/apiClient/api'
+import { CollectiveOfferAllowedAction } from '@/apiClient/v1'
 import { getCollectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
@@ -33,12 +39,37 @@ const renderCollectiveOfferCreationInstitution = (
 }
 
 const defaultProps = {
-  offer: getCollectiveOfferFactory(),
+  offer: getCollectiveOfferFactory({
+    allowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_INSTITUTION],
+  }),
   isTemplate: false,
   offerer: undefined,
 }
 
 describe('CollectiveOfferCreationInstitution', () => {
+  const institution = {
+    id: 12,
+    name: 'Institution 1',
+    postalCode: '91190',
+    city: 'Gif-sur-Yvette',
+    institutionType: 'Collège',
+    phoneNumber: '',
+    institutionId: 'ABCDEF11',
+  }
+
+  beforeEach(() => {
+    vi.spyOn(api, 'getEducationalInstitutions').mockResolvedValue({
+      educationalInstitutions: [institution],
+      page: 1,
+      pages: 1,
+      total: 1,
+    })
+    vi.spyOn(
+      api,
+      'getAutocompleteEducationalRedactorsForUai'
+    ).mockResolvedValue([])
+  })
+
   it('should render without accessibility violations', async () => {
     const { container } = renderCollectiveOfferCreationInstitution(
       '/offre/A1/collectif/etablissement',
@@ -66,5 +97,43 @@ describe('CollectiveOfferCreationInstitution', () => {
         name: "Renseignez l'établissement scolaire et l'enseignant",
       })
     ).toBeInTheDocument()
+
+    await waitFor(() => {
+      expect(api.getEducationalInstitutions).toHaveBeenCalledOnce()
+    })
   })
+
+  it.each([institution, null])(
+    'should not fetch institutions or redactors without edit permission with institution %j',
+    async (institution) => {
+      renderCollectiveOfferCreationInstitution(
+        '/offre/A1/collectif/creation/etablissement',
+        {
+          ...defaultProps,
+          offer: getCollectiveOfferFactory({
+            allowedActions: [],
+            institution,
+          }),
+        }
+      )
+
+      const institutionInput = screen.getByLabelText(
+        /Nom de l’établissement scolaire ou code UAI/
+      )
+      expect(institutionInput).toBeDisabled()
+      await waitFor(() => {
+        expect(institutionInput).toHaveValue(
+          institution ? 'Collège Institution 1 - Gif-sur-Yvette - ABCDEF11' : ''
+        )
+      })
+      expect(
+        screen.getByLabelText(/Prénom et nom de l’enseignant/)
+      ).toBeDisabled()
+      expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
+      expect(api.getEducationalInstitutions).not.toHaveBeenCalled()
+      expect(
+        api.getAutocompleteEducationalRedactorsForUai
+      ).not.toHaveBeenCalled()
+    }
+  )
 })
