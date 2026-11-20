@@ -149,7 +149,7 @@ jobs:
 
       - name: "Create SaaS Sentry release"
         if: ${{ inputs.PUSH_RELEASE_TO_SENTRY }}
-        uses: getsentry/action-release@v3.7.0
+        uses: getsentry/action-release@v3.7.2
         env:
           SENTRY_AUTH_TOKEN: ${{ steps.secrets.outputs.SAAS_SENTRY_TOKEN }}
           SENTRY_ORG: pass-culture
