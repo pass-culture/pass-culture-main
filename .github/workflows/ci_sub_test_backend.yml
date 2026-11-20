@@ -42,7 +42,7 @@ jobs:
           docker run \
             --entrypoint sh \
             "$IMAGE_NAME" \
-            -c 'mypy src'
+            -c 'mypy .'
         env:
           IMAGE_NAME: ${{ steps.load-docker-image.outputs.image-name }}
 
