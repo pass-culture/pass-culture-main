@@ -12,7 +12,6 @@ import { DisplayableActivityMap } from '@/commons/mappings/DisplayableActivity'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { WEBAPP_URL } from '@/commons/utils/config'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
-import { noop } from '@/commons/utils/noop'
 import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { ImageDragAndDropUploader } from '@/components/ImageDragAndDropUploader/ImageDragAndDropUploader'
 import { ButtonImageEdit } from '@/components/ImageUploader/components/ButtonImageEdit/ButtonImageEdit'
@@ -79,7 +78,7 @@ export const Header = ({ context }: Readonly<HeaderProps>) => {
         // check-unused-css-disable-next-line
         dragAndDropClassName={styles['image-uploader-drag-and-drop']}
         onImageUpload={handleOnImageUpload}
-        onImageDelete={noop}
+        onImageDelete={handleOnImageDelete}
         initialValues={imageValues}
         mode={UploaderModeEnum.VENUE}
         hideActionButtons

@@ -95,11 +95,11 @@ describe('Header', () => {
     const snackBarsImport = (await vi.importActual(
       '@/commons/hooks/useSnackBar'
     )) as ReturnType<typeof useSnackBar.useSnackBar>
-    vi.spyOn(useSnackBar, 'useSnackBar').mockImplementationOnce(() => ({
+    vi.spyOn(useSnackBar, 'useSnackBar').mockReturnValue({
       ...snackBarsImport,
       success: snackBarSuccess,
       error: snackBarError,
-    }))
+    })
   })
 
   it('should display the venue public name and activity label', () => {
@@ -221,20 +221,16 @@ describe('Header', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('should call the delete endpoint and notify success when deleting the image', async () => {
+  it('should show the image uploader and notify success after deleting the image', async () => {
     const user = userEvent.setup()
     vi.spyOn(api, 'deleteVenueBanner').mockResolvedValueOnce()
     vi.mocked(apiHelpers.getFileFromURL).mockResolvedValueOnce(
       new File([''], 'mocked_file.jpg', { type: 'image/jpeg' })
     )
-    mockUseOnVenueImageUpload.mockReturnValueOnce({
-      imageValues: {
-        croppedImageUrl: 'https://www.example.com/image.png',
-        credit: '',
-      },
-      setImageValues: vi.fn(),
-      handleOnImageUpload: vi.fn(),
-    })
+    const { useOnVenueImageUpload } = await vi.importActual<
+      typeof import('@/commons/core/Venue/hooks/useOnVenueImageUpload')
+    >('@/commons/core/Venue/hooks/useOnVenueImageUpload')
+    mockUseOnVenueImageUpload.mockImplementation(useOnVenueImageUpload)
 
     renderHeader('partnerPage', {
       bannerUrl: 'https://www.example.com/image.png',
@@ -247,6 +243,10 @@ describe('Header', () => {
     expect(api.deleteVenueBanner).toHaveBeenCalledWith({
       path: { venue_id: 1 },
     })
+    expect(await screen.findByLabelText('Importez une image')).toBeEnabled()
+    expect(
+      screen.queryByRole('button', { name: /Modifier/ })
+    ).not.toBeInTheDocument()
     await waitFor(() => {
       expect(snackBarSuccess).toHaveBeenCalledWith(
         'Votre image a bien été supprimée',
