@@ -3,6 +3,7 @@ import logging
 import typing
 
 import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 
 from pcapi.core import search
 from pcapi.core.categories import subcategories
@@ -19,7 +20,6 @@ from pcapi.core.search.models import IndexationReason
 from pcapi.models import db
 from pcapi.models import offer_mixin
 from pcapi.routes.provider.individual_offers.v1 import serialization as individual_offers_v1_serialization
-from pcapi.routes.provider.individual_offers.v1 import utils as individual_offers_v1_utils
 from pcapi.utils import date as utils_date
 from pcapi.utils.transaction_manager import atomic
 
@@ -30,9 +30,9 @@ logger = logging.getLogger(__name__)
 def batch_create_or_update_ean_offers(
     request_payload: offers_schemas.CreateOrUpdateEANOffersRequest,
 ) -> None:
-    extract_result = _extract(request_payload)
-    transform_result = _transform(request_payload, extract_result)
     with atomic():
+        extract_result = _extract(request_payload)
+        transform_result = _transform(request_payload, extract_result)
         _load(
             request_payload,
             extract_result,
@@ -67,24 +67,23 @@ def _extract(request_payload: offers_schemas.CreateOrUpdateEANOffersRequest) -> 
     ean_list_to_create = requested_eans - ean_list_to_update
 
     products_by_ean = {}
-    with atomic():
-        if request_payload.address_id:
-            offerer_address = offerers_api.get_or_create_offer_location(
-                venue_id=venue.id,
-                address_id=request_payload.address_id,
-                label=request_payload.address_label,
-            )
-        else:
-            offerer_address = offers_api.get_or_create_offerer_address_from_address_body(
-                offerers_schemas.LocationOnlyOnVenueModel(),
-                venue,
-            )
+    if request_payload.address_id:
+        offerer_address = offerers_api.get_or_create_offer_location(
+            venue_id=venue.id,
+            address_id=request_payload.address_id,
+            label=request_payload.address_label,
+        )
+    else:
+        offerer_address = offers_api.get_or_create_offerer_address_from_address_body(
+            offerers_schemas.LocationOnlyOnVenueModel(),
+            venue,
+        )
 
-        if ean_list_to_create:
-            products = _get_existing_products(ean_list_to_create)
-            for product in products:
-                assert product.ean is not None
-                products_by_ean[product.ean] = product
+    if ean_list_to_create:
+        products = _get_existing_products(ean_list_to_create)
+        for product in products:
+            assert product.ean is not None
+            products_by_ean[product.ean] = product
 
     return {
         "venue": venue,
@@ -158,7 +157,6 @@ def _load(
     result: _TransformResult,
 ) -> None:
     for offer_to_create in result["offers_to_create"]:
-        db.session.flush()
         try:
             with atomic():
                 ean = offer_to_create.ean
@@ -184,7 +182,7 @@ def _load(
                     "exc": exc.__class__.__name__,
                 },
             )
-
+    db.session.flush()
     offers_to_index = []
     for offer in result["offers_to_update"]:
         try:
@@ -243,9 +241,16 @@ def _get_existing_offers(
         .subquery()
     )
 
+    # Load Stock with the with_for_update to avoid deadlock on stocks (with_for_update should not be used with a subquery)
+    db.session.query(offers_models.Stock).filter(
+        offers_models.Stock.offerId.in_(sa.select(subquery.c.max_id))
+    ).with_for_update().all()
+
     return (
-        individual_offers_v1_utils.retrieve_offer_relations_query(db.session.query(offers_models.Offer))
-        .join(subquery, offers_models.Offer.id == subquery.c.max_id)
+        db.session.query(offers_models.Offer)
+        .filter(offers_models.Offer.id.in_(sa.select(subquery.c.max_id)))
+        .populate_existing()
+        .with_for_update()
         .all()
     )
 
