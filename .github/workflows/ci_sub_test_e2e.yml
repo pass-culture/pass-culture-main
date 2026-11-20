@@ -96,7 +96,7 @@ jobs:
 
       - uses: pass-culture/common-workflows/actions/setup-safe-chain@setup-pcsi/v1.0
 
-      - uses: KengoTODA/actions-setup-docker-compose@v1.2.8
+      - uses: KengoTODA/actions-setup-docker-compose@v1.2.11
         with:
           version: "2.40.3"
 
