@@ -185,6 +185,20 @@ def discord_signin_post() -> Response | str:
         form.error_message = GENERIC_AUTHENTICATION_ERROR
         return render_template("discord_signin.html", form=form)
 
+    logger.info(
+        "Successful authentication attempt",
+        extra={
+            "identifier": user.email,
+            "user": user.id,
+            "avoid_current_user": True,
+            "success": True,
+            "api_version": "v3",
+            "feature": "users",
+            "action": "login",
+        },
+        technical_message_id="users.login",
+    )
+
     url_redirection = discord_connector.build_discord_redirection_uri(user.id)
     return redirect(url_redirection)
 
