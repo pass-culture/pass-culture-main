@@ -57,7 +57,11 @@ def send_transactional_email(payload: serialization.SendTransactionalEmailReques
 
     try:
         api_key = settings.SENDINBLUE_PRO_API_KEY if payload.use_pro_subaccount else settings.SENDINBLUE_API_KEY
-        client = brevo.Brevo(api_key=api_key, timeout=settings.BREVO_EMAILS_REQUEST_TIMEOUT)
+        client = brevo.Brevo(
+            api_key=api_key,
+            base_url=settings.EMAIL_BACKEND_URL or None,
+            timeout=settings.BREVO_EMAILS_REQUEST_TIMEOUT,
+        )
         client.transactional_emails.send_transac_email(**email_kwargs)
 
     except BrevoApiError as exception:
