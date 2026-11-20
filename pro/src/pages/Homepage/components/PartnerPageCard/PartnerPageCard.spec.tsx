@@ -1,19 +1,24 @@
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { forwardRef } from 'react'
 import { axe } from 'vitest-axe'
 
 import type { GetVenueResponseModel } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events, HomepageEvents } from '@/commons/core/FirebaseEvents/constants'
+import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { imageFileFactory } from '@/commons/utils/factories/imageUploadArgsFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import { postImageToVenue } from '@/repository/pcapi/pcapi'
 
 import { HomepageVariant } from '../types'
 import { PartnerPageCard } from './PartnerPageCard'
 
 const mockLogEvent = vi.fn()
+
+const IMAGE_INPUT_LABEL = 'Importez ou déposez le fichier ici'
 
 vi.mock('@/commons/utils/config', async () => {
   return {
@@ -22,7 +27,7 @@ vi.mock('@/commons/utils/config', async () => {
   }
 })
 
-vi.mock('@/components/ImageDragAndDrop/getImageDimensions', () => ({
+vi.mock('@/commons/utils/imageUpload/getImageDimensions', () => ({
   getImageDimensions: vi.fn((file) => {
     return Promise.resolve({
       width: (file as any).width || 0,
@@ -30,6 +35,34 @@ vi.mock('@/components/ImageDragAndDrop/getImageDimensions', () => ({
     })
   }),
 }))
+
+vi.mock('react-avatar-editor', () => {
+  const MockAvatarEditor = forwardRef((_props, ref) => {
+    if (ref && typeof ref === 'object' && 'current' in ref) {
+      ref.current = {
+        getImage: vi.fn(() => ({ toDataURL: vi.fn(() => 'my img') })),
+        getCroppingRect: vi.fn(() => ({
+          x: 0,
+          y: 0,
+          width: 100,
+          height: 100,
+        })),
+      }
+    }
+    return ''
+  })
+  MockAvatarEditor.displayName = 'MockAvatarEditor'
+  return { __esModule: true, default: MockAvatarEditor }
+})
+
+vi.mock('@/commons/utils/prepareImageForUpload', () => ({
+  prepareImageForUpload: vi.fn(async (file: File) => file),
+}))
+
+vi.mock('@/repository/pcapi/pcapi', () => ({ postImageToVenue: vi.fn() }))
+
+const createImage = () =>
+  Object.assign(imageFileFactory('fake_img.jpg'), { width: 100, height: 100 })
 
 const baseVenue = makeGetVenueResponseModel({
   id: 1,
@@ -103,7 +136,7 @@ describe('PartnerPageCard', () => {
   it('should render image uploader when venue has no image', () => {
     renderPartnerPageCard()
 
-    expect(screen.getByText('Importez une image')).toBeVisible()
+    expect(screen.getByLabelText(IMAGE_INPUT_LABEL)).toBeEnabled()
   })
 
   it('should log CLICKED_ADD_IMAGE on image upload', async () => {
@@ -115,7 +148,7 @@ describe('PartnerPageCard', () => {
 
     renderPartnerPageCard()
 
-    const imageInput = screen.getByLabelText('Importez une image')
+    const imageInput = screen.getByLabelText(IMAGE_INPUT_LABEL)
     expect(imageInput).toBeInTheDocument()
     await user.upload(imageInput, mockFile)
 
@@ -126,6 +159,83 @@ describe('PartnerPageCard', () => {
         imageCreationStage: 'add image',
       })
     })
+    expect(
+      await screen.findByRole('heading', { name: 'Modifier une image' })
+    ).toBeInTheDocument()
+  })
+
+  it('should display an error and not open the image edition modal when the file is not an image', async () => {
+    const user = userEvent.setup()
+    renderPartnerPageCard()
+    const imageInput = screen.getByLabelText(IMAGE_INPUT_LABEL)
+
+    await user.upload(
+      imageInput,
+      new File(['not an image'], 'fake_img.jpg', { type: 'image/jpeg' })
+    )
+
+    await waitFor(() => {
+      expect(imageInput).toHaveAccessibleDescription(
+        expect.stringContaining('Le format de l’image n’est pas valide')
+      )
+    })
+    expect(imageInput).toBeInvalid()
+    expect(imageInput).toHaveFocus()
+    expect(mockLogEvent).not.toHaveBeenCalled()
+    expect(
+      screen.queryByRole('heading', { name: 'Modifier une image' })
+    ).not.toBeInTheDocument()
+  })
+
+  it('should display the image once imported through the image edition modal', async () => {
+    const user = userEvent.setup()
+    vi.mocked(postImageToVenue).mockResolvedValue(
+      makeGetVenueResponseModel({
+        ...baseVenue,
+        bannerUrl: 'https://example.com/banner.jpg',
+      })
+    )
+
+    renderPartnerPageCard()
+
+    await user.upload(screen.getByLabelText(IMAGE_INPUT_LABEL), createImage())
+    await user.click(await screen.findByRole('button', { name: 'Importer' }))
+
+    expect(postImageToVenue).toHaveBeenCalledWith(
+      1,
+      expect.any(File),
+      '',
+      null,
+      { x: 0, y: 0, width: 100, height: 100 }
+    )
+    expect(
+      await screen.findByAltText('Prévisualisation de l’image')
+    ).toHaveAttribute('src', 'https://example.com/banner.jpg')
+    expect(screen.queryByLabelText(IMAGE_INPUT_LABEL)).not.toBeInTheDocument()
+  })
+
+  it('should notify an error when the image upload fails', async () => {
+    const user = userEvent.setup()
+    const snackBarError = vi.fn()
+    // Same object on every render: the image edition modal depends on it.
+    vi.spyOn(useSnackBar, 'useSnackBar').mockReturnValue({
+      success: vi.fn(),
+      error: snackBarError,
+    })
+    vi.mocked(postImageToVenue).mockRejectedValue(new Error('Upload error'))
+
+    renderPartnerPageCard()
+
+    await user.upload(screen.getByLabelText(IMAGE_INPUT_LABEL), createImage())
+    await user.click(await screen.findByRole('button', { name: 'Importer' }))
+
+    await waitFor(() => {
+      expect(snackBarError).toHaveBeenCalledWith(
+        "Une erreur est survenue lors de l'importation de votre image",
+        expect.any(String)
+      )
+    })
+    expect(screen.getByLabelText(IMAGE_INPUT_LABEL)).toBeInTheDocument()
   })
 
   describe('analytics event', () => {
@@ -241,7 +351,7 @@ describe('PartnerPageCard', () => {
     it('should disable the image uploader', () => {
       renderPartnerPageCard(HomepageVariant.INDIVIDUAL, undefined, true)
 
-      expect(screen.getByLabelText('Importez une image')).toBeDisabled()
+      expect(screen.getByLabelText(IMAGE_INPUT_LABEL)).toBeDisabled()
     })
   })
 })

@@ -2,7 +2,7 @@ import {
   MAX_THUMBNAIL_WIDTH,
   MIN_COLLECTIVE_IMAGE_DIMENSIONS,
   MIN_IMAGE_DIMENSIONS,
-} from '@/components/ImageDragAndDrop/constants'
+} from '@/commons/utils/imageUpload/constants'
 
 import { getImageBitmap } from '../image'
 import { prepareImageForUpload } from '../prepareImageForUpload'

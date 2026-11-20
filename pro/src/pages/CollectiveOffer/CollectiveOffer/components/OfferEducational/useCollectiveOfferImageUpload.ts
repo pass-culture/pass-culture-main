@@ -8,9 +8,9 @@ import type {
 } from '@/apiClient/v1'
 import type { OfferCollectiveImage } from '@/commons/core/Offers/types'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
+import { MIN_COLLECTIVE_IMAGE_DIMENSIONS } from '@/commons/utils/imageUpload/constants'
 import { prepareImageForUpload } from '@/commons/utils/prepareImageForUpload'
 import { sendSentryCustomError } from '@/commons/utils/sendSentryCustomError'
-import { MIN_COLLECTIVE_IMAGE_DIMENSIONS } from '@/components/ImageDragAndDrop/constants'
 import type { OnImageUploadArgs } from '@/components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
 
 export const useCollectiveOfferImageUpload = (

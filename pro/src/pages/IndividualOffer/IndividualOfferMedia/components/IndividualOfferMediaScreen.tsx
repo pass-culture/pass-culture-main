@@ -22,16 +22,17 @@ import { useFormNavigationGuard } from '@/commons/hooks/useFormNavigationGuard/u
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
-import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
-import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
-import { FormLayout } from '@/components/FormLayout/FormLayout'
 import {
   ALLOWED_IMAGE_TYPES_TO_EXTENSIONS,
   MAX_FILE_SIZE,
-  UPLOAD_IMAGE_MAX_RESOLUTION,
-} from '@/components/ImageDragAndDrop/constants'
-import { getImageDimensions } from '@/components/ImageDragAndDrop/getImageDimensions'
-import { getImageFormat } from '@/components/ImageDragAndDrop/getImageFormat'
+} from '@/commons/utils/imageUpload/constants'
+import {
+  getImageConditionsText,
+  validateImage,
+} from '@/commons/utils/imageUpload/validateImage'
+import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
+import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
+import { FormLayout } from '@/components/FormLayout/FormLayout'
 import {
   ModalImageUpsertOrEdit,
   type OnImageUploadArgs,
@@ -47,7 +48,6 @@ import {
 } from '@/design-system/Button/types'
 import { SimpleModal } from '@/design-system/SimpleModal/SimpleModal'
 import { UploadZone } from '@/design-system/UploadZone/UploadZone'
-import { getConditionsText } from '@/design-system/UploadZone/utils'
 import fullEditIcon from '@/icons/full-edit.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'
 import strokePictureIcon from '@/icons/stroke-picture.svg'
@@ -66,39 +66,7 @@ type IndividualOfferMediaScreenProps = {
   offer: GetIndividualOfferResponseModel
 }
 
-const IMAGE_CONDITIONS_TEXT = `${getConditionsText(
-  ALLOWED_IMAGE_TYPES_TO_EXTENSIONS,
-  MAX_FILE_SIZE
-)} Résolution maximale : 80 mégapixels.`
-
-const IMAGE_FORMAT_ERROR = 'Le format de l’image n’est pas valide'
-const IMAGE_RESOLUTION_ERROR =
-  "Image trop volumineuse. La résolution maximale acceptée est d'environ 80 millions de pixels (9000 x 9000 pixels)"
-
-// UploadZone only checks the declared type and the weight of the file:
-// the actual content format and the resolution are checked here.
-const validateImage = async (
-  file: File
-): Promise<
-  { image: File; error?: never } | { image?: never; error: string }
-> => {
-  try {
-    const content = await file.arrayBuffer()
-    const { width, height } = await getImageDimensions(file)
-
-    if (getImageFormat(content) === null) {
-      return { error: IMAGE_FORMAT_ERROR }
-    }
-    if (width * height > UPLOAD_IMAGE_MAX_RESOLUTION) {
-      return { error: IMAGE_RESOLUTION_ERROR }
-    }
-
-    const image = new File([content], file.name, { type: file.type })
-    return { image: Object.assign(image, { width, height }) }
-  } catch {
-    return { error: IMAGE_FORMAT_ERROR }
-  }
-}
+const IMAGE_CONDITIONS_TEXT = getImageConditionsText()
 
 export const IndividualOfferMediaScreen = ({
   offer,

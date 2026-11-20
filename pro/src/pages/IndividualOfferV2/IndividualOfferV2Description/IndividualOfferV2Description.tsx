@@ -13,12 +13,14 @@ import {
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useMusicTypes } from '@/commons/hooks/useMusicTypes'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
-import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
-import { noop } from '@/commons/utils/noop'
+import {
+  ALLOWED_IMAGE_TYPES_TO_EXTENSIONS,
+  MAX_FILE_SIZE,
+} from '@/commons/utils/imageUpload/constants'
+import { getImageConditionsText } from '@/commons/utils/imageUpload/validateImage'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
-import { ImageDragAndDropUploader } from '@/components/ImageDragAndDropUploader/ImageDragAndDropUploader'
 import { Button } from '@/design-system/Button/Button'
 import {
   ButtonColor,
@@ -30,8 +32,10 @@ import {
   type CheckboxGroupOption,
 } from '@/design-system/CheckboxGroup/CheckboxGroup'
 import { TextInput } from '@/design-system/TextInput/TextInput'
+import { UploadZone } from '@/design-system/UploadZone/UploadZone'
 import strokeAccessibilityEyeIcon from '@/icons/stroke-accessibility-eye.svg'
 import strokeLeftIcon from '@/icons/stroke-left.svg'
+import strokePictureIcon from '@/icons/stroke-picture.svg'
 import strokeRightIcon from '@/icons/stroke-right.svg'
 import { DEFAULT_DETAILS_FORM_VALUES } from '@/pages/IndividualOffer/IndividualOfferDescription/components/DetailsForm/constants'
 import { ArtistField } from '@/pages/IndividualOffer/IndividualOfferDescription/components/DetailsForm/DetailsSubForm/components/ArtistField/ArtistField'
@@ -42,6 +46,8 @@ import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import styles from './IndividualOfferV2Description.module.scss'
+
+const IMAGE_CONDITIONS_TEXT = getImageConditionsText()
 
 const IndividualOfferV2Description = (): JSX.Element => {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
@@ -197,11 +203,15 @@ const IndividualOfferV2Description = (): JSX.Element => {
             <HasCapability name={FieldEnum.IMAGE}>
               <FormLayout.Section title="Illustrez votre offre">
                 <FormLayout.Row>
-                  <ImageDragAndDropUploader
-                    // TODO : use new UploadZone when design PR is merged
-                    onImageUpload={noop}
-                    onImageDelete={noop}
-                    mode={UploaderModeEnum.OFFER}
+                  <UploadZone
+                    // Image validation, edition and saving done in next ticket
+                    label="Ajoutez une image"
+                    labelVariant="title3"
+                    icon={strokePictureIcon}
+                    accept={ALLOWED_IMAGE_TYPES_TO_EXTENSIONS}
+                    maxSize={MAX_FILE_SIZE}
+                    conditionsText={IMAGE_CONDITIONS_TEXT}
+                    maxFiles={1}
                   />
                 </FormLayout.Row>
               </FormLayout.Section>

@@ -34,7 +34,7 @@ import * as imageUploadModule from '@/pages/IndividualOffer/commons/useIndividua
 import { VideoUploaderContextProvider } from '../commons/context/VideoUploaderContext/VideoUploaderContext'
 import { IndividualOfferMediaScreen } from './IndividualOfferMediaScreen'
 
-vi.mock('@/components/ImageDragAndDrop/getImageDimensions', () => ({
+vi.mock('@/commons/utils/imageUpload/getImageDimensions', () => ({
   getImageDimensions: vi.fn((file) => {
     return Promise.resolve({
       width: (file as any).width || 0,
