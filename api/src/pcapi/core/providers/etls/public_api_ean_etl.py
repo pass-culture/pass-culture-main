@@ -19,7 +19,6 @@ from pcapi.core.search.models import IndexationReason
 from pcapi.models import db
 from pcapi.models import offer_mixin
 from pcapi.routes.provider.individual_offers.v1 import serialization as individual_offers_v1_serialization
-from pcapi.routes.provider.individual_offers.v1 import utils as individual_offers_v1_utils
 from pcapi.utils import date as utils_date
 from pcapi.utils.transaction_manager import atomic
 
@@ -243,9 +242,16 @@ def _get_existing_offers(
         .subquery()
     )
 
+    # Load Stock with the with_for_update to avoid deadlock on stocks (with_for_update should not be used with a subquery)
+    db.session.query(offers_models.Stock).filter(
+        offers_models.Stock.offerId.in_(sa.select(subquery.c.max_id))
+    ).with_for_update().all()
+
     return (
-        individual_offers_v1_utils.retrieve_offer_relations_query(db.session.query(offers_models.Offer))
-        .join(subquery, offers_models.Offer.id == subquery.c.max_id)
+        db.session.query(offers_models.Offer)
+        .filter(offers_models.Offer.id.in_(sa.select(subquery.c.max_id)))
+        .populate_existing()
+        .with_for_update()
         .all()
     )
 
