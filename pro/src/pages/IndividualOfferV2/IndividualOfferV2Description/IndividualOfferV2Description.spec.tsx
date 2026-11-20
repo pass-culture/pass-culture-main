@@ -24,10 +24,11 @@ const renderIndividualOfferV2Description = (
   selection: NFDState = {
     nature: NatureEnum.BIEN,
     format: FormatEnum.LIVRE_PAPIER,
-  }
+  },
+  capabilities: FieldEnum[] = [FieldEnum.TITLE]
 ) => {
   vi.spyOn(api, 'getCapabilities').mockResolvedValue({
-    capabilities: [FieldEnum.TITLE],
+    capabilities,
     mandatoryFields: [FieldEnum.TITLE],
   })
 
@@ -80,6 +81,14 @@ describe('<IndividualOfferV2Description />', () => {
       expect(api.getCapabilities).not.toHaveBeenCalled()
     }
   )
+
+  it('should display the image upload zone when the offer can have an image', async () => {
+    renderIndividualOfferV2Description(undefined, [FieldEnum.IMAGE])
+
+    const input = await screen.findByLabelText('Ajoutez une image')
+    expect(input).toHaveAttribute('type', 'file')
+    expect(input).not.toHaveAttribute('multiple')
+  })
 
   it('should display the description when nature and format are selected', async () => {
     renderIndividualOfferV2Description()
