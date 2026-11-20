@@ -2833,3 +2833,21 @@ class AnonymizeUserByIdTest:
             apple_api.assert_called_once_with("a-good-refresh-token", False)
 
         assert db.session.query(SingleSignOn).filter(SingleSignOn.userId == user.id).count() == 0
+
+    @pytest.mark.parametrize("apple_extra_data", [None, {}])
+    def test_revoke_all_sso_access_without_apple_extra_data(self, apple_extra_data):
+        # Apple SSOs created before the `ssoExtraData` column have no refresh token: Apple cannot be called,
+        # but the SSO must still be deleted
+        user = users_factories.UserFactory(
+            email="email_with_sso@example.com",
+            single_sign_ons=[
+                users_factories.SingleSignOnFactory(ssoProvider="apple", ssoExtraData=apple_extra_data),
+                users_factories.SingleSignOnFactory(ssoProvider="google"),
+            ],
+        )
+
+        with mock.patch("pcapi.core.users.api.revoke_apple_user") as apple_api:
+            revoke_sso_access(user, SingleSignOnProviders.ALL)
+            apple_api.assert_not_called()
+
+        assert db.session.query(SingleSignOn).filter(SingleSignOn.userId == user.id).count() == 0

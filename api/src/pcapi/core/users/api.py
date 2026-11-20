@@ -1546,10 +1546,9 @@ def revoke_sso_access(
             # Revocation on Apple could fail, due to bad refresh_token, but user
             # can do it on their side (follow doc linked in revoke_apple_user function)
 
-            if sso.ssoExtraData is None:
-                continue
+            extra_data: dict = sso.ssoExtraData or {}
 
-            for client_type, token in sso.ssoExtraData.items():
+            for client_type, token in extra_data.items():
                 is_web_client = client_type == "web"
                 try:
                     revoke_apple_user(token, is_web_client)
