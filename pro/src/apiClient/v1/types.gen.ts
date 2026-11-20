@@ -1332,8 +1332,38 @@ export enum DisplayableActivity {
  * DomainEnum
  */
 export enum DomainEnum {
-    DANSE = 'DANSE'
+    BIBLIOTHEQUE_MEDIATHEQUE = 'BIBLIOTHEQUE_MEDIATHEQUE',
+    LITTERATURE = 'LITTERATURE',
+    CINEMA = 'CINEMA',
+    MUSEE_PATRIMOINE_ARCHITECTURE = 'MUSEE_PATRIMOINE_ARCHITECTURE',
+    ART_VISUEL = 'ART_VISUEL',
+    CULTURE_SCIENTIFIQUE = 'CULTURE_SCIENTIFIQUE',
+    MEDIA_PRESSE_RADIO = 'MEDIA_PRESSE_RADIO',
+    MUSIQUE = 'MUSIQUE',
+    MULTI_DOMAINES_CARTE_JEUNE = 'MULTI_DOMAINES_CARTE_JEUNE',
+    CIRQUE_ARTS_RUE = 'CIRQUE_ARTS_RUE',
+    COMEDIE_MUSICALE = 'COMEDIE_MUSICALE',
+    STAND_UP = 'STAND_UP',
+    DANSE = 'DANSE',
+    OPERA = 'OPERA',
+    THEATRE = 'THEATRE',
+    JEUX_VIDEO = 'JEUX_VIDEO',
+    SANS_DOMAINE = 'SANS_DOMAINE',
+    STREAMING_MUSIQUE = 'STREAMING_MUSIQUE',
+    VOD = 'VOD',
+    MEDIA_PRESSE_RADIO_EN_LIGNE = 'MEDIA_PRESSE_RADIO_EN_LIGNE'
 }
+
+/**
+ * DomainResponseModel
+ */
+export type DomainResponseModel = {
+    domain: DomainEnum;
+    /**
+     * Label
+     */
+    label: string;
+};
 
 /**
  * DownloadBookingsQueryModel
@@ -1902,18 +1932,41 @@ export enum FieldEnum {
  * FormatEnum
  */
 export enum FormatEnum {
+    ABONNEMENT = 'ABONNEMENT',
+    ATELIER = 'ATELIER',
+    CARTE = 'CARTE',
     CD = 'CD',
-    VINYLE = 'VINYLE',
+    CONCERT = 'CONCERT',
+    CONFERENCE = 'CONFERENCE',
     DVD_BLU_RAY = 'DVD_BLU_RAY',
+    EVENEMENT_NUMERIQUE = 'EVENEMENT_NUMERIQUE',
+    FESTIVAL = 'FESTIVAL',
     INSTRUMENT_DE_MUSIQUE = 'INSTRUMENT_DE_MUSIQUE',
+    JEUX_EN_LIGNE = 'JEUX_EN_LIGNE',
     LIVRE_PAPIER = 'LIVRE_PAPIER',
-    MATERIEL_ARTS_CREATIFS = 'MATERIEL_ARTS_CREATIFS'
+    LIVRE_NUMERIQUE = 'LIVRE_NUMERIQUE',
+    MATERIEL_ARTS_CREATIFS = 'MATERIEL_ARTS_CREATIFS',
+    MEDIA = 'MEDIA',
+    PODCAST = 'PODCAST',
+    SALON = 'SALON',
+    SEANCE_CINEMA = 'SEANCE_CINEMA',
+    SEANCE_ESSAI = 'SEANCE_ESSAI',
+    SPECTACLE = 'SPECTACLE',
+    VISITE_GUIDEE = 'VISITE_GUIDEE',
+    VINYLE = 'VINYLE',
+    VISITE_LIBRE = 'VISITE_LIBRE',
+    VISITE_VIRTUELLE = 'VISITE_VIRTUELLE',
+    VOD = 'VOD'
 }
 
 /**
  * FormatResponseModel
  */
 export type FormatResponseModel = {
+    /**
+     * Domains
+     */
+    domains: Array<DomainResponseModel>;
     format: FormatEnum;
     /**
      * Label
@@ -4443,7 +4496,7 @@ export type NatureFormatDomainResponseModel = {
      * Label
      */
     label: string;
-    name: NatureEnum;
+    nature: NatureEnum;
 };
 
 /**
