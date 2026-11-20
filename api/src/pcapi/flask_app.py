@@ -360,19 +360,11 @@ if settings.SOFTDELETE_ENABLED:
 
     @listens_for(sa_orm.Session, identifier="do_orm_execute")
     def soft_delete_execute(state: sa_orm.ORMExecuteState) -> None:
-        import sqlalchemy_easy_softdelete.handler.rewriter as softdelete_rewriter
+        from pcapi.models import soft_delete_rewriter
 
         # TODO: check with UPDATE and SELECT in subquery. Does it still work ?
         if not state.is_select:
             return
 
-        # Rewrite the statement
-        global_rewriter = softdelete_rewriter.SoftDeleteQueryRewriter(
-            deleted_field_name="isSoftDeleted",
-            disable_soft_delete_option_name="include_deleted",
-            enabled_tables=[softdelete_rewriter.EnabledTable("venue", None)],
-        )
-        adapted = global_rewriter.rewrite_statement(state.statement)
-
         # Replace the statement
-        state.statement = adapted
+        state.statement = soft_delete_rewriter.rewrite_statement(state.statement)
