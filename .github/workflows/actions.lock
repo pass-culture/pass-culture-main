@@ -35,7 +35,7 @@ workflows:
     '.github/workflows/cd_sub_deploy_front_pro.yml':
         - 'actions/checkout@v7.0.1'
         - 'actions/setup-node@v7.0.0'
-        - 'getsentry/action-release@v3.7.0'
+        - 'getsentry/action-release@v3.7.2'
         - 'google-github-actions/auth@v3.0.0'
         - 'google-github-actions/get-secretmanager-secrets@v3.0.0'
         - 'nick-fields/retry@v4.0.0'
@@ -287,9 +287,9 @@ dependencies:
         commit: 'sha1-f87e5991a6d7451dcb8d9637bfbc97413f497069'
         owner_id: 5429470
         repo_id: 288485773
-    'getsentry/action-release@v3.7.0':
-        ref: 'v3.7.0'
-        commit: 'sha1-ff07929a6537bac57790c3451cf4d364aca38528'
+    'getsentry/action-release@v3.7.2':
+        ref: 'v3.7.2'
+        commit: 'sha1-e6703d0b00208e0b3687ba660d18ab5af7892821'
         owner_id: 1396951
         repo_id: 273043452
         uses:
