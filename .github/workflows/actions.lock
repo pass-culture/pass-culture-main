@@ -176,7 +176,7 @@ workflows:
         - 'pass-culture/common-workflows@IC-1390-create-setup-firebase-tools-action'
     '.github/workflows/docker_build_image.yml':
         - 'actions/checkout@v7.0.1'
-        - 'actions/upload-artifact@v7.0.1'
+        - 'actions/upload-artifact@v7.0.2'
         - 'docker/build-push-action@v7.4.0'
         - 'docker/setup-buildx-action@v4.4.1'
     '.github/workflows/docker_push_image.yml':
@@ -259,6 +259,11 @@ dependencies:
     'actions/upload-artifact@v7.0.1':
         ref: 'v7.0.1'
         commit: 'sha1-043fb46d1a93c77aae656e7c1c64a875d1fc6a0a'
+        owner_id: 44036562
+        repo_id: 192625955
+    'actions/upload-artifact@v7.0.2':
+        ref: 'v7.0.2'
+        commit: 'sha1-cf430e030ddbb5b0abf93d22962f4752f3646cd9'
         owner_id: 44036562
         repo_id: 192625955
     'astral-sh/ruff-action@v4.1.0':
