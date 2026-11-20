@@ -560,6 +560,7 @@ class UserRecreditTest:
                 if fraud_check.type in subscription_models.BONUS_CREDIT_CHECK_TYPES
             ]
             assert set(bonus_fraud_check_types) == {
+                subscription_models.FraudCheckType.QF_BONUS_CREDIT,
                 subscription_models.FraudCheckType.AAH_BONUS_CREDIT,
                 subscription_models.FraudCheckType.AEEH_BONUS_CREDIT,
             }
@@ -580,37 +581,39 @@ class UserRecreditTest:
             ]
             assert not bonus_fraud_checks
 
-        def test_users_recredited_once(self):
+    def test_users_recredited_once(self):
+        last_year = date_utils.get_naive_utc_now() - relativedelta(years=1, days=1)
+        with time_machine.travel(last_year):
             user = users_factories.BeneficiaryFactory(age=17, phoneNumber="0123456789")
-            with time_machine.travel(date_utils.get_naive_utc_now() + relativedelta(years=1)):
-                assert user.age == 18
-                subscription_factories.PhoneValidationFraudCheckFactory(user=user)
-                subscription_factories.BeneficiaryFraudCheckFactory(
-                    user=user,
-                    type=subscription_models.FraudCheckType.UBBLE,
-                    status=subscription_models.FraudCheckStatus.OK,
-                )
-                subscription_factories.HonorStatementFraudCheckFactory(user=user)
-                subscription_factories.ProfileCompletionFraudCheckFactory(user=user)
+        assert user.age == 18
 
-            api.recredit_users()
+        subscription_factories.PhoneValidationFraudCheckFactory(user=user)
+        subscription_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=subscription_models.FraudCheckType.UBBLE,
+            status=subscription_models.FraudCheckStatus.OK,
+        )
+        subscription_factories.HonorStatementFraudCheckFactory(user=user)
+        subscription_factories.ProfileCompletionFraudCheckFactory(user=user)
 
-            assert len(user.deposits) == 1
-            assert len(user.deposit.recredits) == 2
+        api.recredit_users()
+        assert len(user.deposits) == 1
+        assert len(user.deposit.recredits) == 2
 
-            api.recredit_users()
-            assert len(user.deposits) == 1
-            assert len(user.deposit.recredits) == 2
+        api.recredit_users()
+        assert len(user.deposits) == 1
+        assert len(user.deposit.recredits) == 2
 
-            bonus_fraud_check_types = [
-                fraud_check.type
-                for fraud_check in user.beneficiaryFraudChecks
-                if fraud_check.type in subscription_models.BONUS_CREDIT_CHECK_TYPES
-            ]
-            assert set(bonus_fraud_check_types) == {
-                subscription_models.FraudCheckType.AAH_BONUS_CREDIT,
-                subscription_models.FraudCheckType.AEEH_BONUS_CREDIT,
-            }
+        bonus_fraud_check_types = [
+            fraud_check.type
+            for fraud_check in user.beneficiaryFraudChecks
+            if fraud_check.type in subscription_models.BONUS_CREDIT_CHECK_TYPES
+        ]
+        assert set(bonus_fraud_check_types) == {
+            subscription_models.FraudCheckType.QF_BONUS_CREDIT,
+            subscription_models.FraudCheckType.AAH_BONUS_CREDIT,
+            subscription_models.FraudCheckType.AEEH_BONUS_CREDIT,
+        }
 
     def test_user_with_missing_steps_is_not_recredited(self):
         user = users_factories.BeneficiaryFactory(age=17, deposit__type=models.DepositType.GRANT_17_18)
@@ -647,6 +650,7 @@ class UserRecreditTest:
             if fraud_check.type in subscription_models.BONUS_CREDIT_CHECK_TYPES
         ]
         assert set(bonus_fraud_check_types) == {
+            subscription_models.FraudCheckType.QF_BONUS_CREDIT,
             subscription_models.FraudCheckType.AAH_BONUS_CREDIT,
             subscription_models.FraudCheckType.AEEH_BONUS_CREDIT,
         }
@@ -697,6 +701,7 @@ class UserRecreditTest:
             if fraud_check.type in subscription_models.BONUS_CREDIT_CHECK_TYPES
         ]
         assert set(bonus_fraud_check_types) == {
+            subscription_models.FraudCheckType.QF_BONUS_CREDIT,
             subscription_models.FraudCheckType.AAH_BONUS_CREDIT,
             subscription_models.FraudCheckType.AEEH_BONUS_CREDIT,
         }
