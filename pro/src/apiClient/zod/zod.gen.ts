@@ -564,7 +564,7 @@ export const zCreateThumbnailResponseModel = z.object({
 /**
  * CriteriaEnum
  */
-export const zCriteriaEnum = z.enum(['closure_detected']);
+export const zCriteriaEnum = z.enum(['Fermeture demandée au partenaire culturel']);
 
 /**
  * CropParamsV2
