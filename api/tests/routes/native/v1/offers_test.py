@@ -43,6 +43,18 @@ class OffersStocksV2Test:
 
         assert response.json == {"offers": []}
 
+    def test_return_stock_beginning_on_last_day_of_year_9999(self, client):
+        # PC-44463: the cancellation limit date computation raised "year 10000 is out of range"
+        stock = offers_factories.EventStockFactory(beginningDatetime=datetime(9999, 12, 31, 21, 59, 59))
+
+        response = client.post("/native/v2/offers/stocks", json={"offer_ids": [stock.offer.id]})
+
+        assert response.status_code == 200
+        [offer] = response.json["offers"]
+        [stock_response] = offer["stocks"]
+        assert stock_response["id"] == stock.id
+        assert stock_response["beginningDatetime"] == "9999-12-31T21:59:59Z"
+
     @time_machine.travel("2020-01-01", tick=False)
     def test_return_offers_stocks(self, client):
         ean = "1234567899999"

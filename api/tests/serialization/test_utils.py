@@ -1,5 +1,9 @@
-import pytest
+import datetime
 
+import pytest
+import pytz
+
+from pcapi.serialization.utils import as_utc_without_timezone
 from pcapi.serialization.utils import check_url
 
 
@@ -58,3 +62,23 @@ class CheckUrlTest:
     )
     def test_accepted_url(self, url):
         assert check_url(url, pydantic_version="v1")
+
+
+class AsUtcWithoutTimezoneTest:
+    def test_converts_aware_datetime_to_naive_utc(self):
+        paris_datetime = pytz.timezone("Europe/Paris").localize(datetime.datetime(2026, 7, 14, 22, 0))
+
+        assert as_utc_without_timezone(paris_datetime) == datetime.datetime(2026, 7, 14, 20, 0)
+
+    def test_keeps_naive_datetime_unchanged(self):
+        # naive datetimes are already UTC (as stored in the database)
+        assert as_utc_without_timezone(datetime.datetime(2026, 7, 14, 22, 0)) == datetime.datetime(2026, 7, 14, 22, 0)
+
+    @pytest.mark.parametrize(
+        "naive_datetime",
+        [datetime.datetime(9999, 12, 31, 0, 0), datetime.datetime(9999, 12, 31, 21, 59, 59)],
+    )
+    def test_handles_naive_datetime_on_last_day_of_year_9999(self, naive_datetime):
+        # PC-44463: `astimezone` on a naive datetime probes the local timezone 24h around the date,
+        # which raised "ValueError: year 10000 is out of range" on 9999-12-31
+        assert as_utc_without_timezone(naive_datetime) == naive_datetime
