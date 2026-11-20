@@ -14,7 +14,7 @@ updates:
       day: "thursday"
       time: '10:00'
       timezone: "Europe/Paris"
-    open-pull-requests-limit: 15
+    open-pull-requests-limit: 25
     pull-request-branch-name:
       max-length: 76
     cooldown:
