@@ -1329,6 +1329,13 @@ export enum DisplayableActivity {
 }
 
 /**
+ * DomainEnum
+ */
+export enum DomainEnum {
+    DANSE = 'DANSE'
+}
+
+/**
  * DownloadBookingsQueryModel
  */
 export type DownloadBookingsQueryModel = {
@@ -5335,6 +5342,7 @@ export type PatchOfferBodyModel = {
      * Description
      */
     description?: string | null;
+    domain?: DomainEnum | null;
     /**
      * Durationminutes
      */
@@ -5344,6 +5352,7 @@ export type PatchOfferBodyModel = {
      */
     externalTicketOfficeUrl?: string | null;
     extraData?: OfferExtraDataV2 | null;
+    format?: FormatEnum | null;
     /**
      * Hasculturaloutreachclaim
      */
@@ -5376,6 +5385,7 @@ export type PatchOfferBodyModel = {
      * Name
      */
     name?: string | null;
+    nature?: NatureEnum | null;
     /**
      * Publicationdatetime
      */
@@ -5595,6 +5605,11 @@ export type PostCollectiveOfferTemplateBodyModel = {
 };
 
 /**
+ * PostCombinedOfferBodyModel
+ */
+export type PostCombinedOfferBodyModel = PostOfferBodyModel | PostNFDOfferBodyModel;
+
+/**
  * PostDateRangeModel
  */
 export type PostDateRangeModel = {
@@ -5606,6 +5621,60 @@ export type PostDateRangeModel = {
      * Start
      */
     start: string;
+};
+
+/**
+ * PostNFDOfferBodyModel
+ */
+export type PostNFDOfferBodyModel = {
+    /**
+     * Artistofferlinks
+     */
+    artistOfferLinks: Array<ArtistOfferLinkBodyModelV2> | null;
+    /**
+     * Audiodisabilitycompliant
+     */
+    audioDisabilityCompliant: boolean;
+    /**
+     * Description
+     */
+    description: string | null;
+    domain?: DomainEnum | null;
+    /**
+     * Durationminutes
+     */
+    durationMinutes: number | null;
+    extraData: OfferExtraDataV2 | null;
+    format: FormatEnum;
+    /**
+     * Hasculturaloutreachclaim
+     */
+    hasCulturalOutreachClaim: boolean | null;
+    /**
+     * Mentaldisabilitycompliant
+     */
+    mentalDisabilityCompliant: boolean;
+    /**
+     * Motordisabilitycompliant
+     */
+    motorDisabilityCompliant: boolean;
+    /**
+     * Name
+     */
+    name: string;
+    nature: NatureEnum;
+    /**
+     * Productid
+     */
+    productId: number | null;
+    /**
+     * Venueid
+     */
+    venueId: number;
+    /**
+     * Visualdisabilitycompliant
+     */
+    visualDisabilityCompliant: boolean;
 };
 
 /**
@@ -11122,7 +11191,7 @@ export type patchUsersValidateSignupByTokenResponses = {
 export type patchUsersValidateSignupByTokenResponse = patchUsersValidateSignupByTokenResponses[keyof patchUsersValidateSignupByTokenResponses];
 
 export type postV2OffersData = {
-    body: PostOfferBodyModel;
+    body: PostCombinedOfferBodyModel;
     path?: never;
     query?: never;
     url: '/v2/offers';

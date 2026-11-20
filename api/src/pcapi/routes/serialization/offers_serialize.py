@@ -13,6 +13,7 @@ from pydantic.v1 import validator
 from pydantic.v1.utils import GetterDict
 
 from pcapi.core.categories.subcategories import SubcategoryIdEnum
+from pcapi.core.nature_format_domain import nature_format_domain as nfd
 from pcapi.core.offerers.utils import is_venue_address
 from pcapi.core.offers import constants as offers_constants
 from pcapi.core.offers import models as offers_models
@@ -115,6 +116,9 @@ class OfferExtraDataV2(offers_models.OfferExtraData):
 
 
 class PatchOfferBodyModel(HttpBodyModel):
+    nature: nfd.NatureEnum | None = None
+    format: nfd.FormatEnum | None = None
+    domain: nfd.DomainEnum | None = None
     artist_offer_links: list[artist_serialize.ArtistOfferLinkBodyModelV2] | None = None
     location: address_serialize.LocationBodyModelV2 | address_serialize.LocationOnlyOnVenueBodyModelV2 | None = (
         pydantic_v2.Field(default=None, discriminator="isVenueLocation")
@@ -707,12 +711,11 @@ class OfferVideo(ConfiguredBaseModel):
     duration: int | None
 
 
-class PostOfferBodyModel(HttpBodyModel):
+class PostBaseOfferBodyModel(HttpBodyModel):
     name: str = pydantic_v2.Field(max_length=offers_constants.MAX_OFFER_NAME_LENGTH)
     venue_id: int
     has_cultural_outreach_claim: bool | None
     description: str | None
-    subcategory_id: str
     duration_minutes: int | None
     extra_data: OfferExtraDataV2 | None
     artist_offer_links: list[artist_serialize.ArtistOfferLinkBodyModelV2] | None
@@ -731,3 +734,29 @@ class PostOfferBodyModel(HttpBodyModel):
         validate_extra_data_size(extra_data)
         validate_extra_data_content(extra_data)
         return extra_data
+
+
+class PostOfferBodyModel(PostBaseOfferBodyModel):
+    subcategory_id: str
+
+
+class PostNFDOfferBodyModel(PostBaseOfferBodyModel):
+    nature: nfd.NatureEnum
+    format: nfd.FormatEnum
+    domain: nfd.DomainEnum | None = None
+
+
+def nfd_subcategory_discriminator(
+    v: typing.Any,
+) -> typing.Literal["PostOfferBodyModel", "PostNFDOfferBodyModel"]:
+    if {"nature", "format", "domain"} & v.keys():
+        return "PostNFDOfferBodyModel"
+    return "PostOfferBodyModel"
+
+
+class PostCombinedOfferBodyModel(pydantic_v2.RootModel):
+    root: typing.Annotated[
+        typing.Annotated[PostOfferBodyModel, pydantic_v2.Tag("PostOfferBodyModel")]
+        | typing.Annotated[PostNFDOfferBodyModel, pydantic_v2.Tag("PostNFDOfferBodyModel")],
+        pydantic_v2.Discriminator(nfd_subcategory_discriminator),
+    ]

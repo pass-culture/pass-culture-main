@@ -167,7 +167,7 @@ def deserialize_extra_data(initial_extra_data: typing.Any, subcategoryId: str) -
 
 
 def create_offer(
-    body: schemas.CreateOffer,
+    body: schemas.CreateOffer | schemas.CreateNFDOffer,
     *,
     venue: offerers_models.Venue,
     offerer_address: offerers_models.OffererAddress | None = None,
@@ -184,17 +184,22 @@ def create_offer(
         Both should use the same entrypoint but this is still a work in
         progress since some rules are slightly different.
     """
-    validation.check_offer_subcategory_is_valid(body.subcategory_id)
-    body.extra_data = validation.format_extra_data(body.subcategory_id, body.extra_data) or {}
+    if isinstance(body, schemas.CreateOffer):
+        validation.check_offer_subcategory_is_valid(body.subcategory_id)
+        body.extra_data = validation.format_extra_data(body.subcategory_id, body.extra_data) or {}
 
-    subcategory = subcategories.ALL_SUBCATEGORIES_DICT[body.subcategory_id]
+    if isinstance(body, schemas.CreateOffer):
+        subcategory = subcategories.ALL_SUBCATEGORIES_DICT[body.subcategory_id]
+    else:
+        subcategory = get_subcategory_from_nfd(body.nature, body.format, body.domain)
+    body.extra_data = validation.format_extra_data(subcategory.id, body.extra_data) or {}
     artist_offer_links = body.artist_offer_links
     has_cultural_outreach_claim = body.has_cultural_outreach_claim
 
     if is_from_private_api:
         # TODO(jbaudet): should be ok to remove from this if-block since
         # only internal api calls will pass product as a parameter.
-        validation.check_product_for_venue_and_subcategory(product, body.subcategory_id, venue.venueTypeCode)
+        validation.check_product_for_venue_and_subcategory(product, subcategory.id, venue.venueTypeCode)
 
         # TODO(jbaudet): should be ok to remove from this if-block
         # but let's be sure before doing anything stupid
@@ -209,14 +214,14 @@ def create_offer(
         validation.check_offer_withdrawal(
             withdrawal_type=body.withdrawal_type,
             withdrawal_delay=body.withdrawal_delay,
-            subcategory_id=body.subcategory_id,
+            subcategory_id=subcategory.id,
             booking_contact=body.booking_contact,
             provider=provider,
             venue_provider=venue_provider,
         )
         validation.check_url_is_coherent_with_subcategory(subcategory, body.url)
 
-    validation.check_offer_extra_data(body.subcategory_id, body.extra_data, venue, is_from_private_api, ean=body.ean)
+    validation.check_offer_extra_data(subcategory.id, body.extra_data, venue, is_from_private_api, ean=body.ean)
     validation.check_is_duo_compliance(body.is_duo, subcategory)
     validation.check_can_input_id_at_provider(provider, body.id_at_provider)
     validation.check_can_input_id_at_provider_for_this_venue(venue.id, body.id_at_provider)
@@ -227,12 +232,13 @@ def create_offer(
     fields.pop("videoUrl", None)
     fields.pop("artistOfferLinks", None)
     fields.pop("hasCulturalOutreachClaim", None)
+    fields.pop("subcategoryId", None)
 
     if is_from_private_api:
         if not body.withdrawal_details:
             fields.update({"withdrawalDetails": venue.withdrawalDetails})
 
-        subcategory = subcategories.ALL_SUBCATEGORIES_DICT[body.subcategory_id]
+        subcategory = subcategories.ALL_SUBCATEGORIES_DICT[subcategory.id]
         fields.update({"isDuo": bool(subcategory and subcategory.is_event and subcategory.can_be_duo)})
 
         keys_to_remove = {"venueId", "callId"}
@@ -246,11 +252,12 @@ def create_offer(
         label=None,
     )
 
-    if body.subcategory_id in subcategories.ONLINE_SUBCATEGORIES:  # i.e. it is a digital offer
+    if subcategory.id in subcategories.ONLINE_SUBCATEGORIES:  # i.e. it is a digital offer
         offerer_address = None
 
     offer = models.Offer(
         **fields,
+        subcategoryId=subcategory.id,
         venue=venue,
         product=product,
         offererAddress=offerer_address,
@@ -2779,7 +2786,7 @@ def get_subcategory_from_nfd(
     nature: nfd.NatureEnum | None,
     format: nfd.FormatEnum | None,
     domain: nfd.DomainEnum | None,
-) -> subcategories.Subcategory | None:
+) -> subcategories.Subcategory:
     match (nature, format, domain):
         case (nfd.NatureEnum.BIEN, nfd.FormatEnum.LIVRE_PAPIER, _):
             return subcategories.LIVRE_PAPIER
@@ -2793,10 +2800,11 @@ def get_subcategory_from_nfd(
             return subcategories.MATERIEL_ART_CREATIF
         case (nfd.NatureEnum.BIEN, nfd.FormatEnum.INSTRUMENT_DE_MUSIQUE, _):
             return subcategories.ACHAT_INSTRUMENT
-    return None
+    raise ValueError()
 
 
 def fill_offer_subcategory(offer: models.Offer) -> None:
-    subcategory = get_subcategory_from_nfd(offer.nature, offer.format, offer.domain)
-    if subcategory:
-        offer.subcategoryId = subcategory.id
+    try:
+        offer.subcategoryId = get_subcategory_from_nfd(offer.nature, offer.format, offer.domain).id
+    except ValueError:
+        pass
