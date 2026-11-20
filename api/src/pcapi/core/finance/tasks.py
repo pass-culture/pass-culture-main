@@ -51,7 +51,6 @@ def settlement_batch_validation_task(payload: ValidateSettlementBatchRequest) ->
 
     db.session.flush()
 
-    for settlement in settlement_batch.settlements:
-        transactional_mails.send_settlement_validated_email_to_pro(settlement)
+    transactional_mails.send_all_settlement_validated_emails_to_pro(settlement_batch)
 
     notify_settlements_executed.send(settlement_batch)

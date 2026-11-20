@@ -2723,12 +2723,21 @@ class ValidateSettlementBatchTest(PostEndpointHelper):
     endpoint_kwargs = {"batch_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_SETTLEMENTS
 
+    # - fetch session and user
+    # - fetch settlement batch
+    # - update settlement batch
+    # - fetch settlement batch again
+    # - fetch invoice IDs
+    # - update settlements
+    # - fetch data for all emails in a single query
+    expected_num_queries = 7
+
     @patch("pcapi.core.finance.api.validate_invoices")
     def test_validate_settlement_batch(self, mock_validate_invoices, authenticated_client):
         batch = finance_factories.SettlementBatchFactory(name="VIR123-2")
-        bank_account = offerers_factories.VenueBankAccountLinkFactory(
-            venue__bookingEmail="settlement@example.com"
-        ).bankAccount
+        bank_account = offerers_factories.VenueBankAccountLinkFactory(venue__bookingEmail="one@example.com").bankAccount
+        offerers_factories.VenueBankAccountLinkFactory(bankAccount=bank_account, venue__bookingEmail="one@example.com")
+        offerers_factories.VenueBankAccountLinkFactory(bankAccount=bank_account, venue__bookingEmail="two@example.com")
         invoices = finance_factories.InvoiceFactory.create_batch(
             2, status=finance_models.InvoiceStatus.PENDING_PAYMENT, bankAccount=bank_account
         )
@@ -2740,7 +2749,9 @@ class ValidateSettlementBatchTest(PostEndpointHelper):
         other_invoice = finance_factories.InvoiceFactory(status=finance_models.InvoiceStatus.PENDING_PAYMENT)
         other_settlement = finance_factories.SettlementFactory(batch=other_batch, invoices=[other_invoice])
 
-        response = self.post_to_endpoint(authenticated_client, batch_id=batch.id)
+        response = self.post_to_endpoint(
+            authenticated_client, batch_id=batch.id, expected_num_queries=self.expected_num_queries
+        )
         assert response.status_code == 303
 
         assert batch.dateValidated is not None
@@ -2759,7 +2770,7 @@ class ValidateSettlementBatchTest(PostEndpointHelper):
         )
 
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0]["To"] == "settlement@example.com"
+        assert mails_testing.outbox[0]["To"] == "one@example.com, two@example.com"
         assert mails_testing.outbox[0]["template"] == asdict(TransactionalEmail.SETTLEMENT_VALIDATED.value)
         assert mails_testing.outbox[0]["params"] == {
             "FORMATTED_MONTANT_REMBOURSEMENT": "31,50 €",
@@ -2786,7 +2797,9 @@ class ValidateSettlementBatchTest(PostEndpointHelper):
         )
         finance_factories.SettlementFactory(batch=batch, invoices=[invoice], bankAccount=bank_account, amount=-1000)
 
-        response = self.post_to_endpoint(authenticated_client, batch_id=batch.id)
+        response = self.post_to_endpoint(
+            authenticated_client, batch_id=batch.id, expected_num_queries=self.expected_num_queries
+        )
         assert response.status_code == 303
 
         mock_validate_invoices.assert_called_once()
