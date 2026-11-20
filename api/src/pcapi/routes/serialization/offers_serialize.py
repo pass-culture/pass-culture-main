@@ -335,9 +335,33 @@ class ListOffersQueryModel(BaseModel):
         arbitrary_types_allowed = True
 
 
+_THING_OFFERS_CURSOR_ADAPTER = pydantic_v2.TypeAdapter(tuple[pydantic_v2.StrictStr, pydantic_v2.StrictInt])
+
+
+def encode_thing_offers_cursor(cursor: offers_repository.ThingOffersCursor) -> str:
+    return base64.urlsafe_b64encode(json.dumps([cursor.name, cursor.id]).encode()).decode()
+
+
+def decode_thing_offers_cursor(encoded_cursor: str) -> offers_repository.ThingOffersCursor:
+    try:
+        name, offer_id = _THING_OFFERS_CURSOR_ADAPTER.validate_json(base64.urlsafe_b64decode(encoded_cursor))
+    except ValueError:
+        raise ValueError("Curseur invalide")
+    return offers_repository.ThingOffersCursor(name=name, id=offer_id)
+
+
+# the cursor is decoded when the query is validated, but stays a string in the API schema
+ThingOffersCursorParam = typing.Annotated[
+    offers_repository.ThingOffersCursor,
+    pydantic_v2.BeforeValidator(decode_thing_offers_cursor),
+    pydantic_v2.WithJsonSchema({"type": "string"}),
+]
+
+
 class ListThingOffersQueryModel(HttpQueryParamsModel):
     venue_id: int
     status: OfferStatus
+    cursor: ThingOffersCursorParam | None = None
     # a page does not read more offers than the capped total
     limit: int = pydantic_v2.Field(
         default=offers_constants.OFFERS_PER_PAGE, ge=1, le=offers_constants.OFFERS_LIST_TOTAL_MAX
@@ -346,7 +370,6 @@ class ListThingOffersQueryModel(HttpQueryParamsModel):
     creation_mode: offers_constants.CreationMode | None = None
     is_digital: bool | None = None
     order_by_desc: bool = False
-
 
 
 class ThingOfferResponseModel(HttpBodyModel):
@@ -382,6 +405,7 @@ def _get_offer_remaining_quantity(offer: offers_models.Offer) -> int | typing.Li
 
 class ListThingOffersResponseModel(HttpBodyModel):
     offers: list[ThingOfferResponseModel]
+    nextCursor: str | None
     total: int
     totalIsCapped: bool
 
@@ -392,12 +416,13 @@ class ListThingOffersResponseModel(HttpBodyModel):
         paginated_offer_ids: offers_repository.PaginatedOfferIds[offers_repository.ThingOffersCursor],
         headline_offer_id: int | None,
     ) -> typing.Self:
+        next_cursor = paginated_offer_ids.next_cursor
         return cls(
             offers=[ThingOfferResponseModel.build(offer, headline_offer_id) for offer in offers],
+            nextCursor=encode_thing_offers_cursor(next_cursor) if next_cursor else None,
             total=min(paginated_offer_ids.total, offers_constants.OFFERS_LIST_TOTAL_MAX),
             totalIsCapped=paginated_offer_ids.total > offers_constants.OFFERS_LIST_TOTAL_MAX,
         )
-
 
 
 class ListOffersHomeQueryModel(HttpQueryParamsModel):
