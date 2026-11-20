@@ -163,7 +163,10 @@ describe('app', () => {
         search: '?siret=123456789&venue=1436',
       }
 
-      window.location = mockLocation as string & Location
+      Object.defineProperty(window, 'location', {
+        value: mockLocation,
+        configurable: true,
+      })
 
       renderApp({
         initialRouterEntries: ['/recherche?siret=123456789&venue=1436'],
@@ -191,7 +194,10 @@ describe('app', () => {
         search: '?venue=1436',
       }
 
-      window.location = mockLocation as string & Location
+      Object.defineProperty(window, 'location', {
+        value: mockLocation,
+        configurable: true,
+      })
 
       renderApp({
         initialRouterEntries: ['/recherche?venue=1436'],
