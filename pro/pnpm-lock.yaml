@@ -258,8 +258,8 @@ importers:
         specifier: 11.12.0
         version: 11.12.0(react-router@8.5.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(react@19.3.1)
       '@zootools/email-spell-checker':
-        specifier: 1.12.0
-        version: 1.12.0
+        specifier: 1.13.0
+        version: 1.13.0
       algoliasearch:
         specifier: 5.64.0
         version: 5.64.0
@@ -2477,10 +2477,9 @@ packages:
   '@webcontainer/env@1.1.1':
     resolution: {integrity: sha512-6aN99yL695Hi9SuIk1oC88l9o0gmxL1nGWWQ/kNy81HigJ0FoaoTXpytCj6ItzgyCEwA9kF1wixsTuv5cjsgng==}
 
-  '@zootools/email-spell-checker@1.12.0':
-    resolution: {integrity: sha512-yM0lH4yjg+jZG5QubtvpHE+ahSnsHbw9ilnQgKgOF3fk6OBVQLRsEq4NR+/nRvrwG8Vo+29bzKwhXk5y1b/FwA==}
+  '@zootools/email-spell-checker@1.13.0':
+    resolution: {integrity: sha512-Xd+O8ZoR2/fKopJzA8p8lGRKFruGtVYuf/s1z8QV1ztZ/8QyzvCod/m2PShM/yse8QIstdHxL/jK/zrqQKUcAA==}
     engines: {node: '>=12.0'}
-    deprecated: Vulnerable to regex injection/ReDoS via crafted email input. Upgrade to >=1.13.0.
 
   abbrev@1.1.1:
     resolution: {integrity: sha512-nne9/IiQ/hzIhY6pdDnbBtz7DjPTKrY00P/zvPSm5pOFkl6xuGrGnXn/VtTNNfNtAfZ9/1RtehkszU9qcTii0Q==}
@@ -5984,7 +5983,7 @@ snapshots:
 
   '@webcontainer/env@1.1.1': {}
 
-  '@zootools/email-spell-checker@1.12.0': {}
+  '@zootools/email-spell-checker@1.13.0': {}
 
   abbrev@1.1.1: {}
 
