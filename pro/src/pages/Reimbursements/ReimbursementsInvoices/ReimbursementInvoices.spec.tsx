@@ -8,7 +8,10 @@ import { expect } from 'vitest'
 import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
-import { type BankAccountResponseModel, InvoiceStatus } from '@/apiClient/v1'
+import {
+  type BankAccountResponseModel,
+  InvoiceDisplayedStatus,
+} from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
@@ -58,21 +61,21 @@ const BASE_INVOICES = [
     date: '2022-11-02',
     amount: 100,
     url: 'J123456789.invoice',
-    status: InvoiceStatus.PENDING,
+    status: InvoiceDisplayedStatus.PENDING,
   },
   {
     reference: 'J666666666',
     date: '2022-11-03',
     amount: -50,
     url: 'J666666666.invoice',
-    status: InvoiceStatus.PAID,
+    status: InvoiceDisplayedStatus.PAID,
   },
   {
     reference: 'J987654321',
     date: '2023-10-02',
     amount: 75,
     url: 'J987654321.invoice',
-    status: InvoiceStatus.PENDING_PAYMENT,
+    status: InvoiceDisplayedStatus.PENDING,
   },
 ]
 
@@ -130,7 +133,7 @@ describe('reimbursementsWithFilters', () => {
       },
     })
     expect(await screen.findAllByRole('row')).toHaveLength(5)
-    expect(screen.queryAllByRole('columnheader')).toHaveLength(6)
+    expect(screen.queryAllByRole('columnheader')).toHaveLength(7)
 
     // first line
     expect(
@@ -139,6 +142,7 @@ describe('reimbursementsWithFilters', () => {
       })
     ).toBeInTheDocument()
     expect(screen.getByText('J123456789')).toBeInTheDocument()
+    expect(screen.getAllByRole('cell', { name: 'En attente' })).toHaveLength(2)
     expect(screen.getByText(/\+ 100,00/)).toBeInTheDocument()
 
     // second line
@@ -148,6 +152,7 @@ describe('reimbursementsWithFilters', () => {
       })
     ).toBeInTheDocument()
     expect(screen.getByText('J666666666')).toBeInTheDocument()
+    expect(screen.getAllByRole('cell', { name: 'Réglé' })).toHaveLength(1)
     expect(screen.getByText(/- 50,00/)).toBeInTheDocument()
 
     // third line
@@ -169,14 +174,14 @@ describe('reimbursementsWithFilters', () => {
           date: '2022-11-02',
           amount: 100,
           url: 'J123456789.invoice',
-          status: InvoiceStatus.PAID,
+          status: InvoiceDisplayedStatus.PAID,
         },
         {
           reference: 'J666666666',
           date: '2022-11-03',
           amount: -50,
           url: 'J666666666.invoice',
-          status: InvoiceStatus.PAID,
+          status: InvoiceDisplayedStatus.PAID,
         },
       ],
     })
@@ -204,6 +209,11 @@ describe('reimbursementsWithFilters', () => {
         name: 'Sélectionner la ligne du 03/11/2022',
       })
     ).toBeInTheDocument()
+
+    expect(screen.getAllByRole('cell', { name: 'Réglé' })).toHaveLength(2)
+    expect(
+      screen.queryByRole('cell', { name: 'En attente' })
+    ).not.toBeInTheDocument()
   })
 
   it('should render no invoice yet information block', async () => {
@@ -253,6 +263,7 @@ describe('reimbursementsWithFilters', () => {
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     expect(screen.getByLabelText('Type de justificatif')).toBeEnabled()
+    expect(screen.getByLabelText('Statut')).toBeEnabled()
     expect(screen.getByLabelText('Date de début')).toBeEnabled()
     expect(screen.getByLabelText('Date de fin')).toBeEnabled()
   })
@@ -267,7 +278,7 @@ describe('reimbursementsWithFilters', () => {
           date: '2022-11-02',
           amount: 100,
           url: 'J123456789.invoice',
-          status: InvoiceStatus.PAID,
+          status: InvoiceDisplayedStatus.PAID,
         },
       ],
     })
@@ -367,7 +378,7 @@ describe('reimbursementsWithFilters', () => {
         date: '2022-11-02',
         amount: 100,
         url: 'J123456789.invoice',
-        status: InvoiceStatus.PAID,
+        status: InvoiceDisplayedStatus.PAID,
       })),
     })
 
@@ -525,6 +536,38 @@ describe('reimbursementsWithFilters', () => {
         periodBeginningDate: '2020-11-15',
         periodEndingDate: '2020-12-15',
         amountPositiveOnly: true,
+      },
+    })
+  })
+
+  it.each(['PAID', 'PENDING'])('should filter by status', async (status) => {
+    const user = userEvent.setup()
+    vi.spyOn(api, 'getInvoices').mockResolvedValue({
+      hasInvoice: true,
+      invoices: BASE_INVOICES,
+    })
+
+    renderReimbursementsInvoices()
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    await user.selectOptions(screen.getByLabelText('Statut'), status)
+
+    const searchButton = screen.getByRole('button', {
+      name: 'Lancer la recherche',
+    })
+    await user.click(searchButton)
+
+    await waitFor(() => {
+      expect(api.getInvoices).toHaveBeenCalledTimes(2)
+    })
+
+    expect(api.getInvoices).toHaveBeenLastCalledWith({
+      query: {
+        offererId: 1,
+        periodBeginningDate: '2020-11-15',
+        periodEndingDate: '2020-12-15',
+        status,
       },
     })
   })

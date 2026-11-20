@@ -3,7 +3,10 @@ import userEvent from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
-import { type InvoiceResponseModel, InvoiceStatus } from '@/apiClient/v1'
+import {
+  InvoiceDisplayedStatus,
+  type InvoiceResponseModel,
+} from '@/apiClient/v1'
 import * as analyticsHook from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
@@ -38,7 +41,7 @@ const mockInvoice: InvoiceResponseModel = {
   reference: 'INV-001',
   date: '2024-06-01',
   amount: 150,
-  status: InvoiceStatus.PAID,
+  status: InvoiceDisplayedStatus.PAID,
   url: 'https://example.com/invoice.pdf',
 }
 

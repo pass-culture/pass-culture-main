@@ -70,28 +70,28 @@ class GetInvoicesTest:
                     "date": invoice4.date.date().isoformat(),
                     "amount": 25.0,
                     "url": invoice4.url,
-                    "status": "pending_payment",
+                    "status": "PENDING",
                 },
                 {
                     "reference": invoice3.reference,
                     "date": invoice3.date.date().isoformat(),
                     "amount": 20.0,
                     "url": invoice3.url,
-                    "status": "pending",
+                    "status": "PENDING",
                 },
                 {
                     "reference": invoice2.reference,
                     "date": invoice2.date.date().isoformat(),
                     "amount": 15.0,
                     "url": invoice2.url,
-                    "status": "paid",
+                    "status": "PAID",
                 },
                 {
                     "reference": invoice1.reference,
                     "date": invoice1.date.date().isoformat(),
                     "amount": 10.0,
                     "url": invoice1.url,
-                    "status": "paid",
+                    "status": "PAID",
                 },
             ],
         }
@@ -130,14 +130,14 @@ class GetInvoicesTest:
                     "date": invoice2.date.date().isoformat(),
                     "amount": 15.0,
                     "url": invoice2.url,
-                    "status": "paid",
+                    "status": "PAID",
                 },
                 {
                     "reference": invoice1.reference,
                     "date": invoice1.date.date().isoformat(),
                     "amount": 10.0,
                     "url": invoice1.url,
-                    "status": "paid",
+                    "status": "PAID",
                 },
             ],
         }
@@ -257,6 +257,40 @@ class GetInvoicesTest:
         invoices = response.json["invoices"]
         assert len(invoices) == 1
         assert invoices[0]["reference"] == invoice_negative.reference
+
+    def test_get_invoices_status(self, client: TestClient):
+        offerer = offerers_factories.OffererFactory()
+        pro = users_factories.ProFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+        bank_account = finance_factories.BankAccountFactory(offerer=offerer)
+        pending_invoice = finance_factories.InvoiceFactory(bankAccount=bank_account, status=InvoiceStatus.PENDING)
+        pending_payment_invoice = finance_factories.InvoiceFactory(
+            bankAccount=bank_account, status=InvoiceStatus.PENDING_PAYMENT
+        )
+        paid_invoice = finance_factories.InvoiceFactory(bankAccount=bank_account, status=InvoiceStatus.PAID)
+
+        client = client.with_session_auth(pro.email)
+
+        # PENDING filter
+        params = {"offererId": offerer.id, "status": "PENDING"}
+        with testing.assert_num_queries(self.num_queries):
+            response = client.get(URL, params=params)
+
+        assert response.status_code == 200
+        assert len(response.json["invoices"]) == 2
+        assert {i["reference"] for i in response.json["invoices"]} == {
+            pending_invoice.reference,
+            pending_payment_invoice.reference,
+        }
+
+        # PAID filter
+        params = {"offererId": offerer.id, "status": "PAID"}
+        with testing.assert_num_queries(self.num_queries):
+            response = client.get(URL, params=params)
+
+        assert response.status_code == 200
+        assert len(response.json["invoices"]) == 1
+        assert response.json["invoices"][0]["reference"] == paid_invoice.reference
 
     def test_get_invoices_unauthorized_bank_account(self, client: TestClient):
         offerer = offerers_factories.OffererFactory()

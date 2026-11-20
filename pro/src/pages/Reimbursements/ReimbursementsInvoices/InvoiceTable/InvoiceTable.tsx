@@ -16,11 +16,13 @@ import {
   ButtonVariant,
   IconPositionEnum,
 } from '@/design-system/Button/types'
+import { Tag } from '@/design-system/Tag/Tag'
 import fullNextIcon from '@/icons/full-next.svg'
 import strokeInstitutionIcon from '@/icons/stroke-institution.svg'
 import strokeRepaymentIcon from '@/icons/stroke-repayment.svg'
 import { type Column, Table, TableVariant } from '@/ui-kit/Table/Table'
 
+import { INVOICE_STATUS_LABELS } from './constants'
 import { InvoiceActions } from './InvoiceActions'
 import { InvoiceDownloadActionsBar } from './InvoiceDownloadActionsBar'
 import styles from './InvoiceTable.module.scss'
@@ -64,13 +66,16 @@ function getEmptyStateMessage(hasBankAccount: boolean) {
   }
 }
 
+const getInvoiceDateLabel = (invoice: ExtendedInvoiceResponseModel) =>
+  format(new Date(invoice.date), FORMAT_DD_MM_YYYY)
+
 const columns: Column<ExtendedInvoiceResponseModel>[] = [
   {
     id: 'reference',
     label: 'Référence',
     sortable: true,
     ordererField: 'reference',
-    render: (invoice) => invoice.reference,
+    render: (invoice) => <p>{invoice.reference}</p>,
   },
   {
     id: 'documentType',
@@ -89,7 +94,17 @@ const columns: Column<ExtendedInvoiceResponseModel>[] = [
     label: "Date d'émission",
     sortable: true,
     ordererField: 'date',
-    render: (invoice) => format(new Date(invoice.date), FORMAT_DD_MM_YYYY),
+    render: (invoice) => <p>{getInvoiceDateLabel(invoice)}</p>,
+  },
+  {
+    id: 'status',
+    label: 'Statut',
+    sortable: true,
+    ordererField: 'status',
+    render: (invoice) => {
+      const { label, variant } = INVOICE_STATUS_LABELS[invoice.status]
+      return <Tag label={label} variant={variant} />
+    },
   },
   {
     id: 'amount',
@@ -146,9 +161,6 @@ export const InvoiceTable = ({
   onFilterReset,
 }: InvoiceTableProps) => {
   const [checkedInvoices, setCheckedInvoices] = useState<string[]>([])
-
-  const getInvoiceDateLabel = (invoice: ExtendedInvoiceResponseModel) =>
-    format(new Date(invoice.date), FORMAT_DD_MM_YYYY)
 
   const invoices: ExtendedInvoiceResponseModel[] = hasInvoice
     ? data.map((invoice) => ({

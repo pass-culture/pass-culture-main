@@ -18,14 +18,32 @@ from pcapi.utils.date import get_naive_utc_now
 logger = logging.getLogger(__name__)
 
 
+class InvoiceDisplayedStatus(enum.Enum):
+    PAID = "PAID"
+    PENDING = "PENDING"
+
+
 # Query models
+INVOICE_STATUS_FILTER_MAPPING: typing.Final = {
+    InvoiceDisplayedStatus.PAID: [models.InvoiceStatus.PAID],
+    InvoiceDisplayedStatus.PENDING: [models.InvoiceStatus.PENDING, models.InvoiceStatus.PENDING_PAYMENT],
+}
+
+
 class InvoiceListQueryModel(HttpQueryParamsModel):
     offerer_id: int
+    bank_account_id: int | None = None
+    status: InvoiceDisplayedStatus | None = None
     period_beginning_date: datetime.date | None = None
     period_ending_date: datetime.date | None = None
-    bank_account_id: int | None = None
     amount_positive_only: bool | None = None
     amount_negative_only: bool | None = None
+
+    def get_status_list(self) -> list[models.InvoiceStatus] | None:
+        if self.status is None:
+            return None
+
+        return INVOICE_STATUS_FILTER_MAPPING[self.status]
 
 
 class GetCombinedInvoicesQueryModel(HttpQueryParamsModel):
@@ -52,12 +70,19 @@ class GetRejectedBankAccountsQueryModel(HttpQueryParamsModel):
 
 
 # Response Models
+INVOICE_STATUS_MAPPING: typing.Final = {
+    models.InvoiceStatus.PAID: InvoiceDisplayedStatus.PAID,
+    models.InvoiceStatus.PENDING: InvoiceDisplayedStatus.PENDING,
+    models.InvoiceStatus.PENDING_PAYMENT: InvoiceDisplayedStatus.PENDING,
+}
+
+
 class InvoiceResponseModel(HttpBodyModel):
     reference: str
     date: datetime.date
     amount: float
     url: str
-    status: models.InvoiceStatus
+    status: InvoiceDisplayedStatus
 
     @classmethod
     def build(cls, invoice: models.Invoice) -> typing.Self:
@@ -66,7 +91,7 @@ class InvoiceResponseModel(HttpBodyModel):
             date=invoice.date.date(),
             amount=float(-cents_to_full_unit(invoice.amount)),
             url=invoice.url,
-            status=invoice.status,
+            status=INVOICE_STATUS_MAPPING[invoice.status],
         )
 
 

@@ -3870,6 +3870,14 @@ export type InviteMemberQueryModel = {
 };
 
 /**
+ * InvoiceDisplayedStatus
+ */
+export enum InvoiceDisplayedStatus {
+    PAID = 'PAID',
+    PENDING = 'PENDING'
+}
+
+/**
  * InvoiceListQueryModel
  */
 export type InvoiceListQueryModel = {
@@ -3897,6 +3905,7 @@ export type InvoiceListQueryModel = {
      * Periodendingdate
      */
     periodEndingDate?: string | null;
+    status?: InvoiceDisplayedStatus | null;
 };
 
 /**
@@ -3929,21 +3938,12 @@ export type InvoiceResponseModel = {
      * Reference
      */
     reference: string;
-    status: InvoiceStatus;
+    status: InvoiceDisplayedStatus;
     /**
      * Url
      */
     url: string;
 };
-
-/**
- * InvoiceStatus
- */
-export enum InvoiceStatus {
-    PENDING = 'pending',
-    PENDING_PAYMENT = 'pending_payment',
-    PAID = 'paid'
-}
 
 /**
  * LegalStatusResponseModel
@@ -9108,6 +9108,11 @@ export type getFinanceInvoicesData = {
          */
         offererId: number;
         /**
+         * Bankaccountid
+         */
+        bankAccountId?: number | null;
+        status?: InvoiceDisplayedStatus | null;
+        /**
          * Periodbeginningdate
          */
         periodBeginningDate?: string | null;
@@ -9115,10 +9120,6 @@ export type getFinanceInvoicesData = {
          * Periodendingdate
          */
         periodEndingDate?: string | null;
-        /**
-         * Bankaccountid
-         */
-        bankAccountId?: number | null;
         /**
          * Amountpositiveonly
          */
