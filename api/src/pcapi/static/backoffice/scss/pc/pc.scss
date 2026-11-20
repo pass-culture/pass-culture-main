@@ -1,3 +1,6 @@
+@import "../../js/libs/design-system@0.13.0/lib/global/font-faces";
+@import "../../js/libs/design-system@0.13.0/lib/pro/light";
+
 // Utilities
 @import "./_variables";
 @import "./_utilities";
@@ -24,3 +27,7 @@
 @import "./_collapse";
 @import "./_nav";
 @import "./_buttons";
+
+// Elements and components extracted from Bootstrap
+@import "./base/_reset";
+@import "./base/_typography";
