@@ -222,8 +222,8 @@ importers:
         specifier: 1.19.13
         version: 1.19.13(@algolia/client-search@5.64.0)(algoliasearch@5.64.0)(search-insights@2.17.3)
       '@algolia/autocomplete-plugin-query-suggestions':
-        specifier: 1.19.12
-        version: 1.19.12(@algolia/client-search@5.64.0)(algoliasearch@5.64.0)(search-insights@2.17.3)
+        specifier: 1.19.13
+        version: 1.19.13(@algolia/client-search@5.64.0)(algoliasearch@5.64.0)(search-insights@2.17.3)
       '@algolia/autocomplete-plugin-recent-searches':
         specifier: 1.19.13
         version: 1.19.13(@algolia/client-search@5.64.0)(algoliasearch@5.64.0)(search-insights@2.17.3)
@@ -469,17 +469,8 @@ packages:
     resolution: {integrity: sha512-F8StfpD4keeV3Ks4D1pUcH20V7EJ1Rl4lA2dMgEbA9VgaYuotgf2DEdtC5by37TW9YA5HLRfg7EzR9vTxIP1bA==}
     engines: {node: '>= 14.0.0'}
 
-  '@algolia/autocomplete-core@1.19.12':
-    resolution: {integrity: sha512-nJU03L3Q0LlfnFsQTE1YppSrNcbP0lBg29mCaGCeYPog841HP9WWk5KtrTvNH2LPX6p5eELPFetSeSO8I1MFPg==}
-
   '@algolia/autocomplete-core@1.19.13':
     resolution: {integrity: sha512-+ffTzm54Is9KuPEZd1R2FRwwpN6UBKjnBnhlCq0MV7ihjXVQ68q5WLR+LUSWC6Xa9wxr7OCo9FolzCMLD+Cv9w==}
-
-  '@algolia/autocomplete-js@1.19.12':
-    resolution: {integrity: sha512-bHu42z7z6/hfqnzkav1/1IpRlHl7a13GzCElap5y2yqJSSRifhbtXPJT46q3dnNtoSTSDEEfHfKiEspcRWs4DQ==}
-    peerDependencies:
-      '@algolia/client-search': '>= 4.5.1 < 6'
-      algoliasearch: '>= 4.9.1 < 6'
 
   '@algolia/autocomplete-js@1.19.13':
     resolution: {integrity: sha512-fZhkaRY4b4RQIMLmD0u0ulVSLvnBBTxJ/qWMUh3q85H3h62T+pxEY4y84k6m4t4I5vSHXZpjiy15Fgr+5iSDfA==}
@@ -487,18 +478,13 @@ packages:
       '@algolia/client-search': '>= 4.5.1 < 6'
       algoliasearch: '>= 4.9.1 < 6'
 
-  '@algolia/autocomplete-plugin-algolia-insights@1.19.12':
-    resolution: {integrity: sha512-L3Fvu4Ajb7c9X1DMTHFFD8d1uK898b9bg9ENrjLpkSP8BAzO4vS5/MIsU0ks0FqpOihZ4VDAVYRaU6bhm/CljQ==}
-    peerDependencies:
-      search-insights: '>= 1 < 3'
-
   '@algolia/autocomplete-plugin-algolia-insights@1.19.13':
     resolution: {integrity: sha512-4mWWJf73QfJyz5tE7OlfpvQYGjGPaM3UnEoJfoXCnjDkJIhIQDTVQ0GzXpA1MhURKD7m2RwvTI+c/OaK18QEYA==}
     peerDependencies:
       search-insights: '>= 1 < 3'
 
-  '@algolia/autocomplete-plugin-query-suggestions@1.19.12':
-    resolution: {integrity: sha512-i/CN60EG+FD3ZOthDg3YYQojn4Ls3SwX+lgDh9PNdJ3fMMLqUlKwc5WQuabO60SFbQSavXYVHtsOCUckacxgTg==}
+  '@algolia/autocomplete-plugin-query-suggestions@1.19.13':
+    resolution: {integrity: sha512-VuykQw00PajUn+DPWUFWe9Hu4bCMP2zHPv2LyO4XVdoPUyQYIRmhuSjnDKXOcvwo0WygIHu0xnyE0nHBzVL07A==}
     peerDependencies:
       '@algolia/client-search': '>= 4.5.1 < 6'
       algoliasearch: '>= 4.5.1 < 6'
@@ -4470,15 +4456,6 @@ snapshots:
       '@algolia/requester-fetch': 5.64.0
       '@algolia/requester-node-http': 5.64.0
 
-  '@algolia/autocomplete-core@1.19.12(@algolia/client-search@5.64.0)(algoliasearch@5.64.0)(search-insights@2.17.3)':
-    dependencies:
-      '@algolia/autocomplete-plugin-algolia-insights': 1.19.12(@algolia/client-search@5.64.0)(algoliasearch@5.64.0)(search-insights@2.17.3)
-      '@algolia/autocomplete-shared': 1.19.12(@algolia/client-search@5.64.0)(algoliasearch@5.64.0)
-    transitivePeerDependencies:
-      - '@algolia/client-search'
-      - algoliasearch
-      - search-insights
-
   '@algolia/autocomplete-core@1.19.13(@algolia/client-search@5.64.0)(algoliasearch@5.64.0)(search-insights@2.17.3)':
     dependencies:
       '@algolia/autocomplete-plugin-algolia-insights': 1.19.13(@algolia/client-search@5.64.0)(algoliasearch@5.64.0)(search-insights@2.17.3)
@@ -4486,19 +4463,6 @@ snapshots:
     transitivePeerDependencies:
       - '@algolia/client-search'
       - algoliasearch
-      - search-insights
-
-  '@algolia/autocomplete-js@1.19.12(@algolia/client-search@5.64.0)(algoliasearch@5.64.0)(search-insights@2.17.3)':
-    dependencies:
-      '@algolia/autocomplete-core': 1.19.12(@algolia/client-search@5.64.0)(algoliasearch@5.64.0)(search-insights@2.17.3)
-      '@algolia/autocomplete-preset-algolia': 1.19.12(@algolia/client-search@5.64.0)(algoliasearch@5.64.0)
-      '@algolia/autocomplete-shared': 1.19.12(@algolia/client-search@5.64.0)(algoliasearch@5.64.0)
-      '@algolia/client-search': 5.64.0
-      algoliasearch: 5.64.0
-      htm: 3.1.1
-      preact: 10.29.8
-    transitivePeerDependencies:
-      - preact-render-to-string
       - search-insights
 
   '@algolia/autocomplete-js@1.19.13(@algolia/client-search@5.64.0)(algoliasearch@5.64.0)(search-insights@2.17.3)':
@@ -4514,14 +4478,6 @@ snapshots:
       - preact-render-to-string
       - search-insights
 
-  '@algolia/autocomplete-plugin-algolia-insights@1.19.12(@algolia/client-search@5.64.0)(algoliasearch@5.64.0)(search-insights@2.17.3)':
-    dependencies:
-      '@algolia/autocomplete-shared': 1.19.12(@algolia/client-search@5.64.0)(algoliasearch@5.64.0)
-      search-insights: 2.17.3
-    transitivePeerDependencies:
-      - '@algolia/client-search'
-      - algoliasearch
-
   '@algolia/autocomplete-plugin-algolia-insights@1.19.13(@algolia/client-search@5.64.0)(algoliasearch@5.64.0)(search-insights@2.17.3)':
     dependencies:
       '@algolia/autocomplete-shared': 1.19.13(@algolia/client-search@5.64.0)(algoliasearch@5.64.0)
@@ -4530,12 +4486,12 @@ snapshots:
       - '@algolia/client-search'
       - algoliasearch
 
-  '@algolia/autocomplete-plugin-query-suggestions@1.19.12(@algolia/client-search@5.64.0)(algoliasearch@5.64.0)(search-insights@2.17.3)':
+  '@algolia/autocomplete-plugin-query-suggestions@1.19.13(@algolia/client-search@5.64.0)(algoliasearch@5.64.0)(search-insights@2.17.3)':
     dependencies:
-      '@algolia/autocomplete-core': 1.19.12(@algolia/client-search@5.64.0)(algoliasearch@5.64.0)(search-insights@2.17.3)
-      '@algolia/autocomplete-js': 1.19.12(@algolia/client-search@5.64.0)(algoliasearch@5.64.0)(search-insights@2.17.3)
-      '@algolia/autocomplete-preset-algolia': 1.19.12(@algolia/client-search@5.64.0)(algoliasearch@5.64.0)
-      '@algolia/autocomplete-shared': 1.19.12(@algolia/client-search@5.64.0)(algoliasearch@5.64.0)
+      '@algolia/autocomplete-core': 1.19.13(@algolia/client-search@5.64.0)(algoliasearch@5.64.0)(search-insights@2.17.3)
+      '@algolia/autocomplete-js': 1.19.13(@algolia/client-search@5.64.0)(algoliasearch@5.64.0)(search-insights@2.17.3)
+      '@algolia/autocomplete-preset-algolia': 1.19.13(@algolia/client-search@5.64.0)(algoliasearch@5.64.0)
+      '@algolia/autocomplete-shared': 1.19.13(@algolia/client-search@5.64.0)(algoliasearch@5.64.0)
       '@algolia/client-search': 5.64.0
       algoliasearch: 5.64.0
     transitivePeerDependencies:
