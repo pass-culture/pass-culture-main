@@ -26,17 +26,17 @@ from pcapi.utils.transaction_manager import atomic
 logger = logging.getLogger(__name__)
 
 
+@atomic()
 def batch_create_or_update_ean_offers(
     request_payload: offers_schemas.CreateOrUpdateEANOffersRequest,
 ) -> None:
     extract_result = _extract(request_payload)
     transform_result = _transform(request_payload, extract_result)
-    with atomic():
-        _load(
-            request_payload,
-            extract_result,
-            transform_result,
-        )
+    _load(
+        request_payload,
+        extract_result,
+        transform_result,
+    )
 
 
 class _ExtractResult(typing.TypedDict):
@@ -66,24 +66,23 @@ def _extract(request_payload: offers_schemas.CreateOrUpdateEANOffersRequest) -> 
     ean_list_to_create = requested_eans - ean_list_to_update
 
     products_by_ean = {}
-    with atomic():
-        if request_payload.address_id:
-            offerer_address = offerers_api.get_or_create_offer_location(
-                venue_id=venue.id,
-                address_id=request_payload.address_id,
-                label=request_payload.address_label,
-            )
-        else:
-            offerer_address = offers_api.get_or_create_offerer_address_from_address_body(
-                offerers_schemas.LocationOnlyOnVenueModel(),
-                venue,
-            )
+    if request_payload.address_id:
+        offerer_address = offerers_api.get_or_create_offer_location(
+            venue_id=venue.id,
+            address_id=request_payload.address_id,
+            label=request_payload.address_label,
+        )
+    else:
+        offerer_address = offers_api.get_or_create_offerer_address_from_address_body(
+            offerers_schemas.LocationOnlyOnVenueModel(),
+            venue,
+        )
 
-        if ean_list_to_create:
-            products = _get_existing_products(ean_list_to_create)
-            for product in products:
-                assert product.ean is not None
-                products_by_ean[product.ean] = product
+    if ean_list_to_create:
+        products = _get_existing_products(ean_list_to_create)
+        for product in products:
+            assert product.ean is not None
+            products_by_ean[product.ean] = product
 
     return {
         "venue": venue,
@@ -157,7 +156,6 @@ def _load(
     result: _TransformResult,
 ) -> None:
     for offer_to_create in result["offers_to_create"]:
-        db.session.flush()
         try:
             with atomic():
                 ean = offer_to_create.ean
