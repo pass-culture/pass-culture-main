@@ -334,6 +334,7 @@ class ListOffersQueryModel(BaseModel):
 class ListThingOffersQueryModel(HttpQueryParamsModel):
     venue_id: int
     status: OfferStatus
+    cursor: str | None = None
     # a page does not read more offers than the capped total
     limit: int = pydantic_v2.Field(
         default=offers_constants.OFFERS_PER_PAGE, ge=1, le=offers_constants.OFFERS_LIST_TOTAL_MAX
@@ -343,6 +344,12 @@ class ListThingOffersQueryModel(HttpQueryParamsModel):
     is_digital: bool | None = None
     order_by_desc: bool = False
 
+    @pydantic_v2.field_validator("cursor")
+    @classmethod
+    def validate_cursor(cls, cursor: str | None) -> str | None:
+        if cursor is not None:
+            decode_thing_offers_cursor(cursor)
+        return cursor
 
 
 class ThingOfferResponseModel(HttpBodyModel):
@@ -378,6 +385,7 @@ def _get_offer_remaining_quantity(offer: offers_models.Offer) -> int | typing.Li
 
 class ListThingOffersResponseModel(HttpBodyModel):
     offers: list[ThingOfferResponseModel]
+    nextCursor: str | None
     total: int
     totalIsCapped: bool
 
@@ -388,12 +396,28 @@ class ListThingOffersResponseModel(HttpBodyModel):
         paginated_offer_ids: offers_repository.PaginatedOfferIds[offers_repository.ThingOffersCursor],
         headline_offer_id: int | None,
     ) -> typing.Self:
+        next_cursor = paginated_offer_ids.next_cursor
         return cls(
             offers=[ThingOfferResponseModel.build(offer, headline_offer_id) for offer in offers],
+            nextCursor=encode_thing_offers_cursor(next_cursor) if next_cursor else None,
             total=min(paginated_offer_ids.total, offers_constants.OFFERS_LIST_TOTAL_MAX),
             totalIsCapped=paginated_offer_ids.total > offers_constants.OFFERS_LIST_TOTAL_MAX,
         )
 
+
+def encode_thing_offers_cursor(cursor: offers_repository.ThingOffersCursor) -> str:
+    return base64.urlsafe_b64encode(json.dumps([cursor.name, cursor.id]).encode()).decode()
+
+
+def decode_thing_offers_cursor(encoded_cursor: str) -> offers_repository.ThingOffersCursor:
+    try:
+        values = json.loads(base64.urlsafe_b64decode(encoded_cursor.encode()))
+    except ValueError:
+        raise ValueError("Curseur invalide")
+    match values:
+        case [str() as name, int() as offer_id] if not isinstance(offer_id, bool):
+            return offers_repository.ThingOffersCursor(name=name, id=offer_id)
+    raise ValueError("Curseur invalide")
 
 
 class ListOffersHomeQueryModel(HttpQueryParamsModel):

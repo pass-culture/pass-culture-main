@@ -89,9 +89,12 @@ def list_thing_offers(
 
     rest.check_user_has_access_to_venues(current_user, [query.venue_id])
 
+    cursor = offers_serialize.decode_thing_offers_cursor(query.cursor) if query.cursor else None
+
     paginated_offer_ids = offers_repository.get_paginated_thing_offer_ids(
         venue_id=query.venue_id,
         per_page=query.limit,
+        cursor=cursor,
         status=query.status,
         name_keywords_or_ean=query.name_or_ean,
         creation_mode=query.creation_mode,
@@ -99,7 +102,6 @@ def list_thing_offers(
         order_by_desc=query.order_by_desc,
     )
     offers = offers_repository.get_thing_offers_by_ids(paginated_offer_ids.offer_ids)
-    
     headline_offer = offers_repository.get_current_headline_offer(query.venue_id)
     headline_offer_id = headline_offer.offerId if headline_offer else None
 
