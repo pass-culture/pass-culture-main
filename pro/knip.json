@@ -14,7 +14,6 @@
     "scripts/format_generated_index_exports.js",
     "scripts/sanitize_enum_keys.js"
   ],
-  "ignoreDependencies": ["openapi-typescript-codegen"],
   "ignoreUnresolved": ["typescript-plugin-css-modules"],
   "ignoreIssues": {
     "e2e/**": ["exports", "types", "enumMembers", "duplicates"]
