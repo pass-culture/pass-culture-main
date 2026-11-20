@@ -37,7 +37,7 @@ class CGRExtractTransformLoadProcess(CinemaETLProcessTemplate[CGRAPIClient, CGRE
             venue_provider=venue_provider,
             api_client=CGRAPIClient(
                 cinema_id=venue_provider.venueIdAtOfferProvider,
-                request_timeout=settings.EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS,
+                request_timeout=settings.CINE_ETL_TIMEOUT_IN_SECONDS,
             ),
         )
 

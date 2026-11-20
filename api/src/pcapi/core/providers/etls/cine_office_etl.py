@@ -45,7 +45,7 @@ class CineOfficeExtractTransformLoadProcess(CinemaETLProcessTemplate[CineOfficeA
                 cinema_id=venue_provider.venueIdAtOfferProvider,
                 account_id=cinema_details.accountId,
                 cinema_api_token=cinema_details.cinemaApiToken,
-                request_timeout=settings.EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS,
+                request_timeout=settings.CINE_ETL_TIMEOUT_IN_SECONDS,
             ),
         )
 
