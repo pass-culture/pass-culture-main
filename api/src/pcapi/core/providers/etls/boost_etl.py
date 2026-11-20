@@ -41,7 +41,7 @@ class BoostExtractTransformLoadProcess(CinemaETLProcessTemplate[BoostAPIClient, 
             venue_provider=venue_provider,
             api_client=BoostAPIClient(
                 venue_provider.venueIdAtOfferProvider,
-                request_timeout=settings.EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS,
+                request_timeout=settings.CINE_ETL_TIMEOUT_IN_SECONDS,
             ),
         )
 
