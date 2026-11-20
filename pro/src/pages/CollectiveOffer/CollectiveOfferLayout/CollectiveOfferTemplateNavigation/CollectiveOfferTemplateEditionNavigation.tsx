@@ -12,8 +12,8 @@ import { useAnalytics } from '@/app/App/analytics/firebase'
 import { GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { computeURLCollectiveOfferId } from '@/commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
-import { createOfferFromTemplate } from '@/commons/core/OfferEducational/utils/createOfferFromTemplate'
-import { duplicateBookableOffer } from '@/commons/core/OfferEducational/utils/duplicateBookableOffer'
+import { useCreateOfferFromTemplate } from '@/commons/core/OfferEducational/utils/createOfferFromTemplate'
+import { useDuplicateBookableOffer } from '@/commons/core/OfferEducational/utils/duplicateBookableOffer'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
@@ -47,6 +47,8 @@ export const CollectiveOfferTemplateEditionNavigation = ({
   const { logEvent } = useAnalytics()
   const snackBar = useSnackBar()
   const navigate = useNavigate()
+  const createOfferFromTemplate = useCreateOfferFromTemplate()
+  const duplicateBookableOffer = useDuplicateBookableOffer()
   const isMarseilleActive = useActiveFeature('ENABLE_MARSEILLE')
 
   const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false)

@@ -7,7 +7,7 @@ import {
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { computeURLCollectiveOfferId } from '@/commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
-import { createOfferFromTemplate } from '@/commons/core/OfferEducational/utils/createOfferFromTemplate'
+import { useCreateOfferFromTemplate } from '@/commons/core/OfferEducational/utils/createOfferFromTemplate'
 import { getCollectiveOfferLink } from '@/commons/core/OfferEducational/utils/getCollectiveOfferLink'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
@@ -47,6 +47,7 @@ export const CollectiveOffersTemplateLine = ({
   const offerLink = getCollectiveOfferLink(offerId, offer.displayedStatus)
   const navigate = useNavigate()
   const snackBar = useSnackBar()
+  const createOfferFromTemplate = useCreateOfferFromTemplate()
   const { logEvent } = useAnalytics()
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 

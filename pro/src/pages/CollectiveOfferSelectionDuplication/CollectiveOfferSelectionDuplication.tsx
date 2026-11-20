@@ -7,7 +7,7 @@ import { api } from '@/apiClient/api'
 import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
 import { ContentLayout } from '@/app/App/layouts/ContentLayout/ContentLayout'
 import { GET_COLLECTIVE_OFFERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
-import { createOfferFromTemplate } from '@/commons/core/OfferEducational/utils/createOfferFromTemplate'
+import { useCreateOfferFromTemplate } from '@/commons/core/OfferEducational/utils/createOfferFromTemplate'
 import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
 import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeCollectiveOffersUrl'
 import { serializeApiCollectiveFilters } from '@/commons/core/Offers/utils/serializeApiCollectiveFilters'
@@ -40,6 +40,7 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
 
   const snackBar = useSnackBar()
   const navigate = useNavigate()
+  const createOfferFromTemplate = useCreateOfferFromTemplate()
 
   const form = useForm<SearchFormValues>({
     defaultValues: { searchQuery: '' },
