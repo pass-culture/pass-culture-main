@@ -5,6 +5,7 @@ import jwt
 import pytest
 
 from pcapi.connectors.apple_oauth import AppleSignInException
+from pcapi.connectors.apple_oauth import _get_jwks_client
 from pcapi.connectors.apple_oauth import get_apple_user
 from pcapi.utils import requests
 
@@ -86,6 +87,12 @@ def test_logs_and_raises_on_fetch_id_token_bad_response(mocker, caplog):
 
 
 def test_logs_and_raises_on_get_signing_key_error(mocker, requests_mock, caplog):
+    """Regression for API-3A1.
+
+    Sentry sample:
+    - Apple JWKS fetch failed
+    - Fail to fetch data from the url, err: "HTTP Error 501: Not Implemented"
+    """
     mocker.patch(
         "jwt.PyJWKClient.get_signing_key_from_jwt",
         side_effect=jwt.PyJWKClientError("The JWKS endpoint did not return a JSON object"),
@@ -98,6 +105,17 @@ def test_logs_and_raises_on_get_signing_key_error(mocker, requests_mock, caplog)
             get_apple_user("valid_auth_code", is_web=True)
 
     assert caplog.records[0].extra["error"] == "The JWKS endpoint did not return a JSON object"
+    assert caplog.records[0].extra["apple_keys_url"] == "https://appleid.apple.com/auth/keys"
+
+
+def test_jwks_client_is_cached(mocker):
+    _get_jwks_client.cache_clear()
+    constructor = mocker.patch("pcapi.connectors.apple_oauth.PyJWKClient")
+
+    _get_jwks_client()
+    _get_jwks_client()
+
+    assert constructor.call_count == 1
 
 
 def test_logs_and_raises_on_id_token_decoding_error(mocker, requests_mock, caplog):
