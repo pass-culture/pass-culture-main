@@ -14,9 +14,9 @@ import {
   getCollectiveOfferTemplateFactory,
 } from '@/commons/utils/factories/collectiveApiFactories'
 import { imageUploadArgsFactory } from '@/commons/utils/factories/imageUploadArgsFactories'
+import { MIN_COLLECTIVE_IMAGE_DIMENSIONS } from '@/commons/utils/imageUpload/constants'
 import { prepareImageForUpload } from '@/commons/utils/prepareImageForUpload'
 import * as sendSentryCustomError from '@/commons/utils/sendSentryCustomError'
-import { MIN_COLLECTIVE_IMAGE_DIMENSIONS } from '@/components/ImageDragAndDrop/constants'
 
 import { useCollectiveOfferImageUpload } from '../useCollectiveOfferImageUpload'
 

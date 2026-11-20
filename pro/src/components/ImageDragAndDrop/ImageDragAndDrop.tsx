@@ -8,17 +8,17 @@ import {
 } from 'react'
 import { useDropzone } from 'react-dropzone'
 
-import fullValidateIcon from '@/icons/full-validate.svg'
-import strokePicture from '@/icons/stroke-picture.svg'
-import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
-
 import {
   ALLOWED_IMAGE_TYPES_TO_EXTENSIONS,
   MAX_FILE_SIZE,
   UPLOAD_IMAGE_MAX_RESOLUTION,
-} from './constants'
-import { getImageDimensions } from './getImageDimensions'
-import { getImageFormat } from './getImageFormat'
+} from '@/commons/utils/imageUpload/constants'
+import { getImageDimensions } from '@/commons/utils/imageUpload/getImageDimensions'
+import { getImageFormat } from '@/commons/utils/imageUpload/getImageFormat'
+import fullValidateIcon from '@/icons/full-validate.svg'
+import strokePicture from '@/icons/stroke-picture.svg'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
+
 import { ImageConstraintCheck } from './ImageConstraintCheck'
 import styles from './ImageDragAndDrop.module.scss'
 

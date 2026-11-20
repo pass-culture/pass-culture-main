@@ -2,11 +2,11 @@ import cn from 'classnames'
 import { useEffect, useId, useRef, useState } from 'react'
 
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
+import { MIN_COLLECTIVE_IMAGE_DIMENSIONS } from '@/commons/utils/imageUpload/constants'
 import {
   UploaderModeEnum,
   type UploadImageValues,
 } from '@/commons/utils/imageUploadTypes'
-import { MIN_COLLECTIVE_IMAGE_DIMENSIONS } from '@/components/ImageDragAndDrop/constants'
 import { ImageDragAndDrop } from '@/components/ImageDragAndDrop/ImageDragAndDrop'
 import {
   ModalImageUpsertOrEdit,

@@ -22,16 +22,16 @@ import { useFormNavigationGuard } from '@/commons/hooks/useFormNavigationGuard/u
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
-import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
-import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
-import { FormLayout } from '@/components/FormLayout/FormLayout'
 import {
   ALLOWED_IMAGE_TYPES_TO_EXTENSIONS,
   MAX_FILE_SIZE,
   UPLOAD_IMAGE_MAX_RESOLUTION,
-} from '@/components/ImageDragAndDrop/constants'
-import { getImageDimensions } from '@/components/ImageDragAndDrop/getImageDimensions'
-import { getImageFormat } from '@/components/ImageDragAndDrop/getImageFormat'
+} from '@/commons/utils/imageUpload/constants'
+import { getImageDimensions } from '@/commons/utils/imageUpload/getImageDimensions'
+import { getImageFormat } from '@/commons/utils/imageUpload/getImageFormat'
+import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
+import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
+import { FormLayout } from '@/components/FormLayout/FormLayout'
 import {
   ModalImageUpsertOrEdit,
   type OnImageUploadArgs,
