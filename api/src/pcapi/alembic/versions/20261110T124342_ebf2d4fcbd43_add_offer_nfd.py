@@ -16,9 +16,9 @@ depends_on: list[str] | None = None
 
 
 def upgrade() -> None:
-    op.add_column("offer", sa.Column("nature", MagicEnum(nfd.NatureEnum), nullable=True, if_not_exists=True))
-    op.add_column("offer", sa.Column("format", MagicEnum(nfd.FormatEnum), nullable=True, if_not_exists=True))
-    op.add_column("offer", sa.Column("domain", MagicEnum(nfd.DomainEnum), nullable=True, if_not_exists=True))
+    op.add_column("offer", sa.Column("nature", MagicEnum(nfd.NatureEnum), nullable=True), if_not_exists=True)
+    op.add_column("offer", sa.Column("format", MagicEnum(nfd.FormatEnum), nullable=True), if_not_exists=True)
+    op.add_column("offer", sa.Column("domain", MagicEnum(nfd.DomainEnum), nullable=True), if_not_exists=True)
 
 
 def downgrade() -> None:

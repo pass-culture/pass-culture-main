@@ -44,7 +44,9 @@ export const MultiSelectTrigger = ({
         [styles['trigger-error']]: !!error,
       })}
       onClick={toggleDropdown}
-      aria-label={buttonLabel}
+      aria-label={
+        selectedCount > 0 ? `${selectedCount} ${buttonLabel}` : buttonLabel
+      }
       aria-controls={id}
       aria-expanded={isOpen}
       disabled={disabled}
@@ -53,13 +55,8 @@ export const MultiSelectTrigger = ({
     >
       <div className={styles['trigger-content']}>
         {selectedCount > 0 && (
-          <div className={styles['badge']}>
-            {selectedCount}{' '}
-            <span className={styles['visually-hidden']}>
-              éléments sélectionnés
-            </span>
-          </div>
-        )}
+          <div className={styles['badge']}>{selectedCount}</div>
+        )}{' '}
         <span className={styles['trigger-label']}>{buttonLabel}</span>
       </div>
       <SvgIcon

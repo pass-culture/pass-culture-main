@@ -131,7 +131,7 @@ describe('ActivityDetails', () => {
         culturalDomains: ['domaine 1'],
       })
 
-      await userEvent.click(screen.getByLabelText('domaine sélectionné'))
+      await userEvent.click(screen.getByLabelText('1 domaine sélectionné'))
       await waitFor(() => {
         expect(screen.getByTestId('panel-scrollable')).toBeInTheDocument()
       })
@@ -152,7 +152,7 @@ describe('ActivityDetails', () => {
       await userEvent.click(screen.getByText('domaine 1'))
       await userEvent.click(screen.getByText('domaine III'))
       expect(
-        screen.getByRole('button', { name: 'domaines sélectionnés' })
+        screen.getByRole('button', { name: /domaines sélectionnés/ })
       ).toBeInTheDocument()
     })
   })

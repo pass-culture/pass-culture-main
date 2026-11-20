@@ -39,7 +39,7 @@ describe('<MultiSelectTrigger />', () => {
   it('should expose its expanded state and selected count description', () => {
     renderMultiSelectPanel({ isOpen: true, selectedCount: 2 })
 
-    const button = screen.getByRole('button', { name: 'Options Label' })
+    const button = screen.getByRole('button', { name: '2 Options Label' })
     expect(button).toHaveAttribute('aria-expanded', 'true')
     expect(button).toHaveAttribute(
       'aria-describedby',

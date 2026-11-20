@@ -149,7 +149,7 @@ describe('screens:SignupJourney::ActivityForm', () => {
       })
     ).not.toBeChecked()
 
-    await userEvent.click(screen.getByLabelText('domaine sélectionné'))
+    await userEvent.click(screen.getByLabelText('1 domaine sélectionné'))
     await waitFor(() => {
       expect(screen.getByTestId('panel-scrollable')).toBeInTheDocument()
     })
@@ -249,7 +249,7 @@ describe('screens:SignupJourney::ActivityForm', () => {
     expect(screen.getAllByText(/domaine 1/)).toHaveLength(2)
     await userEvent.click(screen.getByText(/domaine III/))
     expect(
-      screen.getByRole('button', { name: 'domaines sélectionnés' })
+      screen.getByRole('button', { name: /domaines sélectionnés/ })
     ).toBeInTheDocument()
   })
 

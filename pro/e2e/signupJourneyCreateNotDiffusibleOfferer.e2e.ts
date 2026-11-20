@@ -83,7 +83,7 @@ test.describe('Signup journey with not diffusible offerer siret', () => {
     await createOffererPromise
 
     await expect(
-      page.getByLabel('Commencer la création d’offre sur l’application mobile')
+      page.getByLabel('Créer une offre individuelle sur l’application mobile')
     ).toBeVisible()
   })
 
@@ -139,7 +139,7 @@ test.describe('Signup journey with not diffusible offerer siret', () => {
     await createOffererPromise
 
     await expect(
-      page.getByLabel('Commencer la création d’offre sur l’application mobile')
+      page.getByLabel('Créer une offre individuelle sur l’application mobile')
     ).toBeVisible()
   })
 })

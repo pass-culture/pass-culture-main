@@ -379,12 +379,12 @@ describe('Homepage', () => {
       ).toBeVisible()
       expect(
         screen.getByRole('button', {
-          name: 'Commencer la création d’offre sur l’application mobile',
+          name: 'Créer une offre individuelle sur l’application mobile',
         })
       ).toBeVisible()
       expect(
         screen.getByRole('button', {
-          name: 'Commencer la création d’offre sur ADAGE',
+          name: 'Déposer un dossier ADAGE pour créer une offre collective',
         })
       ).toBeVisible()
       expect(

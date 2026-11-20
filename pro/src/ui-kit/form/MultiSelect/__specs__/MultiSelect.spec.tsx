@@ -39,7 +39,7 @@ describe('<MultiSelect />', () => {
   it('should render correctly', () => {
     renderMultiSelect({ options })
 
-    expect(screen.getByRole('button', { name: 'Options' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Options/ })).toBeInTheDocument()
   })
 
   it('should not have accessibility violations', async () => {
@@ -47,7 +47,7 @@ describe('<MultiSelect />', () => {
 
     expect(await axe(container)).toHaveNoViolations()
 
-    const toggleButton = screen.getByRole('button', { name: 'Options' })
+    const toggleButton = screen.getByRole('button', { name: /Options/ })
     await userEvent.click(toggleButton)
 
     expect(await axe(container)).toHaveNoViolations()
@@ -66,7 +66,7 @@ describe('<MultiSelect />', () => {
   it('toggles the dropdown when the trigger is clicked', async () => {
     renderMultiSelect({ hasSelectAllOptions: true, options })
 
-    const toggleButton = screen.getByRole('button', { name: 'Options' })
+    const toggleButton = screen.getByRole('button', { name: /Options/ })
     await userEvent.click(toggleButton)
 
     const selectAllCheckbox = screen.getByRole('checkbox', {
@@ -84,7 +84,7 @@ describe('<MultiSelect />', () => {
     const user = userEvent.setup()
     renderMultiSelect({ options })
 
-    const trigger = screen.getByRole('button', { name: 'Options' })
+    const trigger = screen.getByRole('button', { name: /Options/ })
     expect(trigger).toHaveAttribute('aria-expanded', 'false')
     expect(trigger).not.toHaveAttribute('aria-haspopup')
     trigger.focus()
@@ -115,7 +115,7 @@ describe('<MultiSelect />', () => {
     const user = userEvent.setup()
     renderMultiSelect({ options })
 
-    await user.click(screen.getByRole('button', { name: 'Options' }))
+    await user.click(screen.getByRole('button', { name: /Options/ }))
     await user.tab()
     await user.tab()
     await user.tab()
@@ -125,7 +125,7 @@ describe('<MultiSelect />', () => {
     expect(
       screen.getByRole('button', { name: 'Supprimer Option 1' })
     ).toHaveFocus()
-    expect(screen.getByRole('button', { name: 'Options' })).toHaveAttribute(
+    expect(screen.getByRole('button', { name: /Options/ })).toHaveAttribute(
       'aria-expanded',
       'false'
     )
@@ -134,7 +134,7 @@ describe('<MultiSelect />', () => {
   it('selects all options when "Select All" is clicked', async () => {
     renderMultiSelect({ hasSelectAllOptions: true, options })
 
-    const toggleButton = screen.getByRole('button', { name: 'Options' })
+    const toggleButton = screen.getByRole('button', { name: /Options/ })
     await userEvent.click(toggleButton)
 
     const selectAllCheckbox = screen.getByRole('checkbox', {
@@ -168,7 +168,7 @@ describe('<MultiSelect />', () => {
       const user = userEvent.setup()
       renderMultiSelect({ options })
 
-      const trigger = screen.getByRole('button', { name: 'Options' })
+      const trigger = screen.getByRole('button', { name: /Options/ })
       await user.tab()
       await user.tab()
 
@@ -204,7 +204,7 @@ describe('<MultiSelect />', () => {
     const user = userEvent.setup()
     renderMultiSelect({ options: [options[0]] })
 
-    const trigger = screen.getByRole('button', { name: 'Options' })
+    const trigger = screen.getByRole('button', { name: /Options/ })
     await user.click(trigger)
     await user.tab()
 
@@ -222,7 +222,7 @@ describe('<MultiSelect />', () => {
   it('closes the dropdown when clicked outside or when Escape key is pressed', async () => {
     renderMultiSelect({ options })
 
-    const toggleButton = screen.getByRole('button', { name: 'Options' })
+    const toggleButton = screen.getByRole('button', { name: /Options/ })
     toggleButton.focus()
 
     await userEvent.click(toggleButton)
@@ -244,7 +244,7 @@ describe('<MultiSelect />', () => {
   it('should toggle dropdown with keyboard accessibility', async () => {
     renderMultiSelect({ hasSelectAllOptions: true, options })
 
-    const toggleButton = screen.getByRole('button', { name: 'Options' })
+    const toggleButton = screen.getByRole('button', { name: /Options/ })
     toggleButton.focus()
 
     await userEvent.keyboard('[Enter]')
@@ -275,7 +275,7 @@ describe('<MultiSelect />', () => {
       </div>
     )
 
-    const toggleButton = screen.getByRole('button', { name: 'Options' })
+    const toggleButton = screen.getByRole('button', { name: /Options/ })
     toggleButton.focus()
 
     await userEvent.click(toggleButton)
