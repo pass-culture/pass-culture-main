@@ -377,7 +377,10 @@ describe('offersSearch component', () => {
       search: '?domain=1',
     }
 
-    window.location = mockLocation as string & Location
+    Object.defineProperty(window, 'location', {
+      value: mockLocation,
+      configurable: true,
+    })
 
     renderOffersSearchComponent(
       { ...props, initialFilters: { domains: [1] } },
