@@ -20,8 +20,6 @@ updates:
     cooldown:
       default-days: 7
       semver-major-days: 14
-    ignore:
-      - dependency-name: "openapi-typescript-codegen"
     groups:
       react:
         patterns:
