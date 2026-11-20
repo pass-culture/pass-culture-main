@@ -1031,7 +1031,7 @@ def _get_offers_filters(
 
 
 def _get_capped_total(filters: list[sa.ColumnElement[bool]]) -> int:
-    offer_ids = sa.select(models.Offer.id).where(*filters).limit(offers_constants.OFFERS_RECAP_LIMIT).subquery()
+    offer_ids = sa.select(models.Offer.id).where(*filters).limit(offers_constants.OFFERS_LIST_TOTAL_MAX + 1).subquery()
     return db.session.execute(sa.select(sa.func.count()).select_from(offer_ids)).scalar_one()
 
 
