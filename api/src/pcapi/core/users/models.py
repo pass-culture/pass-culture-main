@@ -100,7 +100,7 @@ class NotificationSubscriptions:
 
 
 # calculate date of latest birthday
-def _get_latest_birthday(birth_date: date | None) -> date | None:
+def _get_latest_birthday(birth_date: date | None):
     """
     Calculates the latest birthday of a given person.
     :param birth_date: The person's birthday.

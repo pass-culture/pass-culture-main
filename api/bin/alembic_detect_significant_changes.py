@@ -23,7 +23,7 @@ NOTABLE = (
 )
 
 
-def check_migration(file_name: str, operation_level: str = "important") -> list[str]:
+def check_migration(file_name: str, operation_level: str = "important"):
     operation_group = IMPORTANT if operation_level == "important" else NOTABLE
     file_path = pathlib.Path(file_name)
     operations = []
