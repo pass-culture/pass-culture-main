@@ -28,6 +28,7 @@ from pcapi.core.videos import api as videos_api
 from pcapi.core.videos import exceptions as videos_exceptions
 from pcapi.models import api_errors
 from pcapi.models import db
+from pcapi.models.feature import FeatureToggle
 from pcapi.models.utils import first_or_404
 from pcapi.models.utils import get_or_404
 from pcapi.routes.pro.blueprint import pro_blueprint
@@ -70,6 +71,39 @@ def list_offers(query: offers_serialize.ListOffersQueryModel) -> offers_serializ
     )
 
     return offers_serialize.ListOffersResponseModel(__root__=offers_serialize.serialize_capped_offers(paginated_offers))
+
+
+@pro_blueprint.route("/thing-offers", methods=["GET"])
+@login_required
+@spectree_serialize(
+    response_model=offers_serialize.ListThingOffersResponseModel,
+    on_error_statuses=[400, 404],
+    api=blueprint.pro_schema,
+)
+@atomic()
+def list_thing_offers(
+    query: offers_serialize.ListThingOffersQueryModel,
+) -> offers_serialize.ListThingOffersResponseModel:
+    if not FeatureToggle.WIP_INDIVIDUAL_OFFERS_LIST_V2.is_active():
+        raise api_errors.ResourceNotFoundError()
+
+    rest.check_user_has_access_to_venues(current_user, [query.venue_id])
+
+    paginated_offer_ids = offers_repository.get_paginated_thing_offer_ids(
+        venue_id=query.venue_id,
+        per_page=query.limit,
+        status=query.status,
+        name_keywords_or_ean=query.name_or_ean,
+        creation_mode=query.creation_mode,
+        is_digital=query.is_digital,
+        order_by_desc=query.order_by_desc,
+    )
+    offers = offers_repository.get_thing_offers_by_ids(paginated_offer_ids.offer_ids)
+    
+    headline_offer = offers_repository.get_current_headline_offer(query.venue_id)
+    headline_offer_id = headline_offer.offerId if headline_offer else None
+
+    return offers_serialize.ListThingOffersResponseModel.build(offers, paginated_offer_ids, headline_offer_id)
 
 
 @pro_blueprint.route("/offers/home", methods=["GET"])
