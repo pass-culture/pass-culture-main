@@ -21,7 +21,6 @@ import typing
 
 from pydantic import BaseModel
 
-from pcapi.app import app
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.history import api as history_api
 from pcapi.core.history import constants as history_constants
@@ -30,6 +29,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users import api as users_api
 from pcapi.core.users import models as users_models
 from pcapi.core.users.password_utils import random_password
+from pcapi.flask_app import create_app
 from pcapi.models import db
 from pcapi.routes.serialization import users as users_serializers
 from pcapi.utils import email as email_utils
@@ -136,7 +136,7 @@ def main(filename: str, apply: bool) -> None:
 
 
 if __name__ == "__main__":
-    app.app_context().push()
+    create_app().app_context().push()
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--apply", action="store_true")

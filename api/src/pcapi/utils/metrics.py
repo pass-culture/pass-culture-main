@@ -12,19 +12,39 @@ but this decision might need to be revisited as the number increases.
 
 """
 
+import os
 import time
 from threading import Lock
 from typing import Any
 from typing import Self
 from urllib.parse import urlparse
 
+from flask import Flask
+from flask import request
 from prometheus_client import Counter
 from prometheus_client import Histogram
+from prometheus_flask_exporter.multiprocess import GunicornPrometheusMetrics
 
 
 # Global metrics registry to avoid re-registering metrics
 _metrics_registry: dict[str, tuple[Histogram, Counter]] = {}
 _metrics_lock = Lock()
+URL_PREFIX_VALUES = {
+    "account-update-requests",
+    "backoffice",
+    "openapi.json",
+    "adage",
+    "adage-iframe",
+    "auth",
+    "health",
+    "individual-bookings",
+    "institutional",
+    "native",
+    "pro",
+    "public",
+    "public-accounts",
+    "webhooks",
+}
 
 
 def get_or_create_http_metrics(name_suffix: str) -> tuple[Histogram, Counter]:
@@ -102,3 +122,40 @@ class HttpMetricsContext:
     def record_response(self, status_code: int) -> None:
         """Record the response status code for successful requests."""
         self._status_code = str(status_code)
+
+
+def setup_metrics(app: Flask) -> None:
+    if not int(os.environ.get("ENABLE_FLASK_PROMETHEUS_EXPORTER", "0")):
+        return
+
+    def get_top_level_blueprint_name() -> str | None:
+        if hasattr(request, "blueprint") and request.blueprint is not None:
+            blueprint_list = request.blueprint.split(".")
+            if blueprint_list and blueprint_list[0] is not None:
+                return blueprint_list[0]
+        return "other"
+
+    def get_url_prefix() -> str | None:
+        path = request.path
+        # Request.path always includes a leading slash
+        prefix = next((p for p in path.split("/") if p), None)
+        if prefix not in URL_PREFIX_VALUES:
+            return "other"
+        return prefix
+
+    def get_url_rule() -> str:
+        if request.url_rule:
+            return str(request.url_rule)
+        else:
+            return "other"
+
+    GunicornPrometheusMetrics(
+        app,
+        group_by="url_rule",
+        default_labels={
+            "url_prefix": get_url_prefix,
+            "route_blueprint": get_top_level_blueprint_name,
+            "path": get_url_rule,
+        },
+    )
+    # An external export server is started by Gunicorn, see `gunicorn.conf.py`.
