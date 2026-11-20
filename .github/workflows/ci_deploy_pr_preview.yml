@@ -159,7 +159,7 @@ jobs:
           git config --global url."https://oauth2:${GITHUB_TOKEN}@github.com/".insteadOf "https://github.com/"
         env:
           GITHUB_TOKEN: ${{ steps.github-token.outputs.token }}
-      - uses: jdx/mise-action@v4.3.0
+      - uses: jdx/mise-action@v5.2.6
         env:
           GITHUB_TOKEN: ${{ steps.github-token.outputs.token }}
 
@@ -253,7 +253,7 @@ jobs:
           git config --global url."https://oauth2:${GITHUB_TOKEN}@github.com/".insteadOf "https://github.com/"
         env:
           GITHUB_TOKEN: ${{ steps.github-token.outputs.token }}
-      - uses: jdx/mise-action@v4.3.0
+      - uses: jdx/mise-action@v5.2.6
         env:
           GITHUB_TOKEN: ${{ steps.github-token.outputs.token }}
       - name: Ensure ${{ matrix.service }} is ready
