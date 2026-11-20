@@ -3775,6 +3775,10 @@ export type InvoiceListQueryModel = {
      * Periodendingdate
      */
     periodEndingDate?: string | null;
+    /**
+     * Status
+     */
+    status?: Array<InvoiceStatus> | null;
 };
 
 /**
@@ -8977,6 +8981,14 @@ export type getFinanceInvoicesData = {
          */
         offererId: number;
         /**
+         * Bankaccountid
+         */
+        bankAccountId?: number | null;
+        /**
+         * Status
+         */
+        status?: Array<InvoiceStatus> | null;
+        /**
          * Periodbeginningdate
          */
         periodBeginningDate?: string | null;
@@ -8984,10 +8996,6 @@ export type getFinanceInvoicesData = {
          * Periodendingdate
          */
         periodEndingDate?: string | null;
-        /**
-         * Bankaccountid
-         */
-        bankAccountId?: number | null;
         /**
          * Amountpositiveonly
          */

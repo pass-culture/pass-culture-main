@@ -9,7 +9,7 @@ import fullRefreshIcon from '@/icons/full-refresh.svg'
 import { PeriodSelector } from '@/ui-kit/form/PeriodSelector/PeriodSelector'
 import { Select } from '@/ui-kit/form/Select/Select'
 
-import { DEFAULT_INVOICES_FILTERS } from './constants'
+import { DEFAULT_INVOICES_FILTERS, STATUS_FILTER } from './constants'
 import styles from './InvoicesFilters.module.scss'
 
 interface InvoicesFiltersProps {
@@ -34,6 +34,16 @@ function extractAmountFilters(searchParams: URLSearchParams): AMOUNT_FILTER {
   return AMOUNT_FILTER.ALL_AMOUNTS
 }
 
+function extractStatusFilters(searchParams: URLSearchParams): STATUS_FILTER {
+  const searchStatus = searchParams.get('status')
+
+  if (searchStatus && Object.keys(STATUS_FILTER).includes(searchStatus)) {
+    return searchStatus as STATUS_FILTER
+  }
+
+  return STATUS_FILTER.ALL_STATUS
+}
+
 function amountFilterToQuery(
   amount: AMOUNT_FILTER
 ): Partial<Record<'amountPositiveOnly' | 'amountNegativeOnly', string>> {
@@ -49,26 +59,32 @@ function amountFilterToQuery(
 function computeFilterState(
   searchParams: URLSearchParams,
   amount: AMOUNT_FILTER,
+  status: STATUS_FILTER,
   periodBeginningDate: string,
   periodEndingDate: string
 ) {
   const urlAmounts = extractAmountFilters(searchParams)
+  const urlStatus = extractStatusFilters(searchParams)
   const urlPeriodBeginningDate = searchParams.get('periodBeginningDate')
   const urlPeriodEndingDate = searchParams.get('periodEndingDate')
   const hasCustomFilters =
     urlAmounts !== AMOUNT_FILTER.ALL_AMOUNTS ||
+    urlStatus !== STATUS_FILTER.ALL_STATUS ||
     urlPeriodBeginningDate !== DEFAULT_INVOICES_FILTERS.periodBeginningDate ||
     urlPeriodEndingDate !== DEFAULT_INVOICES_FILTERS.periodEndingDate
+
   const errors = {
     beginningDate: !periodBeginningDate
       ? 'La date de début est obligatoire'
       : '',
     endingDate: !periodEndingDate ? 'La date de fin est obligatoire' : '',
   }
+
   const canRelaunchSearch =
     !errors.beginningDate &&
     !errors.endingDate &&
     (amount !== urlAmounts ||
+      status !== urlStatus ||
       periodBeginningDate !== urlPeriodBeginningDate ||
       periodEndingDate !== urlPeriodEndingDate)
 
@@ -83,10 +99,15 @@ export const InvoicesFilters = ({
   const [amount, setAmount] = useState<AMOUNT_FILTER>(
     extractAmountFilters(searchParams)
   )
+  const [status, setStatus] = useState<STATUS_FILTER>(
+    extractStatusFilters(searchParams)
+  )
+
   const [periodBeginningDate, setPeriodBeginningDate] = useState(
     searchParams.get('periodBeginningDate') ??
       DEFAULT_INVOICES_FILTERS.periodBeginningDate
   )
+
   const [periodEndingDate, setPeriodEndingDate] = useState(
     searchParams.get('periodEndingDate') ??
       DEFAULT_INVOICES_FILTERS.periodEndingDate
@@ -95,6 +116,7 @@ export const InvoicesFilters = ({
   const { hasCustomFilters, canRelaunchSearch, errors } = computeFilterState(
     searchParams,
     amount,
+    status,
     periodBeginningDate,
     periodEndingDate
   )
@@ -103,6 +125,7 @@ export const InvoicesFilters = ({
     setSearchParams({
       periodBeginningDate,
       periodEndingDate,
+      ...(status !== STATUS_FILTER.ALL_STATUS && { status }),
       ...amountFilterToQuery(amount),
     })
   }
@@ -124,6 +147,23 @@ export const InvoicesFilters = ({
               setAmount(value as AMOUNT_FILTER)
             }
           />
+
+          <Select
+            label="Statut"
+            name="status"
+            defaultOption={{
+              label: 'Tous les statuts',
+              value: STATUS_FILTER.ALL_STATUS,
+            }}
+            options={[
+              { label: 'Réglé', value: STATUS_FILTER.PAID },
+              { label: 'En attente', value: STATUS_FILTER.PENDING },
+            ]}
+            value={status}
+            onChange={({ target: { value } }) =>
+              setStatus(value as STATUS_FILTER)
+            }
+          ></Select>
 
           <PeriodSelector
             onBeginningDateChange={setPeriodBeginningDate}

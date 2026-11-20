@@ -1387,6 +1387,15 @@ export const zInviteMemberQueryModel = z.object({
 });
 
 /**
+ * InvoiceStatus
+ */
+export const zInvoiceStatus = z.enum([
+    'pending',
+    'pending_payment',
+    'paid'
+]);
+
+/**
  * InvoiceListQueryModel
  */
 export const zInvoiceListQueryModel = z.object({
@@ -1395,17 +1404,9 @@ export const zInvoiceListQueryModel = z.object({
     bankAccountId: z.int().nullish().default(null),
     offererId: z.int(),
     periodBeginningDate: z.iso.date().nullish().default(null),
-    periodEndingDate: z.iso.date().nullish().default(null)
+    periodEndingDate: z.iso.date().nullish().default(null),
+    status: z.array(zInvoiceStatus).nullish().default(null)
 });
-
-/**
- * InvoiceStatus
- */
-export const zInvoiceStatus = z.enum([
-    'pending',
-    'pending_payment',
-    'paid'
-]);
 
 /**
  * InvoiceResponseModel
@@ -3982,9 +3983,10 @@ export const zGetCombinedInvoicesQuery = z.object({
 
 export const zGetInvoicesQuery = z.object({
     offererId: z.int(),
+    bankAccountId: z.int().nullish().default(null),
+    status: z.array(zInvoiceStatus).nullish().default(null),
     periodBeginningDate: z.iso.date().nullish().default(null),
     periodEndingDate: z.iso.date().nullish().default(null),
-    bankAccountId: z.int().nullish().default(null),
     amountPositiveOnly: z.boolean().nullish().default(null),
     amountNegativeOnly: z.boolean().nullish().default(null)
 });

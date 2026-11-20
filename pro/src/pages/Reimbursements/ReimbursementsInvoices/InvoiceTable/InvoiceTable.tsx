@@ -16,11 +16,13 @@ import {
   ButtonVariant,
   IconPositionEnum,
 } from '@/design-system/Button/types'
+import { Tag } from '@/design-system/Tag/Tag'
 import fullNextIcon from '@/icons/full-next.svg'
 import strokeInstitutionIcon from '@/icons/stroke-institution.svg'
 import strokeRepaymentIcon from '@/icons/stroke-repayment.svg'
 import { type Column, Table, TableVariant } from '@/ui-kit/Table/Table'
 
+import { INVOICE_STATUS_LABELS } from './constants'
 import { InvoiceActions } from './InvoiceActions'
 import { InvoiceDownloadActionsBar } from './InvoiceDownloadActionsBar'
 import styles from './InvoiceTable.module.scss'
@@ -90,6 +92,16 @@ const columns: Column<ExtendedInvoiceResponseModel>[] = [
     sortable: true,
     ordererField: 'date',
     render: (invoice) => format(new Date(invoice.date), FORMAT_DD_MM_YYYY),
+  },
+  {
+    id: 'status',
+    label: 'Statut',
+    sortable: true,
+    ordererField: 'status',
+    render: (invoice) => {
+      const { label, variant } = INVOICE_STATUS_LABELS[invoice.status]
+      return <Tag label={label} variant={variant} />
+    },
   },
   {
     id: 'amount',

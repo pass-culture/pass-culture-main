@@ -12,6 +12,7 @@ from pcapi.core.finance.utils import cents_to_full_unit
 from pcapi.core.offerers import models as offerers_models
 from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.serialization import HttpQueryParamsModel
+from pcapi.serialization import utils
 from pcapi.utils.date import get_naive_utc_now
 
 
@@ -21,9 +22,10 @@ logger = logging.getLogger(__name__)
 # Query models
 class InvoiceListQueryModel(HttpQueryParamsModel):
     offerer_id: int
+    bank_account_id: int | None = None
+    status: typing.Annotated[list[models.InvoiceStatus] | None, utils.ArgsAsListBeforeValidator] = None
     period_beginning_date: datetime.date | None = None
     period_ending_date: datetime.date | None = None
-    bank_account_id: int | None = None
     amount_positive_only: bool | None = None
     amount_negative_only: bool | None = None
 
