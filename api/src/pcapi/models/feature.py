@@ -142,6 +142,7 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_CULTURAL_OUTREACH = "Active la déclaration des actions de médiation culturelle"
     WIP_CLOSE_VENUE = "Active la fermeture d'une venue depuis l'espace partenaire"
     WIP_HOME_STATS_V2 = "Active la V2 des statistiques de réservations de la page d'accueil"
+    WIP_INDIVIDUAL_OFFERS_LIST_V2 = "Active la V2 de la liste des offres individuelles paginée par curseur"
     WIP_NFD = "Active la création d'offre par Nature, Format, Domaine"
     WIP_VALIDATE_OFFER_BEFORE_PUBLISHING = (
         "Active la validation des données d'une offre avant sa publication sur le portail pro"
@@ -202,6 +203,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_CULTURAL_OUTREACH,
     FeatureToggle.WIP_ENABLE_NEW_BREVO_RECOMMENDATION_WEBHOOK,
     FeatureToggle.WIP_HOME_STATS_V2,
+    FeatureToggle.WIP_INDIVIDUAL_OFFERS_LIST_V2,
     FeatureToggle.WIP_NFD,
     # Please keep alphabetic order
 )
