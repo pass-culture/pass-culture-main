@@ -1,3 +1,4 @@
+import base64
 import datetime
 import json
 import re
@@ -332,6 +333,71 @@ class ListOffersQueryModel(BaseModel):
         alias_generator = to_camel
         extra = "forbid"
         arbitrary_types_allowed = True
+
+
+class ListThingOffersQueryModel(HttpQueryParamsModel):
+    venue_id: int
+    status: OfferStatus
+    # a page does not read more offers than the capped total
+    limit: int = pydantic_v2.Field(
+        default=offers_constants.OFFERS_PER_PAGE, ge=1, le=offers_constants.OFFERS_LIST_TOTAL_MAX
+    )
+    name_or_ean: str | None = None
+    creation_mode: offers_constants.CreationMode | None = None
+    is_digital: bool | None = None
+    order_by_desc: bool = False
+
+
+
+class ThingOfferResponseModel(HttpBodyModel):
+    id: int
+    name: str
+    thumbUrl: str | None
+    remainingQuantity: int | typing.Literal["unlimited"]
+    bookingsCount: int
+    isHeadlineOffer: bool
+
+    @classmethod
+    def build(cls, offer: offers_models.Offer, headline_offer_id: int | None) -> typing.Self:
+        return cls(
+            id=offer.id,
+            name=offer.name,
+            thumbUrl=offer.thumbUrl,
+            remainingQuantity=_get_offer_remaining_quantity(offer),
+            bookingsCount=sum(stock.dnBookedQuantity for stock in offer.stocks),
+            isHeadlineOffer=offer.id == headline_offer_id,
+        )
+
+
+def _get_offer_remaining_quantity(offer: offers_models.Offer) -> int | typing.Literal["unlimited"]:
+    remaining_quantity = 0
+    for stock in offer.stocks:
+        if stock.isSoftDeleted:
+            continue
+        if stock.remainingQuantity == "unlimited":
+            return "unlimited"
+        remaining_quantity += stock.remainingQuantity
+    return remaining_quantity
+
+
+class ListThingOffersResponseModel(HttpBodyModel):
+    offers: list[ThingOfferResponseModel]
+    total: int
+    totalIsCapped: bool
+
+    @classmethod
+    def build(
+        cls,
+        offers: list[offers_models.Offer],
+        paginated_offer_ids: offers_repository.PaginatedOfferIds[offers_repository.ThingOffersCursor],
+        headline_offer_id: int | None,
+    ) -> typing.Self:
+        return cls(
+            offers=[ThingOfferResponseModel.build(offer, headline_offer_id) for offer in offers],
+            total=min(paginated_offer_ids.total, offers_constants.OFFERS_LIST_TOTAL_MAX),
+            totalIsCapped=paginated_offer_ids.total > offers_constants.OFFERS_LIST_TOTAL_MAX,
+        )
+
 
 
 class ListOffersHomeQueryModel(HttpQueryParamsModel):
