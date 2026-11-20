@@ -41,13 +41,6 @@ vi.mock('react-router', async () => ({
   useNavigate: vi.fn(),
 }))
 
-vi.mock(
-  '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit',
-  () => ({
-    ScrollToFirstHookFormErrorAfterSubmit: () => null,
-  })
-)
-
 describe('<CollectiveOfferStockForm />', () => {
   it.each([undefined, []])(
     'should initialize one additional fee row in creation when fees are %s',

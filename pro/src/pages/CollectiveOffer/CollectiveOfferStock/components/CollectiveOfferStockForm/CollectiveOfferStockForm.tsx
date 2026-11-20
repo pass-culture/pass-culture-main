@@ -331,11 +331,7 @@ export const CollectiveOfferStockForm = ({
                 <TextInput
                   {...form.register('servicePrice', {
                     valueAsNumber: true,
-                    onChange: () =>
-                      form.trigger([
-                        'collectiveAdditionalFees',
-                        'servicePrice',
-                      ]),
+                    onChange: () => form.trigger(['servicePrice']),
                   })}
                   disabled={!canEditDiscount}
                   error={form.formState.errors.servicePrice?.message}
