@@ -29,7 +29,6 @@
     "src/design-system/DetailedModal/DetailedModal.tsx",
     "src/design-system/FilesUpload/**"
   ],
-  "ignoreDependencies": ["openapi-typescript-codegen"],
   "ignoreUnresolved": ["typescript-plugin-css-modules"],
   "ignoreIssues": {
     "e2e/**": ["exports", "types", "enumMembers", "duplicates"]
