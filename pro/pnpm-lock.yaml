@@ -228,8 +228,8 @@ importers:
         specifier: 1.19.13
         version: 1.19.13(@algolia/client-search@5.64.0)(algoliasearch@5.64.0)(search-insights@2.17.3)
       '@algolia/autocomplete-preset-algolia':
-        specifier: 1.19.12
-        version: 1.19.12(@algolia/client-search@5.64.0)(algoliasearch@5.64.0)
+        specifier: 1.19.13
+        version: 1.19.13(@algolia/client-search@5.64.0)(algoliasearch@5.64.0)
       '@firebase/analytics':
         specifier: 0.10.25
         version: 0.10.25(@firebase/app@0.16.6)
