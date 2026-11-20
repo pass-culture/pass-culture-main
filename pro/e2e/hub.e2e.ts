@@ -24,7 +24,9 @@ test.describe('Hub', () => {
     await doLogin(page, userData.user.email)
     await page.goto('/parametres/notifications')
 
-    await expect(page).toHaveURL('/hub?redirectTo=/parametres/notifications')
+    await expect(page).toHaveURL(
+      '/hub?redirectTo=%2Fparametres%2Fnotifications'
+    )
     await expect(
       page.getByText('À quelle structure souhaitez-vous accéder ?')
     ).toBeVisible()
