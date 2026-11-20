@@ -53,6 +53,7 @@ licenses.json
 
 # reports
 /.vitest-reports
+.vitest/blob
 tyrion_report.html
 result.html
 

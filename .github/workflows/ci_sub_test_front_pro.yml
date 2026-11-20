@@ -115,7 +115,7 @@ jobs:
         uses: actions/upload-artifact@v7.0.1
         with:
           name: blob-report-${{ matrix.shardIndex }}
-          path: pro/.vitest-reports/
+          path: pro/.vitest/blob/
           include-hidden-files: true
           retention-days: 1
 
@@ -181,7 +181,7 @@ jobs:
       - name: Download blob reports from GitHub Actions Artifacts
         uses: actions/download-artifact@v8.0.1
         with:
-          path: pro/.vitest-reports
+          path: pro/.vitest/blob/
           pattern: blob-report-*
           merge-multiple: true
 
