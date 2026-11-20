@@ -113,7 +113,7 @@ jobs:
       # This is needed because tags are protected and the default GITHUB_TOKEN cannot be exempted
       # from this ruleset
       - name: Authenticate through github app ghactionci
-        uses: actions/create-github-app-token@v3.2.0
+        uses: actions/create-github-app-token@v3.3.0
         id: github-token
         with:
           app-id: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}

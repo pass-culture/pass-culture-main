@@ -33,7 +33,7 @@ jobs:
       # we use a GH app token so that another workflow (deploy on staging) can be triggered on push
       # https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/trigger-a-workflow#triggering-a-workflow-from-a-workflow
       - name: Authenticate through github app ghactionci
-        uses: actions/create-github-app-token@v3.2.0
+        uses: actions/create-github-app-token@v3.3.0
         id: github-token
         with:
           app-id: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
