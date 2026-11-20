@@ -63,6 +63,11 @@ class Returns201Test:
             "image_alternative_text": "A venue banner",
             "original_image_url": str(url_prefix / f"{humanize(venue.id)}_{original_banner_url_timestamp}"),
         }
+        offerer_response = client.get(f"/offerers/{user_offerer.offerer.id}")
+        assert offerer_response.status_code == 200
+        [managed_venue] = offerer_response.json["managedVenues"]
+        assert managed_venue["bannerUrl"] == response.json["bannerUrl"]
+        assert managed_venue["bannerMeta"] == response.json["bannerMeta"]
 
 
 class Returns400Test:

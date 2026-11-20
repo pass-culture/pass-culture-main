@@ -160,17 +160,20 @@ class GetVenueResponseModel(HttpBodyModel):
 
         opening_hours = opening_hours_api.format_opening_hours(venue.openingHours)
 
+        # The Pro editor only displays banners uploaded by a partner.
+        banner_url = venue._bannerUrl
+        stored_banner_meta = venue._bannerMeta
         banner_meta = None
-        if venue.bannerUrl:
-            if venue.bannerMeta:
-                crop_params = venue.bannerMeta.get("crop_params")
+        if banner_url:
+            if stored_banner_meta:
+                crop_params = stored_banner_meta.get("crop_params")
                 if not crop_params:
                     crop_params = venue_banners_serialize.CropParamsV2()
 
                 banner_meta = venue_banners_serialize.BannerMetaModel(
-                    image_credit=venue.bannerMeta.get("image_credit"),
-                    image_alternative_text=venue.bannerMeta.get("image_alternative_text"),
-                    original_image_url=venue.bannerMeta.get("original_image_url"),
+                    image_credit=stored_banner_meta.get("image_credit"),
+                    image_alternative_text=stored_banner_meta.get("image_alternative_text"),
+                    original_image_url=stored_banner_meta.get("original_image_url"),
                     crop_params=crop_params,
                 )
             else:
@@ -183,7 +186,7 @@ class GetVenueResponseModel(HttpBodyModel):
         dms_application = venue.last_collective_dms_application
         return cls(
             activity=offerers_models.DisplayableActivity[venue.activity.name],
-            bannerUrl=venue.bannerUrl,
+            bannerUrl=banner_url,
             name=venue.name,
             contact=venue.contact,  # type: ignore [arg-type]
             criteria=filtered_criteria,
