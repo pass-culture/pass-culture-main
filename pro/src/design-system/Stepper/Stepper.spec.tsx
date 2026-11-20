@@ -71,15 +71,16 @@ describe('Stepper', () => {
 
     expect(
       screen.getByLabelText(
-        'Étape 1 sur 3, terminée, Choisissez votre catégorie'
+        'Étape 1 : Choisissez votre catégorie, terminée, 1 sur 3'
       )
     ).toBeInTheDocument()
     expect(
-      screen.getAllByText('Étape 2 sur 3, active, Définissez un tarif').length
+      screen.getAllByText('Étape 2 : Définissez un tarif, active, 2 sur 3')
+        .length
     ).toBeGreaterThan(0)
     // Disabled steps are visually hidden for screen readers inside a static span
     expect(
-      screen.getByText('Étape 3 sur 3, à venir, Validez votre offre')
+      screen.getByText('Étape 3 : Validez votre offre, à venir, 3 sur 3')
     ).toBeInTheDocument()
   })
 
@@ -131,7 +132,7 @@ describe('Stepper', () => {
 
     expect(
       screen.getByRole('button', {
-        name: 'Étape 1 sur 3, terminée, Step with onClick only',
+        name: 'Étape 1 : Step with onClick only, terminée, 1 sur 3',
       })
     ).toBeInTheDocument()
     // The current step is not actionable
@@ -147,7 +148,7 @@ describe('Stepper', () => {
     )
 
     const step1Link = screen.getByLabelText(
-      'Étape 1 sur 3, terminée, Choisissez votre catégorie'
+      'Étape 1 : Choisissez votre catégorie, terminée, 1 sur 3'
     )
 
     await user.click(step1Link)
@@ -163,7 +164,7 @@ describe('Stepper', () => {
 
     expect(screen.queryAllByRole('link')).toHaveLength(0)
     expect(
-      screen.getByText('Étape 1 sur 3, à venir, Choisissez votre catégorie')
+      screen.getByText('Étape 1 : Choisissez votre catégorie, à venir, 1 sur 3')
     ).toBeInTheDocument()
     expect(
       screen.queryByRole('listitem', { current: 'step' })

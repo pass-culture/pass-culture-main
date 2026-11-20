@@ -58,7 +58,7 @@ describe('OnboardingOffersChoice Component', () => {
 
     expect(
       screen.getByRole('button', {
-        name: 'Commencer la création d’offre sur l’application mobile',
+        name: 'Créer une offre individuelle sur l’application mobile',
       })
     ).toHaveTextContent('Créer une offre individuelle')
   })
@@ -73,7 +73,7 @@ describe('OnboardingOffersChoice Component', () => {
 
     expect(
       screen.getByRole('button', {
-        name: /Commencer la création d.offre sur ADAGE/,
+        name: /Déposer un dossier ADAGE pour créer une offre collective/,
       })
     ).toHaveTextContent('Déposer un dossier ADAGE')
   })
@@ -82,7 +82,7 @@ describe('OnboardingOffersChoice Component', () => {
     renderOnboardingOffersChoice()
     await userEvent.click(
       screen.getByRole('button', {
-        name: 'Commencer la création d’offre sur ADAGE',
+        name: 'Déposer un dossier ADAGE pour créer une offre collective',
       })
     )
 
@@ -96,7 +96,7 @@ describe('OnboardingOffersChoice Component', () => {
       renderOnboardingOffersChoice()
       await userEvent.click(
         screen.getByRole('button', {
-          name: 'Commencer la création d’offre sur ADAGE',
+          name: 'Déposer un dossier ADAGE pour créer une offre collective',
         })
       )
 
@@ -129,7 +129,7 @@ describe('OnboardingOffersChoice Component', () => {
     renderOnboardingOffersChoice()
     await userEvent.click(
       screen.getByRole('button', {
-        name: 'Commencer la création d’offre sur l’application mobile',
+        name: 'Créer une offre individuelle sur l’application mobile',
       })
     )
 

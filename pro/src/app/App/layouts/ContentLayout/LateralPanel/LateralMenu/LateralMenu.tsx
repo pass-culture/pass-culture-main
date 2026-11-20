@@ -181,7 +181,7 @@ export const LateralMenu = ({ isLateralPanelOpen }: SideNavLinksProps) => {
         <div className={styles['nav-links-switch-venue-button']}>
           <Button
             as="router-link"
-            aria-label={`Changer de structure (actuellement sélectionnée : ${selectedPartnerVenue.publicName})`}
+            aria-label={`${selectedPartnerVenue.publicName}, changer de structure`}
             variant={ButtonVariant.SECONDARY}
             color={ButtonColor.NEUTRAL}
             icon={fullLeftIcon}

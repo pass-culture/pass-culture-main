@@ -129,7 +129,6 @@ export const Hub = () => {
           {filteredVenues.map((venue) => (
             <div key={venue.id}>
               <button
-                aria-labelledby={`venue-${venue.id}-name`}
                 className={styles['venue-item-button']}
                 onClick={() => setSelectedVenueByIdAndRedirect(venue.id)}
                 type="button"
@@ -139,13 +138,10 @@ export const Hub = () => {
                   <div className={styles['venue-item-state']}>
                     <Tag variant={TagVariant.ERROR} label="Structure fermée" />
                   </div>
-                )}
-                <span
-                  className={styles['venue-item-name']}
-                  id={`venue-${venue.id}-name`}
-                >
+                )}{' '}
+                <span className={styles['venue-item-name']}>
                   {venue.publicName}
-                </span>
+                </span>{' '}
                 <span className={styles['venue-location']}>
                   {withVenueHelpers(venue).fullAddressAsString}
                 </span>
