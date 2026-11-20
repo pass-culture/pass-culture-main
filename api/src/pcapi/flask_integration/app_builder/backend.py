@@ -6,6 +6,7 @@ from pcapi import settings
 from pcapi.core.users.sessions import install_routed_login
 from pcapi.flask_integration.app_builder.common import AppBuilder
 from pcapi.routes import install_all_routes
+from pcapi.scripts.install import install_commands
 from pcapi.utils.metrics import setup_metrics
 
 
@@ -42,6 +43,7 @@ class BackendAppBuilder(AppBuilder):
     def install_routes(self, app: "Flask") -> None:
         super().install_routes(app)
         install_all_routes(app)
+        install_commands(app)  # FIXME  remove commands from this buiilder and move tests to a new app
 
     def finalize_startup(self, app: "Flask") -> None:
         super().finalize_startup(app)
