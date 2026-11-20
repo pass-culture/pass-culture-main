@@ -241,7 +241,7 @@ importers:
         version: 0.10.0(@firebase/app@0.16.6)
       '@hookform/resolvers':
         specifier: 7.0.6
-        version: 7.0.6(@standard-schema/spec@1.1.0)(ajv@8.20.0)(react-hook-form@7.91.0(@types/react@19.3.0)(react@19.3.1))(yup@1.7.1)(zod@4.6.7)
+        version: 7.0.6(@standard-schema/spec@1.1.0)(ajv@8.20.0)(react-hook-form@7.92.0(@types/react@19.3.0)(react@19.3.1))(yup@1.7.1)(zod@4.6.7)
       '@pass-culture/design-system':
         specifier: 0.13.0
         version: 0.13.0
@@ -315,8 +315,8 @@ importers:
         specifier: 20.2.0
         version: 20.2.0(@types/react@19.3.0)(react@19.3.1)
       react-hook-form:
-        specifier: 7.91.0
-        version: 7.91.0(@types/react@19.3.0)(react@19.3.1)
+        specifier: 7.92.0
+        version: 7.92.0(@types/react@19.3.0)(react@19.3.1)
       react-instantsearch:
         specifier: 7.55.0
         version: 7.55.0(algoliasearch@5.64.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
@@ -494,20 +494,8 @@ packages:
     peerDependencies:
       '@algolia/client-search': '>= 4.5.1 < 6'
 
-  '@algolia/autocomplete-preset-algolia@1.19.12':
-    resolution: {integrity: sha512-0NfpAj47g95Dpk7cufSzpamYeOEnmY2/0UQlfJZlMVjch59uOaWAxtNGmcgSPuFwWXu4iidm6xqhVIb0w6mmbA==}
-    peerDependencies:
-      '@algolia/client-search': '>= 4.9.1 < 6'
-      algoliasearch: '>= 4.9.1 < 6'
-
   '@algolia/autocomplete-preset-algolia@1.19.13':
     resolution: {integrity: sha512-3rDPV1uXqTINidc/GGqKYHwzhq1NOOKb4/+KMFMZQy61W21PUlFeCewTgcJr1NtWkZhs4t98EWrLnr1xGWtV1g==}
-    peerDependencies:
-      '@algolia/client-search': '>= 4.9.1 < 6'
-      algoliasearch: '>= 4.9.1 < 6'
-
-  '@algolia/autocomplete-shared@1.19.12':
-    resolution: {integrity: sha512-goe55oftoEduuOHhTg4viHr58/ZsZvYEtfxkKFy6LdJxZ7+jOdVwp2bZz7qjip9CdFqkIB+34d4esftcaErCzA==}
     peerDependencies:
       '@algolia/client-search': '>= 4.9.1 < 6'
       algoliasearch: '>= 4.9.1 < 6'
@@ -3697,8 +3685,8 @@ packages:
       '@types/react':
         optional: true
 
-  react-hook-form@7.91.0:
-    resolution: {integrity: sha512-5BEBUnCBwa28AFXYTYmOaB/+CSpJ/+CWVASHEvIGUzFdHyUiPHeRhG7r5hOZ8nZi0yP7pbHdFNXO/p31EKTJFQ==}
+  react-hook-form@7.92.0:
+    resolution: {integrity: sha512-O5ILyY5fYHN7N13Pfxpe55KboyNFsJdM03BHpshQkClJd8raugiAUGY7VjifITrfhVxyx81ko25azXCoayhf1w==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       '@types/react': '*'
@@ -4466,20 +4454,9 @@ snapshots:
       - preact-render-to-string
       - search-insights
 
-  '@algolia/autocomplete-preset-algolia@1.19.12(@algolia/client-search@5.64.0)(algoliasearch@5.64.0)':
-    dependencies:
-      '@algolia/autocomplete-shared': 1.19.12(@algolia/client-search@5.64.0)(algoliasearch@5.64.0)
-      '@algolia/client-search': 5.64.0
-      algoliasearch: 5.64.0
-
   '@algolia/autocomplete-preset-algolia@1.19.13(@algolia/client-search@5.64.0)(algoliasearch@5.64.0)':
     dependencies:
       '@algolia/autocomplete-shared': 1.19.13(@algolia/client-search@5.64.0)(algoliasearch@5.64.0)
-      '@algolia/client-search': 5.64.0
-      algoliasearch: 5.64.0
-
-  '@algolia/autocomplete-shared@1.19.12(@algolia/client-search@5.64.0)(algoliasearch@5.64.0)':
-    dependencies:
       '@algolia/client-search': 5.64.0
       algoliasearch: 5.64.0
 
@@ -5051,10 +5028,10 @@ snapshots:
 
   '@hey-api/types@0.1.4': {}
 
-  '@hookform/resolvers@7.0.6(@standard-schema/spec@1.1.0)(ajv@8.20.0)(react-hook-form@7.91.0(@types/react@19.3.0)(react@19.3.1))(yup@1.7.1)(zod@4.6.7)':
+  '@hookform/resolvers@7.0.6(@standard-schema/spec@1.1.0)(ajv@8.20.0)(react-hook-form@7.92.0(@types/react@19.3.0)(react@19.3.1))(yup@1.7.1)(zod@4.6.7)':
     dependencies:
       '@standard-schema/utils': 0.3.0
-      react-hook-form: 7.91.0(@types/react@19.3.0)(react@19.3.1)
+      react-hook-form: 7.92.0(@types/react@19.3.0)(react@19.3.1)
     optionalDependencies:
       '@standard-schema/spec': 1.1.0
       ajv: 8.20.0
@@ -7412,7 +7389,7 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.3.0
 
-  react-hook-form@7.91.0(@types/react@19.3.0)(react@19.3.1):
+  react-hook-form@7.92.0(@types/react@19.3.0)(react@19.3.1):
     dependencies:
       react: 19.3.1
     optionalDependencies:
