@@ -4506,6 +4506,14 @@ class CloseVenueTest:
             mock_send_venue_closed_email.assert_not_called()
         mock_send_venue_closure_request_email.assert_not_called()
 
+        mock_send_venue_closed_email.reset_mock()
+
+        # Closing again should be a noop in this case
+        with atomic():
+            offerers_api.close_venue(venue, author, send_mail=send_mail)
+
+        mock_send_venue_closed_email.assert_not_called()
+
     def test_close_venue_adds_immediate_close_action_with_comment(self):
         venue = offerers_factories.VenueFactory()
         author = users_factories.BaseUserFactory()
