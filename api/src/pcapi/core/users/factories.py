@@ -71,7 +71,10 @@ class BaseUserFactory(BaseFactory):
         **kwargs: typing.Any,
     ) -> models.User:
         password = kwargs.get("password", settings.TEST_DEFAULT_PASSWORD)
-        kwargs["password"] = crypto.hash_password(password)
+        # `hashed_password` lets callers (e.g. bulk user generation) provide a precomputed hash of `password`
+        # to avoid hashing it again for every user, which is slow with bcrypt.
+        hashed_password = kwargs.pop("hashed_password", None)
+        kwargs["password"] = hashed_password or crypto.hash_password(password)
 
         if "email" not in kwargs:
             kwargs["email"] = f"{uuid.uuid4()}@to_override.com"
@@ -90,7 +93,8 @@ class BaseUserFactory(BaseFactory):
         **kwargs: typing.Any,
     ) -> models.User:
         password = kwargs.get("password", settings.TEST_DEFAULT_PASSWORD)
-        kwargs["password"] = crypto.hash_password(password)
+        hashed_password = kwargs.pop("hashed_password", None)
+        kwargs["password"] = hashed_password or crypto.hash_password(password)
 
         if "email" not in kwargs:
             kwargs["email"] = f"{uuid.uuid4()}@to_override.com"
