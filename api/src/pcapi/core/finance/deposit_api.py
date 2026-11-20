@@ -17,7 +17,7 @@ from pcapi.core.subscription.bonus import fraud_check_api
 from pcapi.core.users import utils as users_utils
 from pcapi.models import db
 from pcapi.utils import date as date_utils
-from pcapi.utils.repository import transaction
+from pcapi.utils.transaction_manager import atomic
 
 from . import conf
 from . import exceptions
@@ -100,7 +100,7 @@ def recredit_users() -> None:
 def recredit_users_by_id(user_ids: list[int]) -> None:
     failed_users = []
 
-    with transaction():
+    with atomic():
         users = (
             db.session.query(users_models.User)
             .filter(users_models.User.id.in_(user_ids))
