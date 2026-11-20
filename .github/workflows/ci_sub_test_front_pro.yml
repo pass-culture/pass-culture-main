@@ -220,7 +220,7 @@ jobs:
         run: echo "version=$(gh release view --json tagName -q .tagName | sed 's/^v//')" >> "$GITHUB_OUTPUT"
 
       - name: SonarCloud scan
-        uses: SonarSource/sonarqube-scan-action@v8.2.2
+        uses: SonarSource/sonarqube-scan-action@v8.4.1
         if: ${{ github.event.pull_request.user.login != 'dependabot[bot]' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

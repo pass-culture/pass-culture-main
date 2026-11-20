@@ -167,7 +167,7 @@ workflows:
         - 'pass-culture-github-actions/cache@v1.0.0'
         - 'pass-culture/common-workflows@setup-pcsi/v1.0'
         - 'pnpm/action-setup@v6.1.0'
-        - 'sonarsource/sonarqube-scan-action@v8.2.2'
+        - 'sonarsource/sonarqube-scan-action@v8.4.1'
     '.github/workflows/dev_on_workflow_check_folder_changes.yml':
         - 'actions/checkout@v7.0.1'
         - 'tj-actions/changed-files@v47.0.6'
@@ -440,9 +440,9 @@ dependencies:
         commit: 'sha1-6f9f17788090df1f26f669e9d70d6ae9567deba6'
         owner_id: 71096353
         repo_id: 351211695
-    'sonarsource/sonarqube-scan-action@v8.2.2':
-        ref: 'v8.2.2'
-        commit: 'sha1-ba9859eae8dd6bd29e412f25ddbbef3d032000f4'
+    'sonarsource/sonarqube-scan-action@v8.4.1':
+        ref: 'v8.4.1'
+        commit: 'sha1-e805d875275f728fac1885b413934be6d7c63f65'
         owner_id: 545988
         repo_id: 366408409
     'tj-actions/changed-files@v47.0.6':
