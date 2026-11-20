@@ -270,11 +270,11 @@ jobs:
         id: restore-test-durations
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
-          path: /tests/.test_durations
-          key: tests-durations-${{ steps.get-date.outputs.date }}
+          path: ${{ runner.temp }}/.test_durations
+          key: tests-durations-v2-${{ steps.get-date.outputs.date }}
           restore-keys: |
-            tests-durations-${{ steps.get-date.outputs.date }}-
-            tests-durations-
+            tests-durations-v2-${{ steps.get-date.outputs.date }}-
+            tests-durations-v2-
           fail-on-cache-miss: false
 
       # Then we upload the restored test durations as an artifact. This way, each matrix job will download
@@ -285,7 +285,9 @@ jobs:
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: test-durations-before
-          path: /tests/.test_durations
+          path: ${{ runner.temp }}/.test_durations
+          if-no-files-found: error
+          include-hidden-files: true
 
   pytest:
     needs: restore-test-durations
@@ -356,6 +358,14 @@ jobs:
           NETWORK: ${{ job.container.network }}
           IMAGE_NAME: ${{ steps.load-docker-image.outputs.image-name }}
 
+      # Reuse the same durations on retries, before granting the container user write access.
+      - name: Download test durations
+        if: needs.restore-test-durations.outputs.restored == 'true'
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: test-durations-before
+          path: ${{ runner.workspace }}/pass-culture-main/api/tests
+
       - name: "Mount a Volume with pcapi rights"
         run: |
           docker run \
@@ -371,20 +381,6 @@ jobs:
           WORKSPACE: ${{ runner.workspace }}
           IMAGE_NAME: ${{ steps.load-docker-image.outputs.image-name }}
 
-      # These two steps will be executed only when there IS a cache hit (exact match or not).
-      # When a matrix job is retried, it will reuse the same artifact to execute the exact same split.
-      - name: Download test durations
-        if: needs.restore-test-durations.outputs.restored == 'true'
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
-        with:
-          name: test-durations-before
-
-      - name: Use cached test durations
-        if: needs.restore-test-durations.outputs.restored == 'true'
-        run: mv .test_durations "$WORKSPACE/pass-culture-main/api/tests/.test_durations"
-        env:
-          WORKSPACE: ${{ runner.workspace }}
-
         # When running pytest, we write the new test durations using options `--store-durations --clean-durations`.
         # Option `--clean-durations` is undocumented but you can check its implementation here:
         # https://github.com/jerry-git/pytest-split/blob/fb9af7e0122c18a96a7c01ca734c4ab01027f8d9/src/pytest_split/plugin.py#L68-L76
@@ -399,7 +395,8 @@ jobs:
             --env RUN_ENV --env DATABASE_URL_TEST --env REDIS_URL --env COLLECTION --env GROUP \
             "$IMAGE_NAME" \
             -c '
-              pytest $COLLECTION \
+              # An existing /tests/.test_durations can change automatic config discovery.
+              pytest -c pyproject.toml $COLLECTION \
               --splits 4 --group $GROUP \
               --store-durations --durations-path /tests/.test_durations --clean-durations \
               --durations=10 --junitxml="/tests/junit.xml" \
@@ -477,4 +474,4 @@ jobs:
         uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ${{ runner.temp }}/.test_durations
-          key: tests-durations-${{ steps.get-date.outputs.date }}-${{ github.run_id }}
+          key: tests-durations-v2-${{ steps.get-date.outputs.date }}-${{ github.run_id }}

@@ -12,8 +12,8 @@ export default defineConfig(({ mode }) => {
     root: './src',
     build: {
       outDir: '../build',
-      sourcemap: true,
-      emptyOutDir: true,
+      sourcemap: process.env.BUILD_SOURCEMAP === 'true',
+      reportCompressedSize: process.env.ANALYZE_BUNDLE === 'true',
       assetsInlineLimit: 0,
     },
     resolve: {
