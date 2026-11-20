@@ -90,14 +90,14 @@ _without_accessibility_features = {
     "audio": "DOLBY_ATMOS",
     "video": "SCREEN_X",
     "accessibility": {"audio": [], "mental": [], "motor": [], "visual": []},
-    "specialEventType": "PREVIEW_SCREENING",
+    "specialEventType": "AVANT_PREMIERE",
 }
 _all_features = {
     "language": "VF",
     "audio": "DOLBY_ATMOS",
     "video": "SCREEN_X",
     "accessibility": {"audio": ["CCAP"], "mental": ["RELAX"], "motor": ["PMR"], "visual": ["GRETA"]},
-    "specialEventType": "PREVIEW_SCREENING",
+    "specialEventType": "AVANT_PREMIERE",
 }
 
 
