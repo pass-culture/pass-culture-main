@@ -14,12 +14,19 @@ import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useGetImageBitmap } from '@/commons/hooks/useGetBitmap'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
-import { MIN_COLLECTIVE_IMAGE_DIMENSIONS } from '@/commons/utils/imageUpload/constants'
+import {
+  ALLOWED_IMAGE_TYPES_TO_EXTENSIONS,
+  MAX_FILE_SIZE,
+  MIN_COLLECTIVE_IMAGE_DIMENSIONS,
+} from '@/commons/utils/imageUpload/constants'
+import {
+  getImageConditionsText,
+  validateImage,
+} from '@/commons/utils/imageUpload/validateImage'
 import {
   UploaderModeEnum,
   type UploadImageValues,
 } from '@/commons/utils/imageUploadTypes'
-import { ImageDragAndDrop } from '@/components/ImageDragAndDrop/ImageDragAndDrop'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import { Button } from '@/design-system/Button/Button'
 import {
@@ -30,8 +37,10 @@ import {
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
 import { DetailedModal } from '@/design-system/DetailedModal/DetailedModal'
 import { TextInput } from '@/design-system/TextInput/TextInput'
+import { UploadZone } from '@/design-system/UploadZone/UploadZone'
 import fullDownloadIcon from '@/icons/full-download.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'
+import strokePictureIcon from '@/icons/stroke-picture.svg'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { ImageEditor } from './components/ImageEditor/ImageEditor'
@@ -63,6 +72,11 @@ export interface ModalImageUpsertOrEditProps {
 }
 
 const AppPreviewCollectiveOffer = () => <></>
+
+const IMAGE_CONDITIONS_TEXT = getImageConditionsText()
+const COLLECTIVE_IMAGE_CONDITIONS_TEXT = getImageConditionsText(
+  MIN_COLLECTIVE_IMAGE_DIMENSIONS
+)
 
 export const ModalImageUpsertOrEdit = ({
   open,
@@ -109,6 +123,7 @@ export const ModalImageUpsertOrEdit = ({
       : defaultPositions.y
 
   const editorRef = useRef<AvatarEditorRef>(null)
+  const uploadZoneRef = useRef<HTMLInputElement>(null)
   const snackBar = useSnackBar()
   const [isLoadingImage, setIsLoadingImage] = useState(
     !draftImage && !!previouslyUploadedImageUrl
@@ -131,6 +146,7 @@ export const ModalImageUpsertOrEdit = ({
     ? widthCropPercentToScale(initalWidthCropPercent)
     : 1
   const [scale, setScale] = useState<number>(initialScale)
+  const [imageError, setImageError] = useState<string | undefined>(undefined)
 
   const { width, height } = useGetImageBitmap(image)
   const imageEditorConfig = getImageEditorConfig(width, height, mode)
@@ -190,6 +206,7 @@ export const ModalImageUpsertOrEdit = ({
     setAlternativeText('')
     setIsInformative(false)
     setScale(1)
+    setImageError(undefined)
   }
 
   const resetWithInitialValues = () => {
@@ -203,12 +220,26 @@ export const ModalImageUpsertOrEdit = ({
     setAlternativeText(initialAlternativeText ?? '')
     setIsInformative(Boolean(initialAlternativeText))
     setScale(initialScale)
+    setImageError(undefined)
   }
   const onImageReplace = () => hardReset()
 
-  const onImageReplacementDropOrSelected = (file: File) => {
+  const onImageReplacementAdded = async (file: File) => {
+    const { image, error } = await validateImage(
+      file,
+      mode === UploaderModeEnum.OFFER_COLLECTIVE
+        ? MIN_COLLECTIVE_IMAGE_DIMENSIONS
+        : undefined
+    )
+    setImageError(error)
+
+    if (error) {
+      uploadZoneRef.current?.focus({ preventScroll: true })
+      return
+    }
+
     setIsPaintingImage(true)
-    setImage(file)
+    setImage(image)
     handleImageChange()
   }
 
@@ -428,13 +459,21 @@ export const ModalImageUpsertOrEdit = ({
             </>
           )}
           {open && !isLoadingImage && !image && (
-            <ImageDragAndDrop
-              onDropOrSelected={onImageReplacementDropOrSelected}
-              {...(mode === UploaderModeEnum.OFFER_COLLECTIVE
-                ? {
-                    minSizes: MIN_COLLECTIVE_IMAGE_DIMENSIONS,
-                  }
-                : {})}
+            <UploadZone
+              ref={uploadZoneRef}
+              icon={strokePictureIcon}
+              accept={ALLOWED_IMAGE_TYPES_TO_EXTENSIONS}
+              maxSize={MAX_FILE_SIZE}
+              conditionsText={
+                mode === UploaderModeEnum.OFFER_COLLECTIVE
+                  ? COLLECTIVE_IMAGE_CONDITIONS_TEXT
+                  : IMAGE_CONDITIONS_TEXT
+              }
+              maxFiles={1}
+              error={imageError}
+              onFilesAdded={([file]) => void onImageReplacementAdded(file)}
+              // The zone displays its own errors: the one of a previous image is outdated.
+              onFilesRejected={() => setImageError(undefined)}
             />
           )}
         </div>
