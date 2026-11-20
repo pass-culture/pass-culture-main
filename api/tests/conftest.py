@@ -48,6 +48,7 @@ from pcapi.db_utils import clean_all_database
 from pcapi.db_utils import install_database_extensions
 from pcapi.models import db
 from pcapi.models import feature
+from pcapi.routes.middlewares import remove_db_session
 from pcapi.utils import requests
 from pcapi.utils.module_loading import import_string
 
@@ -165,8 +166,6 @@ def init_celery(app: Flask):
 
 @pytest.fixture(scope="session", autouse=True)
 def manage_teardown(app: Flask):
-    from pcapi.flask_integration.middlewares import remove_db_session
-
     # Some tests fail without this. It's probably because of
     # pytest_flask_sqlalchemy.
     app.teardown_request_funcs[None].remove(remove_db_session)

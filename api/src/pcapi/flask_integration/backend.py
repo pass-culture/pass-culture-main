@@ -4,7 +4,7 @@ from flask_jwt_extended import JWTManager
 
 from pcapi import settings
 from pcapi.core.users.sessions import install_routed_login
-from pcapi.flask_integration.app_builder.common import AppBuilder
+from pcapi.flask_integration.common import AppBuilder
 from pcapi.routes import install_all_routes
 from pcapi.scripts.install import install_commands
 from pcapi.utils.metrics import setup_metrics

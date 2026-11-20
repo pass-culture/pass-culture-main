@@ -1,8 +1,8 @@
 import typing
 
 from pcapi import settings
-from pcapi.flask_integration import middlewares
-from pcapi.flask_integration.app_builder.common import AppBuilder
+from pcapi.flask_integration.common import AppBuilder
+from pcapi.routes import middlewares
 from pcapi.scripts.install import install_commands
 from pcapi.utils.metrics import setup_metrics
 

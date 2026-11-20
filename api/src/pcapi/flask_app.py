@@ -2,7 +2,7 @@ import logging
 
 from flask import Flask
 
-from pcapi.flask_integration.app_builder.shell import ShellAppBuilder
+from pcapi.flask_integration.shell import ShellAppBuilder
 from pcapi.flask_integration.utils import build_app
 
 

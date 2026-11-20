@@ -2,8 +2,8 @@ import typing
 
 from pcapi import settings
 from pcapi.core.users.sessions import install_backoffice_login
-from pcapi.flask_integration import middlewares
-from pcapi.flask_integration.app_builder.common import AppBuilder
+from pcapi.flask_integration.common import AppBuilder
+from pcapi.routes import middlewares
 from pcapi.routes.backoffice.utils import static as static_utils
 from pcapi.utils.metrics import setup_metrics
 

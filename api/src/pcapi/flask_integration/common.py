@@ -14,9 +14,9 @@ from pcapi import settings
 from pcapi.celery_tasks.celery import celery_init_app
 from pcapi.celery_tasks.config import CELERY_BASE_SETTINGS
 from pcapi.core.finance import utils as finance_utils
-from pcapi.flask_integration import middlewares
 from pcapi.models import db
 from pcapi.models import install_models
+from pcapi.routes import middlewares
 from pcapi.utils import jwt
 from pcapi.utils.json_encoder import EnumJSONEncoder
 from pcapi.utils.logging import install_logging

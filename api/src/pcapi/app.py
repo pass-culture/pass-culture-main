@@ -2,7 +2,7 @@
 import typing
 
 from pcapi import settings
-from pcapi.flask_integration.app_builder.backend import BackendAppBuilder
+from pcapi.flask_integration.backend import BackendAppBuilder
 from pcapi.flask_integration.utils import build_app
 
 
