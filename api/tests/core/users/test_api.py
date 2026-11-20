@@ -370,11 +370,13 @@ class ChangeUserEmailTest:
     new_email = "newemail@mail.com"
     mock_redis_client = fakeredis.FakeStrictRedis()
 
-    def test_change_user_email(self):
+    @mock.patch("pcapi.core.users.api.revoke_sso_access")
+    def test_change_user_email(self, revoke_sso_mock):
         # Given
         user = users_factories.UserFactory(email=self.old_email, firstName="UniqueNameForEmailChangeTest")
         users_factories.SingleSignOnFactory(user=user)
         users_factories.UserSessionFactory(user=user)
+        users_factories.NativeUserSessionFactory(user=user)
 
         # When
         email_update.validate_email_update_request(user=user, author=user, new_email=self.new_email)
@@ -384,7 +386,9 @@ class ChangeUserEmailTest:
         assert user.email == self.new_email
         assert db.session.query(users_models.User).filter_by(email=self.old_email).first() is None
         assert db.session.query(users_models.UserSession).filter_by(userId=user.id).first() is None
-        assert db.session.query(users_models.SingleSignOn).filter_by(userId=user.id).first() is None
+        assert db.session.query(users_models.NativeUserSession).filter_by(userId=user.id).first() is None
+
+        revoke_sso_mock.assert_called_once()
 
         assert len(user.email_history) == 1
 
