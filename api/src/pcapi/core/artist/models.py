@@ -24,11 +24,33 @@ class ArtistType(enum.Enum):
     An artist can be an author or a musician for different products
     """
 
+    ADAPTER = "adapter"
+    AFTERWORD_AUTHOR = "afterword_author"
     AUTHOR = "author"
+    CARTOGRAPHER = "cartographer"
+    CO_AUTHOR = "co_author"
+    COLLECTION_DIRECTOR = "collection_director"
+    COMIC_ARTIST = "comic_artist"
+    CREATOR = "creator"
+    EDITORIAL_COORDINATOR = "editorial_coordinator"
     FILM_ACTOR = "film_actor"
     FILM_DIRECTOR = "film_director"
+    FOREWORD_AUTHOR = "foreword_author"
+    ILLUSTRATOR = "illustrator"
+    INTRODUCTION_AUTHOR = "introduction_author"
+    MAIN_SUBJECT = "main_subject"
+    NARRATOR = "narrator"
+    ORIGINAL_AUTHOR = "original_author"
     PERFORMER = "performer"
+    PHOTOGRAPHER = "photographer"
+    POSTHUMOUS_COMPLETER = "posthumous_completer"
+    PREFACE_AUTHOR = "preface_author"
+    REVISED_TRANSLATOR = "revised_translator"
+    SCRIPTWRITER = "scriptwriter"
     STAGE_DIRECTOR = "stage_director"
+    THESIS_DIRECTOR = "thesis_director"
+    TRANSLATOR = "translator"
+    VOLUME_EDITOR = "volume_editor"
 
     def __str__(self) -> str:
         return self.value
