@@ -100,9 +100,11 @@ describe('ImageEditor', () => {
       expect(canvas).toHaveAttribute('tabindex', '0')
       expect(canvas).toHaveAttribute('aria-roledescription', 'éditeur d’image')
       expect(screen.getByRole('status')).toHaveTextContent(INITIAL_EDITOR_STATE)
-      expect(canvas).toHaveAccessibleName(
-        `Éditeur de cadrage et de zoom de l'image. Utilisez les flèches du clavier pour déplacer l’image et les touches + et - pour zoomer. ${INITIAL_EDITOR_STATE}`
-      )
+      await waitFor(() => {
+        expect(canvas).toHaveAccessibleName(
+          `Éditeur de cadrage et de zoom de l'image. Utilisez les flèches du clavier pour déplacer l’image et les touches + et - pour zoomer. ${INITIAL_EDITOR_STATE}`
+        )
+      })
       expect(
         screen.queryByText(/^Utilisez les flèches du clavier/)
       ).not.toBeInTheDocument()
@@ -112,9 +114,11 @@ describe('ImageEditor', () => {
     it('should not mention keyboard zoom when zoom is disabled', async () => {
       await renderLoadedImageEditor({ maxScale: 1 })
 
-      expect(screen.getByLabelText(CANVAS_LABEL)).toHaveAccessibleName(
-        `Éditeur de cadrage et de zoom de l'image. Utilisez les flèches du clavier pour déplacer l’image. ${INITIAL_EDITOR_STATE}`
-      )
+      await waitFor(() => {
+        expect(screen.getByLabelText(CANVAS_LABEL)).toHaveAccessibleName(
+          `Éditeur de cadrage et de zoom de l'image. Utilisez les flèches du clavier pour déplacer l’image. ${INITIAL_EDITOR_STATE}`
+        )
+      })
     })
 
     it('should move the cropped area with the keyboard arrows', async () => {
@@ -127,14 +131,14 @@ describe('ImageEditor', () => {
 
       await user.keyboard('{Shift>}{ArrowRight}{/Shift}')
 
-      await waitFor(() =>
+      await waitFor(() => {
         expect(screen.getByRole('status')).toHaveTextContent(
           'Zoom : 100 %. Zone cadrée : de 10 à 77 % de la largeur et de 0 à 100 % de la hauteur de l’image.'
         )
-      )
-      expect(screen.getByLabelText(CANVAS_LABEL)).toHaveAccessibleName(
-        /Zone cadrée : de 10 à 77 % de la largeur/
-      )
+        expect(screen.getByLabelText(CANVAS_LABEL)).toHaveAccessibleName(
+          /Zone cadrée : de 10 à 77 % de la largeur/
+        )
+      })
       expect(onChangeDone).toHaveBeenCalled()
     })
 
