@@ -1,4 +1,5 @@
 import base64
+import dataclasses
 import datetime
 import json
 import re
@@ -352,6 +353,30 @@ class ListThingOffersQueryModel(HttpQueryParamsModel):
         return cursor
 
 
+class ListEventOffersQueryModel(HttpQueryParamsModel):
+    venue_id: int
+    status: OfferStatus
+    cursor: str | None = None
+    # a page does not read more offers than the capped total
+    limit: int = pydantic_v2.Field(
+        default=offers_constants.OFFERS_PER_PAGE, ge=1, le=offers_constants.OFFERS_LIST_TOTAL_MAX
+    )
+    name_or_ean: str | None = None
+
+    creation_mode: offers_constants.CreationMode | None = None
+    is_digital: bool | None = None
+    order_by_desc: bool = True
+    period_beginning_date: datetime.date | None = None
+    period_ending_date: datetime.date | None = None
+
+    @pydantic_v2.field_validator("cursor")
+    @classmethod
+    def validate_cursor(cls, cursor: str | None) -> str | None:
+        if cursor is not None:
+            decode_event_offers_cursor(cursor)
+        return cursor
+
+
 class ThingOfferResponseModel(HttpBodyModel):
     id: int
     name: str
@@ -370,6 +395,58 @@ class ThingOfferResponseModel(HttpBodyModel):
             bookingsCount=sum(stock.dnBookedQuantity for stock in offer.stocks),
             isHeadlineOffer=offer.id == headline_offer_id,
         )
+
+
+class EventOfferResponseModel(HttpBodyModel):
+    id: int
+    name: str
+    thumbUrl: str | None
+    location: address_serialize.LocationResponseModelV2 | None
+    firstBeginningDate: datetime.date | None
+    lastBeginningDate: datetime.date | None
+    remainingQuantity: int | typing.Literal["unlimited"]
+    bookingsCount: int
+    isHeadlineOffer: bool
+
+    @classmethod
+    def build(cls, offer: offers_models.Offer, headline_offer_id: int | None) -> typing.Self:
+        location = None
+        if offer.offererAddress:
+            is_venue_location = is_venue_address(offer.offererAddress, offer.venue)
+            location = address_serialize.LocationResponseModelV2.build(
+                offerer_address=offer.offererAddress,
+                label=None if is_venue_location else offer.offererAddress.label,
+                is_venue_location=is_venue_location,
+            )
+
+        first_beginning_date, last_beginning_date = _get_beginning_dates(offer)
+
+        return cls(
+            id=offer.id,
+            name=offer.name,
+            thumbUrl=offer.thumbUrl,
+            location=location,
+            firstBeginningDate=first_beginning_date,
+            lastBeginningDate=last_beginning_date,
+            remainingQuantity=_get_offer_remaining_quantity(offer),
+            bookingsCount=sum(stock.dnBookedQuantity for stock in offer.stocks),
+            isHeadlineOffer=offer.id == headline_offer_id,
+        )
+
+
+def _get_beginning_dates(offer: offers_models.Offer) -> tuple[datetime.date | None, datetime.date | None]:
+    beginning_datetimes = [
+        stock.beginningDatetime
+        for stock in offer.stocks
+        if not stock.isSoftDeleted and stock.beginningDatetime is not None
+    ]
+    if not beginning_datetimes:
+        return None, None
+
+    timezone = offers_repository.get_offer_timezone(offer)
+    first_date = date_utils.default_timezone_to_local_datetime(min(beginning_datetimes), timezone).date()
+    last_date = date_utils.default_timezone_to_local_datetime(max(beginning_datetimes), timezone).date()
+    return first_date, (last_date if last_date != first_date else None)
 
 
 def _get_offer_remaining_quantity(offer: offers_models.Offer) -> int | typing.Literal["unlimited"]:
@@ -399,14 +476,37 @@ class ListThingOffersResponseModel(HttpBodyModel):
         next_cursor = paginated_offer_ids.next_cursor
         return cls(
             offers=[ThingOfferResponseModel.build(offer, headline_offer_id) for offer in offers],
-            nextCursor=encode_thing_offers_cursor(next_cursor) if next_cursor else None,
+            nextCursor=encode_offers_cursor(next_cursor) if next_cursor else None,
             total=min(paginated_offer_ids.total, offers_constants.OFFERS_LIST_TOTAL_MAX),
             totalIsCapped=paginated_offer_ids.total > offers_constants.OFFERS_LIST_TOTAL_MAX,
         )
 
 
-def encode_thing_offers_cursor(cursor: offers_repository.ThingOffersCursor) -> str:
-    return base64.urlsafe_b64encode(json.dumps([cursor.name, cursor.id]).encode()).decode()
+class ListEventOffersResponseModel(HttpBodyModel):
+    offers: list[EventOfferResponseModel]
+    nextCursor: str | None
+    total: int
+    totalIsCapped: bool
+
+    @classmethod
+    def build(
+        cls,
+        offers: list[offers_models.Offer],
+        paginated_offer_ids: offers_repository.PaginatedOfferIds[offers_repository.EventOffersCursor],
+        headline_offer_id: int | None,
+    ) -> typing.Self:
+        next_cursor = paginated_offer_ids.next_cursor
+        return cls(
+            offers=[EventOfferResponseModel.build(offer, headline_offer_id) for offer in offers],
+            nextCursor=encode_offers_cursor(next_cursor) if next_cursor else None,
+            total=min(paginated_offer_ids.total, offers_constants.OFFERS_LIST_TOTAL_MAX),
+            totalIsCapped=paginated_offer_ids.total > offers_constants.OFFERS_LIST_TOTAL_MAX,
+        )
+
+
+def encode_offers_cursor(cursor: offers_repository.ThingOffersCursor | offers_repository.EventOffersCursor) -> str:
+    values = json.dumps(dataclasses.astuple(cursor), default=datetime.datetime.isoformat)
+    return base64.urlsafe_b64encode(values.encode()).decode()
 
 
 def decode_thing_offers_cursor(encoded_cursor: str) -> offers_repository.ThingOffersCursor:
@@ -417,6 +517,24 @@ def decode_thing_offers_cursor(encoded_cursor: str) -> offers_repository.ThingOf
     match values:
         case [str() as name, int() as offer_id] if not isinstance(offer_id, bool):
             return offers_repository.ThingOffersCursor(name=name, id=offer_id)
+    raise ValueError("Curseur invalide")
+
+
+def decode_event_offers_cursor(encoded_cursor: str) -> offers_repository.EventOffersCursor:
+    try:
+        values = json.loads(base64.urlsafe_b64decode(encoded_cursor.encode()))
+    except ValueError:
+        raise ValueError("Curseur invalide")
+    match values:
+        case [None, int() as offer_id] if not isinstance(offer_id, bool):
+            return offers_repository.EventOffersCursor(first_beginning_datetime=None, id=offer_id)
+        case [str() as first_beginning_datetime, int() as offer_id] if not isinstance(offer_id, bool):
+            try:
+                return offers_repository.EventOffersCursor(
+                    first_beginning_datetime=datetime.datetime.fromisoformat(first_beginning_datetime), id=offer_id
+                )
+            except ValueError:
+                raise ValueError("Curseur invalide")
     raise ValueError("Curseur invalide")
 
 
