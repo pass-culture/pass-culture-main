@@ -8,9 +8,7 @@ import {
   mockAddressSearch,
 } from './helpers/address'
 import {
-  isGetCategoriesResponse,
   isGetOfferResponse,
-  isGetOffersResponse,
   isPatchOffersResponse,
   isPostOfferResponse,
   isPublishOfferResponse,
@@ -163,9 +161,9 @@ test.describe('Create individual offers new flow', () => {
     await page.getByLabel(/Horaire 2/).fill('21:00')
 
     await page.getByText('Ajouter d’autres places et tarifs').click()
-    expect(
-      await page.getByTestId(/wrapper-quantityPerPriceCategories/).count()
-    ).toEqual(2)
+    await expect(
+      page.getByTestId(/wrapper-quantityPerPriceCategories/)
+    ).toHaveCount(2)
 
     const row = await page
       .getByTestId(/wrapper-quantityPerPriceCategories/)
@@ -178,9 +176,9 @@ test.describe('Create individual offers new flow', () => {
     await row[1].getByLabel('Nombre de places').fill('20')
 
     await page.getByText('Ajouter d’autres places et tarifs').click()
-    expect(
-      await page.getByTestId(/wrapper-quantityPerPriceCategories/).count()
-    ).toEqual(3)
+    await expect(
+      page.getByTestId(/wrapper-quantityPerPriceCategories/)
+    ).toHaveCount(3)
 
     await page
       .getByTestId(/wrapper-quantityPerPriceCategories/)
@@ -227,11 +225,7 @@ test.describe('Create individual offers new flow', () => {
       .getByRole('button', { name: 'Plus tard' })
       .click()
 
-    await Promise.all([
-      page.waitForResponse(isGetOffersResponse),
-      page.waitForResponse(isGetCategoriesResponse),
-      page.getByText('Accéder à la liste des offres').click(),
-    ])
+    await page.getByText('Accéder à la liste des offres').click()
 
     await expect(
       page.getByRole('cell', { name: 'Le Diner de Devs' }).first()
@@ -306,11 +300,7 @@ test.describe('Create individual offers new flow', () => {
       page.getByText('Publier l’offre').click(),
     ])
 
-    await Promise.all([
-      page.waitForResponse(isGetOffersResponse),
-      page.waitForResponse(isGetCategoriesResponse),
-      page.getByText('Accéder à la liste des offres').click(),
-    ])
+    await page.getByText('Accéder à la liste des offres').click()
     await expect(
       page.getByRole('cell', { name: offerTitle }).first()
     ).toBeVisible()
