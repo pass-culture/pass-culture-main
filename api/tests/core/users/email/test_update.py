@@ -171,10 +171,12 @@ class RequestEmailUpdateFromAdminTest:
         user = users_factories.UserFactory(email="old@example.com")
         admin = users_factories.AdminFactory()
         users_factories.NativeUserSessionFactory(user=user)
+        users_factories.UserSessionFactory(user=user)
 
         email_update.request_email_update_from_admin(user, author=admin, email="new@example.com")
 
         assert db.session.query(NativeUserSession).filter_by(userId=user.id).first() is None
+        assert db.session.query(UserSession).filter_by(userId=user.id).first() is None
 
 
 class FullEmailUpdateByAdminTest:
@@ -237,7 +239,9 @@ class ClearEmailByAdminTest:
         user = users_factories.UserFactory(email="old@example.com")
         admin = users_factories.AdminFactory()
         users_factories.NativeUserSessionFactory(user=user)
+        users_factories.UserSessionFactory(user=user)
 
         email_update.clear_email_by_admin(user, author=admin)
 
         assert db.session.query(NativeUserSession).filter_by(userId=user.id).first() is None
+        assert db.session.query(UserSession).filter_by(userId=user.id).first() is None
