@@ -139,12 +139,6 @@ jobs:
           fetch-tags: false
           persist-credentials: false
 
-      - uses: actions/cache@v6.1.0
-        id: cache
-        with:
-          path: ~/.cache/mise
-          key: ${{ runner.os }}-mise-${{ hashFiles('mise.ci.lock') }}
-
       - name: Authenticate through github app ghactionci
         uses: actions/create-github-app-token@v3.2.0
         id: github-token
