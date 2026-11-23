@@ -28,6 +28,7 @@ def clean_data() -> None:
     logger.info("Feature flags cleaned")
 
 
+# interruptible
 @blueprint.cli.command("check_feature_flags")
 @cron_decorators.log_cron_with_transaction
 def check_feature_flags() -> None:
@@ -61,7 +62,6 @@ def get_ff_from_target(target: str) -> dict[str, bool]:
     help="Compares local feature flags vs remonte platform.",
     required=True,
 )
-@cron_decorators.log_cron_with_transaction
 def check_feature_flags_vs(target: str) -> None:
     remote_flags = get_ff_from_target(target)
     local_flags = {ff.name: ff.isActive for ff in db.session.query(feature_models.Feature).all()}
