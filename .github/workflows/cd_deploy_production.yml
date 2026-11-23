@@ -100,6 +100,17 @@ jobs:
       PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
       PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
 
+  check-deploy-succeeded:
+    runs-on: ubuntu-22.04
+    needs: [version, deploy]
+    env:
+          APP_VERSION: ${{ needs.version.outputs.APP_VERSION }}
+    steps:
+      - name: Ensure version is ready
+        shell: bash
+        run: |
+          passdirector pcapi is-version-deployed --environment "production" --version "${APP_VERSION}" --retries 120 --retry-interval 30 --timeout 60 || false
+
   publish-github-release:
     runs-on: ubuntu-22.04
     needs: deploy
