@@ -1,3 +1,4 @@
+import decimal
 import hashlib
 import hmac
 import json
@@ -1451,11 +1452,11 @@ class CancelBookingTest:
             "can_be_asynchronously_retried": True,
             "event_name": "recredit_account_cancellation",
             "event_payload": {
-                "credit": "150.00",
+                "credit": decimal.Decimal("150.00"),
                 "formatted_credit": "150 €",
                 "offer_id": booking.stock.offer.id,
                 "offer_name": booking.stock.offer.name,
-                "offer_price": "10.10",
+                "offer_price": decimal.Decimal("10.10"),
                 "formatted_offer_price": "10,10 €",
             },
             "user_id": user.id,
@@ -1477,11 +1478,11 @@ class CancelBookingTest:
             "can_be_asynchronously_retried": True,
             "event_name": "recredit_account_cancellation",
             "event_payload": {
-                "credit": "150.00",
+                "credit": decimal.Decimal("150.00"),
                 "formatted_credit": "17900 F",
                 "offer_id": booking.stock.offer.id,
                 "offer_name": booking.stock.offer.name,
-                "offer_price": "10.10",
+                "offer_price": decimal.Decimal("10.10"),
                 "formatted_offer_price": "1205 F",
             },
             "user_id": user.id,
