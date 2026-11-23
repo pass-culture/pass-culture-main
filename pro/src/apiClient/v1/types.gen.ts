@@ -1158,6 +1158,14 @@ export type CreateThumbnailResponseModel = {
 };
 
 /**
+ * CreationMode
+ */
+export enum CreationMode {
+    MANUAL = 'manual',
+    IMPORTED = 'imported'
+}
+
+/**
  * CriteriaEnum
  */
 export enum CriteriaEnum {
@@ -1732,6 +1740,45 @@ export type EventDateScheduleAndPriceCategoriesCountModel = {
  * EventDatesInfos
  */
 export type EventDatesInfos = Array<EventDateScheduleAndPriceCategoriesCountModel>;
+
+/**
+ * EventOfferResponseModel
+ */
+export type EventOfferResponseModel = {
+    /**
+     * Bookingscount
+     */
+    bookingsCount: number;
+    /**
+     * Firstbeginningdate
+     */
+    firstBeginningDate: string | null;
+    /**
+     * Id
+     */
+    id: number;
+    /**
+     * Isheadlineoffer
+     */
+    isHeadlineOffer: boolean;
+    /**
+     * Lastbeginningdate
+     */
+    lastBeginningDate: string | null;
+    location: LocationResponseModelV2 | null;
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Remainingquantity
+     */
+    remainingQuantity: number | 'unlimited';
+    /**
+     * Thumburl
+     */
+    thumbUrl: string | null;
+};
 
 /**
  * EventStockCreateBodyModel
@@ -3945,6 +3992,65 @@ export type ListCollectiveOffersQueryModel = {
 export type ListCollectiveOffersResponseModel = Array<CollectiveOfferResponseModel>;
 
 /**
+ * ListEventOffersQueryModel
+ */
+export type ListEventOffersQueryModel = {
+    creationMode?: CreationMode | null;
+    cursor?: string | null;
+    /**
+     * Isdigital
+     */
+    isDigital?: boolean | null;
+    /**
+     * Limit
+     */
+    limit?: number;
+    /**
+     * Nameorean
+     */
+    nameOrEan?: string | null;
+    /**
+     * Orderbydesc
+     */
+    orderByDesc?: boolean;
+    /**
+     * Periodbeginningdate
+     */
+    periodBeginningDate?: string | null;
+    /**
+     * Periodendingdate
+     */
+    periodEndingDate?: string | null;
+    status: OfferStatus;
+    /**
+     * Venueid
+     */
+    venueId: number;
+};
+
+/**
+ * ListEventOffersResponseModel
+ */
+export type ListEventOffersResponseModel = {
+    /**
+     * Nextcursor
+     */
+    nextCursor: string | null;
+    /**
+     * Offers
+     */
+    offers: Array<EventOfferResponseModel>;
+    /**
+     * Total
+     */
+    total: number;
+    /**
+     * Totaliscapped
+     */
+    totalIsCapped: boolean;
+};
+
+/**
  * ListFeatureResponseModel
  */
 export type ListFeatureResponseModel = Array<FeatureResponseModel>;
@@ -4082,6 +4188,57 @@ export type ListOffersStockResponseModel = {
  * ListProviderResponse
  */
 export type ListProviderResponse = Array<ProviderResponse>;
+
+/**
+ * ListThingOffersQueryModel
+ */
+export type ListThingOffersQueryModel = {
+    creationMode?: CreationMode | null;
+    cursor?: string | null;
+    /**
+     * Isdigital
+     */
+    isDigital?: boolean | null;
+    /**
+     * Limit
+     */
+    limit?: number;
+    /**
+     * Nameorean
+     */
+    nameOrEan?: string | null;
+    /**
+     * Orderbydesc
+     */
+    orderByDesc?: boolean;
+    status: OfferStatus;
+    /**
+     * Venueid
+     */
+    venueId: number;
+};
+
+/**
+ * ListThingOffersResponseModel
+ */
+export type ListThingOffersResponseModel = {
+    /**
+     * Nextcursor
+     */
+    nextCursor: string | null;
+    /**
+     * Offers
+     */
+    offers: Array<ThingOfferResponseModel>;
+    /**
+     * Total
+     */
+    total: number;
+    /**
+     * Totaliscapped
+     */
+    totalIsCapped: boolean;
+};
 
 /**
  * ListVenueProviderResponse
@@ -6726,6 +6883,36 @@ export enum TargetAudience {
 }
 
 /**
+ * ThingOfferResponseModel
+ */
+export type ThingOfferResponseModel = {
+    /**
+     * Bookingscount
+     */
+    bookingsCount: number;
+    /**
+     * Id
+     */
+    id: number;
+    /**
+     * Isheadlineoffer
+     */
+    isHeadlineOffer: boolean;
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Remainingquantity
+     */
+    remainingQuantity: number | 'unlimited';
+    /**
+     * Thumburl
+     */
+    thumbUrl: string | null;
+};
+
+/**
  * ThingStockUpsertBodyModel
  */
 export type ThingStockUpsertBodyModel = {
@@ -8907,6 +9094,75 @@ export type getEducationalInstitutionsResponses = {
 
 export type getEducationalInstitutionsResponse = getEducationalInstitutionsResponses[keyof getEducationalInstitutionsResponses];
 
+export type getEventOffersData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * Venueid
+         */
+        venueId: number;
+        status: OfferStatus;
+        cursor?: string | null;
+        /**
+         * Limit
+         */
+        limit?: number;
+        /**
+         * Nameorean
+         */
+        nameOrEan?: string | null;
+        creationMode?: CreationMode | null;
+        /**
+         * Isdigital
+         */
+        isDigital?: boolean | null;
+        /**
+         * Orderbydesc
+         */
+        orderByDesc?: boolean;
+        /**
+         * Periodbeginningdate
+         */
+        periodBeginningDate?: string | null;
+        /**
+         * Periodendingdate
+         */
+        periodEndingDate?: string | null;
+    };
+    url: '/event-offers';
+};
+
+export type getEventOffersErrors = {
+    /**
+     * Bad Request
+     */
+    400: unknown;
+    /**
+     * Forbidden
+     */
+    403: unknown;
+    /**
+     * Not Found
+     */
+    404: unknown;
+    /**
+     * Unprocessable Content
+     */
+    422: ValidationError;
+};
+
+export type getEventOffersError = getEventOffersErrors[keyof getEventOffersErrors];
+
+export type getEventOffersResponses = {
+    /**
+     * OK
+     */
+    200: ListEventOffersResponseModel;
+};
+
+export type getEventOffersResponse = getEventOffersResponses[keyof getEventOffersResponses];
+
 export type getFeaturesData = {
     body?: never;
     path?: never;
@@ -10612,6 +10868,67 @@ export type postStructureSummariseSignupResponses = {
 };
 
 export type postStructureSummariseSignupResponse = postStructureSummariseSignupResponses[keyof postStructureSummariseSignupResponses];
+
+export type getThingOffersData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * Venueid
+         */
+        venueId: number;
+        status: OfferStatus;
+        cursor?: string | null;
+        /**
+         * Limit
+         */
+        limit?: number;
+        /**
+         * Nameorean
+         */
+        nameOrEan?: string | null;
+        creationMode?: CreationMode | null;
+        /**
+         * Isdigital
+         */
+        isDigital?: boolean | null;
+        /**
+         * Orderbydesc
+         */
+        orderByDesc?: boolean;
+    };
+    url: '/thing-offers';
+};
+
+export type getThingOffersErrors = {
+    /**
+     * Bad Request
+     */
+    400: unknown;
+    /**
+     * Forbidden
+     */
+    403: unknown;
+    /**
+     * Not Found
+     */
+    404: unknown;
+    /**
+     * Unprocessable Content
+     */
+    422: ValidationError;
+};
+
+export type getThingOffersError = getThingOffersErrors[keyof getThingOffersErrors];
+
+export type getThingOffersResponses = {
+    /**
+     * OK
+     */
+    200: ListThingOffersResponseModel;
+};
+
+export type getThingOffersResponse = getThingOffersResponses[keyof getThingOffersResponses];
 
 export type postUsersAnonymizeData = {
     body?: never;
