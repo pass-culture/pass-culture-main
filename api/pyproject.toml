@@ -262,6 +262,8 @@ filterwarnings = [
   "ignore::DeprecationWarning:weasyprint.text.ffi",
   "ignore::DeprecationWarning:flask_login.login_manager",
   "ignore::pytest.PytestRemovedIn10Warning:anyio.pytest_plugin",
+  # remove this when log_cron_with_transaction is removed
+  "ignore:Use log_cron and atomic instead:DeprecationWarning"
 ]
 testpaths = ["tests"]
 norecursedirs = [".git", "venv", ".pytest_cache"]
