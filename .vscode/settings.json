@@ -15,8 +15,7 @@
   "python.testing.pytestArgs": [
     "-vv",
     "-s",
-    "--color=yes",
-    "-W ignore::DeprecationWarning"
+    "--color=yes"
   ],
   "[javascript]": {
     "editor.defaultFormatter": "biomejs.biome"
