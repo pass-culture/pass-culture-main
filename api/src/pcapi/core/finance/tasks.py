@@ -47,10 +47,11 @@ def settlement_batch_validation_task(payload: ValidateSettlementBatchRequest) ->
         {"status": finance_models.SettlementStatus.EXECUTED}, synchronize_session=False
     )
 
-    finance_api.validate_invoices(list(invoice_ids))
+    invoice_ids_list = list(invoice_ids)
+    finance_api.validate_invoices(invoice_ids_list)
 
     db.session.flush()
 
     transactional_mails.send_all_settlement_validated_emails_to_pro(settlement_batch)
 
-    notify_settlements_executed.send(settlement_batch)
+    notify_settlements_executed.send(settlement_batch, len(invoice_ids_list))
