@@ -2193,7 +2193,7 @@ requires-dist = [
     { name = "redis", specifier = "==6.4.0" },
     { name = "regex", specifier = "==2026.11.9" },
     { name = "requests", specifier = "==2.34.2" },
-    { name = "schwifty", specifier = "==2026.11.0" },
+    { name = "schwifty", specifier = "==2026.11.2" },
     { name = "semver", specifier = "==3.1.1" },
     { name = "sentry-sdk", extras = ["flask", "celery"], specifier = "==2.75.0" },
     { name = "shapely", specifier = "==2.2.0" },
@@ -3109,15 +3109,15 @@ wheels = [
 
 [[package]]
 name = "schwifty"
-version = "2026.11.0"
+version = "2026.11.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pycountry" },
     { name = "rstr" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/f4/2a/49d8d104476288306e0fa18955f7e24456f8964da51970d441baa0252238/schwifty-2026.11.0.tar.gz", hash = "sha256:b006e0759a761a9444cf179b8da58590e0dc92b39e736da6be22746e766480f6", size = 968855, upload-time = "2026-11-05T21:12:59.339Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/e1/0a/74d0ebf308e45d2bdd44a64be9780929622f57b59902e98cff6a6c3a8400/schwifty-2026.11.2.tar.gz", hash = "sha256:76f9bf7715252fdfd9419696d8b07200f34c5cdae7b8010bf1a7d2dd73738c8c", size = 1031697, upload-time = "2026-11-13T09:30:00.19Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/a9/c0/b1df640490247ce75029f8dcabeea22b0848d657867ad7a6e1741c445c5c/schwifty-2026.11.0-py3-none-any.whl", hash = "sha256:09a609c8512ff363922b53eed8194ee9c230e646738208646d71bfff37100f68", size = 446778, upload-time = "2026-11-05T21:12:58.111Z" },
+    { url = "https://files.pythonhosted.org/packages/90/7b/70661ee7e99a57c78faf195b649fb4666c43484f4b08d419ec01b368a40e/schwifty-2026.11.2-py3-none-any.whl", hash = "sha256:25a7171739b2bf2e3c8beb3d83230ef9f314d4a90f285330eba8d371cdaf1da0", size = 494085, upload-time = "2026-11-13T09:29:58.653Z" },
 ]
 
 [[package]]
