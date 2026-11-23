@@ -61,7 +61,7 @@ jobs:
         run: pnpm run "build:$ENV"
 
       - name: Save build folder
-        uses: actions/upload-artifact@v7.0.1
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: build-playwright
           if-no-files-found: error
@@ -206,7 +206,7 @@ jobs:
           SHARD_TOTAL: ${{matrix.shardTotal }}
 
       - name: "Upload Playwright report"
-        uses: actions/upload-artifact@v7.0.1
+        uses: actions/upload-artifact@v7.0.2
         if: ${{ !cancelled() }}
         with:
           name: report-chromium-${{ matrix.shardIndex }}
@@ -259,7 +259,7 @@ jobs:
         run: pnpm exec playwright merge-reports --reporter html ./all-blob-reports
 
       - name: Upload HTML report
-        uses: actions/upload-artifact@v7.0.1
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: html-report--attempt-${{ github.run_attempt }}
           path: pro/playwright-report
