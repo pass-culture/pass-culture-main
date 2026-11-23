@@ -68,7 +68,7 @@ jobs:
 
           echo "backend_url=${backend_url}" | tee -a "$GITHUB_OUTPUT"
           echo "backoffice_url=${backoffice_url}" | tee -a "$GITHUB_OUTPUT"
-        
+
           if [ "${FRONT_ONLY}" == "true" ]; then
             echo "backend_url_for_pro=https://backend.testing.passculture.team" | tee -a "$GITHUB_OUTPUT"
           else
@@ -125,6 +125,8 @@ jobs:
     permissions:
       id-token: write
       contents: read
+    env:
+      MISE_ENV: ci
     needs:
       - deploy-preview-env-init
       - push-pcapi
@@ -136,12 +138,6 @@ jobs:
           ref: ${{ github.ref }}
           fetch-tags: false
           persist-credentials: false
-
-      - uses: actions/cache@v6.1.0
-        id: cache
-        with:
-          path: ~/.cache/mise
-          key: ${{ runner.os }}-mise
 
       - name: Authenticate through github app ghactionci
         uses: actions/create-github-app-token@v3.2.0
@@ -155,7 +151,7 @@ jobs:
           permission-contents: read
 
       - name: Configure Github
-        run: 
+        run:
           git config --global url."https://oauth2:${GITHUB_TOKEN}@github.com/".insteadOf "https://github.com/"
         env:
           GITHUB_TOKEN: ${{ steps.github-token.outputs.token }}
@@ -220,6 +216,8 @@ jobs:
     environment:
       name: pcapi-preview
       deployment: false
+    env:
+      MISE_ENV: ci
     needs:
       - deploy-preview-env-init
       - deploy-api
@@ -249,7 +247,7 @@ jobs:
           permission-contents: read
 
       - name: Configure Github
-        run: 
+        run:
           git config --global url."https://oauth2:${GITHUB_TOKEN}@github.com/".insteadOf "https://github.com/"
         env:
           GITHUB_TOKEN: ${{ steps.github-token.outputs.token }}

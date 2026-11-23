@@ -81,7 +81,6 @@ workflows:
         - 'pass-culture/common-workflows@setup-passdirector/v1.0.0'
         - 'pass-culture/common-workflows@setup-pcsi/v1.0'
     '.github/workflows/ci_deploy_pr_preview.yml':
-        - 'actions/cache@v6.1.0'
         - 'actions/checkout@v7.0.1'
         - 'actions/create-github-app-token@v3.2.0'
         - 'google-github-actions/auth@v3.0.0'
