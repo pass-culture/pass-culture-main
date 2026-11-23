@@ -150,7 +150,7 @@ workflows:
         - 'actions/upload-artifact@v7.0.2'
         - 'google-github-actions/setup-gcloud@v3.0.1'
         - 'ifaxity/wait-on-action@v1.2.1'
-        - 'kengotoda/actions-setup-docker-compose@v1.2.8'
+        - 'kengotoda/actions-setup-docker-compose@v1.2.11'
         - 'nick-fields/retry@v4.0.0'
         - 'pass-culture-github-actions/cache@v1.0.0'
         - 'pass-culture/common-workflows@setup-pcsi/v1.0'
@@ -348,9 +348,9 @@ dependencies:
         commit: 'sha1-c2a87611a18de5b3828c5652fe268e992400cb5c'
         owner_id: 216188
         repo_id: 738284564
-    'kengotoda/actions-setup-docker-compose@v1.2.8':
-        ref: 'v1.2.8'
-        commit: 'sha1-caf887cb5173b7ea66cce3c7db3b1e04974a53d4'
+    'kengotoda/actions-setup-docker-compose@v1.2.11':
+        ref: 'v1.2.11'
+        commit: 'sha1-b09fb2b902df45b91982bc46858188f2a714ee5f'
         owner_id: 505751
         repo_id: 290669864
     'mikepenz/action-junit-report@v6.5.0':
