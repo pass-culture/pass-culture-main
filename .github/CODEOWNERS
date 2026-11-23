@@ -3,3 +3,8 @@
 
 /.github/ @pass-culture/sherif-ops @pass-culture/main-ci-owners
 /api/src/pcapi/alembic/ @pass-culture/database-reviewers
+
+### protect those 3 files during a big refactor
+/api/src/pcapi/app.py @rpaoloni-pass @tcoudray-pass
+/api/src/pcapi/flask_app.py @rpaoloni-pass @tcoudray-pass
+/api/src/pcapi/backoffice_app.py @rpaoloni-pass @tcoudray-pass
