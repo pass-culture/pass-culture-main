@@ -154,7 +154,7 @@ describe('LateralMenu', () => {
     })
 
     const switchVenueButton = screen.getByRole('link', {
-      name: `Changer de structure (actuellement sélectionnée : ${selectedPartnerVenuePublicName})`,
+      name: `${selectedPartnerVenuePublicName}, changer de structure`,
     })
     expect(switchVenueButton).toBeInTheDocument()
     expect(switchVenueButton).toHaveAttribute('href', '/hub')

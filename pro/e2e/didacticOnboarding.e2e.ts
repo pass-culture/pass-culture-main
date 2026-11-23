@@ -51,7 +51,7 @@ test.describe('Didactic Onboarding feature', () => {
     ).toBeVisible()
 
     // I should be able to navigate without being redirected to onboarding
-    await page.getByRole('button', { name: 'Individuel' }).click() // Open the section
+    await page.getByRole('button', { name: 'Individuel', exact: true }).click() // Open the section
     await page.getByRole('link', { name: 'Réservations' }).click()
     await expect(
       page.getByRole('heading', { name: 'Réservations individuelles' })
@@ -63,7 +63,9 @@ test.describe('Didactic Onboarding feature', () => {
     checkAccessibility,
   }) => {
     await checkAccessibility()
-    await page.getByLabel('Commencer la création d’offre sur ADAGE').click()
+    await page
+      .getByLabel('Déposer un dossier ADAGE pour créer une offre collective')
+      .click()
     await expect(
       page.getByRole('heading', { level: 2, name: 'Déposer un dossier ADAGE' })
     ).toBeVisible()
@@ -90,7 +92,9 @@ test.describe('Didactic Onboarding feature', () => {
     checkAccessibility,
   }) => {
     await checkAccessibility()
-    await page.getByLabel('Commencer la création d’offre sur ADAGE').click()
+    await page
+      .getByLabel('Déposer un dossier ADAGE pour créer une offre collective')
+      .click()
     await expect(
       page.getByRole('heading', { level: 2, name: 'Déposer un dossier ADAGE' })
     ).toBeVisible()
@@ -137,7 +141,7 @@ test.describe('Didactic Onboarding feature', () => {
     checkAccessibility,
   }) => {
     await page
-      .getByLabel('Commencer la création d’offre sur l’application mobile')
+      .getByLabel('Créer une offre individuelle sur l’application mobile')
       .click()
     await expect(
       page.getByRole('heading', {
@@ -176,7 +180,7 @@ test.describe('Didactic Onboarding feature', () => {
     checkAccessibility,
   }) => {
     await page
-      .getByLabel('Commencer la création d’offre sur l’application mobile')
+      .getByLabel('Créer une offre individuelle sur l’application mobile')
       .click()
     await expect(
       page.getByRole('heading', {

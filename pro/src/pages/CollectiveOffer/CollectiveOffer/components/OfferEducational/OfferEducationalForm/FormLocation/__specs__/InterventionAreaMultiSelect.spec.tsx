@@ -76,7 +76,7 @@ describe('InterventionAreaMultiSelect', () => {
         'mainland',
       ],
     })
-    const departmentButton = screen.getByLabelText('Département(s)')
+    const departmentButton = screen.getByLabelText(/Département\(s\)/)
     await userEvent.click(departmentButton)
 
     const mainlandCheckbox = screen.getByLabelText('France métropolitaine')
