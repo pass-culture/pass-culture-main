@@ -49,12 +49,14 @@ def update_booking_used() -> None:
     api.auto_mark_as_used_after_event()
 
 
+# interruptible
 @blueprint.cli.command("cancel_unstored_external_bookings")
 @cron_decorators.log_cron_with_transaction
 def cancel_unstored_external_bookings() -> None:
     api.cancel_unstored_external_bookings()
 
 
+# interruptible
 @blueprint.cli.command("cancel_ems_external_bookings")
 @cron_decorators.log_cron_with_transaction
 @cron_decorators.cron_require_feature(FeatureToggle.ENABLE_RECURRENT_CRON)
