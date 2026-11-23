@@ -63,6 +63,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.MANAGE_ACCOUNT_UPDATE_REQUEST,
         perm_models.Permissions.CREATE_INCIDENTS,
         perm_models.Permissions.READ_FRAUDULENT_BOOKING_INFO,
+        perm_models.Permissions.READ_TECH_LOGS,
     ],
     "support_n3": [
         perm_models.Permissions.ANONYMIZE_PUBLIC_ACCOUNT,
@@ -101,6 +102,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.MANAGE_INCIDENTS,
         perm_models.Permissions.READ_NON_PAYMENT_NOTICES,
         perm_models.Permissions.MANAGE_NON_PAYMENT_NOTICES,
+        perm_models.Permissions.READ_TECH_LOGS,
     ],
     "support_partenaires_techniques": [
         perm_models.Permissions.READ_PRO_ENTITY,

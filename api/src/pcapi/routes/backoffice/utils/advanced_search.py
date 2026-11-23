@@ -432,7 +432,6 @@ def generate_gcp_search_dict(
 
         operator = search_data.get("operator", "")
         if operator not in GCP_LOGS_OPERATOR_DICT:
-            breakpoint()
             warnings.add(f"L'operateur '{operator}' n'est pas supporté, merci de prévenir les devs")
             continue
 

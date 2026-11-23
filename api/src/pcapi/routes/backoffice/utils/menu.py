@@ -285,6 +285,11 @@ MENU_SECTIONS = [
                 url_name="backoffice.user_profile_refresh_campaigns.list_campaigns",
                 permissions=["READ_USER_PROFILE_REFRESH_CAMPAIGN"],
             ),
+            MenuItem(
+                label="Explorer les logs",
+                url_name="backoffice.logs.list_logs",
+                permissions=["READ_TECH_LOGS"],
+            ),
         ],
     ),
     MenuSection(
@@ -309,11 +314,6 @@ MENU_SECTIONS = [
                 label="Liste des composants",
                 url_name="backoffice.dev.components",
                 settings=["ENABLE_BO_COMPONENT_PAGE"],
-            ),
-            MenuItem(  # only here as an alpha version
-                label="Explorer les logs",
-                url_name="backoffice.logs.list_logs",
-                permissions=["READ_TECH_LOGS"],
             ),
         ],
     ),
