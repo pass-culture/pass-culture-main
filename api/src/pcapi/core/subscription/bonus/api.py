@@ -158,7 +158,7 @@ def _get_and_cache_quotient_familial_result(
     try:
         redis_client = get_redis_client()
         cache_key = at_date.isoformat()
-        cached_result = redis_client.hget(cache_name, cache_key)
+        cached_result = typing.cast(str | None, redis_client.hget(cache_name, cache_key))
     except RedisError:
         logger.exception(
             "Redis cache read error during QF", extra={"beneficiary_fraud_check_id": quotient_familial_fraud_check.id}

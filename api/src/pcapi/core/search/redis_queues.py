@@ -1,5 +1,6 @@
 import contextlib
 import logging
+import typing
 from collections import abc
 
 import redis
@@ -215,7 +216,8 @@ class AlgoliaIndexingQueuesMixin:
         timestamp = date_utils.get_naive_utc_now().timestamp()
         processing_queue = f"{queue}:processing:{timestamp}"
         try:
-            ids = self.redis_client.srandmember(queue, count)
+            ids = typing.cast(list[str], self.redis_client.srandmember(queue, count))
+
             with self.redis_client.pipeline(transaction=True) as pipeline:
                 for id_ in ids:
                     pipeline.smove(queue, processing_queue, id_)
@@ -289,6 +291,7 @@ class AlgoliaIndexingQueuesMixin:
             while 1:
                 cursor, processing_queues = redis_client.scan(cursor, pattern)
                 for processing_queue in processing_queues:
+                    assert isinstance(processing_queue, str)
                     timestamp = float(processing_queue.rsplit(":")[-1])
                     if timestamp > date_utils.get_naive_utc_now().timestamp() - 60 * 60:
                         continue  # less than 1 hour ago, too recent, could still be processing
@@ -301,6 +304,7 @@ class AlgoliaIndexingQueuesMixin:
         with redis_client.pipeline(transaction=True) as pipeline:
             try:
                 for id_ in redis_client.smembers(processing_queue):
+                    assert isinstance(id_, str)
                     pipeline.smove(processing_queue, originating_queue, id_)
                 pipeline.execute()
             except Exception:

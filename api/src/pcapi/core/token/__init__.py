@@ -67,8 +67,11 @@ class AbstractToken(abc.ABC):
     @classmethod
     def get_token(cls, type_: TokenType, key_suffix: int | str | None) -> typing.Self | None:
         encoded_token = get_redis_client().get(cls.get_redis_key(type_, key_suffix))
+        assert isinstance(encoded_token, str | None)
+
         if encoded_token is None:
             return None
+
         return cls.load_without_checking(encoded_token)
 
     @classmethod

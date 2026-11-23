@@ -80,7 +80,7 @@ class JwtSecretManagerBackend(JwtBaseBackend):
         except SecretManagerException:
             # something went wrong falling back on redis
             logger.exception("Error while building jwt keyring")
-            key_dict = get_redis_client().hgetall(REDIS_KEY)
+            key_dict = get_redis_client().hgetall(REDIS_KEY)  # type: ignore [assignment]
 
         if key_dict:
             self._key_by_kid = key_dict

@@ -40,7 +40,7 @@ class GoogleTokenProvider(redis.CredentialProvider):
         return "default", response.access_token
 
 
-def get_redis_client() -> "redis.Redis[str]":
+def get_redis_client() -> redis.Redis:
     # set in connect_redis
     return current_app.redis_client  # type: ignore [attr-defined]
 
@@ -48,6 +48,8 @@ def get_redis_client() -> "redis.Redis[str]":
 def connect_redis() -> None:
     parsed_redis = RedisDsn(settings.REDIS_URL)
 
+    # NOTE: decode_responses set to True means that all responses will be decoded as str
+    # so e.g client.get is typed as (-> bytes | str | None) but it will always be (str | None) in our case
     redis_dict: dict[str, typing.Any] = {
         "host": parsed_redis.host,
         "port": parsed_redis.port,

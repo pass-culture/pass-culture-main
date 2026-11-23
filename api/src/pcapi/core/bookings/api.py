@@ -1583,7 +1583,9 @@ def cancel_ems_external_bookings() -> None:
     ems_queue = EMS_EXTERNAL_BOOKINGS_TO_CANCEL
 
     while redis_client.llen(ems_queue) > 0:
-        booking_to_cancel = json.loads(redis_client.rpop(ems_queue))
+        element = redis_client.rpop(ems_queue)
+        assert isinstance(element, str)
+        booking_to_cancel = json.loads(element)
         cinema_id, token, timestamp = (
             booking_to_cancel["cinema_id"],
             booking_to_cancel["token"],

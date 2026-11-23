@@ -37,12 +37,15 @@ def update_pro_attributes() -> None:
     while len(redis_client.smembers(REDIS_EMAIL_LIST_ATTRIBUTES_TO_UPDATE)) > 0:
         with atomic():
             email = redis_client.spop(REDIS_EMAIL_LIST_ATTRIBUTES_TO_UPDATE)
+            assert isinstance(email, str | None)
+
             if email:
                 redis_client.set(REDIS_BACKUP_EMAIL_TO_UPDATE, email, ex=REDIS_BACKUP_EMAIL_TO_UPDATE_TIMEOUT)
                 logger.info("update_pro_attributes", extra={"email": email})
-                if isinstance(email, str):  # helps mypy
-                    attributes = get_pro_attributes(email)
-                    update_brevo_user(email, attributes, asynchronous=False)
-                    if FeatureToggle.ENABLE_BEAMER.is_active():
-                        update_beamer_user(attributes)
+
+                attributes = get_pro_attributes(email)
+                update_brevo_user(email, attributes, asynchronous=False)
+                if FeatureToggle.ENABLE_BEAMER.is_active():
+                    update_beamer_user(attributes)
+
                 redis_client.delete(REDIS_BACKUP_EMAIL_TO_UPDATE)

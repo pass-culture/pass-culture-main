@@ -134,7 +134,7 @@ def configure_session_keys(*, default_session_key: str, session_keys_secret: str
                 key_dict[str(secret.creation_timestamp)] = secret.value
         except SecretManagerException:
             logger.exception("Error while building the session keyring")
-            key_dict = get_redis_client().hgetall(redis_key)
+            key_dict = get_redis_client().hgetall(redis_key)  # type: ignore [assignment]
 
         if not key_dict:
             raise ValueError("Error while building the session keyring, no backup available in redis")

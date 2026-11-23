@@ -30,4 +30,6 @@ def pop_from_queue(queue_name: str) -> dict | None:
     except redis.exceptions.RedisError:
         logger.exception("Could not pop element from queue", extra={"queue": queue_name})
         return None
+
+    assert isinstance(item, str | None)
     return json.loads(item) if item else None
