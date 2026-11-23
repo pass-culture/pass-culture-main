@@ -125,7 +125,11 @@ export const Stepper = ({
           disabled: 'à venir',
         }[state]
 
-        const voiceOverText = `Étape ${index + 1} sur ${steps.length}, ${stateTranslation}, ${step.label}`
+        const stepNumber = index + 1
+        const stepLabel = step.sublabel
+          ? `${step.label}, ${step.sublabel}`
+          : step.label
+        const voiceOverText = `Étape ${stepNumber} : ${stepLabel}, ${stateTranslation}, ${stepNumber} sur ${steps.length}`
 
         const visualContent = (
           <div className={styles['step-content']} aria-hidden="true">
@@ -138,9 +142,9 @@ export const Stepper = ({
                   })}
                 />
               }
-            </div>
+            </div>{' '}
             <div className={styles['text-container']}>
-              <span className={styles.label}>{step.label}</span>
+              <span className={styles.label}>{step.label}</span>{' '}
               {step.sublabel && (
                 <span className={styles.sublabel}>{step.sublabel}</span>
               )}

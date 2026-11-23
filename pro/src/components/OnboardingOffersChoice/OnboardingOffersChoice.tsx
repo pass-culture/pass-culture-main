@@ -55,7 +55,7 @@ export const OnboardingOffersChoice = ({
           <Card.Footer>
             <Button
               variant={ButtonVariant.PRIMARY}
-              aria-label="Commencer la création d’offre sur l’application mobile"
+              aria-label="Créer une offre individuelle sur l’application mobile"
               fullWidth
               label="Créer une offre individuelle"
               onClick={() => {
@@ -84,7 +84,7 @@ export const OnboardingOffersChoice = ({
           </Card.Content>
           <Card.Footer>
             <Button
-              aria-label="Commencer la création d’offre sur ADAGE"
+              aria-label="Déposer un dossier ADAGE pour créer une offre collective"
               onClick={() => {
                 logEvent(
                   OnboardingDidacticEvents.HAS_CLICKED_START_COLLECTIVE_DIDACTIC_ONBOARDING

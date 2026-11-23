@@ -75,7 +75,7 @@ describe('screens | OfferEducational: edition', () => {
     })
 
     const inputs = [
-      screen.getByLabelText(`Formats`),
+      screen.getByLabelText(/Formats/),
       screen.getByLabelText(/Titre de l’offre/),
       screen.getByLabelText('Indiquez la durée de l’évènement', {
         exact: false,
