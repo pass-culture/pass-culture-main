@@ -179,7 +179,7 @@ jobs:
             pnpm ci
 
       - name: Download blob reports from GitHub Actions Artifacts
-        uses: actions/download-artifact@v8.0.1
+        uses: actions/download-artifact@v8.0.2
         with:
           path: pro/.vitest/blob/
           pattern: blob-report-*
@@ -189,7 +189,7 @@ jobs:
         run: pnpm exec vitest --merge-reports --reporter=dot
 
       - name: Download coverage reports from GitHub Actions Artifacts
-        uses: actions/download-artifact@v8.0.1
+        uses: actions/download-artifact@v8.0.2
         with:
           path: pro/coverage
           pattern: coverage-report-*

@@ -375,7 +375,7 @@ jobs:
       # When a matrix job is retried, it will reuse the same artifact to execute the exact same split.
       - name: Download test durations
         if: needs.restore-test-durations.outputs.restored == 'true'
-        uses: actions/download-artifact@v8.0.1
+        uses: actions/download-artifact@v8.0.2
         with:
           name: test-durations-before
 
@@ -437,7 +437,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download all partial test durations
-        uses: actions/download-artifact@v8.0.1
+        uses: actions/download-artifact@v8.0.2
         with:
           pattern: test-durations-after-partial-*
           path: ${{ runner.temp }}
