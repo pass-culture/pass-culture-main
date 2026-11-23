@@ -30,7 +30,7 @@ jobs:
           --exclude-rule=yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag
 
       - name: Save SARIF results as artifact
-        uses: actions/upload-artifact@v7.0.1
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: semgrep-scan-results
           path: semgrep-results.sarif
