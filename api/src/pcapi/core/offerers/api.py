@@ -3723,6 +3723,9 @@ def close_venue(
             transactional_mails.send_venue_closed_email(venue.id)
         return
 
+    if venue.is_closed:
+        return
+
     venue.state = models.VenueState.CLOSED
     history_api.add_action(history_constants.ActionType.VENUE_CLOSED, author=author, venue=venue, comment=comment)
 
