@@ -33,6 +33,7 @@ def notify_users_before_deletion_of_suspended_account() -> None:
     users_api.notify_users_before_deletion_of_suspended_account()
 
 
+# non_interruptible
 @blueprint.cli.command("notify_users_before_online_event")
 @cron_decorators.log_cron_with_transaction
 def notify_users_before_online_event() -> None:
