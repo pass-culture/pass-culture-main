@@ -363,8 +363,7 @@ export const IndividualOfferMediaScreen = ({
                       key={uploadZoneKey}
                       ref={uploadZoneRef}
                       id={uploadZoneId}
-                      label="Ajoutez une image"
-                      labelVariant="title3"
+                      label="Image"
                       icon={strokePictureIcon}
                       accept={ALLOWED_IMAGE_TYPES_TO_EXTENSIONS}
                       maxSize={MAX_FILE_SIZE}
@@ -426,7 +425,7 @@ export const IndividualOfferMediaScreen = ({
                 </FormLayout.Row>
                 <FormLayout.Row className={styles['media-cell']}>
                   <div className={styles['media-wrapper']}>
-                    <p className={styles['media-title']}>Ajoutez une vidéo</p>
+                    <p className={styles['media-title']}>Vidéo Youtube</p>
                     <VideoUploader uploadTipsId={tipsVideoUploaderId} />
                     {!videoData?.videoThumbnailUrl && (
                       <div id={tipsVideoUploaderId}>
