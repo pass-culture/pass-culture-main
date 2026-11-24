@@ -14,6 +14,7 @@ from pcapi.core.categories import subcategories
 from pcapi.core.external.batch import testing as notifications_testing
 from pcapi.core.geography.factories import AddressFactory
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offers.constants import VideoFeatures
 from pcapi.core.providers.etls.cinema_etl_template import ShowFeatures
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import assert_num_queries
@@ -82,6 +83,7 @@ class OffersStocksV2Test:
                 ShowFeatures.VF.value,
                 ShowFeatures.THREE_D.value,
                 ShowFeatures.ICE.value,
+                VideoFeatures.FOUR_K.value,
             ],
         )
         another_bookable_stock = offers_factories.EventStockFactory(

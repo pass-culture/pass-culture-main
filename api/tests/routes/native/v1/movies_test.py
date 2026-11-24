@@ -34,6 +34,7 @@ class MovieCalendarTest:
             offer__product=product,
             offer__venue__offererAddress__address=address,
             beginningDatetime=tz_naive_beginning_datetime,
+            features=["SCREEN_X"],
         )
 
         start = date_utils.get_naive_utc_now()
@@ -619,6 +620,7 @@ class MovieCalendarForUserTest:
             offer__product=product,
             offer__venue__offererAddress__address=address,
             beginningDatetime=tz_naive_beginning_datetime,
+            features=["SCREEN_X"],
         )
         start = datetime.now(UTC)
         end = start + timedelta(days=1)
@@ -1124,6 +1126,7 @@ class VenueMovieCalendarTest:
             offer__product=product,
             offer__venue__offererAddress__address=address,
             beginningDatetime=tz_naive_beginning_datetime,
+            features=["SCREEN_X"],
         )
         start = date_utils.get_naive_utc_now().replace(hour=0, minute=0, second=0, microsecond=0)
         end = date_utils.get_naive_utc_now().replace(hour=23, minute=59, second=59, microsecond=999) + timedelta(
@@ -1473,6 +1476,7 @@ class VenueMovieCalendarForUserTest:
             offer__product=product,
             beginningDatetime=tz_naive_beginning_datetime,
             offer__venue__offererAddress__address=address,
+            features=["SCREEN_X"],
         )
         start = date_utils.get_naive_utc_now().replace(hour=0, minute=0, second=0, microsecond=0)
         end = (start + timedelta(days=1)).replace(hour=12, minute=0, second=0, microsecond=0)

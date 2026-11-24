@@ -12,6 +12,7 @@ from decimal import Decimal
 import pydantic as pydantic_v2
 
 from pcapi.core.categories.genres.movie import get_movie_label
+from pcapi.core.offers.constants import get_legacy_screening_features
 from pcapi.core.providers import api as providers_api
 from pcapi.core.users.young_status import SubscriptionStatus
 from pcapi.routes.serialization import HttpBodyModel
@@ -185,7 +186,7 @@ class Screening(HttpBodyModel):
                 local_tz=raw_screening.timezone or date_utils.METROPOLE_TIMEZONE,
             ),
             bookability=cls._get_screening_bookability(raw_screening),
-            features=raw_screening.features,
+            features=get_legacy_screening_features(raw_screening.features),
             price=float(raw_screening.price),
             stock_id=raw_screening.stock_id,
         )
