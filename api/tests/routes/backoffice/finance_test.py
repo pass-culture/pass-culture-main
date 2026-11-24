@@ -634,8 +634,7 @@ class ValidateFinanceOverpaymentIncidentTest(PostEndpointHelper):
             if force_debit_note
             else "Récupération sur les prochaines réservations."
         )
-        assert db.session.query(sa.func.get_deposit_balance(deposit.id, False)).first()[0] == 250
-        assert db.session.query(sa.func.get_deposit_balance(deposit.id, True)).first()[0] == 270
+        assert db.session.query(sa.func.get_deposit_balance(deposit.id)).scalar() == 250
 
         assert booking_reimbursed.status == bookings_models.BookingStatus.CANCELLED
         assert booking_reimbursed_2.status == bookings_models.BookingStatus.REIMBURSED
@@ -1032,8 +1031,7 @@ class ValidateFinanceCommercialGestureTest(PostEndpointHelper):
         assert validation_action
         assert validation_action.actionType == history_constants.ActionType.FINANCE_INCIDENT_VALIDATED
         assert validation_action.comment == "Geste commercial remboursé au prochain virement"
-        assert db.session.query(sa.func.get_deposit_balance(deposit.id, False)).first()[0] == decimal.Decimal("0.10")
-        assert db.session.query(sa.func.get_deposit_balance(deposit.id, True)).first()[0] == decimal.Decimal("0.10")
+        assert db.session.query(sa.func.get_deposit_balance(deposit.id)).scalar() == decimal.Decimal("0.10")
 
         assert cancelled_booking1.status == bookings_models.BookingStatus.CANCELLED
         assert cancelled_booking2.status == bookings_models.BookingStatus.CANCELLED
@@ -1047,7 +1045,7 @@ class ValidateFinanceCommercialGestureTest(PostEndpointHelper):
         assert len(total_incident_events) == 1
         assert total_incident_events[0].motive == finance_models.FinanceEventMotive.INCIDENT_COMMERCIAL_GESTURE
 
-        # partial finaance incident
+        # partial finance incident
         partial_incident_events = (
             db.session.query(finance_models.FinanceEvent)
             .filter(finance_models.FinanceEvent.bookingFinanceIncidentId == partial_booking_commercial_gesture.id)

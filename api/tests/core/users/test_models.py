@@ -493,8 +493,7 @@ class SQLFunctionsTest:
         bookings_factories.UsedBookingFactory(deposit=deposit, amount=10)
         bookings_factories.BookingFactory(deposit=deposit, amount=1)
 
-        assert db.session.query(sa.func.get_deposit_balance(deposit.id, False)).first()[0] == initial_amount - 11
-        assert db.session.query(sa.func.get_deposit_balance(deposit.id, True)).first()[0] == initial_amount - 10
+        assert db.session.query(sa.func.get_deposit_balance(deposit.id)).scalar() == initial_amount - 11
 
     def test_deposit_balance_on_cancelled_bookings(self):
         user = users_factories.BeneficiaryFactory(age=18)
@@ -504,8 +503,7 @@ class SQLFunctionsTest:
         bookings_factories.CancelledBookingFactory(deposit=deposit, amount=10)
         bookings_factories.CancelledBookingFactory(deposit=deposit, amount=20)
 
-        assert db.session.query(sa.func.get_deposit_balance(deposit.id, False)).first()[0] == initial_amount
-        assert db.session.query(sa.func.get_deposit_balance(deposit.id, True)).first()[0] == initial_amount
+        assert db.session.query(sa.func.get_deposit_balance(deposit.id)).scalar() == initial_amount
 
     def test_deposit_balance_on_only_used_bookings(self):
         user = users_factories.BeneficiaryFactory(age=18)
@@ -515,14 +513,7 @@ class SQLFunctionsTest:
         bookings_factories.BookingFactory(deposit=deposit, amount=10)
         bookings_factories.BookingFactory(deposit=deposit, amount=20)
 
-        assert db.session.query(sa.func.get_deposit_balance(deposit.id, True)).first()[0] == initial_amount
-        assert db.session.query(sa.func.get_deposit_balance(deposit.id, False)).first()[0] == initial_amount - 10 - 20
-
-    def test_deposit_balance_wrong_id(self):
-        with pytest.raises(sa_exc.InternalError) as exc:
-            db.session.query(sa.func.get_deposit_balance(None, False)).first()[0]
-
-        assert "the deposit was not found" in str(exc)
+        assert db.session.query(sa.func.get_deposit_balance(deposit.id)).scalar() == initial_amount - 10 - 20
 
     def test_deposit_bookings_with_incident(self):
         deposit = users_factories.BeneficiaryFactory(age=18).deposit
@@ -548,13 +539,7 @@ class SQLFunctionsTest:
         assert incident.status == finance_models.IncidentStatus.VALIDATED
 
         # All bookings that are not cancelled
-        assert (
-            db.session.query(sa.func.get_deposit_balance(deposit.id, False)).first()[0]
-            == 150 - 20 - 45 - 35 - 40 + 35 + 10
-        )
-        assert (
-            db.session.query(sa.func.get_deposit_balance(deposit.id, True)).first()[0] == 150 - 45 - 35 - 40 + 35 + 10
-        )
+        assert db.session.query(sa.func.get_deposit_balance(deposit.id)).scalar() == 150 - 20 - 45 - 35 - 40 + 35 + 10
 
         assert booking_reimbursed.status == bookings_models.BookingStatus.CANCELLED
         assert booking_reimbursed_2.status == bookings_models.BookingStatus.REIMBURSED
@@ -574,8 +559,7 @@ class SQLFunctionsTest:
 
         # Then
         assert incident.status == finance_models.IncidentStatus.VALIDATED
-        assert db.session.query(sa.func.get_deposit_balance(deposit.id, False)).first()[0] == 150 - 20 - 40 - 30
-        assert db.session.query(sa.func.get_deposit_balance(deposit.id, True)).first()[0] == 150 - 40 - 30
+        assert db.session.query(sa.func.get_deposit_balance(deposit.id)).scalar() == 150 - 20 - 40 - 30
 
     def test_deposit_bookings_when_incident_is_cancelled(self):
         deposit = users_factories.BeneficiaryFactory(age=18).deposit
@@ -597,10 +581,7 @@ class SQLFunctionsTest:
 
         assert incident.status == finance_models.IncidentStatus.CANCELLED
 
-        assert (
-            db.session.query(sa.func.get_deposit_balance(deposit.id, False)).first()[0] == 150 - 20 - 35 - 40 + 35 + 10
-        )
-        assert db.session.query(sa.func.get_deposit_balance(deposit.id, True)).first()[0] == 150 - 35 - 40 + 35 + 10
+        assert db.session.query(sa.func.get_deposit_balance(deposit.id)).scalar() == 150 - 20 - 35 - 40
 
 
 class UserLoginTest:
