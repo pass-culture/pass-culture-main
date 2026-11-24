@@ -40,10 +40,10 @@ export const Error: Story = {
   },
 }
 
-export const New: Story = {
+export const Highlight: Story = {
   args: {
-    label: 'Nouveau',
-    variant: TagVariant.NEW,
+    label: 'Highlight',
+    variant: TagVariant.HIGHLIGHT,
   },
 }
 

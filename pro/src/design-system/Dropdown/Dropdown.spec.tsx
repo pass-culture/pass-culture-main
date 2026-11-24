@@ -113,7 +113,12 @@ describe('<Dropdown />', () => {
     it('should render a tag alongside an item when `tag` is provided', async () => {
       renderDropdown({
         items: [
-          [{ text: 'Item 1', tag: { label: 'New', variant: TagVariant.NEW } }],
+          [
+            {
+              text: 'Item 1',
+              tag: { label: 'New', variant: TagVariant.HIGHLIGHT },
+            },
+          ],
         ],
       })
 

@@ -84,8 +84,11 @@
     background-color: var(--color-background-subtle);
   }
 
-  &.new {
-    color: var(--color-text-inverted);
+  &.highlight {
+    .tag {
+      color: var(--color-text-inverted);
+    }
+
     background-color: var(--color-background-brand-primary);
   }
 }

@@ -32,11 +32,11 @@ describe('Tag', () => {
     expect(container.querySelector('svg')).not.toBeInTheDocument()
   })
 
-  it('should not render an icon for new variant', () => {
+  it('should not render an icon for highlight variant', () => {
     const { container } = renderTag({
       label: 'Département',
       icon: 'icon.svg',
-      variant: TagVariant.NEW,
+      variant: TagVariant.HIGHLIGHT,
     })
     expect(container.querySelector('svg')).not.toBeInTheDocument()
   })

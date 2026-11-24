@@ -24,7 +24,7 @@ export const SummarySubSection = ({
   <div className={cn(style['summary-layout-sub-section'], className)}>
     <div className={style['summary-layout-sub-section-title-wrapper']}>
       <h3 className={style['summary-layout-sub-section-title']}>{title}</h3>
-      {isNew && <Tag label="Nouveau" variant={TagVariant.NEW} />}
+      {isNew && <Tag label="Nouveau" variant={TagVariant.HIGHLIGHT} />}
     </div>
     {children}
     {shouldShowDivider && <Divider size="large" />}

@@ -71,7 +71,7 @@ export const OfferHighlightCard = ({
         <div className={styles['highlight-card-highlights']}>
           {highlightRequests.map((request) => (
             <Tag
-              variant={TagVariant.NEW}
+              variant={TagVariant.HIGHLIGHT}
               key={request.id}
               label={request.name}
             />
