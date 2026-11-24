@@ -4640,7 +4640,7 @@ class CloseVenueTest:
         offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer, pricing_point=venue)
         author = users_factories.BaseUserFactory()
 
-        assert venue.is_pricing_point
+        assert venue.is_active_pricing_point
 
         with atomic():
             offerers_api.close_venue(venue, author)
@@ -4650,11 +4650,11 @@ class CloseVenueTest:
 
         assert venue.state is offerers_models.VenueState.CLOSED
         assert venue.criteria == [tag]
-        assert venue.is_pricing_point
+        assert venue.is_active_pricing_point
         mock_send_venue_closure_request_email.assert_called_once()
         mock_send_venue_closed_email.assert_not_called()
 
-        # Let's remove the pricing point.
+        # Let's end the pricing point link.
         for pp_link in db.session.query(offerers_models.VenuePricingPointLink).all():
             pp_link.timespan = db_utils.make_timerange(start=pp_link.timespan.lower, end=pp_link.timespan.lower)
         db.session.flush()
@@ -4663,7 +4663,7 @@ class CloseVenueTest:
             offerers_api.close_venue(venue, author)
 
         db.session.refresh(venue)
-        assert not venue.is_pricing_point
+        assert not venue.is_active_pricing_point
         mock_send_venue_closure_request_email.assert_called_once()
         mock_send_venue_closed_email.assert_called_once()
 
@@ -4675,13 +4675,10 @@ class CloseVenueTest:
         )
         author = users_factories.BaseUserFactory()
 
-        assert venue.is_pricing_point
-
         with atomic():
             offerers_api.close_venue(venue, author)
 
         db.session.refresh(venue)
-        assert venue.is_pricing_point
         assert not venue.criteria
         mock_send_venue_closed_email.assert_called_once()
 
