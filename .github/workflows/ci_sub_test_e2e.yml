@@ -184,6 +184,7 @@ jobs:
           IMAGE_NAME: ${{ steps.compute-image-name.outputs.image_name }}
         run: |
           if [ "$TAG" != "latest" ]; then
+            # shellcheck disable=SC2016
             timeout "$E2E_STARTUP_TIMEOUT_SECONDS" bash -c 'until [ -f "$TEMP/docker-load.exit" ]; do sleep 1; done' \
               || { echo "::error::Timed out waiting for docker load"; cat "$TEMP/docker-load.log"; exit 1; }
             cat "$TEMP/docker-load.log"
