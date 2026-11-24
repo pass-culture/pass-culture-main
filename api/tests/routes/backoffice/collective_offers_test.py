@@ -132,9 +132,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
     endpoint = "backoffice.collective_offer.list_collective_offers"
     needed_permission = perm_models.Permissions.READ_OFFERS
 
-    # Use assert_num_queries() instead of assert_no_duplicated_queries() which does not detect one extra query caused
-    # by a field added in the jinja template.
-    # - fetch session +user (1 query)
+    # - fetch session + user (1 query)
     # - fetch collective offers with joinedload including extra data (1 query)
     expected_num_queries = 2
     # - fetch collective bookings (selectinload)
@@ -813,6 +811,27 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert {int(row["ID"]) for row in rows} == {collective_offers[2].id}
         assert rows[0]["État"] == "Rejetée Date erronée"
+
+    def test_list_collective_offers_by_instructor(self, authenticated_client):
+        instructor = users_factories.UserFactory()
+        instructor_id = instructor.id
+        instructor_offer = educational_factories.CollectiveOfferFactory(instructor=instructor)
+        educational_factories.CollectiveOfferFactory()
+
+        query_args = {
+            "search-0-search_field": "INSTRUCTOR",
+            "search-0-operator": "IN",
+            "search-0-instructor": instructor_id,
+        }
+        # +1 because of reloading selected instructor in the form
+        with assert_num_queries(self.expected_num_queries + 1):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(instructor_offer.id)
+        assert rows[0]["Responsable"] == instructor.full_name
 
     def test_list_collective_offers_by_four_filters(self, authenticated_client, collective_offers):
         venue_id = collective_offers[2].venueId

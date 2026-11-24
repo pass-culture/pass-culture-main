@@ -137,6 +137,11 @@ def _get_collective_offer_templates(
     if form.status.data:
         base_query = base_query.filter(educational_models.CollectiveOfferTemplate.validation.in_(form.status.data))
 
+    if form.instructor.data:
+        base_query = base_query.outerjoin(educational_models.CollectiveOfferTemplate.instructor).filter(
+            users_models.User.id.in_(form.instructor.data)
+        )
+
     if form.only_validated_offerers.data:
         base_query = base_query.filter(offerers_models.Offerer.isValidated)
 
@@ -196,6 +201,7 @@ def list_collective_offer_templates() -> response_utils.BackofficeResponse:
 
     autocomplete.prefill_offerers_choices(form.offerer)
     autocomplete.prefill_venues_choices(form.venue)
+    autocomplete.prefill_bo_users_choices(form.instructor)
 
     connect_as = {}
     for collective_offer_template in collective_offer_templates:

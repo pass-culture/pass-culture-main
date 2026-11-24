@@ -51,6 +51,7 @@ class CollectiveOffersSearchAttributes(enum.Enum):
     MEG = "Marseille en Grand"
     TOP_ACTEUR = "Top Acteur"
     VALIDATED_OFFERER = "Entité juridique validée"
+    INSTRUCTOR = "Responsable"
 
 
 operator_no_require_value = ["NOT_EXIST"]
@@ -76,6 +77,7 @@ form_field_configuration = {
     "MEG": {"field": "boolean", "operator": ["NULLABLE"]},
     "TOP_ACTEUR": {"field": "boolean", "operator": ["NULLABLE"]},
     "VALIDATED_OFFERER": {"field": "boolean", "operator": ["EQUALS"]},
+    "INSTRUCTOR": {"field": "instructor", "operator": ["IN", "NOT_IN"]},
 }
 
 
@@ -101,6 +103,7 @@ class CollectiveOfferAdvancedSearchSubForm(forms_utils.PCForm):
                 "price",
                 "ministry",
                 "boolean",
+                "instructor",
             ],
             "sub_rule_type_field_name": "search_field",
             "operator_field_name": "operator",
@@ -112,6 +115,7 @@ class CollectiveOfferAdvancedSearchSubForm(forms_utils.PCForm):
         autocomplete.prefill_institutions_choices(self.institution)
         autocomplete.prefill_offerers_choices(self.offerer)
         autocomplete.prefill_venues_choices(self.venue)
+        autocomplete.prefill_bo_users_choices(self.instructor)
 
     search_field = fields.PCSelectWithPlaceholderValueField(
         "Champ de recherche",
@@ -232,6 +236,15 @@ class CollectiveOfferAdvancedSearchSubForm(forms_utils.PCForm):
             wtforms.validators.Optional(""),
         ],
     )
+    instructor = fields.PCTomSelectField(
+        "Responsable",
+        multiple=True,
+        choices=[],
+        validate_choice=False,
+        endpoint="backoffice.autocomplete_bo_users",
+        search_inline=True,
+        field_list_compatibility=True,
+    )
 
     def validate_string(self, string: fields.PCStringField) -> fields.PCStringField:
         if string.data:
@@ -348,6 +361,13 @@ class GetCollectiveOfferTemplatesListForm(forms.GetOffersBaseFields):
         "États",
         choices=forms_utils.choices_from_enum(OfferValidationStatus, formatter=filters.format_offer_validation_status),
     )
+    instructor = fields.PCTomSelectField(
+        "Responsable",
+        multiple=True,
+        choices=[],
+        validate_choice=False,
+        endpoint="backoffice.autocomplete_bo_users",
+    )
 
     def __init__(self, *args: typing.Any, **kwargs: typing.Any) -> None:
         super().__init__(*args, **kwargs)
@@ -357,6 +377,7 @@ class GetCollectiveOfferTemplatesListForm(forms.GetOffersBaseFields):
         # 'only_validated_offerers', 'sort' must be combined with other filters
         empty = not any(
             (
+                self.instructor.data,
                 self.formats.data,
                 self.venue.data,
                 self.offerer.data,

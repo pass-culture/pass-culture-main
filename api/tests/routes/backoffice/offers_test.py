@@ -148,6 +148,8 @@ class ListOffersTest(GetEndpointHelper):
     expected_num_queries_with_provider = expected_num_queries_with_results + 1
     # - fetch offerer & venue dropdown (2 queries)
     expected_num_queries_with_offerer = expected_num_queries_with_results + 2
+    # - fetch bo users dropdown (1 queries)
+    expected_num_queries_with_bo_users = expected_num_queries_with_results + 1
 
     def test_list_offers_without_filter(self, authenticated_client, offers):
         # no filter => no query to fetch offers
@@ -1720,6 +1722,27 @@ class ListOffersTest(GetEndpointHelper):
         assert rows[0]["ID"] == str(offers[expected_offer_index].id)
         assert rows[0]["Action de médiation"] == expected_status
 
+    def test_list_offers_with_instructor(self, authenticated_client):
+        instructor = users_factories.UserFactory()
+        instructor_id = instructor.id
+        instructor_offer = offers_factories.OfferFactory(instructor=instructor)
+        offers_factories.OfferFactory()
+
+        query_args = {
+            "search-0-search_field": "INSTRUCTOR",
+            "search-0-operator": "IN",
+            "search-0-instructor": instructor_id,
+        }
+        # +1 because of reloading selected instructor in the form
+        with assert_num_queries(self.expected_num_queries_with_results + 1):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(instructor_offer.id)
+        assert rows[0]["Responsable"] == instructor.full_name
+
 
 class EditOfferTest(PostEndpointHelper):
     endpoint = "backoffice.offer.edit_offer"
@@ -1779,7 +1802,7 @@ class EditOfferTest(PostEndpointHelper):
         assert response.status_code == 200
         # ensure that the row is rendered
         cells = html_parser.extract_plain_row(response.data, id=f"offer-row-{offer_to_edit.id}")
-        assert len(cells) == 27
+        assert len(cells) == 28
         i = count()
         assert cells[next(i)] == ""  # Checkbox
         assert cells[next(i)] == (  # Actions
@@ -1802,6 +1825,7 @@ class EditOfferTest(PostEndpointHelper):
         assert cells[next(i)] == ""  # Date(s) de l'évènement
         assert cells[next(i)] == ""  # Date(s) limite(s) de réservation
         assert cells[next(i)] == ""  # Créateur de l'offre
+        assert cells[next(i)] == ""  # Responsable
         assert cells[next(i)] == "22"  # Pondération
         assert cells[next(i)] == "Validée"  # État
         assert cells[next(i)] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
@@ -2419,7 +2443,7 @@ class ValidateOfferTest(PostEndpointHelper):
         assert response.status_code == 200
         # ensure that the row is rendered
         cells = html_parser.extract_plain_row(response.data, id=f"offer-row-{offer_to_validate.id}")
-        assert len(cells) == 27
+        assert len(cells) == 28
         i = count()
         assert cells[next(i)] == ""  # Checkbox
         assert cells[next(i)] == (  # Actions
@@ -2439,6 +2463,7 @@ class ValidateOfferTest(PostEndpointHelper):
         assert cells[next(i)] == ""  # Date(s) de l'évènement
         assert cells[next(i)] == ""  # Date(s) limite(s) de réservation
         assert cells[next(i)] == ""  # Créateur de l'offre
+        assert cells[next(i)] == ""  # Responsable
         assert cells[next(i)] == ""  # Pondération
         assert cells[next(i)] == "Validée"  # État
         assert cells[next(i)] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
@@ -2518,7 +2543,7 @@ class QualifyCulturalOutreachTest(PostEndpointHelper):
         assert response.status_code == 200
         # ensure that the row is rendered
         cells = html_parser.extract_plain_row(response.data, id=f"offer-row-{offer.id}")
-        assert len(cells) == 27
+        assert len(cells) == 28
         i = count()
         assert cells[next(i)] == ""  # Checkbox
         assert cells[next(i)] == (  # Actions
@@ -2538,6 +2563,7 @@ class QualifyCulturalOutreachTest(PostEndpointHelper):
         assert cells[next(i)] == ""  # Date(s) de l'évènement
         assert cells[next(i)] == ""  # Date(s) limite(s) de réservation
         assert cells[next(i)] == ""  # Créateur de l'offre
+        assert cells[next(i)] == ""  # Responsable
         assert cells[next(i)] == ""  # Pondération
         assert cells[next(i)] == "Validée"  # État
         assert cells[next(i)] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
@@ -2675,7 +2701,7 @@ class DisqualifyCulturalOutreachTest(PostEndpointHelper):
         assert response.status_code == 200
         # ensure that the row is rendered
         cells = html_parser.extract_plain_row(response.data, id=f"offer-row-{offer.id}")
-        assert len(cells) == 27
+        assert len(cells) == 28
         i = count()
         assert cells[next(i)] == ""  # Checkbox
         assert cells[next(i)] == (  # Actions
@@ -2695,6 +2721,7 @@ class DisqualifyCulturalOutreachTest(PostEndpointHelper):
         assert cells[next(i)] == ""  # Date(s) de l'évènement
         assert cells[next(i)] == ""  # Date(s) limite(s) de réservation
         assert cells[next(i)] == ""  # Créateur de l'offre
+        assert cells[next(i)] == ""  # Responsable
         assert cells[next(i)] == ""  # Pondération
         assert cells[next(i)] == "Validée"  # État
         assert cells[next(i)] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
@@ -2830,7 +2857,7 @@ class PendingOfferTest(PostEndpointHelper):
         assert response.status_code == 200
         # ensure that the row is rendered
         cells = html_parser.extract_plain_row(response.data, id=f"offer-row-{offer_to_validate.id}")
-        assert len(cells) == 27
+        assert len(cells) == 28
         i = count()
         assert cells[next(i)] == ""  # Checkbox
         assert cells[next(i)] == (  # Actions
@@ -2850,6 +2877,7 @@ class PendingOfferTest(PostEndpointHelper):
         assert cells[next(i)] == ""  # Date(s) de l'évènement
         assert cells[next(i)] == ""  # Date(s) limite(s) de réservation
         assert cells[next(i)] == ""  # Créateur de l'offre
+        assert cells[next(i)] == ""  # Responsable
         assert cells[next(i)] == ""  # Pondération
         assert cells[next(i)] == "En attente"  # État
         assert cells[next(i)] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
@@ -2936,7 +2964,7 @@ class RejectOfferTest(PostEndpointHelper):
         assert response.status_code == 200
         # ensure that the row is rendered
         cells = html_parser.extract_plain_row(response.data, id=f"offer-row-{offer_to_reject.id}")
-        assert len(cells) == 27
+        assert len(cells) == 28
         i = count()
         assert cells[next(i)] == ""  # Checkbox
         assert cells[next(i)] == (  # Actions
@@ -2956,6 +2984,7 @@ class RejectOfferTest(PostEndpointHelper):
         assert cells[next(i)] == ""  # Date(s) de l'évènement
         assert cells[next(i)] == ""  # Date(s) limite(s) de réservation
         assert cells[next(i)] == ""  # Créateur de l'offre
+        assert cells[next(i)] == ""  # Responsable
         assert cells[next(i)] == ""  # Pondération
         assert cells[next(i)] == "Rejetée"  # État
         assert cells[next(i)] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
@@ -4242,7 +4271,7 @@ class ActivateOfferTest(PostEndpointHelper):
         assert response.status_code == 200
         # ensure that the row is rendered
         cells = html_parser.extract_plain_row(response.data, id=f"offer-row-{offer_to_activate.id}")
-        assert len(cells) == 27
+        assert len(cells) == 28
         i = count()
         assert cells[next(i)] == ""  # Checkbox
         assert cells[next(i)] == (  # Actions
@@ -4262,6 +4291,7 @@ class ActivateOfferTest(PostEndpointHelper):
         assert cells[next(i)] == ""  # Date(s) de l'évènement
         assert cells[next(i)] == ""  # Date(s) limite(s) de réservation
         assert cells[next(i)] == ""  # Créateur de l'offre
+        assert cells[next(i)] == ""  # Responsable
         assert cells[next(i)] == ""  # Pondération
         assert cells[next(i)] == "Validée"  # État
         assert cells[next(i)] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
@@ -4336,7 +4366,7 @@ class DeactivateOfferTest(PostEndpointHelper):
         assert response.status_code == 200
         # ensure that the row is rendered
         cells = html_parser.extract_plain_row(response.data, id=f"offer-row-{offer_to_deactivate.id}")
-        assert len(cells) == 27
+        assert len(cells) == 28
         i = count()
         assert cells[next(i)] == ""  # Checkbox
         assert cells[next(i)] == (  # Actions
@@ -4356,6 +4386,7 @@ class DeactivateOfferTest(PostEndpointHelper):
         assert cells[next(i)] == ""  # Date(s) de l'évènement
         assert cells[next(i)] == ""  # Date(s) limite(s) de réservation
         assert cells[next(i)] == ""  # Créateur de l'offre
+        assert cells[next(i)] == ""  # Responsable
         assert cells[next(i)] == ""  # Pondération
         assert cells[next(i)] == "Validée"  # État
         assert cells[next(i)] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
@@ -5152,7 +5183,7 @@ class SetInstructorOfferTest(PostEndpointHelper):
             id=f"offer-row-{offer.id}",
         )
         assert cells[3] == str(offer.id)
-        # assert cells[16] == new_instructor.full_name
+        assert cells[16] == new_instructor.full_name
 
         assert offer.instructor == new_instructor
 
@@ -5264,4 +5295,4 @@ class BatchSetInstructorOffersTest(PostEndpointHelper):
                 id=f"offer-row-{offer.id}",
             )
             assert cells[3] == str(offer.id)
-            # assert cells[16] == new_instructor.full_name
+            assert cells[16] == new_instructor.full_name

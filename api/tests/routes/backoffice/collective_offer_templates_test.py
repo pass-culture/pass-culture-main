@@ -139,6 +139,21 @@ class ListCollectiveOfferTemplatesTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert {int(row["ID"]) for row in rows} == {collective_offer_templates[1].id}
 
+    def test_list_collective_offer_templates_by_instructor(self, authenticated_client):
+        instructor = users_factories.UserFactory()
+        instructor_id = instructor.id
+        instructor_template = educational_factories.CollectiveOfferTemplateFactory(instructor=instructor)
+        educational_factories.CollectiveOfferTemplateFactory()
+
+        with assert_num_queries(
+            self.expected_num_queries + 1
+        ):  # +1 because of reloading selected instructor in the form
+            response = authenticated_client.get(url_for(self.endpoint, instructor=[instructor_id]))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert {int(row["ID"]) for row in rows} == {instructor_template.id}
+
     def test_list_collective_offer_templates_by_status(self, authenticated_client, collective_offer_templates):
         status = collective_offer_templates[2].validation
         with assert_num_queries(self.expected_num_queries):
