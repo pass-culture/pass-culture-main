@@ -9,6 +9,7 @@ from wtforms import fields as wtforms_fields
 from pcapi.core.categories import subcategories
 from pcapi.core.finance.conf import GRANTED_DEPOSIT_AMOUNT_18_v2
 from pcapi.core.geography.constants import TIME_ZONE_COUNTRY_CODE
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.subscription.ubble import schemas as ubble_schemas
 from pcapi.core.users.generator import GeneratedIdProvider
 from pcapi.core.users.generator import GeneratedSubscriptionStep
@@ -273,6 +274,23 @@ class OfferGeneratorForm(utils.PCForm):
     )
     is_duo = fields.PCSwitchBooleanField("Offre Duo", default=False)
     provider_id = fields.PCOptIntegerField("Provider id")
+    venue_id = fields.PCOptIntegerField("Venue id")
+
+
+class VenueGeneratorForm(utils.PCForm):
+    name = fields.PCStringField("Nom de la venue")
+    timezone = fields.PCSelectField(
+        "Fuseau horaire",
+        choices=[wtforms_fields.SelectChoice(e, e) for e in TIME_ZONE_COUNTRY_CODE],
+        default=date_utils.METROPOLE_TIMEZONE,
+        validators=[wtforms.validators.Optional()],
+    )
+    activity = fields.PCSelectField(
+        "Activité",
+        choices=utils.choices_from_enum(offerers_models.Activity),
+        default=offerers_models.Activity.CINEMA,
+        validators=[wtforms.validators.Optional()],
+    )
 
 
 class ProviderGeneratorForm(utils.PCForm):

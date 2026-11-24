@@ -1,5 +1,6 @@
 import pytest
 
+from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import factories as providers_factories
@@ -81,6 +82,33 @@ class E2EOfferTest:
         assert offer.subcategoryId == "SEANCE_CINE"
         assert offer.lastProviderId == public_api_provider.id
         assert offer.withdrawalType == expected_withdrawalType
+        assert offer.venue.venueProviders[0].provider == public_api_provider
+
+        assert response.json["id"] == offer.id
+
+    def test_create_offer_linked_to_venue(self, auth_client):
+        venue = offerers_factories.VenueFactory()
+        public_api_provider = providers_factories.PublicApiProviderFactory()
+        response = auth_client.post(
+            "/e2e/offer",
+            {
+                "name": "Test Offer",
+                "subcategory_id": "SEANCE_CINE",
+                "price": 8.2,
+                "venue_id": venue.id,
+                "provider_id": public_api_provider.id,
+            },
+        )
+        assert response.status_code == 200
+
+        offers = db.session.query(offers_models.Offer).all()
+
+        assert len(offers) == 1
+        offer = offers[0]
+        assert offer.subcategoryId == "SEANCE_CINE"
+        assert offer.lastProviderId == public_api_provider.id
+        assert offer.venue == venue
+        assert offer.venue.venueProviders[0].provider == public_api_provider
 
         assert response.json["id"] == offer.id
 
