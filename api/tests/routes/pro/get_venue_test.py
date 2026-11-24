@@ -125,10 +125,7 @@ class Returns200Test:
             timespan=[now - datetime.timedelta(days=7), None],
         )
 
-        criteria = [
-            criteria_factories.CriterionFactory(name=name)
-            for name in [criteria_constants.CLOSURE_DETECTED_LABEL, criteria_constants.SIRET_SHIFT_PENDING_LABEL]
-        ]
+        criteria = [criteria_factories.CriterionFactory(name=criteria_constants.CLOSURE_DETECTED_LABEL)]
         venue.criteria = criteria
         db.session.flush()
 
@@ -152,7 +149,7 @@ class Returns200Test:
                 "socialMedias": venue.contact.social_medias,
             },
             "comment": venue.comment,
-            "criteria": ["Fermeture demandée au partenaire culturel", "Déplacement de SIRET attendu"],
+            "criteria": ["CLOSURE_DETECTED"],
             "pricingPoint": {
                 "id": venue_currently_used_for_pricing.id,
                 "venueName": venue_currently_used_for_pricing.publicName,

@@ -567,11 +567,6 @@ export const zCreateThumbnailResponseModel = z.object({
 export const zCreationMode = z.enum(['manual', 'imported']);
 
 /**
- * CriteriaEnum
- */
-export const zCriteriaEnum = z.enum(['Fermeture demandée au partenaire culturel', 'Déplacement de SIRET attendu']);
-
-/**
  * CropParamsV2
  */
 export const zCropParamsV2 = z.object({
@@ -3517,7 +3512,7 @@ export const zGetVenueResponseModel = z.object({
     collectiveWebsite: z.string().nullable(),
     comment: z.string().nullable(),
     contact: zVenueContactModel.nullable(),
-    criteria: z.array(z.union([z.string(), zCriteriaEnum])),
+    criteria: z.array(z.enum(['CLOSURE_DETECTED', 'SIRET_SHIFT_PENDING'])),
     dateCreated: z.iso.datetime(),
     description: z.string().max(1000).nullable(),
     externalAccessibilityData: zExternalAccessibilityDataModel.nullable(),

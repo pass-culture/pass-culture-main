@@ -2,7 +2,7 @@ import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { addDays, isBefore } from 'date-fns'
 import { useId, useState } from 'react'
 
-import { CriteriaEnum, DMSApplicationstatus } from '@/apiClient/v1'
+import { DMSApplicationstatus } from '@/apiClient/v1'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { getToday } from '@/commons/utils/date'
@@ -55,9 +55,8 @@ export const Homepage = (): JSX.Element => {
   )
   const individualId = useId()
   const collectiveId = useId()
-  const isVenueClosureDetected = selectedPartnerVenue.criteria.includes(
-    CriteriaEnum.FERMETURE_DEMAND_E_AU_PARTENAIRE_CULTUREL
-  )
+  const isVenueClosureDetected =
+    selectedPartnerVenue.criteria.includes('CLOSURE_DETECTED')
 
   if (!hasIndividualTab && !hasCollectiveTab) {
     return (

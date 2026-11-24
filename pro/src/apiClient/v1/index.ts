@@ -201,7 +201,6 @@ export {
   type CreateThumbnailBodyModel,
   type CreateThumbnailResponseModel,
   CreationMode,
-  CriteriaEnum,
   type CropParamsV2,
   type DMSApplicationForEAC,
   DMSApplicationstatus,
