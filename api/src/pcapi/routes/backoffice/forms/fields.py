@@ -10,6 +10,7 @@ from flask import render_template
 from flask import url_for
 from sqlalchemy.dialects.postgresql.ranges import Range
 from wtforms import ValidationError
+from wtforms import fields as wtforms_fields
 from wtforms import validators
 
 from pcapi.core.offers import exceptions
@@ -451,7 +452,7 @@ class PCBOUsersSelectField(PCSelectField):
                 .filter(permissions_models.Permission.name.in_(permission_names))
             )
 
-        self.choices = [(bo_user.id, bo_user.full_name) for bo_user in bo_users]
+        self.choices = [wtforms_fields.SelectChoice(bo_user.id, bo_user.full_name) for bo_user in bo_users]
 
 
 class PCLimitField(PCSelectField):
