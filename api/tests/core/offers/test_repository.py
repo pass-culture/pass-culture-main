@@ -1589,8 +1589,8 @@ class GetPaginatedThingOfferIdsTest:
         assert last_page.offer_ids == [batman.id, asterix.id]
         assert last_page.next_cursor is None
 
-    @patch("pcapi.core.offers.constants.OFFERS_RECAP_LIMIT", 3)
-    def test_total_is_counted_up_to_recap_limit(self):
+    @patch("pcapi.core.offers.constants.OFFERS_LIST_TOTAL_MAX", 2)
+    def test_total_is_counted_up_to_one_more_than_the_max(self):
         venue = offerers_factories.VenueFactory()
         factories.ThingOfferFactory.create_batch(5, venue=venue)
 
@@ -1751,8 +1751,8 @@ class GetPaginatedEventOfferIdsTest:
         assert last_page.offer_ids == [without_stock_1.id]
         assert last_page.next_cursor is None
 
-    @patch("pcapi.core.offers.constants.OFFERS_RECAP_LIMIT", 3)
-    def test_total_is_counted_up_to_recap_limit(self):
+    @patch("pcapi.core.offers.constants.OFFERS_LIST_TOTAL_MAX", 2)
+    def test_total_is_counted_up_to_one_more_than_the_max(self):
         venue = offerers_factories.VenueFactory()
         factories.EventOfferFactory.create_batch(5, venue=venue)
 

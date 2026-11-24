@@ -1,3 +1,5 @@
+import base64
+import dataclasses
 import datetime
 import json
 import re
@@ -332,6 +334,207 @@ class ListOffersQueryModel(BaseModel):
         alias_generator = to_camel
         extra = "forbid"
         arbitrary_types_allowed = True
+
+
+_THING_OFFERS_CURSOR_ADAPTER = pydantic_v2.TypeAdapter(tuple[pydantic_v2.StrictStr, pydantic_v2.StrictInt])
+_EVENT_OFFERS_CURSOR_ADAPTER = pydantic_v2.TypeAdapter(
+    tuple[typing.Annotated[datetime.datetime, pydantic_v2.Strict()] | None, pydantic_v2.StrictInt]
+)
+
+
+def encode_offers_cursor(cursor: offers_repository.ThingOffersCursor | offers_repository.EventOffersCursor) -> str:
+    values = json.dumps(dataclasses.astuple(cursor), default=datetime.datetime.isoformat)
+    return base64.urlsafe_b64encode(values.encode()).decode()
+
+
+def decode_thing_offers_cursor(encoded_cursor: str) -> offers_repository.ThingOffersCursor:
+    try:
+        name, offer_id = _THING_OFFERS_CURSOR_ADAPTER.validate_json(base64.urlsafe_b64decode(encoded_cursor))
+    except ValueError:
+        raise ValueError("Curseur invalide")
+    return offers_repository.ThingOffersCursor(name=name, id=offer_id)
+
+
+def decode_event_offers_cursor(encoded_cursor: str) -> offers_repository.EventOffersCursor:
+    try:
+        first_beginning_datetime, offer_id = _EVENT_OFFERS_CURSOR_ADAPTER.validate_json(
+            base64.urlsafe_b64decode(encoded_cursor)
+        )
+    except ValueError:
+        raise ValueError("Curseur invalide")
+    return offers_repository.EventOffersCursor(first_beginning_datetime=first_beginning_datetime, id=offer_id)
+
+
+# the cursor is decoded when the query is validated, but stays a string in the API schema
+ThingOffersCursorParam = typing.Annotated[
+    offers_repository.ThingOffersCursor,
+    pydantic_v2.BeforeValidator(decode_thing_offers_cursor),
+    pydantic_v2.WithJsonSchema({"type": "string"}),
+]
+
+EventOffersCursorParam = typing.Annotated[
+    offers_repository.EventOffersCursor,
+    pydantic_v2.BeforeValidator(decode_event_offers_cursor),
+    pydantic_v2.WithJsonSchema({"type": "string"}),
+]
+
+
+class ListThingOffersQueryModel(HttpQueryParamsModel):
+    venue_id: int
+    status: OfferStatus
+    cursor: ThingOffersCursorParam | None = None
+    # a page does not read more offers than the capped total
+    limit: int = pydantic_v2.Field(
+        default=offers_constants.OFFERS_PER_PAGE, ge=1, le=offers_constants.OFFERS_LIST_TOTAL_MAX
+    )
+    name_or_ean: str | None = None
+    creation_mode: offers_constants.CreationMode | None = None
+    is_digital: bool | None = None
+    order_by_desc: bool = False
+
+
+class ListEventOffersQueryModel(HttpQueryParamsModel):
+    venue_id: int
+    status: OfferStatus
+    cursor: EventOffersCursorParam | None = None
+    # a page does not read more offers than the capped total
+    limit: int = pydantic_v2.Field(
+        default=offers_constants.OFFERS_PER_PAGE, ge=1, le=offers_constants.OFFERS_LIST_TOTAL_MAX
+    )
+    name_or_ean: str | None = None
+
+    creation_mode: offers_constants.CreationMode | None = None
+    is_digital: bool | None = None
+    order_by_desc: bool = True
+    period_beginning_date: datetime.date | None = None
+    period_ending_date: datetime.date | None = None
+
+
+class ThingOfferResponseModel(HttpBodyModel):
+    id: int
+    name: str
+    thumbUrl: str | None
+    remainingQuantity: int | typing.Literal["unlimited"]
+    bookingsCount: int
+    isHeadlineOffer: bool
+
+    @classmethod
+    def build(cls, offer: offers_models.Offer, headline_offer_id: int | None) -> typing.Self:
+        return cls(
+            id=offer.id,
+            name=offer.name,
+            thumbUrl=offer.thumbUrl,
+            remainingQuantity=_get_offer_remaining_quantity(offer),
+            bookingsCount=sum(stock.dnBookedQuantity for stock in offer.stocks),
+            isHeadlineOffer=offer.id == headline_offer_id,
+        )
+
+
+class EventOfferResponseModel(HttpBodyModel):
+    id: int
+    name: str
+    thumbUrl: str | None
+    location: address_serialize.LocationResponseModelV2 | None
+    firstBeginningDate: datetime.date | None
+    lastBeginningDate: datetime.date | None
+    remainingQuantity: int | typing.Literal["unlimited"]
+    bookingsCount: int
+    isHeadlineOffer: bool
+
+    @classmethod
+    def build(cls, offer: offers_models.Offer, headline_offer_id: int | None) -> typing.Self:
+        location = None
+        if offer.offererAddress:
+            is_venue_location = is_venue_address(offer.offererAddress, offer.venue)
+            location = address_serialize.LocationResponseModelV2.build(
+                offerer_address=offer.offererAddress,
+                label=None if is_venue_location else offer.offererAddress.label,
+                is_venue_location=is_venue_location,
+            )
+
+        first_beginning_date, last_beginning_date = _get_beginning_dates(offer)
+
+        return cls(
+            id=offer.id,
+            name=offer.name,
+            thumbUrl=offer.thumbUrl,
+            location=location,
+            firstBeginningDate=first_beginning_date,
+            lastBeginningDate=last_beginning_date,
+            remainingQuantity=_get_offer_remaining_quantity(offer),
+            bookingsCount=sum(stock.dnBookedQuantity for stock in offer.stocks),
+            isHeadlineOffer=offer.id == headline_offer_id,
+        )
+
+
+def _get_beginning_dates(offer: offers_models.Offer) -> tuple[datetime.date | None, datetime.date | None]:
+    beginning_datetimes = [
+        stock.beginningDatetime
+        for stock in offer.stocks
+        if not stock.isSoftDeleted and stock.beginningDatetime is not None
+    ]
+    if not beginning_datetimes:
+        return None, None
+
+    timezone = offers_repository.get_offer_timezone(offer)
+    first_date = date_utils.default_timezone_to_local_datetime(min(beginning_datetimes), timezone).date()
+    last_date = date_utils.default_timezone_to_local_datetime(max(beginning_datetimes), timezone).date()
+    return first_date, (last_date if last_date != first_date else None)
+
+
+def _get_offer_remaining_quantity(offer: offers_models.Offer) -> int | typing.Literal["unlimited"]:
+    remaining_quantity = 0
+    for stock in offer.stocks:
+        if stock.isSoftDeleted:
+            continue
+        if stock.remainingQuantity == "unlimited":
+            return "unlimited"
+        remaining_quantity += stock.remainingQuantity
+    return remaining_quantity
+
+
+class ListThingOffersResponseModel(HttpBodyModel):
+    offers: list[ThingOfferResponseModel]
+    nextCursor: str | None
+    total: int
+    totalIsCapped: bool
+
+    @classmethod
+    def build(
+        cls,
+        offers: list[offers_models.Offer],
+        paginated_offer_ids: offers_repository.PaginatedOfferIds[offers_repository.ThingOffersCursor],
+        headline_offer_id: int | None,
+    ) -> typing.Self:
+        next_cursor = paginated_offer_ids.next_cursor
+        return cls(
+            offers=[ThingOfferResponseModel.build(offer, headline_offer_id) for offer in offers],
+            nextCursor=encode_offers_cursor(next_cursor) if next_cursor else None,
+            total=min(paginated_offer_ids.total, offers_constants.OFFERS_LIST_TOTAL_MAX),
+            totalIsCapped=paginated_offer_ids.total > offers_constants.OFFERS_LIST_TOTAL_MAX,
+        )
+
+
+class ListEventOffersResponseModel(HttpBodyModel):
+    offers: list[EventOfferResponseModel]
+    nextCursor: str | None
+    total: int
+    totalIsCapped: bool
+
+    @classmethod
+    def build(
+        cls,
+        offers: list[offers_models.Offer],
+        paginated_offer_ids: offers_repository.PaginatedOfferIds[offers_repository.EventOffersCursor],
+        headline_offer_id: int | None,
+    ) -> typing.Self:
+        next_cursor = paginated_offer_ids.next_cursor
+        return cls(
+            offers=[EventOfferResponseModel.build(offer, headline_offer_id) for offer in offers],
+            nextCursor=encode_offers_cursor(next_cursor) if next_cursor else None,
+            total=min(paginated_offer_ids.total, offers_constants.OFFERS_LIST_TOTAL_MAX),
+            totalIsCapped=paginated_offer_ids.total > offers_constants.OFFERS_LIST_TOTAL_MAX,
+        )
 
 
 class ListOffersHomeQueryModel(HttpQueryParamsModel):

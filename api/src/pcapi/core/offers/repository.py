@@ -895,6 +895,73 @@ def get_paginated_thing_offer_ids(
     )
 
 
+def get_thing_offers_by_ids(offer_ids: list[int]) -> list[models.Offer]:
+    offers = (
+        db.session.scalars(
+            sa.select(models.Offer)
+            .where(models.Offer.id.in_(offer_ids))
+            .options(
+                sa_orm.load_only(models.Offer.id, models.Offer.name, models.Offer.productId),
+                sa_orm.selectinload(models.Offer.stocks).load_only(
+                    models.Stock.quantity,
+                    models.Stock.dnBookedQuantity,
+                    models.Stock.isSoftDeleted,
+                ),
+                sa_orm.selectinload(models.Offer.mediations),
+                sa_orm.joinedload(models.Offer.product)
+                .load_only(models.Product.thumbCount)
+                .selectinload(models.Product.productMediations),
+            )
+        )
+        .unique()
+        .all()
+    )
+
+    offers_by_id = {offer.id: offer for offer in offers}
+    return [offers_by_id[offer_id] for offer_id in offer_ids]
+
+
+def get_event_offers_by_ids(offer_ids: list[int]) -> list[models.Offer]:
+    offers = (
+        db.session.scalars(
+            sa.select(models.Offer)
+            .where(models.Offer.id.in_(offer_ids))
+            .options(
+                sa_orm.load_only(
+                    models.Offer.id,
+                    models.Offer.name,
+                    models.Offer.productId,
+                    models.Offer.venueId,
+                    models.Offer.offererAddressId,
+                ),
+                sa_orm.joinedload(models.Offer.venue)
+                .load_only(offerers_models.Venue.publicName)
+                .joinedload(offerers_models.Venue.offererAddress)
+                .load_only(offerers_models.OffererAddress.addressId)
+                # the venue timezone is used when the offer has no address
+                .joinedload(offerers_models.OffererAddress.address)
+                .load_only(geography_models.Address.timezone),
+                sa_orm.joinedload(models.Offer.offererAddress).joinedload(offerers_models.OffererAddress.address),
+                sa_orm.selectinload(models.Offer.stocks).load_only(
+                    models.Stock.beginningDatetime,
+                    models.Stock.quantity,
+                    models.Stock.dnBookedQuantity,
+                    models.Stock.isSoftDeleted,
+                ),
+                sa_orm.selectinload(models.Offer.mediations),
+                sa_orm.joinedload(models.Offer.product)
+                .load_only(models.Product.thumbCount)
+                .selectinload(models.Product.productMediations),
+            )
+        )
+        .unique()
+        .all()
+    )
+
+    offers_by_id = {offer.id: offer for offer in offers}
+    return [offers_by_id[offer_id] for offer_id in offer_ids]
+
+
 def get_paginated_event_offer_ids(
     *,
     venue_id: int,
@@ -1031,7 +1098,7 @@ def _get_offers_filters(
 
 
 def _get_capped_total(filters: list[sa.ColumnElement[bool]]) -> int:
-    offer_ids = sa.select(models.Offer.id).where(*filters).limit(offers_constants.OFFERS_RECAP_LIMIT).subquery()
+    offer_ids = sa.select(models.Offer.id).where(*filters).limit(offers_constants.OFFERS_LIST_TOTAL_MAX + 1).subquery()
     return db.session.execute(sa.select(sa.func.count()).select_from(offer_ids)).scalar_one()
 
 

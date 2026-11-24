@@ -9,6 +9,8 @@ MAX_OFFER_NAME_LENGTH: typing.Final = 90
 MAX_OFFER_VIDEO_DESCRIPTION_LENGTH: typing.Final = 150
 
 OFFERS_RECAP_LIMIT: typing.Final = 101
+OFFERS_PER_PAGE: typing.Final = 10
+OFFERS_LIST_TOTAL_MAX: typing.Final = 99
 OFFERS_HOMEPAGE_LIMIT: typing.Final = 3
 
 
@@ -278,3 +280,8 @@ class VideoFeatures(BaseFeatures):
 
 class OfferAccessibilityEnum(enum.StrEnum):
     LARGE_PRINT = "LARGE_PRINT"
+
+
+class CreationMode(enum.StrEnum):
+    MANUAL = "manual"
+    IMPORTED = "imported"

@@ -562,6 +562,11 @@ export const zCreateThumbnailResponseModel = z.object({
 });
 
 /**
+ * CreationMode
+ */
+export const zCreationMode = z.enum(['manual', 'imported']);
+
+/**
  * CriteriaEnum
  */
 export const zCriteriaEnum = z.enum(['closure_detected']);
@@ -1645,6 +1650,24 @@ export const zLocationResponseModelV2 = z.object({
 });
 
 /**
+ * EventOfferResponseModel
+ */
+export const zEventOfferResponseModel = z.object({
+    bookingsCount: z.int(),
+    firstBeginningDate: z.iso.date().nullable(),
+    id: z.int(),
+    isHeadlineOffer: z.boolean(),
+    lastBeginningDate: z.iso.date().nullable(),
+    location: zLocationResponseModelV2.nullable(),
+    name: z.string(),
+    remainingQuantity: z.union([
+        z.int(),
+        z.literal('unlimited')
+    ]),
+    thumbUrl: z.string().nullable()
+});
+
+/**
  * GetCollectiveOfferLocationModel
  */
 export const zGetCollectiveOfferLocationModel = z.object({
@@ -1692,6 +1715,16 @@ export const zListCollectiveOfferTemplatesResponseModel = z.array(zCollectiveOff
  * ListCollectiveOffersResponseModel
  */
 export const zListCollectiveOffersResponseModel = z.array(zCollectiveOfferResponseModel);
+
+/**
+ * ListEventOffersResponseModel
+ */
+export const zListEventOffersResponseModel = z.object({
+    nextCursor: z.string().nullable(),
+    offers: z.array(zEventOfferResponseModel),
+    total: z.int(),
+    totalIsCapped: z.boolean()
+});
 
 /**
  * LoginUserBodyModel
@@ -1978,6 +2011,22 @@ export const zOfferStatus = z.enum([
 ]);
 
 /**
+ * ListEventOffersQueryModel
+ */
+export const zListEventOffersQueryModel = z.object({
+    creationMode: zCreationMode.nullish().default(null),
+    cursor: z.string().nullish().default(null),
+    isDigital: z.boolean().nullish().default(null),
+    limit: z.int().gte(1).lte(99).optional().default(10),
+    nameOrEan: z.string().nullish().default(null),
+    orderByDesc: z.boolean().optional().default(true),
+    periodBeginningDate: z.iso.date().nullish().default(null),
+    periodEndingDate: z.iso.date().nullish().default(null),
+    status: zOfferStatus,
+    venueId: z.int()
+});
+
+/**
  * ListOffersQueryModel
  */
 export const zListOffersQueryModel = z.object({
@@ -1989,6 +2038,20 @@ export const zListOffersQueryModel = z.object({
     periodEndingDate: z.iso.date().optional(),
     status: zOfferStatus.optional(),
     venueId: z.int().optional()
+});
+
+/**
+ * ListThingOffersQueryModel
+ */
+export const zListThingOffersQueryModel = z.object({
+    creationMode: zCreationMode.nullish().default(null),
+    cursor: z.string().nullish().default(null),
+    isDigital: z.boolean().nullish().default(null),
+    limit: z.int().gte(1).lte(99).optional().default(10),
+    nameOrEan: z.string().nullish().default(null),
+    orderByDesc: z.boolean().optional().default(false),
+    status: zOfferStatus,
+    venueId: z.int()
 });
 
 /**
@@ -2864,6 +2927,31 @@ export const zSignupSimulationSummaryPayload = z.object({
     isOpenToPublic: z.boolean(),
     siret: z.string(),
     targets: z.array(zTargetAudience).min(1).max(2)
+});
+
+/**
+ * ThingOfferResponseModel
+ */
+export const zThingOfferResponseModel = z.object({
+    bookingsCount: z.int(),
+    id: z.int(),
+    isHeadlineOffer: z.boolean(),
+    name: z.string(),
+    remainingQuantity: z.union([
+        z.int(),
+        z.literal('unlimited')
+    ]),
+    thumbUrl: z.string().nullable()
+});
+
+/**
+ * ListThingOffersResponseModel
+ */
+export const zListThingOffersResponseModel = z.object({
+    nextCursor: z.string().nullable(),
+    offers: z.array(zThingOfferResponseModel),
+    total: z.int(),
+    totalIsCapped: z.boolean()
 });
 
 /**
@@ -4020,6 +4108,24 @@ export const zGetEducationalInstitutionsQuery = z.object({
  */
 export const zGetEducationalInstitutionsResponse = zEducationalInstitutionsResponseModel;
 
+export const zListEventOffersQuery = z.object({
+    venueId: z.int(),
+    status: zOfferStatus,
+    cursor: z.string().nullish().default(null),
+    limit: z.int().gte(1).lte(99).optional().default(10),
+    nameOrEan: z.string().nullish().default(null),
+    creationMode: zCreationMode.nullish().default(null),
+    isDigital: z.boolean().nullish().default(null),
+    orderByDesc: z.boolean().optional().default(true),
+    periodBeginningDate: z.iso.date().nullish().default(null),
+    periodEndingDate: z.iso.date().nullish().default(null)
+});
+
+/**
+ * OK
+ */
+export const zListEventOffersResponse = zListEventOffersResponseModel;
+
 /**
  * OK
  */
@@ -4474,6 +4580,22 @@ export const zSendSignupSimulationSummaryBody = zSignupSimulationSummaryPayload;
  * No Content
  */
 export const zSendSignupSimulationSummaryResponse = z.void();
+
+export const zListThingOffersQuery = z.object({
+    venueId: z.int(),
+    status: zOfferStatus,
+    cursor: z.string().nullish().default(null),
+    limit: z.int().gte(1).lte(99).optional().default(10),
+    nameOrEan: z.string().nullish().default(null),
+    creationMode: zCreationMode.nullish().default(null),
+    isDigital: z.boolean().nullish().default(null),
+    orderByDesc: z.boolean().optional().default(false)
+});
+
+/**
+ * OK
+ */
+export const zListThingOffersResponse = zListThingOffersResponseModel;
 
 /**
  * No Content
