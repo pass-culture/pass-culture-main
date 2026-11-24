@@ -24,34 +24,46 @@ class ValidateSettlementBatchRequest(BaseModelV2):
     name="tasks.finance.default.validate_settlement_batch",
     model=ValidateSettlementBatchRequest,
 )
-@atomic()
 def settlement_batch_validation_task(payload: ValidateSettlementBatchRequest) -> None:
-    settlement_batch = db.session.query(finance_models.SettlementBatch).filter_by(id=payload.batch_id).one()
+    extra = {"batch_id": payload.batch_id}
+    logger.info("validate_settlement_batch - starting task", extra=extra)
 
-    if settlement_batch.dateValidated is None:
-        logger.error("SettlementBatch is not validated", extra={"batch_id": payload.batch_id})
-        return
+    with atomic():
+        settlement_batch = db.session.query(finance_models.SettlementBatch).filter_by(id=payload.batch_id).one()
 
-    settlement_filter = sa.and_(
-        finance_models.Settlement.batchId == payload.batch_id,
-        finance_models.Settlement.status == finance_models.SettlementStatus.ISSUED,
-    )
+        if settlement_batch.dateValidated is None:
+            logger.error("SettlementBatch is not validated", extra=extra)
+            return
 
-    invoice_ids = db.session.scalars(
-        sa.select(finance_models.InvoiceSettlement.invoiceId)
-        .join(finance_models.Settlement, finance_models.InvoiceSettlement.settlementId == finance_models.Settlement.id)
-        .where(settlement_filter)
-    ).all()
+        settlement_filter = sa.and_(
+            finance_models.Settlement.batchId == payload.batch_id,
+            finance_models.Settlement.status == finance_models.SettlementStatus.ISSUED,
+        )
 
-    db.session.query(finance_models.Settlement).filter(settlement_filter).update(
-        {"status": finance_models.SettlementStatus.EXECUTED}, synchronize_session=False
-    )
+        invoice_ids = db.session.scalars(
+            sa.select(finance_models.InvoiceSettlement.invoiceId)
+            .join(
+                finance_models.Settlement, finance_models.InvoiceSettlement.settlementId == finance_models.Settlement.id
+            )
+            .where(settlement_filter)
+        ).all()
 
-    invoice_ids_list = list(invoice_ids)
-    finance_api.validate_invoices(invoice_ids_list)
+        db.session.query(finance_models.Settlement).filter(settlement_filter).update(
+            {"status": finance_models.SettlementStatus.EXECUTED}, synchronize_session=False
+        )
 
-    db.session.flush()
+        invoice_ids_list = list(invoice_ids)
 
+        logger.info("validate_settlement_batch - validate invoices", extra=extra | {"count": len(invoice_ids_list)})
+        finance_api.validate_invoices(invoice_ids_list)
+
+        db.session.flush()
+
+    logger.info("validate_settlement_batch - objects updated in database, now preparing emails", extra=extra)
+
+    # Enqueue a lot of emails outside managed transaction to avoid OOMkill
     transactional_mails.send_all_settlement_validated_emails_to_pro(settlement_batch)
 
     notify_settlements_executed.send(settlement_batch, len(invoice_ids_list))
+
+    logger.info("validate_settlement_batch - finished", extra=extra)
