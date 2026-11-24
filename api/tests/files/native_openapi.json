@@ -550,6 +550,30 @@
                 "title": "AudioDisability",
                 "type": "object"
             },
+            "AvailableMfaV3": {
+                "additionalProperties": false,
+                "properties": {
+                    "endpoint": {
+                        "title": "Endpoint",
+                        "type": "string"
+                    },
+                    "mfaToken": {
+                        "title": "Mfatoken",
+                        "type": "string"
+                    },
+                    "type": {
+                        "title": "Type",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "type",
+                    "endpoint",
+                    "mfaToken"
+                ],
+                "title": "AvailableMfaV3",
+                "type": "object"
+            },
             "AvailableReactionBooking": {
                 "additionalProperties": false,
                 "properties": {
@@ -4559,25 +4583,6 @@
                 "title": "MentalDisability",
                 "type": "object"
             },
-            "MfaOfferV3": {
-                "additionalProperties": false,
-                "properties": {
-                    "endpoint": {
-                        "title": "Endpoint",
-                        "type": "string"
-                    },
-                    "type": {
-                        "title": "Type",
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "type",
-                    "endpoint"
-                ],
-                "title": "MfaOfferV3",
-                "type": "object"
-            },
             "MotorDisability": {
                 "additionalProperties": false,
                 "properties": {
@@ -7782,7 +7787,21 @@
                 "title": "OnlineOfflinePlatformChoicesEnum",
                 "type": "string"
             },
-            "OtpChallengeV3": {
+            "OtpChallengeRequestV3": {
+                "additionalProperties": false,
+                "properties": {
+                    "mfaToken": {
+                        "title": "Mfatoken",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "mfaToken"
+                ],
+                "title": "OtpChallengeRequestV3",
+                "type": "object"
+            },
+            "OtpChallengeResponseV3": {
                 "additionalProperties": false,
                 "properties": {
                     "charCount": {
@@ -7792,6 +7811,10 @@
                     "expiration": {
                         "title": "Expiration",
                         "type": "integer"
+                    },
+                    "mfaToken": {
+                        "title": "Mfatoken",
+                        "type": "string"
                     },
                     "newEmailSent": {
                         "title": "Newemailsent",
@@ -7816,20 +7839,26 @@
                     "nextEmailAt",
                     "retryLeft",
                     "charCount",
-                    "responseEndpoint"
+                    "responseEndpoint",
+                    "mfaToken"
                 ],
-                "title": "OtpChallengeV3",
+                "title": "OtpChallengeResponseV3",
                 "type": "object"
             },
             "OtpRequestV3": {
                 "additionalProperties": false,
                 "properties": {
+                    "mfaToken": {
+                        "title": "Mfatoken",
+                        "type": "string"
+                    },
                     "response": {
                         "title": "Response",
                         "type": "string"
                     }
                 },
                 "required": [
+                    "mfaToken",
                     "response"
                 ],
                 "title": "OtpRequestV3",
@@ -7845,6 +7874,17 @@
                     "expiration": {
                         "title": "Expiration",
                         "type": "integer"
+                    },
+                    "mfaToken": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Mfatoken"
                     },
                     "nextEmailAt": {
                         "title": "Nextemailat",
@@ -7882,7 +7922,8 @@
                     "charCount",
                     "retryLeft",
                     "responseEndpoint",
-                    "sessionTokens"
+                    "sessionTokens",
+                    "mfaToken"
                 ],
                 "title": "OtpResponseV3",
                 "type": "object"
@@ -9212,6 +9253,18 @@
             "SigninRequestV3": {
                 "additionalProperties": false,
                 "properties": {
+                    "captchaToken": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Captchatoken"
+                    },
                     "deviceInfo": {
                         "$ref": "#/components/schemas/DeviceInfoV3"
                     },
@@ -9222,18 +9275,6 @@
                     "password": {
                         "title": "Password",
                         "type": "string"
-                    },
-                    "token": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "default": null,
-                        "title": "Token"
                     }
                 },
                 "required": [
@@ -9293,20 +9334,20 @@
             "SigninResponseV3": {
                 "additionalProperties": false,
                 "properties": {
+                    "availableMfas": {
+                        "items": {
+                            "$ref": "#/components/schemas/AvailableMfaV3"
+                        },
+                        "title": "Availablemfas",
+                        "type": "array"
+                    },
                     "expiration": {
                         "title": "Expiration",
                         "type": "integer"
-                    },
-                    "mfaOffers": {
-                        "items": {
-                            "$ref": "#/components/schemas/MfaOfferV3"
-                        },
-                        "title": "Mfaoffers",
-                        "type": "array"
                     }
                 },
                 "required": [
-                    "mfaOffers",
+                    "availableMfas",
                     "expiration"
                 ],
                 "title": "SigninResponseV3",
@@ -16499,68 +16540,16 @@
                 "tags": []
             }
         },
-        "/native/v3/otp_mail/{token}": {
-            "get": {
-                "description": "",
-                "operationId": "get__native_v3_otp_mail_{token}",
-                "parameters": [
-                    {
-                        "description": "",
-                        "in": "path",
-                        "name": "token",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/OtpChallengeV3"
-                                }
-                            }
-                        },
-                        "description": "OK"
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    },
-                    "422": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationError"
-                                }
-                            }
-                        },
-                        "description": "Unprocessable Content"
-                    }
-                },
-                "summary": "otp_mail <GET>",
-                "tags": []
-            },
+        "/native/v3/otp/challenge": {
             "post": {
                 "description": "",
-                "operationId": "post__native_v3_otp_mail_{token}",
-                "parameters": [
-                    {
-                        "description": "",
-                        "in": "path",
-                        "name": "token",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
+                "operationId": "post__native_v3_otp_challenge",
+                "parameters": [],
                 "requestBody": {
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/OtpRequestV3"
+                                "$ref": "#/components/schemas/OtpChallengeRequestV3"
                             }
                         }
                     },
@@ -16571,7 +16560,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/OtpResponseV3"
+                                    "$ref": "#/components/schemas/OtpChallengeResponseV3"
                                 }
                             }
                         },
@@ -16594,7 +16583,57 @@
                         "description": "Unprocessable Content"
                     }
                 },
-                "summary": "submit_otp_mail <POST>",
+                "summary": "otp_challenge <POST>",
+                "tags": []
+            }
+        },
+        "/native/v3/otp/response": {
+            "post": {
+                "description": "",
+                "operationId": "post__native_v3_otp_response",
+                "parameters": [],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/OtpRequestV3"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OtpResponseV3"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        },
+                        "description": "Unprocessable Content"
+                    }
+                },
+                "summary": "submit_otp_response <POST>",
                 "tags": []
             }
         },

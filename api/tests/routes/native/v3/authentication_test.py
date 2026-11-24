@@ -55,14 +55,18 @@ class SigninTest:
         assert response.status_code == 200
 
         assert response.json["expiration"] in (int(time.time()) + 900, int(time.time()) + 899)
-        assert len(response.json.get("mfaOffers")) == 1
-        token = _check_mfa_offer(response.json["mfaOffers"][0], endpoint="/native/v3/otp_mail", name="OTP_MAIL")
+        assert len(response.json.get("availableMfas")) == 1
 
+        available_mfa = response.json["availableMfas"][0]
+        assert available_mfa["endpoint"] == "/native/v3/otp/challenge"
+        assert available_mfa["type"] == "OTP_MAIL"
+
+        token = available_mfa["mfaToken"]
         assert clear_redis.ttl(SESSION_KEY_PATTERN % token) in (899, 900)
         session = json.loads(clear_redis.get(SESSION_KEY_PATTERN % token))
         assert session["user_id"] == user.id
         assert session["expiration"] == response.json["expiration"]
-        assert set(session["available_second_factors"]) == {o["type"] for o in response.json["mfaOffers"]}
+        assert set(session["available_second_factors"]) == {o["type"] for o in response.json["availableMfas"]}
         assert session["current_step"] is None
         assert session["device_info"] == DEVICE_INFO
 
@@ -156,7 +160,6 @@ class SigninTest:
             "device_info": self.device_info,
         }
         user = users_factories.UserFactory(email=data["identifier"], password=data["password"])
-        users_factories.NativeUserSessionFactory(user=user)
 
         # signin with invalid password and ensures the result messsage is generic
         data["password"] = data["password"][:-2]
@@ -167,7 +170,7 @@ class SigninTest:
         assert "Failed authentication attempt" in caplog.messages
         assert clear_redis.keys(SESSION_KEY_PATTERN % "*") == []
 
-        assert _count_native_sessions(user.id) == 1
+        assert _count_native_sessions(user.id) == 0
 
     def test_unknown_user_logs_in(self, client, caplog, clear_redis):
         data = {
@@ -221,7 +224,7 @@ class SigninTest:
         data = {
             "identifier": "user@test.com",
             "password": settings.TEST_DEFAULT_PASSWORD,
-            "token": "invalid_token",
+            "captchaToken": "invalid_token",
             "device_info": self.device_info,
         }
         users_factories.UserFactory(email=data["identifier"], password=data["password"])
@@ -238,8 +241,8 @@ class SigninTest:
         data = {
             "identifier": "user@test.com",
             "password": settings.TEST_DEFAULT_PASSWORD,
-            "token": "invalid_token",
-            "device_info": self.device_info,
+            "captchaToken": "invalid_token",
+            "deviceInfo": self.device_info,
         }
         users_factories.UserFactory(email=data["identifier"], password=data["password"])
 
@@ -269,8 +272,8 @@ class SigninTest:
         data = {
             "identifier": "user@test.com",
             "password": settings.TEST_DEFAULT_PASSWORD,
-            "token": "valid_token",
-            "device_info": self.device_info,
+            "captchaToken": "invalid_token",
+            "deviceInfo": self.device_info,
         }
         users_factories.UserFactory(email=data["identifier"], password=data["password"])
 
@@ -328,10 +331,14 @@ class SigninTest:
             "device_info": self.device_info,
         }
         user = users_factories.UserFactory(email=data["identifier"], password=data["password"], isActive=True)
-        clear_redis.set(USER_BAN_REDIS_KEY % user.id, "1")
+        clear_redis.set(USER_BAN_REDIS_KEY % user.id, "1", ex=250)
 
         response = client.post(self.url, json=data)
         assert response.status_code == 403
+
+        assert response.json["banExpiration"] >= (time.time() + 249)
+        assert response.json["banExpiration"] <= (time.time() + 250)
+
         assert clear_redis.keys(SESSION_KEY_PATTERN % "*") == []
 
 
@@ -340,7 +347,6 @@ def _count_native_sessions(user_id: int) -> int:
 
 
 class OtpMfaHelper:
-    url = "/native/v3/otp_mail/%s"
     default_token = secrets.token_urlsafe(64)  # reuse the same token for all tests and avoid security warning
 
     def _generate_session(self, user_id, redis, second_factor=None, current_step=None):
@@ -359,16 +365,16 @@ class OtpMfaHelper:
         )
 
 
-class GetOtpMailTest(OtpMfaHelper):
+class OtpMailChallengeTest(OtpMfaHelper):
+    url = "/native/v3/otp/challenge"
+
     def test_nominal(self, client, clear_redis):
         user = users_factories.UserFactory()
         self._generate_session(user.id, redis=clear_redis)
 
-        response = client.get(self.url % self.default_token)
+        response = client.post(self.url, json={"mfaToken": self.default_token})
         assert response.status_code == 200
 
-        response_endpoint = "/".join(response.json["responseEndpoint"].split("/")[:-1])
-        token = response.json["responseEndpoint"].split("/")[-1]
         assert response.json["newEmailSent"] == True
         assert response.json["expiration"] >= (time.time() + 899)
         assert response.json["expiration"] <= (time.time() + 900)
@@ -376,8 +382,11 @@ class GetOtpMailTest(OtpMfaHelper):
         assert response.json["nextEmailAt"] <= (time.time() + 60)
         assert response.json["retryLeft"] == 3
         assert response.json["charCount"] == 6
-        assert response_endpoint == "/native/v3/otp_mail"
 
+        response_endpoint = response.json["responseEndpoint"]
+        assert response_endpoint == "/native/v3/otp/response"
+
+        token = response.json["mfaToken"]
         session = json.loads(clear_redis.get(SESSION_KEY_PATTERN % token))
         assert session["user_id"] == user.id
         assert session["expiration"] == response.json["expiration"]
@@ -398,11 +407,10 @@ class GetOtpMailTest(OtpMfaHelper):
             current_step={"otp": "AZERTY", "next_email_at": int(time.time()), "retry_left": 1},
         )
 
-        response = client.get(self.url % self.default_token)
+        response = client.post(self.url, json={"mfaToken": self.default_token})
         assert response.status_code == 200
 
-        response_endpoint = "/".join(response.json["responseEndpoint"].split("/")[:-1])
-        token = response.json["responseEndpoint"].split("/")[-1]
+        response_endpoint = response.json["responseEndpoint"]
         assert response.json["newEmailSent"] == True
         assert response.json["expiration"] >= (time.time() + 899)
         assert response.json["expiration"] <= (time.time() + 900)
@@ -410,8 +418,9 @@ class GetOtpMailTest(OtpMfaHelper):
         assert response.json["nextEmailAt"] <= (time.time() + 60)
         assert response.json["retryLeft"] == 1
         assert response.json["charCount"] == 6
-        assert response_endpoint == "/native/v3/otp_mail"
+        assert response_endpoint == "/native/v3/otp/response"
 
+        token = response.json["mfaToken"]
         session = json.loads(clear_redis.get(SESSION_KEY_PATTERN % token))
         assert session["user_id"] == user.id
         assert session["expiration"] == response.json["expiration"]
@@ -436,19 +445,21 @@ class GetOtpMailTest(OtpMfaHelper):
             },
         )
 
-        response = client.get(self.url % self.default_token)
-
+        response = client.post(self.url, json={"mfaToken": self.default_token})
         assert response.status_code == 200
+
         assert response.json["newEmailSent"] == False
-        token = response.json["responseEndpoint"].split("/")[-1]
+
+        token = response.json["mfaToken"]
         assert token != self.default_token
+
         session = json.loads(clear_redis.get(SESSION_KEY_PATTERN % token))
         assert session
 
         assert not mails_testing.outbox
 
     def test_invalid_session(self, client, clear_redis):
-        response = client.get(self.url % self.default_token)
+        response = client.post(self.url, json={"mfaToken": self.default_token})
 
         assert response.status_code == 401
         assert clear_redis.keys("*") == []
@@ -458,9 +469,12 @@ class GetOtpMailTest(OtpMfaHelper):
         self._generate_session(user.id, redis=clear_redis)
         clear_redis.set(USER_BAN_REDIS_KEY % user.id, "1", ex=250)
 
-        response = client.get(self.url % self.default_token)
-
+        response = client.post(self.url, json={"mfaToken": self.default_token})
         assert response.status_code == 403
+
+        assert response.json["banExpiration"] >= (time.time() + 249)
+        assert response.json["banExpiration"] <= (time.time() + 250)
+
         assert clear_redis.keys(SESSION_KEY_PATTERN % "*") == []
         assert clear_redis.ttl(USER_BAN_REDIS_KEY % user.id) in (249, 250)
 
@@ -471,7 +485,7 @@ class GetOtpMailTest(OtpMfaHelper):
         users_factories.NativeUserSessionFactory(user=user)
         self._generate_session(user.id, redis=clear_redis, second_factor=[])
 
-        response = client.get(self.url % self.default_token)
+        response = client.post(self.url, json={"mfaToken": self.default_token})
         assert response.status_code == 403
         assert response.json == {"token": ["Méthode d'authentification invalide"]}
         assert clear_redis.keys(SESSION_KEY_PATTERN % "*") == []
@@ -483,6 +497,8 @@ class GetOtpMailTest(OtpMfaHelper):
 
 
 class SubmitOtpMailTest(OtpMfaHelper):
+    url = "/native/v3/otp/response"
+
     def test_success(self, client, clear_redis):
         user = users_factories.UserFactory(
             isActive=True,
@@ -494,10 +510,9 @@ class SubmitOtpMailTest(OtpMfaHelper):
             current_step={"otp": "AZERTY", "next_email_at": int(time.time()) + 20, "retry_left": 1},
         )
 
-        response = client.post(self.url % self.default_token, json={"response": "AZERTY"})
-        db.session.refresh(user)
-
+        response = client.post(self.url, json={"response": "AZERTY", "mfaToken": self.default_token})
         assert response.status_code == 200
+
         assert response.json["charCount"] == 0
         assert response.json["expiration"] == 0
         assert response.json["nextEmailAt"] == 0
@@ -523,7 +538,7 @@ class SubmitOtpMailTest(OtpMfaHelper):
             current_step={"otp": "AZERTY", "next_email_at": int(time.time()) + 20, "retry_left": 3},
         )
 
-        response = client.post(self.url % self.default_token, json={"response": "FALSE2"})
+        response = client.post(self.url, json={"response": "FALSE2", "mfaToken": self.default_token})
         assert response.status_code == 200
 
         assert response.json["charCount"] == 6
@@ -531,11 +546,11 @@ class SubmitOtpMailTest(OtpMfaHelper):
         assert response.json["expiration"] <= (time.time() + 900)
         assert response.json["nextEmailAt"] >= (time.time() + 19)
         assert response.json["nextEmailAt"] <= (time.time() + 20)
-        assert "/".join(response.json["responseEndpoint"].split("/")[:-1]) == "/native/v3/otp_mail"
+        assert response.json["responseEndpoint"] == "/native/v3/otp/response"
         assert response.json["retryLeft"] == 2
         assert not response.json["sessionTokens"]
 
-        token = response.json["responseEndpoint"].split("/")[-1]
+        token = response.json["mfaToken"]
         session = json.loads(clear_redis.get(SESSION_KEY_PATTERN % token))
 
         assert session["user_id"] == user.id
@@ -559,10 +574,10 @@ class SubmitOtpMailTest(OtpMfaHelper):
         )
         users_factories.NativeUserSessionFactory(user=user)
 
-        response = client.post(self.url % self.default_token, json={"response": "FALSE2"})
+        response = client.post(self.url, json={"response": "FALSE2", "mfaToken": self.default_token})
 
         assert response.status_code == 403
-        assert "ban_expiration" in response.json
+        assert "banExpiration" in response.json
         assert clear_redis.keys(SESSION_KEY_PATTERN % "*") == []
         assert clear_redis.exists(USER_BAN_REDIS_KEY % user.id)
 
@@ -572,7 +587,7 @@ class SubmitOtpMailTest(OtpMfaHelper):
         assert mails_testing.outbox[0]["template"] == dataclasses.asdict(TransactionalEmail.MFA_FAILED.value)
 
     def test_invalid_token(self, client, clear_redis):
-        response = client.post(self.url % self.default_token, json={"response": "FALSE2"})
+        response = client.post(self.url, json={"response": "FALSE2", "mfaToken": self.default_token})
 
         assert response.status_code == 401
         assert clear_redis.keys(SESSION_KEY_PATTERN % "*") == []
@@ -587,7 +602,7 @@ class SubmitOtpMailTest(OtpMfaHelper):
         )
         clear_redis.set(USER_BAN_REDIS_KEY % user.id, "1", ex=12)
 
-        response = client.post(self.url % self.default_token, json={"response": "AZERTY"})
+        response = client.post(self.url, json={"response": "AZERTY", "mfaToken": self.default_token})
 
         assert response.status_code == 403
         assert clear_redis.keys(SESSION_KEY_PATTERN % "*") == []
@@ -598,7 +613,7 @@ class SubmitOtpMailTest(OtpMfaHelper):
         users_factories.NativeUserSessionFactory(user=user)
         self._generate_session(user.id, redis=clear_redis, second_factor=[])
 
-        response = client.post(self.url % self.default_token, json={"response": "AZERTY"})
+        response = client.post(self.url, json={"response": "AZERTY", "mfaToken": self.default_token})
 
         assert response.status_code == 403
         assert response.json == {"token": ["Méthode d'authentification invalide"]}
@@ -618,7 +633,7 @@ class SubmitOtpMailTest(OtpMfaHelper):
             redis=clear_redis,
         )
 
-        response = client.post(self.url % self.default_token, json={"response": "AZERTY"})
+        response = client.post(self.url, json={"response": "AZERTY", "mfaToken": self.default_token})
 
         assert response.status_code == 403
         assert response.json == {"general": ["Workflow violation"]}
@@ -637,9 +652,9 @@ class SubmitOtpMailTest(OtpMfaHelper):
             current_step={"otp": "AZERTY", "next_email_at": int(time.time()) + 20, "retry_left": 3},
         )
 
-        response = client.post(self.url % self.default_token, json={"response": "AZERTY"})
+        response = client.post(self.url, json={"response": "AZERTY", "mfaToken": self.default_token})
+        assert response.status_code == 400
 
-        assert response.status_code == 403
         assert clear_redis.keys(SESSION_KEY_PATTERN % "*") == []
         assert clear_redis.keys(USER_BAN_REDIS_KEY % "*") == []
 
@@ -667,23 +682,28 @@ class ScenarioTest:
         response = client.post("/native/v3/signin", json=data)
         assert response.status_code == 200
 
-        next_step_url = [o["endpoint"] for o in response.json["mfaOffers"] if o["type"] == "OTP_MAIL"][0]
+        next_step = [o for o in response.json["availableMfas"] if o["type"] == "OTP_MAIL"][0]
         # generate OTP  + send email
-        response = client.get(next_step_url)
+        response = client.post(next_step["endpoint"], json={"mfaToken": next_step["mfaToken"]})
         assert response.status_code == 200
         assert response.json["retryLeft"] == 3
 
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0]["template"] == dataclasses.asdict(TransactionalEmail.MFA_OTP_CHALLENGE.value)
+
         # send wrong answer
-        response = client.post(response.json["responseEndpoint"], json={"response": "++++++"})
+        response = client.post(
+            response.json["responseEndpoint"], json={"response": "++++++", "mfaToken": response.json["mfaToken"]}
+        )
         assert response.status_code == 200
         assert response.json["retryLeft"] == 2
         assert not response.json["sessionTokens"]
 
-        token = response.json["responseEndpoint"].split("/")[-1]
+        token = response.json["mfaToken"]
         session = json.loads(clear_redis.get(SESSION_KEY_PATTERN % token))
         otp = session["current_step"]["otp"]
         # send good answer
-        response = client.post(response.json["responseEndpoint"], json={"response": otp})
+        response = client.post(response.json["responseEndpoint"], json={"response": otp, "mfaToken": token})
         assert response.status_code == 200
 
         assert response.json["responseEndpoint"] == ""  # no next step

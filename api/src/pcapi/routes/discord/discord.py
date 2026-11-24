@@ -193,10 +193,10 @@ def discord_signin_post() -> Response | str:
             "avoid_current_user": True,
             "success": True,
             "api_version": "v3",
-            "feature": "users",
+            "feature": "discord",
             "action": "login",
         },
-        technical_message_id="users.login",
+        technical_message_id="discord.login",
     )
 
     url_redirection = discord_connector.build_discord_redirection_uri(user.id)

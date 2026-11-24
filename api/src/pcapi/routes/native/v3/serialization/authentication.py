@@ -3,9 +3,10 @@ from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.serialization import HttpQueryParamsModel
 
 
-class MfaOfferV3(HttpBodyModel):
+class AvailableMfaV3(HttpBodyModel):
     type: str
     endpoint: str
+    mfa_token: str
 
 
 class DeviceInfoV3(HttpBodyModel):
@@ -18,24 +19,30 @@ class SigninRequestV3(HttpQueryParamsModel):
     identifier: str
     password: str
     device_info: DeviceInfoV3
-    token: str | None = None
+    captcha_token: str | None = None
 
 
 class SigninResponseV3(HttpBodyModel):
-    mfa_offers: list[MfaOfferV3]
+    available_mfas: list[AvailableMfaV3]
     expiration: int
 
 
-class OtpChallengeV3(HttpBodyModel):
+class OtpChallengeRequestV3(HttpBodyModel):
+    mfa_token: str
+
+
+class OtpChallengeResponseV3(HttpBodyModel):
     new_email_sent: bool
     expiration: int
     next_email_at: int
     retry_left: int
     char_count: int
     response_endpoint: str
+    mfa_token: str
 
 
 class OtpRequestV3(HttpQueryParamsModel):
+    mfa_token: str
     response: str
 
 
@@ -52,3 +59,4 @@ class OtpResponseV3(HttpBodyModel):
     retry_left: int
     response_endpoint: str | None
     session_tokens: UserAuthenticatedV3 | None
+    mfa_token: str | None

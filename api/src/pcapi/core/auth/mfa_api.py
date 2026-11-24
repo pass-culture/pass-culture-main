@@ -4,7 +4,6 @@ import secrets
 import time
 
 import pydantic
-from werkzeug.exceptions import NotFound
 
 from pcapi import settings
 from pcapi.core import token as token_utils
@@ -15,8 +14,6 @@ from pcapi.core.users import models as users_models
 from pcapi.core.users import repository as users_repository
 from pcapi.core.users.sessions import create_user_jwt_tokens
 from pcapi.core.users.sessions import disconnect_native_user_sessions
-from pcapi.models import db
-from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.native.v3.serialization import authentication
 from pcapi.utils.redis import get_redis_client
 
@@ -31,13 +28,36 @@ class SecondFactor(enum.StrEnum):
     OTP_MAIL = "OTP_MAIL"
 
 
-class AuthenticationViolation(Exception):
-    """The user broke the authentication workflow and must be blocked, see `block_user_connection`"""
+class MultifactorAuthenticationViolation(Exception):
+    """The user broke the multifactor authentication workflow and must be blocked, see `block_user_connection`"""
 
-    def __init__(self, user_id: int, errors: dict) -> None:
+    def __init__(self, user_id: int) -> None:
         super().__init__()
         self.user_id = user_id
-        self.errors = errors
+
+
+class MultifactorAuthenticationInvalidSecondFactor(MultifactorAuthenticationViolation):
+    """The second factor is not available for this session"""
+
+
+class MultifactorAuthenticationWorkflowViolation(MultifactorAuthenticationViolation):
+    """A step was called out of order"""
+
+
+class MultifactorAuthenticationTooManyAttempts(MultifactorAuthenticationViolation):
+    def __init__(self, user_id: int, ban_expiration: int) -> None:
+        super().__init__(user_id)
+        self.ban_expiration = ban_expiration
+
+
+class MultifactorAuthenticationBanned(Exception):
+    def __init__(self, ban_expiration: int) -> None:
+        super().__init__()
+        self.ban_expiration = ban_expiration
+
+
+class MultifactorAuthenticationExpiredSession(Exception):
+    pass
 
 
 class OtpMailStep(pydantic.BaseModel):
@@ -60,19 +80,14 @@ def _get_available_mfas(user: users_models.User) -> list[SecondFactor]:
 
 def _check_user_can_authenticate(user: users_models.User) -> None:
     if user.account_state.is_deleted or user.account_state == users_models.AccountState.ANONYMIZED:
-        raise ApiErrors({"general": ["Identifiant ou Mot de passe incorrect"]})
+        raise users_exceptions.InvalidIdentifier()
 
 
 def check_user_id_banned(user_id: int) -> None:
     ban_expiration = get_redis_client().ttl(USER_BAN_REDIS_KEY % user_id)
     if ban_expiration != -2:
         # a banned user cannot continue an authentication process
-        raise ApiErrors(
-            {
-                "ban_expiration": max(int(time.time()) + ban_expiration, 0),
-            },
-            status_code=403,
-        )
+        raise MultifactorAuthenticationBanned(max(int(time.time()) + ban_expiration, 0))
 
 
 def block_user_connection(user_id: int) -> None:
@@ -91,24 +106,33 @@ def block_user_connection(user_id: int) -> None:
     else:
         logger.error(
             "User disappeared during MFA",
-            extra={"user_id": user_id, "avoid_current_user": True, "success": False},
+            extra={
+                "user_id": user_id,
+                "avoid_current_user": True,
+                "success": False,
+                "api_version": "v3",
+                "feature": "users",
+                "action": "login",
+            },
             technical_message_id="users.login",
         )
 
     logger.info(
         "Failed authentication attempt",
-        extra={"user_id": user_id, "avoid_current_user": True, "success": False},
+        extra={
+            "user_id": user_id,
+            "avoid_current_user": True,
+            "success": False,
+            "api_version": "v3",
+            "feature": "users",
+            "action": "login",
+        },
         technical_message_id="users.login",
     )
 
 
 def check_first_factor(identifier: str, password: str) -> users_models.User:
-    try:
-        user = users_repository.get_user_with_credentials(identifier, password, allow_inactive=True)
-    except users_exceptions.UnvalidatedAccount as exc:
-        raise ApiErrors({"code": "EMAIL_NOT_VALIDATED", "general": ["L'email n'a pas été validé."]}) from exc
-    except users_exceptions.CredentialsException as exc:
-        raise ApiErrors({"general": ["Identifiant ou Mot de passe incorrect"]}) from exc
+    user = users_repository.get_user_with_credentials(identifier, password, allow_inactive=True)
 
     _check_user_can_authenticate(user)
     check_user_id_banned(user.id)
@@ -118,7 +142,7 @@ def check_first_factor(identifier: str, password: str) -> users_models.User:
 
 def save_auth_session(session: MfaAuthSession) -> str:
     if session.expiration < time.time():
-        raise ApiErrors({"session": ["Session déjà expirée"]}, status_code=422)
+        raise MultifactorAuthenticationExpiredSession()
 
     return token_utils.create_token(
         token_type=token_utils.TokenType.NATIVE_AUTH_SESSION,
@@ -141,20 +165,16 @@ def create_auth_session(
 
 
 def load_auth_session(token: str, second_factor: SecondFactor) -> MfaAuthSession:
-    try:
-        data = token_utils.load_token(token_type=token_utils.TokenType.NATIVE_AUTH_SESSION, token=token)
-    except users_exceptions.InvalidToken as exc:
-        raise ApiErrors({"token": ["Token invalide"]}, status_code=401) from exc
-
+    data = token_utils.load_token(token_type=token_utils.TokenType.NATIVE_AUTH_SESSION, token=token)
     if not data:
-        raise ApiErrors({"token": ["Token invalide"]}, status_code=401)
+        raise users_exceptions.InvalidToken()
 
     session = MfaAuthSession.model_validate(data)
     check_user_id_banned(session.user_id)
 
     # check if this factor is available for this session
     if second_factor not in session.available_second_factors:
-        raise AuthenticationViolation(session.user_id, {"token": ["Méthode d'authentification invalide"]})
+        raise MultifactorAuthenticationInvalidSecondFactor(session.user_id)
     # once a factor has been selected, it is the only one available
     session.available_second_factors = [second_factor]
 
@@ -173,7 +193,7 @@ def get_or_renew_otp_mail_step(session: MfaAuthSession) -> tuple[OtpMailStep, bo
 
     user = users_repository.find_user_by_id(session.user_id)
     if not user:
-        raise NotFound()
+        raise users_exceptions.UserDoesNotExist()
 
     mfa_mails.send_otp_by_email(user, otp)
 
@@ -192,7 +212,7 @@ def get_or_renew_otp_mail_step(session: MfaAuthSession) -> tuple[OtpMailStep, bo
 
 def get_otp_mail_step(session: MfaAuthSession) -> OtpMailStep:
     if not session.current_step:
-        raise AuthenticationViolation(session.user_id, {"general": ["Workflow violation"]})
+        raise MultifactorAuthenticationWorkflowViolation(session.user_id)
     return session.current_step
 
 
@@ -201,19 +221,21 @@ def check_otp_mail_response(user_id: int, step: OtpMailStep, response: str) -> b
     if response == step.otp:
         return True
 
+    # TODO(dnguyen): add a check on the user password salt to invalidate response on password change
+
     step.retry_left -= 1
     if step.retry_left <= 0:
-        raise AuthenticationViolation(
-            user_id, {"ban_expiration": int(time.time()) + settings.NATIVE_APP_AUTHENTICATION_BAN_DURATION}
+        raise MultifactorAuthenticationTooManyAttempts(
+            user_id, ban_expiration=int(time.time()) + settings.NATIVE_APP_AUTHENTICATION_BAN_DURATION
         )
     return False
 
 
 def get_session_user(session: MfaAuthSession) -> users_models.User:
-    user = db.session.query(users_models.User).filter_by(id=session.user_id).one_or_none()
+    user = users_repository.find_user_by_id(session.user_id)
     if not user:
         # this should not be possible but let's be defensive
-        raise ApiErrors({"general": ["L'utilisateur n'existe plus"]}, status_code=403)
+        raise users_exceptions.UserDoesNotExist()
 
     _check_user_can_authenticate(user)
     return user

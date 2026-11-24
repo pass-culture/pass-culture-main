@@ -24,7 +24,7 @@ from .spec_tree import add_feature_flag
 logger = logging.getLogger(__name__)
 
 
-def _make_json_response(
+def make_json_response(
     content: BaseModel | HttpBodyModel | None,
     status_code: int,
     by_alias: bool,
@@ -200,7 +200,7 @@ def spectree_serialize(
             if raw_response:
                 return result
             if json_format:
-                return _make_json_response(
+                return make_json_response(
                     content=result,
                     status_code=on_success_status if result else on_empty_status,
                     by_alias=response_by_alias,
