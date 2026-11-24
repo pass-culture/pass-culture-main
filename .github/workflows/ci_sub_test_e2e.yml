@@ -71,6 +71,8 @@ jobs:
     name: Run Playwright tests
     runs-on: ubuntu-24.04
     needs: [install]
+    env:
+      E2E_STARTUP_TIMEOUT_SECONDS: ${{ vars.E2E_STARTUP_TIMEOUT_SECONDS || '300' }}
     strategy:
       fail-fast: false
       matrix:
@@ -182,8 +184,7 @@ jobs:
           IMAGE_NAME: ${{ steps.compute-image-name.outputs.image_name }}
         run: |
           if [ "$TAG" != "latest" ]; then
-            # shellcheck disable=SC2016
-            timeout 300 bash -c 'until [ -f "$TEMP/docker-load.exit" ]; do sleep 1; done' \
+            timeout "$E2E_STARTUP_TIMEOUT_SECONDS" bash -c 'until [ -f "$TEMP/docker-load.exit" ]; do sleep 1; done' \
               || { echo "::error::Timed out waiting for docker load"; cat "$TEMP/docker-load.log"; exit 1; }
             cat "$TEMP/docker-load.log"
             [ "$(cat "$TEMP/docker-load.exit")" = "0" ] || { echo "::error::docker load failed"; exit 1; }
@@ -222,11 +223,10 @@ jobs:
       - name: "Wait for front-end to listen"
         run: |
           # shellcheck disable=SC2016
-          timeout 300 bash -c 'while [[ "$(curl --max-time 5 -s -o /dev/null -w ''%{http_code}'' localhost:3001)" != "200" ]]; do sleep 1; done'
+          timeout "$E2E_STARTUP_TIMEOUT_SECONDS" bash -c 'while [[ "$(curl --max-time 5 -s -o /dev/null -w ''%{http_code}'' localhost:3001)" != "200" ]]; do sleep 1; done'
       - name: "Playwright run"
         run: |
-          SECONDS=0
-          trap 'echo "Shard $SHARD_INDEX/$SHARD_TOTAL: ${SECONDS}s (exit code: $?)" >> "$GITHUB_STEP_SUMMARY"' EXIT
+          trap 'echo "Shard $SHARD_INDEX/$SHARD_TOTAL: 0s (exit code: $?)" >> "$GITHUB_STEP_SUMMARY"' EXIT
           pnpm test:e2e:ci --reporter=blob --shard="$SHARD_INDEX/$SHARD_TOTAL"
         env:
           E2E_API_KEY: DummyToken
