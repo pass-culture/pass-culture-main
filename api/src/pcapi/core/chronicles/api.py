@@ -147,7 +147,8 @@ def save_chronicle(
     club_constants: type[constants.BookClub]
     | type[constants.CineClub]
     | type[constants.AlbumClub]
-    | type[constants.ConcertClub],
+    | type[constants.ConcertClub]
+    | type[constants.SceneClub],
     club_type: models.ChronicleClubType,
     product_identifier_type: models.ChronicleProductIdentifierType,
 ) -> None:
