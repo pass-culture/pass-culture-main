@@ -2144,6 +2144,8 @@ def format_chronicle_club_type(club_type: chronicles_models.ChronicleClubType) -
             return "Musique - concerts"
         case chronicles_models.ChronicleClubType.SCENE_CLUB:
             return "Scène"
+        case chronicles_models.ChronicleClubType.MUSIC_CLUB:
+            return "Musique"
         case _:
             return club_type.value
 

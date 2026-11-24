@@ -226,6 +226,57 @@ class ListChroniclesTest(GetEndpointHelper):
         assert len(rows) == 1
         assert rows[0]["ID"] == str(chronicle_to_find.id)
 
+    def test_search_by_music_club_type_includes_legacy_music_club_types(self, authenticated_client):
+        music_chronicle = chronicles_factories.ChronicleFactory(clubType=chronicles_models.ChronicleClubType.MUSIC_CLUB)
+        album_chronicle = chronicles_factories.ChronicleFactory(clubType=chronicles_models.ChronicleClubType.ALBUM_CLUB)
+        concert_chronicle = chronicles_factories.ChronicleFactory(
+            clubType=chronicles_models.ChronicleClubType.CONCERT_CLUB
+        )
+        chronicles_factories.ChronicleFactory(clubType=chronicles_models.ChronicleClubType.BOOK_CLUB)
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(
+                url_for(self.endpoint, category=[chronicles_models.ChronicleClubType.MUSIC_CLUB.name]),
+            )
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert {row["ID"] for row in rows} == {
+            str(music_chronicle.id),
+            str(album_chronicle.id),
+            str(concert_chronicle.id),
+        }
+
+    def test_search_by_all_club_types(self, authenticated_client):
+        chronicles = [
+            chronicles_factories.ChronicleFactory(clubType=club_type)
+            for club_type in chronicles_models.ChronicleClubType
+        ]
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(
+                url_for(
+                    self.endpoint,
+                    category=[
+                        chronicles_models.ChronicleClubType.BOOK_CLUB.name,
+                        chronicles_models.ChronicleClubType.CINE_CLUB.name,
+                        chronicles_models.ChronicleClubType.SCENE_CLUB.name,
+                        chronicles_models.ChronicleClubType.MUSIC_CLUB.name,
+                    ],
+                ),
+            )
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert {row["ID"] for row in rows} == {str(chronicle.id) for chronicle in chronicles}
+
+    @pytest.mark.parametrize(
+        "club_type",
+        [chronicles_models.ChronicleClubType.ALBUM_CLUB, chronicles_models.ChronicleClubType.CONCERT_CLUB],
+    )
+    def test_search_by_legacy_music_club_type(self, authenticated_client, club_type):
+        response = authenticated_client.get(url_for(self.endpoint, category=[club_type.name]))
+
+        assert response.status_code == 400
+
     def test_chronicle_with_offer(self, authenticated_client):
         offer = offers_factories.OfferFactory()
         chronicles_factories.ChronicleFactory(offers=[offer])
@@ -1210,6 +1261,64 @@ class CreateChronicleTest(PostEndpointHelper):
         assert chronicle.productIdentifierType == chronicles_models.ChronicleProductIdentifierType.EAN
         assert chronicle.productIdentifier == form["product_identifier"]
         assert chronicle.clubType == chronicles_models.ChronicleClubType.CINE_CLUB
+
+    def test_create_music_club_chronicle(self, authenticated_client):
+        offer = offers_factories.OfferFactory()
+
+        form = {
+            "club_type": "MUSIC_CLUB",
+            "email": "beneficiary@example.com",
+            "first_name": "beneficiary",
+            "age": "21",
+            "city": "Brest",
+            "is_identity_diffusible": "true",
+            "is_social_media_diffusible": "true",
+            "content": "some great chronicle",
+            "product_identifier_type": "OFFER_ID",
+            "product_identifier": offer.id,
+        }
+
+        response = self.post_to_endpoint(
+            follow_redirects=True,
+            expected_num_queries=self.expected_num_queries + 1,  # get the offer and attach it
+            client=authenticated_client,
+            form=form,
+        )
+
+        assert response.status_code == 200
+
+        chronicle = db.session.query(chronicles_models.Chronicle).one()
+        assert chronicle.clubType == chronicles_models.ChronicleClubType.MUSIC_CLUB
+        assert chronicle.productIdentifierType == chronicles_models.ChronicleProductIdentifierType.OFFER_ID
+        assert chronicle.offers == [offer]
+
+    @pytest.mark.parametrize("club_type", ["ALBUM_CLUB", "CONCERT_CLUB"])
+    def test_create_legacy_music_club_chronicle(self, authenticated_client, club_type):
+        form = {
+            "club_type": club_type,
+            "email": "beneficiary@example.com",
+            "first_name": "beneficiary",
+            "age": "21",
+            "city": "Brest",
+            "is_identity_diffusible": "true",
+            "is_social_media_diffusible": "true",
+            "content": "some great chronicle",
+            "product_identifier_type": "EAN",
+            "product_identifier": "1234567890123",
+        }
+
+        response = self.post_to_endpoint(
+            follow_redirects=True,
+            client=authenticated_client,
+            form=form,
+        )
+
+        assert response.status_code == 200
+        assert (
+            html_parser.extract_alert(response.data)
+            == "Les données envoyées comportent des erreurs. Club : Not a valid choice. ;"
+        )
+        assert db.session.query(chronicles_models.Chronicle).count() == 0
 
     def test_attach_user(self, authenticated_client):
         user = users_factories.BeneficiaryFactory()

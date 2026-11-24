@@ -162,6 +162,7 @@ class SaveBookChroniclesTest:
                 models.ChronicleProductIdentifierType.OFFER_ID,
             ),
             (constants.SceneClub, models.ChronicleClubType.SCENE_CLUB, models.ChronicleProductIdentifierType.OFFER_ID),
+            (constants.MusicClub, models.ChronicleClubType.MUSIC_CLUB, models.ChronicleProductIdentifierType.OFFER_ID),
         ],
     )
     def test_save_chronicle_full(self, club_constants, club_type, product_identifier_type):
@@ -256,6 +257,7 @@ class SaveBookChroniclesTest:
                 models.ChronicleProductIdentifierType.OFFER_ID,
             ),
             (constants.SceneClub, models.ChronicleClubType.SCENE_CLUB, models.ChronicleProductIdentifierType.OFFER_ID),
+            (constants.MusicClub, models.ChronicleClubType.MUSIC_CLUB, models.ChronicleProductIdentifierType.OFFER_ID),
         ],
     )
     def test_save_chronicle_empty(self, club_constants, club_type, product_identifier_type):
@@ -636,6 +638,7 @@ class SaveBookChroniclesTest:
             (constants.BookClub, models.ChronicleClubType.BOOK_CLUB, models.ChronicleProductIdentifierType.EAN),
             (constants.CineClub, models.ChronicleClubType.CINE_CLUB, models.ChronicleProductIdentifierType.ALLOCINE_ID),
             (constants.SceneClub, models.ChronicleClubType.SCENE_CLUB, models.ChronicleProductIdentifierType.OFFER_ID),
+            (constants.MusicClub, models.ChronicleClubType.MUSIC_CLUB, models.ChronicleProductIdentifierType.OFFER_ID),
         ],
     )
     def test_save_chronicle_with_other_choice(self, club_constants, club_type, product_identifier_type):
@@ -888,6 +891,96 @@ class ImportCineClubChroniclesTest:
 
         chronicle = db.session.query(models.Chronicle).order_by(models.Chronicle.id.desc()).first()
         assert chronicle.email == "email@mail.test"
+
+
+@pytest.mark.usefixtures("db_session")
+class ImportMusicClubChroniclesTest:
+    def _get_api_result(self):
+        return [
+            typeform.TypeformResponse(
+                response_id=random_string(),
+                date_submitted=datetime.datetime(2024, 10, 24),
+                phone_number=None,
+                email="email@mail.test",
+                answers=[
+                    typeform.TypeformAnswer(
+                        field_id=random_string(),
+                        choice_id=None,
+                        text="should be ignored",
+                    ),
+                    typeform.TypeformAnswer(
+                        field_id=constants.MusicClub.NAME_ID.value,
+                        choice_id=None,
+                        text="Bob",
+                    ),
+                    typeform.TypeformAnswer(
+                        field_id=constants.MusicClub.PRODUCT_IDENTIFIER_FIELD_ID.value,
+                        choice_id=random_string(),
+                        text="Concert title - 123456",
+                    ),
+                    typeform.TypeformAnswer(
+                        field_id=constants.MusicClub.CHRONICLE_ID.value,
+                        choice_id=None,
+                        text=random_string(150),
+                    ),
+                    typeform.TypeformAnswer(
+                        field_id=constants.MusicClub.DIFFUSIBLE_PERSONAL_DATA_QUESTION_ID.value,
+                        choice_id=constants.MusicClub.DIFFUSIBLE_PERSONAL_DATA_ANSWER_ID.value,
+                        text="oui",
+                    ),
+                    typeform.TypeformAnswer(
+                        field_id=constants.MusicClub.SOCIAL_MEDIA_QUESTION_ID.value,
+                        choice_id=constants.MusicClub.SOCIAL_MEDIA_ANSWER_ID.value,
+                        text="oui",
+                    ),
+                ],
+            ),
+        ]
+
+    def test_import_music_club_chronicles_with_old_chronicle(self):
+        old_chronicle = chronicles_factories.ChronicleFactory(
+            clubType=models.ChronicleClubType.MUSIC_CLUB,
+            productIdentifierType=models.ChronicleProductIdentifierType.OFFER_ID,
+        )
+        api_results = self._get_api_result()
+
+        with patch("pcapi.core.chronicles.api.typeform.get_responses", return_value=api_results) as typeform_mock:
+            api.import_music_club_chronicles()
+
+            typeform_mock.assert_called_once_with(
+                form_id="Yby7LqxM",
+                num_results=pcapi_settings.TYPEFORM_IMPORT_CHUNK_SIZE,
+                since=old_chronicle.dateCreated,
+                sort="submitted_at,asc",
+            )
+
+        chronicle = db.session.query(models.Chronicle).order_by(models.Chronicle.id.desc()).first()
+        assert chronicle.email == "email@mail.test"
+        assert chronicle.clubType == models.ChronicleClubType.MUSIC_CLUB
+        assert chronicle.productIdentifierType == models.ChronicleProductIdentifierType.OFFER_ID
+        assert chronicle.productIdentifier == "123456"
+
+    def test_import_music_club_chronicles_without_old_music_club_chronicle(self):
+        chronicles_factories.ChronicleFactory(clubType=models.ChronicleClubType.ALBUM_CLUB)
+        chronicles_factories.ChronicleFactory(
+            clubType=models.ChronicleClubType.CONCERT_CLUB,
+            productIdentifierType=models.ChronicleProductIdentifierType.OFFER_ID,
+        )
+        api_results = self._get_api_result()
+
+        with patch("pcapi.core.chronicles.api.typeform.get_responses", return_value=api_results) as typeform_mock:
+            api.import_music_club_chronicles()
+
+            typeform_mock.assert_called_once_with(
+                form_id="Yby7LqxM",
+                num_results=pcapi_settings.TYPEFORM_IMPORT_CHUNK_SIZE,
+                since=None,
+                sort="submitted_at,asc",
+            )
+
+        chronicle = db.session.query(models.Chronicle).order_by(models.Chronicle.id.desc()).first()
+        assert chronicle.email == "email@mail.test"
+        assert chronicle.clubType == models.ChronicleClubType.MUSIC_CLUB
 
 
 @pytest.mark.usefixtures("db_session")

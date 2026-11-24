@@ -75,6 +75,13 @@ def _get_chronicle_query() -> sa_orm.Query:
     return query
 
 
+def _get_club_types_from_categories(categories: list[str]) -> list[chronicles_models.ChronicleClubType]:
+    club_types = [chronicles_models.ChronicleClubType[category] for category in categories]
+    if chronicles_models.ChronicleClubType.MUSIC_CLUB in club_types:
+        club_types.extend(forms.LEGACY_MUSIC_CLUB_TYPES)
+    return club_types
+
+
 @chronicles_blueprint.route("", methods=["GET"])
 def list_chronicles() -> response_utils.BackofficeResponse:
     form = forms.GetChronicleSearchForm(formdata=request_utils.get_query_params())
@@ -149,11 +156,9 @@ def list_chronicles() -> response_utils.BackofficeResponse:
         else:
             query = query.filter(sa.not_(has_product), sa.not_(has_offer))
 
-    if form.category.data and len(form.category.data) != len(chronicles_models.ChronicleClubType):
+    if form.category.data and len(form.category.data) != len(form.category.choices):
         query = query.filter(
-            chronicles_models.Chronicle.clubType.in_(
-                [chronicles_models.ChronicleClubType[club_type] for club_type in form.category.data]
-            )
+            chronicles_models.Chronicle.clubType.in_(_get_club_types_from_categories(form.category.data))
         )
 
     query = query.order_by(chronicles_models.Chronicle.id.desc())
