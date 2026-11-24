@@ -31,6 +31,7 @@ from pcapi.core.offers import models
 from pcapi.core.offers import offer_metadata
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.api import get_expense_domains
+from pcapi.core.offers.constants import get_legacy_screening_features
 from pcapi.core.providers import constants as provider_constants
 from pcapi.core.providers.titelive_gtl import GTLS
 from pcapi.core.users.models import ExpenseDomain
@@ -89,7 +90,7 @@ class OfferStockResponseV2(HttpBodyModel):
             cancellation_limit_datetime=compute_booking_cancellation_limit_date(
                 stock.beginningDatetime, date_utils.get_naive_utc_now()
             ),
-            features=stock.features,
+            features=get_legacy_screening_features(stock.features),
             isBookable=stock.isBookable,
             is_forbidden_to_underage=stock.is_forbidden_to_underage,
             isSoldOut=stock.isSoldOut,

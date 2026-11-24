@@ -88,7 +88,7 @@ class OfferStockResponse(HttpBodyModel):
             cancellation_limit_datetime=compute_booking_cancellation_limit_date(
                 stock.beginningDatetime, date_utils.get_naive_utc_now()
             ),
-            features=stock.features,
+            features=offers_constants.get_legacy_screening_features(stock.features),
             is_bookable=stock.isBookable,
             is_expired=stock.isExpired,
             is_forbidden_to_underage=stock.is_forbidden_to_underage,

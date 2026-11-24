@@ -54,6 +54,13 @@ def verify_display_title(cls: type[BaseFeatures]) -> type[BaseFeatures]:
     return cls
 
 
+LEGACY_SCREENING_FEATURES = ("VF", "VO", "3D", "ICE")
+
+
+def get_legacy_screening_features(features: list[str]) -> list[str]:
+    return [feature for feature in features if feature in LEGACY_SCREENING_FEATURES]
+
+
 @verify_display_title
 class AudioAccessbilityFeatures(BaseFeatures):
     SUBTITLE_CCAP = "SUBTITLE_CCAP"

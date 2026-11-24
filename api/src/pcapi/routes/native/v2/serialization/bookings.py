@@ -14,6 +14,7 @@ from pcapi.core.categories.subcategories import SEANCE_CINE
 from pcapi.core.categories.subcategories import SubcategoryIdEnum
 from pcapi.core.finance.utils import to_cents
 from pcapi.core.offerers.models import Venue
+from pcapi.core.offers.constants import get_legacy_screening_features
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.offers.models import WithdrawalTypeEnum
@@ -169,7 +170,7 @@ class BookingStockResponseV2(HttpBodyModel):
             id=stock.id,
             is_automatically_used=stock.is_automatically_used,
             beginning_datetime=stock.beginningDatetime,
-            features=stock.features,
+            features=get_legacy_screening_features(stock.features),
             offer=stock.offer,  # type: ignore [arg-type]
             price_category_label=stock.priceCategory.label if stock.priceCategory else None,
             price=to_cents(stock.price),
