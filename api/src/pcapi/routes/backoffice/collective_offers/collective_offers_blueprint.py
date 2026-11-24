@@ -391,7 +391,7 @@ JOIN_DICT: dict[str, list[dict[str, typing.Any]]] = {
 def _render_collective_offers(collective_offers_ids: list[int] | None = None) -> response_utils.BackofficeResponse:
     rows = []
     if collective_offers_ids:
-        rows = _get_collective_offers(collective_offers_ids).all()
+        rows = _get_collective_offers(collective_offers_ids=collective_offers_ids).all()
 
     connect_as = {}
     for row in rows:
@@ -429,7 +429,9 @@ def _get_collective_offer_ids_query(form: forms.GetCollectiveOfferAdvancedSearch
 
 
 def _get_collective_offers(
-    collective_offers_ids: list[int] | sa_orm.Query,
+    *,
+    filter_query: sa_orm.Query | None = None,
+    collective_offers_ids: list[int] | None = None,
 ) -> sa_orm.Query:
     institution_info_subquery = (
         sa.select(
@@ -525,10 +527,22 @@ def _get_collective_offers(
             institution_info_subquery.label("institution_info"),
         )
 
+    query = db.session.query(*entities)
+
+    if filter_query:
+        # Too many joins (above from_collapse_limit) make the query planner join everything with Seq Scan without filter
+        # and execute the subquery separately. Using a CTE forces filtering first (even if inlined as a subquery), then
+        # joining everything using Index Scans.
+        cte = filter_query.cte()
+        query = query.select_from(cte).join(
+            educational_models.CollectiveOffer, educational_models.CollectiveOffer.id == cte.c.id
+        )
+
+    if collective_offers_ids:
+        query = query.filter(educational_models.CollectiveOffer.id.in_(collective_offers_ids))
+
     query = (
-        db.session.query(*entities)
-        .filter(educational_models.CollectiveOffer.id.in_(collective_offers_ids))
-        .join(offerers_models.Venue)
+        query.join(offerers_models.Venue)
         .join(offerers_models.Offerer)
         .outerjoin(educational_models.CollectiveOffer.collectiveStock)
         .outerjoin(educational_models.CollectiveOffer.institution)
@@ -613,7 +627,7 @@ def list_collective_offers() -> response_utils.BackofficeResponse:
         form = forms.GetCollectiveOfferAdvancedSearchForm(formdata=form_data)
         return render_template("collective_offer/list.html", rows=[], form=form)
 
-    query = _get_collective_offers(_get_collective_offer_ids_query(form))
+    query = _get_collective_offers(filter_query=_get_collective_offer_ids_query(form))
     if form.sort.data:
         order = form.order.data or "desc"
         query = query.order_by(getattr(getattr(educational_models.CollectiveOffer, form.sort.data), order)())
