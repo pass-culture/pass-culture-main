@@ -94,9 +94,20 @@ describe('UploadZone', () => {
   it('should be named by its instruction when there is no label', () => {
     renderUploadZone({ label: undefined })
 
-    expect(
-      screen.getByLabelText('Importez ou déposez le fichier ici')
-    ).toBeInTheDocument()
+    const input = screen.getByLabelText('Importez ou déposez le fichier ici')
+    expect(input).toHaveAccessibleName('Importez ou déposez le fichier ici')
+    expect(input).toHaveAttribute(
+      'aria-label',
+      'Importez ou déposez le fichier ici'
+    )
+  })
+
+  it('should not have a fallback aria-label when there is a label', () => {
+    renderUploadZone()
+
+    expect(screen.getByLabelText('Justificatifs')).not.toHaveAttribute(
+      'aria-label'
+    )
   })
 
   it('should only accept a single file, without files counter, when used alone with maxFiles 1', () => {
