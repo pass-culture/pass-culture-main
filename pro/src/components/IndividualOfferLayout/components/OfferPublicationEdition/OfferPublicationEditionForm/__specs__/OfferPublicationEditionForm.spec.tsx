@@ -31,9 +31,7 @@ describe('OfferPublicationEditionForm', () => {
   it('should render the form', async () => {
     renderOfferPublicationEditionForm({
       offer: getIndividualOfferFactory({
-        // @ts-expect-error:waiting for backend to migrate to pydantic v2
         publicationDatetime: null,
-        // @ts-expect-error:waiting for backend to migrate to pydantic v2
         bookingAllowedDatetime: null,
       }),
       onSubmit: () => {},
@@ -55,9 +53,7 @@ describe('OfferPublicationEditionForm', () => {
   it('should disable the form if the pause toggle is on', async () => {
     renderOfferPublicationEditionForm({
       offer: getIndividualOfferFactory({
-        // @ts-expect-error:waiting for backend to migrate to pydantic v2
         publicationDatetime: null,
-        // @ts-expect-error:waiting for backend to migrate to pydantic v2
         bookingAllowedDatetime: null,
       }),
       onSubmit: () => {},
@@ -87,7 +83,6 @@ describe('OfferPublicationEditionForm', () => {
     renderOfferPublicationEditionForm({
       offer: getIndividualOfferFactory({
         publicationDatetime: publicationDateFomatted,
-        // @ts-expect-error:waiting for backend to migrate to pydantic v2
         bookingAllowedDatetime: null,
       }),
       onSubmit: () => {},

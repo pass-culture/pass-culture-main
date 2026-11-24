@@ -371,12 +371,10 @@ describe('IndividualOffersScreen', () => {
       },
       {
         id: [venueAddress[0].id],
-        // @ts-expect-error:waiting for backend to migrate to pydantic v2
         value: computeAddressDisplayName(venueAddress[0]),
       },
       {
         id: [venueAddress[1].id],
-        // @ts-expect-error:waiting for backend to migrate to pydantic v2
         value: computeAddressDisplayName(venueAddress[1]),
       },
     ]

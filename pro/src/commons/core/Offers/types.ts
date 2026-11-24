@@ -8,21 +8,6 @@ export type Pagination = {
   page?: number
 }
 
-/**
- * Type of an individual offer's `extraData`, which the API exposes as an untyped object.
- */
-export type OfferExtraData = {
-  author?: string
-  ean?: string
-  gtl_id?: string
-  performer?: string
-  showSubType?: string
-  showType?: string
-  speaker?: string
-  stageDirector?: string
-  visa?: string
-}
-
 export type CollectiveSearchFiltersParams = Pagination & {
   name: string
   // TODO (igabriele, 2026-09-09): Both should be numbers, which requires splitting the request scope (`venueId` in the partner space, `offererId` in the admin export) from the user filters.

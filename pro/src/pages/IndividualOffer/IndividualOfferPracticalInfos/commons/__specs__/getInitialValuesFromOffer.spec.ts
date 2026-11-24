@@ -43,9 +43,8 @@ describe('getInitialValuesFromOffer', () => {
       getInitialValuesFromOffer(
         {
           ...offer,
-          bookingEmail: undefined,
-          bookingAllowedDatetime: undefined,
-          // @ts-expect-error:waiting for backend to migrate to pydantic v2
+          bookingEmail: null,
+          bookingAllowedDatetime: null,
           withdrawalType: null,
         },
         nonWithdrawableSubCategory
