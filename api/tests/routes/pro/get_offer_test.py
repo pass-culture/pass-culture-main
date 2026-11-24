@@ -15,6 +15,7 @@ from pcapi.core import testing
 from pcapi.core.artist import factories as artist_factories
 from pcapi.core.artist import models as artist_models
 from pcapi.core.categories import subcategories
+from pcapi.core.nature_format_domain import nature_format_domain as nfd
 from pcapi.core.offers.models import WithdrawalTypeEnum
 from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 from pcapi.utils import date as date_utils
@@ -100,6 +101,22 @@ class Returns200Test:
 
         assert response.status_code == 200
         assert response.json["videoData"]["videoDescription"] == "A video description"
+
+    def test_returns_nature_format_and_domain(self, client):
+        user_offerer = offerers_factories.UserOffererFactory()
+        offer = offers_factories.EventOfferFactory(
+            venue__managingOfferer=user_offerer.offerer,
+            nature=nfd.NatureEnum.EVENEMENT,
+            format=nfd.FormatEnum.CONCERT,
+            domain=nfd.DomainEnum.MUSIQUE,
+        )
+
+        response = client.with_session_auth(email=user_offerer.user.email).get(f"/offers/{offer.id}")
+
+        assert response.status_code == 200
+        assert response.json["nature"] == "EVENEMENT"
+        assert response.json["format"] == "CONCERT"
+        assert response.json["domain"] == "MUSIQUE"
 
     def test_returns_an_active_mediation(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
@@ -210,6 +227,9 @@ class Returns200Test:
                 {"hasStocks": True, "id": stock.priceCategoryId, "label": "Au pied du mur", "price": 10.1}
             ],
             "subcategoryId": "SEANCE_CINE",
+            "nature": None,
+            "format": None,
+            "domain": None,
             "thumbUrl": None,
             "url": None,
             "location": {

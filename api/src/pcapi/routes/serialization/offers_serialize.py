@@ -749,6 +749,9 @@ class GetIndividualOfferResponseModelV2(HttpBodyModel):
     name: str
     priceCategories: list[PriceCategoryResponseModelV2] | None
     subcategoryId: SubcategoryIdEnum
+    nature: nfd.NatureEnum | None
+    format: nfd.FormatEnum | None
+    domain: nfd.DomainEnum | None
     productId: int | None
     thumbUrl: str | None
     externalTicketOfficeUrl: str | None
@@ -844,6 +847,9 @@ class GetIndividualOfferResponseModelV2(HttpBodyModel):
             publicationDate=offer.publicationDate,
             publicationDatetime=offer.publicationDatetime,
             subcategoryId=SubcategoryIdEnum[offer.subcategoryId],
+            nature=offer.nature,
+            format=offer.format,
+            domain=offer.domain,
             status=offer.status,
             thumbUrl=offer.thumbUrl,
             url=offer.url,

@@ -2762,6 +2762,7 @@ export type GetIndividualOfferResponseModelV2 = {
      * Description
      */
     description: string | null;
+    domain: DomainEnum | null;
     /**
      * Durationminutes
      */
@@ -2771,6 +2772,7 @@ export type GetIndividualOfferResponseModelV2 = {
      */
     externalTicketOfficeUrl: string | null;
     extraData: OfferExtraDataV2 | null;
+    format: FormatEnum | null;
     /**
      * Hasbookinglimitdatetimespassed
      */
@@ -2845,6 +2847,7 @@ export type GetIndividualOfferResponseModelV2 = {
      * Name
      */
     name: string;
+    nature: NatureEnum | null;
     /**
      * Pricecategories
      */
