@@ -3,7 +3,6 @@ import userEvent from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
 import {
-  CriteriaEnum,
   DMSApplicationstatus,
   type GetVenueResponseModel,
   VenueState,
@@ -139,7 +138,7 @@ describe('Homepage', () => {
     it('should be displayed when closure is detected', () => {
       renderHomepage({
         ...defaultGetVenueResponseModel,
-        criteria: [CriteriaEnum.FERMETURE_DEMAND_E_AU_PARTENAIRE_CULTUREL],
+        criteria: ['CLOSURE_DETECTED'],
         hasNonDraftOffers: true,
       })
 
@@ -153,7 +152,7 @@ describe('Homepage', () => {
     it('should be displayed when closure is detected and no tab is available', () => {
       renderHomepage({
         ...defaultGetVenueResponseModel,
-        criteria: [CriteriaEnum.FERMETURE_DEMAND_E_AU_PARTENAIRE_CULTUREL],
+        criteria: ['CLOSURE_DETECTED'],
         allowedOnAdage: false,
         hasNonDraftOffers: false,
       })

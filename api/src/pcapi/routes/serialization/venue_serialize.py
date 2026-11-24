@@ -28,15 +28,13 @@ from pcapi.utils import date as date_utils
 from pcapi.utils.siren import SIRET_LENGTH
 
 
-class CriteriaEnum(enum.Enum):
-    # Not great at all, but the frontend code is generated base on the
-    # backend one and the enum handling is... complicated. Hopefully,
-    # this should be fixed soon (only use labels, as strings).
-    FERMETURE_DEMAND_E_AU_PARTENAIRE_CULTUREL = criteria_constants.CLOSURE_DETECTED_LABEL
-    D_PLACEMENT_DE_SIRET_ATTENDU = criteria_constants.SIRET_SHIFT_PENDING_LABEL
+CriteriaList = typing.Literal["CLOSURE_DETECTED", "SIRET_SHIFT_PENDING"]
 
 
-CRITERIA_MAPPINGS = {c.value: c.value for c in CriteriaEnum}
+CRITERIA_MAPPINGS: dict[str, CriteriaList] = {
+    criteria_constants.CLOSURE_DETECTED_LABEL: "CLOSURE_DETECTED",
+    criteria_constants.SIRET_SHIFT_PENDING_LABEL: "SIRET_SHIFT_PENDING",
+}
 
 
 class PostVenueBodyModel(HttpBodyModel):
@@ -107,7 +105,7 @@ class GetVenueResponseModel(HttpBodyModel):
     bannerMeta: venue_banners_serialize.BannerMetaModel | None
     bookingEmail: str | None
     comment: str | None
-    criteria: list[str | CriteriaEnum]
+    criteria: list[CriteriaList]
     managingOfferer: GetVenueManagingOffererResponseModel
     pricingPoint: venue_finance_serialize.GetVenuePricingPointResponseModel | None
     isPricingPoint: bool
@@ -180,7 +178,7 @@ class GetVenueResponseModel(HttpBodyModel):
             else:
                 banner_meta = venue_banners_serialize.BannerMetaModel(image_credit=None, original_image_url=None)
 
-        filtered_criteria: list[str | CriteriaEnum] = [
+        filtered_criteria: list[CriteriaList] = [
             CRITERIA_MAPPINGS[criterion.name] for criterion in venue.criteria if criterion.name in CRITERIA_MAPPINGS
         ]
 

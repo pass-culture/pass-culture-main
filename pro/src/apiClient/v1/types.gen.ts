@@ -1166,14 +1166,6 @@ export enum CreationMode {
 }
 
 /**
- * CriteriaEnum
- */
-export enum CriteriaEnum {
-    FERMETURE_DEMAND_E_AU_PARTENAIRE_CULTUREL = 'Fermeture demandée au partenaire culturel',
-    D_PLACEMENT_DE_SIRET_ATTENDU = 'Déplacement de SIRET attendu'
-}
-
-/**
  * CropParamsV2
  */
 export type CropParamsV2 = {
@@ -3595,7 +3587,7 @@ export type GetVenueResponseModel = {
     /**
      * Criteria
      */
-    criteria: Array<string | CriteriaEnum>;
+    criteria: Array<'CLOSURE_DETECTED' | 'SIRET_SHIFT_PENDING'>;
     /**
      * Datecreated
      */
