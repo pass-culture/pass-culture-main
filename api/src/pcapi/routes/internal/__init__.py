@@ -15,4 +15,5 @@ def install_routes(app: Flask) -> None:
         from . import e2e_account
         from . import e2e_offer
         from . import e2e_provider
+        from . import e2e_venue
         from . import testing
