@@ -134,13 +134,13 @@ def create_account(
     if not user.age or user.age < constants.ACCOUNT_CREATION_MINIMUM_AGE:
         raise exceptions.UnderAgeUserException()
 
-    setup_login(user, password, sso_provider, sso_user_id, sso_extra_data)
-
     if user.externalIds is None:
         user.externalIds = {}
 
     if firebase_pseudo_id:
         user.externalIds["firebase_pseudo_id"] = firebase_pseudo_id
+
+    setup_login(user, password, sso_provider, sso_user_id, sso_extra_data)
 
     db.session.add(user)
     db.session.flush()
