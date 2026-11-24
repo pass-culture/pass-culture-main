@@ -1,3 +1,4 @@
+import contextlib
 import dataclasses
 import datetime
 import decimal
@@ -12,6 +13,7 @@ import pcapi.core.users.models as users_models
 import pcapi.core.users.utils as users_utils
 from pcapi import settings
 from pcapi.core.users import constants as users_constants
+from pcapi.utils import crypto
 from pcapi.utils import date as date_utils
 
 from . import exceptions
@@ -71,9 +73,21 @@ def generate_users(user_data: GenerateUserData, users_count: int = 1) -> list[us
         )
         raise generation_exception
 
-    with time_machine.travel(user_data.get_date_created()):
+    is_bulk = users_count > 1
+    # time_machine patches the clock process-wide: in bulk mode (load tests), avoid travelling when no creation date
+    # is explicitly requested, so that concurrent requests handled by other threads are not affected.
+    time_travel: contextlib.AbstractContextManager = (
+        contextlib.nullcontext()
+        if is_bulk and user_data.date_created is None
+        else time_machine.travel(user_data.get_date_created())
+    )
+    with time_travel:
         factory_kwargs: dict[str, typing.Any] = {}
         Factory = _get_user_factory(user_data)
+
+        if is_bulk:
+            # all generated users share the same password: hash it once instead of once per user (bcrypt is slow)
+            factory_kwargs["hashed_password"] = crypto.hash_password(settings.TEST_DEFAULT_PASSWORD)
 
         # ensure that postal code is set only for ProfileCompletedUserFactory or a factory that is a descendant of it
         if users_factories.ProfileCompletedUserFactory in Factory.mro() and user_data.postal_code:
