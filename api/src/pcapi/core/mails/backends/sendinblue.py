@@ -2,10 +2,10 @@ import logging
 from collections.abc import Iterable
 from dataclasses import asdict
 
-from brevo import Brevo
 from brevo.core import ApiError as BrevoApiError
 
 from pcapi import settings
+from pcapi.connectors import brevo
 from pcapi.core.mails import models
 from pcapi.core.mails import serialization
 from pcapi.core.mails import tasks
@@ -25,13 +25,8 @@ logger = logging.getLogger(__name__)
 class SendinblueBackend(BaseBackend):
     def __init__(self, use_pro_subaccount: bool) -> None:
         super().__init__()
-        api_key = settings.SENDINBLUE_PRO_API_KEY if use_pro_subaccount else settings.SENDINBLUE_API_KEY
         # send_mail does not use this client instance, but creates one in an asynchronous task
-        self.client = Brevo(
-            base_url=settings.EMAIL_BACKEND_URL,
-            api_key=api_key,
-            timeout=settings.BREVO_CONTACTS_REQUEST_TIMEOUT,
-        )
+        self.client = brevo.get_client(use_pro_subaccount, timeout=settings.BREVO_CONTACTS_REQUEST_TIMEOUT)
 
     def send_mail(
         self,

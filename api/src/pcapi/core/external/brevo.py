@@ -13,6 +13,7 @@ import brevo
 from brevo.core import ApiError as BrevoApiError
 
 from pcapi import settings
+from pcapi.connectors.brevo import get_client
 from pcapi.core import mails as mails_api
 from pcapi.core.cultural_survey import models as cultural_survey_models
 from pcapi.core.external.attributes import models as attributes_models
@@ -118,11 +119,6 @@ BREVO_PII_FIELDS = frozenset(
         BrevoAttributes.BONIFICATION_STATUS.value,
     ]
 )
-
-
-def _get_brevo_client(use_pro_subaccount: bool) -> brevo.Brevo:
-    api_key = settings.SENDINBLUE_PRO_API_KEY if use_pro_subaccount else settings.SENDINBLUE_API_KEY
-    return brevo.Brevo(api_key=api_key, timeout=settings.BREVO_CONTACTS_REQUEST_TIMEOUT)
 
 
 def update_contact_email(user: users_models.User, old_email: str, new_email: str, asynchronous: bool = True) -> None:
@@ -390,7 +386,7 @@ def import_contacts_in_brevo(brevo_users_data: list[BrevoUserUpdateData], email_
     # This part causes an HTTP 400 error: {"code":"missing_parameter","message":"Missing listIds or newList"}
     # List is mandatory when calling import_contacts endpoint.
     if pro_users:
-        client = _get_brevo_client(use_pro_subaccount=True)
+        client = get_client(use_pro_subaccount=True, timeout=settings.BREVO_CONTACTS_REQUEST_TIMEOUT)
         pro_users_file_body = build_file_body(pro_users)
         send_import_contacts_request(
             client,
@@ -400,7 +396,7 @@ def import_contacts_in_brevo(brevo_users_data: list[BrevoUserUpdateData], email_
         )
     # send young users request
     if young_users:
-        client = _get_brevo_client(use_pro_subaccount=False)
+        client = get_client(use_pro_subaccount=False, timeout=settings.BREVO_CONTACTS_REQUEST_TIMEOUT)
         young_users_file_body = build_file_body(young_users)
         send_import_contacts_request(
             client,
@@ -449,7 +445,7 @@ def add_contacts_to_list(
     Returns:
         bool: True when successful, False otherwise
     """
-    client = _get_brevo_client(bool(use_pro_subaccount))
+    client = get_client(bool(use_pro_subaccount), timeout=settings.BREVO_CONTACTS_REQUEST_TIMEOUT)
 
     iteration = 1
 
