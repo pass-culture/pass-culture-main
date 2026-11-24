@@ -282,6 +282,13 @@ class CreateThingsTest(CreateOfferBase):
         shared_response_json_checks(offer, response.json)
         shared_offer_checks(offer, ref_payload)
 
+        assert response.json["nature"] == nfd.NatureEnum.BIEN.value
+        assert response.json["format"] == nfd.FormatEnum.LIVRE_PAPIER.value
+        assert response.json["domain"] is None
+        assert offer.nature == nfd.NatureEnum.BIEN
+        assert offer.format == nfd.FormatEnum.LIVRE_PAPIER
+        assert offer.domain is None
+
         assert not offer.isDigital
         assert not offer.isEvent
 

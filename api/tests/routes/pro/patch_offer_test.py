@@ -21,6 +21,7 @@ from pcapi.core.categories import subcategories
 from pcapi.core.external.batch import testing as push_testing
 from pcapi.core.geography import models as geography_models
 from pcapi.core.highlights import factories as highlights_factories
+from pcapi.core.nature_format_domain import nature_format_domain as nfd
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationStatus
@@ -51,6 +52,9 @@ class Returns200Test:
             venue=venue,
             name="L'amie prodigieuse",
             description="Un livre sur l'italie des années 60",
+            nature=nfd.NatureEnum.BIEN,
+            format=nfd.FormatEnum.LIVRE_PAPIER,
+            domain=nfd.DomainEnum.LITTERATURE,
         )
         publication_datetime = datetime.datetime.now(tz=datetime.UTC) + datetime.timedelta(days=2)
         booking_allowed_datetime = datetime.datetime.now(tz=datetime.UTC) + datetime.timedelta(days=1)
@@ -67,6 +71,9 @@ class Returns200Test:
         assert response.json["id"] == offer.id
         assert response.json["venue"]["id"] == offer.venue.id
         assert response.json["location"]["street"]
+        assert response.json["nature"] == nfd.NatureEnum.BIEN.value
+        assert response.json["format"] == nfd.FormatEnum.LIVRE_PAPIER.value
+        assert response.json["domain"] == nfd.DomainEnum.LITTERATURE.value
 
         updated_offer = db.session.get(Offer, offer.id)
         assert updated_offer.name == "Notre part de nuit"
