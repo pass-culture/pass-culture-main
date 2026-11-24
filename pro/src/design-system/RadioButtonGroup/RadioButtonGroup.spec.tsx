@@ -139,6 +139,82 @@ describe('<RadioButtonGroup />', () => {
     expect(selectedRadio).toBeChecked()
   })
 
+  describe('sizing', () => {
+    it('forwards "fill" sizing to each radio button by default', () => {
+      render(
+        <RadioButtonGroup
+          name="radio-button-group"
+          label="Radio Button Group"
+          options={options}
+        />
+      )
+
+      const radios = screen.getAllByRole('radio')
+      const optionsContainer = radios[0].closest('.radio-button-group-options')
+      expect(optionsContainer).toHaveClass('sizing-fill')
+
+      radios.forEach((radio) => {
+        expect(radio.closest('.radio-button')).toHaveClass('sizing-fill')
+      })
+    })
+
+    it('forwards "hug" sizing to each radio button', () => {
+      render(
+        <RadioButtonGroup
+          name="radio-button-group"
+          label="Radio Button Group"
+          sizing="hug"
+          options={options}
+        />
+      )
+
+      const radios = screen.getAllByRole('radio')
+      const optionsContainer = radios[0].closest('.radio-button-group-options')
+      expect(optionsContainer).toHaveClass('sizing-hug')
+
+      radios.forEach((radio) => {
+        expect(radio.closest('.radio-button')).not.toHaveClass('sizing-fill')
+      })
+    })
+  })
+
+  describe('grid display', () => {
+    it('applies the grid layout to the options container and makes each radio button fill its cell', () => {
+      render(
+        <RadioButtonGroup
+          name="radio-button-group"
+          label="Grid Radio Button Group"
+          variant="detailed"
+          display="grid"
+          options={options}
+        />
+      )
+
+      const radios = screen.getAllByRole('radio')
+      const optionsContainer = radios[0].closest('.radio-button-group-options')
+      expect(optionsContainer).toHaveClass('display-grid')
+      expect(optionsContainer).not.toHaveClass('display-vertical')
+
+      radios.forEach((radio) => {
+        expect(radio.closest('.radio-button')).toHaveClass('sizing-fill')
+      })
+    })
+
+    it('should render without accessibility violations', async () => {
+      const { container } = render(
+        <RadioButtonGroup
+          name="radio-button-group"
+          label="Grid Radio Button Group"
+          variant="detailed"
+          display="grid"
+          options={options}
+        />
+      )
+
+      expect(await axe(container)).toHaveNoViolations()
+    })
+  })
+
   it('should render an error message when options have duplicate values', () => {
     // `invokeGuardedCallbackDev` writes to stderr. This prevent useless noise in test results.
     const _stderrWriteSpy = vi

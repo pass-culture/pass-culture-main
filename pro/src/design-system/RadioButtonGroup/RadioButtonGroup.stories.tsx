@@ -97,6 +97,21 @@ export const HuggedHorizontalDisplay: StoryObj<typeof RadioButtonGroup> = {
   },
 }
 
+export const GridDisplay: StoryObj<typeof RadioButtonGroup> = {
+  args: {
+    name: 'radio-button-group',
+    label: 'Grid Radio Button Group',
+    variant: 'detailed',
+    display: 'grid',
+    options: options.concat({
+      label: 'Option 4',
+      name: 'group1',
+      description: 'Description 4 slightly longer',
+      value: '4',
+    }),
+  },
+}
+
 export const Disabled: StoryObj<typeof RadioButtonGroup> = {
   args: {
     name: 'radio-button-group',
