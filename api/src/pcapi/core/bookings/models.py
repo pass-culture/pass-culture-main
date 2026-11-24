@@ -602,32 +602,38 @@ function_get_wallet_balance_ddl = sa.DDL(
     """
 )
 
-function_get_deposit_balance_ddl = sa.DDL(f"""
-    CREATE OR REPLACE FUNCTION public.get_deposit_balance (deposit_id bigint, only_used_bookings boolean)
+function_get_deposit_balance_ddl = sa.DDL("""
+    CREATE OR REPLACE FUNCTION public.get_deposit_balance (deposit_id bigint)
         RETURNS numeric
         AS $$
     DECLARE
         deposit_amount numeric := (SELECT CASE WHEN "expirationDate" > now() THEN amount ELSE 0 END amount FROM deposit WHERE id = deposit_id);
-        sum_bookings numeric;
+        spent_amount numeric;
     BEGIN
-        IF deposit_amount IS NULL
-        THEN RAISE EXCEPTION 'the deposit was not found';
-        END IF;
-
         SELECT
-            COALESCE(SUM(COALESCE(booking_finance_incident."newTotalAmount" / 100,
-                            booking.amount * booking.quantity)), 0) INTO sum_bookings
+            COALESCE(SUM(COALESCE(partial_incident.new_total_amount, booking.amount * booking.quantity)), 0)
+        INTO spent_amount
         FROM
             booking
-            LEFT OUTER JOIN booking_finance_incident ON booking_finance_incident."bookingId" = booking.id
-            LEFT OUTER JOIN finance_incident ON finance_incident.id = booking_finance_incident."incidentId" AND finance_incident."status" IN ('{finance_models.IncidentStatus.VALIDATED.value}', '{finance_models.IncidentStatus.INVOICED.value}')
+            LEFT OUTER JOIN LATERAL (
+                SELECT booking_finance_incident."newTotalAmount" * 0.01 AS new_total_amount
+                FROM
+                    booking_finance_incident
+                    JOIN finance_incident ON finance_incident.id = booking_finance_incident."incidentId"
+                WHERE
+                    booking_finance_incident."bookingId" = booking.id
+                    AND booking_finance_incident."newTotalAmount" > 0
+                    AND finance_incident.status IN ('VALIDATED', 'INVOICED')
+                    AND finance_incident.kind = 'OVERPAYMENT'
+                LIMIT 1
+            ) AS partial_incident ON TRUE
         WHERE
             booking."depositId" = deposit_id
-            AND NOT booking.status = '{BookingStatus.CANCELLED.value}'
-            AND (NOT only_used_bookings OR booking.status IN ('{BookingStatus.USED.value}', '{BookingStatus.PENDING_REIMBURSEMENT.value}', '{BookingStatus.REIMBURSED.value}'));
-        RETURN
-            deposit_amount - sum_bookings;
-        END;
+            AND booking.status <> 'CANCELLED'
+        ;
+
+        RETURN deposit_amount - spent_amount;
+    END;
     $$
     LANGUAGE plpgsql;
     """)
@@ -668,7 +674,7 @@ function_check_booking_ddl = sa.DDL(f"""
         AND (
             -- Allow to book free offers even with no credit left (or expired deposits)
             (deposit_id IS NULL AND NEW."amount" != 0)
-            OR (deposit_id IS NOT NULL AND get_deposit_balance(deposit_id, false) < 0)
+            OR (deposit_id IS NOT NULL AND get_deposit_balance(deposit_id) < 0)
         )
     )
     THEN RAISE EXCEPTION 'insufficientFunds'
