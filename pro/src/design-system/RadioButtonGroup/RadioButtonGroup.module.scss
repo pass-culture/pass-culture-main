@@ -1,5 +1,6 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_size.scss" as size;
 
 .radio-button-group {
   display: flex;
@@ -61,6 +62,22 @@
 
     &.variant-detailed {
       gap: var(--size-spacing-s);
+    }
+  }
+
+  &.display-grid {
+    display: grid;
+    gap: var(--size-spacing-s);
+    // minmax(0, 1fr) instead of 1fr so long content cannot widen its column
+    grid-template-columns: minmax(0, 1fr);
+
+    @media (min-width: size.$tablet) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    // Lets the radio button stretch to the full height of its grid row
+    .radio-button-group-option {
+      display: flex;
     }
   }
 }

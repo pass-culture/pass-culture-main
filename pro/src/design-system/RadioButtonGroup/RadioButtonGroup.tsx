@@ -15,7 +15,20 @@ import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './RadioButtonGroup.module.scss'
 
-export type RadioButtonGroupProps = {
+type RadioButtonGroupLayoutProps =
+  | {
+      /** Display style of the radio button group, defaults to 'vertical' */
+      display?: 'horizontal' | 'vertical'
+      /** Sizing of the radio buttons (applied to all), defaults to 'fill' */
+      sizing?: RadioButtonSizing
+    }
+  | {
+      /** Lays options out in equal-width columns, radio buttons always fill their cell */
+      display: 'grid'
+      sizing?: never
+    }
+
+export type RadioButtonGroupProps = RadioButtonGroupLayoutProps & {
   /** Name of the radio button group, binding all radio buttons together */
   name: string
   /** Label for the radio button group */
@@ -27,12 +40,8 @@ export type RadioButtonGroupProps = {
   error?: string
   /** Variant of the radio buttons (applied to all), defaults to 'default' */
   variant?: RadioButtonVariant
-  /** Sizing of the radio buttons (applied to all), defaults to 'fill' */
-  sizing?: RadioButtonSizing
   /** Asset of the radio buttons (applied to all), displayed when variant is 'detailed' */
   asset?: RadioButtonAsset
-  /** Display style of the radio button group, defaults to 'vertical' */
-  display?: 'horizontal' | 'vertical'
   /** Selected option, required if the group is non-controlled */
   checkedOption?: string
   /** If the radio button group is disabled, making all options unselectable */
@@ -82,6 +91,8 @@ export const RadioButtonGroup = ({
     'RadioButtonGroup options must have unique values.'
   )
 
+  const itemSizing = display === 'grid' ? 'fill' : sizing
+
   return (
     <fieldset
       aria-describedby={describedByIds || undefined}
@@ -120,7 +131,7 @@ export const RadioButtonGroup = ({
         className={cn(
           styles['radio-button-group-options'],
           styles[`display-${display}`],
-          styles[`sizing-${sizing}`],
+          styles[`sizing-${itemSizing}`],
           styles[`variant-${variant}`]
         )}
       >
@@ -132,7 +143,7 @@ export const RadioButtonGroup = ({
             <RadioButton
               name={name}
               variant={variant}
-              sizing={sizing}
+              sizing={itemSizing}
               aria-invalid={!!error || undefined}
               disabled={disabled}
               hasError={!!error}
