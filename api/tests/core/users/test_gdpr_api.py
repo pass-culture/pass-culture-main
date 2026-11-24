@@ -2046,6 +2046,7 @@ class ExtractBeneficiaryDataTest(StorageFolderManager):
                         "ean": "1234567890123",
                         "email": "useremail@example.com",
                         "firstName": "Hari",
+                        "providedTitle": None,
                         "isIdentityDiffusible": True,
                         "isSocialMediaDiffusible": True,
                         "productIdentifier": "1234567890123",
@@ -2211,6 +2212,36 @@ class ExtractBeneficiaryDataTest(StorageFolderManager):
             self.TEST_FILES_PATH / "gdpr" / "rendered_minimal_beneficiary_extract.html", "r", encoding="utf-8"
         ) as f:
             pdf_generator_mock.assert_called_once_with(html_content=f.read())
+
+    @mock.patch("pcapi.core.users.gdpr_api.generate_pdf_from_html", return_value=b"content of a pdf")
+    def test_pdf_with_unidentified_chronicle(self, pdf_generator_mock):
+        user = users_factories.BeneficiaryFactory()
+        chronicles_factories.ChronicleFactory(user=user, productIdentifier=None, providedTitle="Le Petit Prince")
+        extract = users_factories.GdprUserDataExtractBeneficiaryFactory(user=user)
+
+        gdpr_api.extract_beneficiary_data(extract=extract)
+
+        html_content = pdf_generator_mock.call_args.kwargs["html_content"]
+        assert ("Titre renseigné", "Le Petit Prince") in html_parser_rows(html_content)
+
+
+class ExtractGdprChroniclesTest:
+    def test_unidentified_scene_chronicle_with_attached_product(self):
+        user = users_factories.BeneficiaryFactory()
+        chronicles_factories.ChronicleFactory(
+            user=user,
+            clubType=chronicles_models.ChronicleClubType.SCENE_CLUB,
+            productIdentifierType=chronicles_models.ChronicleProductIdentifierType.OFFER_ID,
+            productIdentifier=None,
+            providedTitle="Le Petit Prince",
+            products=[offers_factories.ProductFactory()],
+        )
+
+        [chronicle_data] = gdpr_api._extract_gdpr_chronicles(user)
+
+        assert chronicle_data.productIdentifier is None
+        assert chronicle_data.providedTitle == "Le Petit Prince"
+        assert chronicle_data.productName is None
 
 
 class ExtractGdprAccountHistoryTest:

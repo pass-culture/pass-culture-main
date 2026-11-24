@@ -70,6 +70,14 @@ class GetChronicleSearchForm(forms_utils.PCForm):
         ],
     )
 
+    is_attached = fields.PCSelectMultipleField(
+        "Rattachée",
+        choices=(
+            wtforms_fields.SelectChoice("true", "Oui"),
+            wtforms_fields.SelectChoice("false", "Non"),
+        ),
+    )
+
     category = fields.PCSelectMultipleField(
         "Club",
         choices=(

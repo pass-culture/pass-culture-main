@@ -272,3 +272,83 @@ la convoitise.
             user=user,
             offers=[scene_offer],
         )
+
+    logger.info("Creating unidentified chronicles with a provided title")
+    provided_titles = (
+        (
+            chronicles_models.ChronicleClubType.BOOK_CLUB,
+            "BOOK",
+            chronicles_models.ChronicleProductIdentifierType.EAN,
+            "Les Lettres de la rue des Lilas",
+        ),
+        (
+            chronicles_models.ChronicleClubType.BOOK_CLUB,
+            "BOOK",
+            chronicles_models.ChronicleProductIdentifierType.EAN,
+            "Le Phare au bout du monde, tome 2",
+        ),
+        (
+            chronicles_models.ChronicleClubType.CINE_CLUB,
+            "CINÉ",
+            chronicles_models.ChronicleProductIdentifierType.ALLOCINE_ID,
+            "La Nuit des lucioles",
+        ),
+        (
+            chronicles_models.ChronicleClubType.CINE_CLUB,
+            "CINÉ",
+            chronicles_models.ChronicleProductIdentifierType.ALLOCINE_ID,
+            "Retour à Belleville",
+        ),
+        (
+            chronicles_models.ChronicleClubType.SCENE_CLUB,
+            "SCÈNE",
+            chronicles_models.ChronicleProductIdentifierType.OFFER_ID,
+            "Le Cabaret des ombres",
+        ),
+        (
+            chronicles_models.ChronicleClubType.SCENE_CLUB,
+            "SCÈNE",
+            chronicles_models.ChronicleProductIdentifierType.OFFER_ID,
+            "Les Fourberies du quai",
+        ),
+    )
+    for user, (club_type, club_label, product_identifier_type, provided_title), i in zip(
+        itertools.cycle(users), provided_titles, range(len(provided_titles))
+    ):
+        chronicles_factories.ChronicleFactory.create(
+            age=(15 + (i % 5)),
+            city=user.city,
+            content=f"Chronique {club_label} sur « {provided_title} », titre renseigné par l'utilisateur {user.full_name} ({user.id}).",
+            identifierChoiceId=None,
+            productIdentifier=None,
+            productIdentifierType=product_identifier_type,
+            providedTitle=provided_title,
+            clubType=club_type,
+            email=user.email,
+            firstName=user.firstName,
+            isActive=bool(i % 5 == 0),
+            isIdentityDiffusible=bool(i % 2 == 0),
+            isSocialMediaDiffusible=bool(i % 3 == 0),
+            user=user,
+        )
+
+    logger.info("Creating an unidentified 'CINÉ' type chronicle attached to a product")
+    user = users[0]
+    product = products_with_allocine_id[0]
+    chronicles_factories.ChronicleFactory.create(
+        age=20,
+        city=user.city,
+        content=f"Chronique CINÉ sur « film avec chronique », rattachée au produit {product.name} par l'équipe.",
+        identifierChoiceId=None,
+        productIdentifier=None,
+        productIdentifierType=chronicles_models.ChronicleProductIdentifierType.ALLOCINE_ID,
+        providedTitle="film avec chronique",
+        clubType=chronicles_models.ChronicleClubType.CINE_CLUB,
+        email=user.email,
+        firstName=user.firstName,
+        isActive=True,
+        isIdentityDiffusible=True,
+        isSocialMediaDiffusible=True,
+        user=user,
+        products=[product],
+    )

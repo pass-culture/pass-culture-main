@@ -95,6 +95,11 @@
                   Non renseigné
                 {% endif %}
               </p>
+              {% if chronicle.providedTitle %}
+                <p class="mb-1">
+                  <span class="fw-bold">Titre renseigné :</span> {{ chronicle.providedTitle }}
+                </p>
+              {% endif %}
               <p class="mb-1">
                 <span class="fw-bold">{{ chronicle.productIdentifierType | format_chronicle_product_identifier_type }}
                 :</span>
@@ -243,7 +248,7 @@
                       </td>
                     {% endif %}
                     <td>
-                      {% if chronicle.productIdentifierType.value == "EAN" and product.ean == chronicle.productIdentifier %}
+                      {% if chronicle.productIdentifierType.value == "EAN" and chronicle.productIdentifier and product.ean == chronicle.productIdentifier %}
                         <b>{{ product.ean }}</b>
                       {% elif product.ean %}
                         {{ product.ean }}
