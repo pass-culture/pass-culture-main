@@ -24,7 +24,7 @@ export const SubSection = ({
   <div className={cn(style['form-layout-sub-section'], className)}>
     <div className={style['form-layout-sub-section-title-wrapper']}>
       <h3 className={style['form-layout-sub-section-title']}>{title}</h3>
-      {isNew && <Tag label="Nouveau" variant={TagVariant.NEW} />}
+      {isNew && <Tag label="Nouveau" variant={TagVariant.HIGHLIGHT} />}
     </div>
 
     {description && (

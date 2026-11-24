@@ -178,7 +178,7 @@ export const WithTags: StoryObj<typeof Dropdown> = {
       [
         {
           text: 'Pré-réserver',
-          tag: { label: 'Nouveau', variant: TagVariant.NEW },
+          tag: { label: 'Nouveau', variant: TagVariant.HIGHLIGHT },
         },
         {
           text: 'Partager',

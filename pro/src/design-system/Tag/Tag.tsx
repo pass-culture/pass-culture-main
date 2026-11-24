@@ -13,7 +13,7 @@ export enum TagVariant {
   SUCCESS = 'success',
   WARNING = 'warning',
   ERROR = 'error',
-  NEW = 'new',
+  HIGHLIGHT = 'highlight',
   BOOKCLUB = 'bookclub',
   CINECLUB = 'cineclub',
   HEADLINE = 'headline',
@@ -52,7 +52,7 @@ export const Tag = ({
 }: TagProps): JSX.Element => {
   const finalIcon =
     tagIconByVariant[variant as TagVariant] ||
-    (variant !== TagVariant.NEW && icon)
+    (variant !== TagVariant.HIGHLIGHT && icon)
 
   return (
     <span className={cx(styles.tag, styles[variant])}>
