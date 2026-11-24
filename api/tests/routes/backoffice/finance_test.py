@@ -2726,11 +2726,12 @@ class ValidateSettlementBatchTest(PostEndpointHelper):
     # - fetch session and user
     # - fetch settlement batch
     # - update settlement batch
-    # - fetch settlement batch again
+    # - fetch settlement batch again after update
     # - fetch invoice IDs
     # - update settlements
+    # - fetch settlement batch again after commit
     # - fetch data for all emails in a single query
-    expected_num_queries = 7
+    expected_num_queries = 8
 
     @patch("pcapi.core.finance.api.validate_invoices")
     def test_validate_settlement_batch(self, mock_validate_invoices, authenticated_client):
