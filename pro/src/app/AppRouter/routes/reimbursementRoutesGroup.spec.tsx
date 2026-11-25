@@ -1,4 +1,4 @@
-import { act, screen, waitFor } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/dom'
 import { Outlet, useLocation } from 'react-router'
 
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -33,12 +33,7 @@ describe('reimbursementsRouteGroup', () => {
               'path' in route
                 ? {
                     ...route,
-                    lazy: async () => {
-                      if (route.path === 'informations-bancaires') {
-                        await new Promise((resolve) => setTimeout(resolve, 10))
-                      }
-                      return { Component: RouteTester }
-                    },
+                    lazy: async () => ({ Component: RouteTester }),
                   }
                 : route
             ),
@@ -55,8 +50,8 @@ describe('reimbursementsRouteGroup', () => {
       )
     })
 
-    await act(async () => {
-      await router.navigate(-1)
+    await waitFor(() => {
+      router.navigate(-1)
     })
 
     expect(screen.getByTestId('route-location')).toHaveTextContent(previousUrl)
