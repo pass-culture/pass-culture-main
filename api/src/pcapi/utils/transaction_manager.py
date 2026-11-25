@@ -6,8 +6,8 @@ from dataclasses import dataclass
 from traceback import format_exc
 from types import TracebackType
 
-import sqlalchemy as sa
 from flask import g
+from sqlalchemy import orm as sa_orm
 
 from pcapi.models import Model
 from pcapi.models import db
@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 class AtomicContext:
     autoflush: bool
     invalid_transaction: bool
-    transaction: sa.orm.session.SessionTransaction
+    transaction: sa_orm.session.SessionTransaction
 
 
 @dataclass

@@ -14,13 +14,14 @@ import sqlalchemy.dialects.postgresql as sa_postgresql
 import sqlalchemy.engine as sa_engine
 import sqlalchemy.types as sa_types
 
-import pcapi.utils.cron as cron_decorators
 from pcapi import settings
 from pcapi.connectors import googledrive
 from pcapi.core.internal_notifications.transactional import notify_invalid_indexes
 from pcapi.models import db
+from pcapi.utils import cron as cron_decorators
 from pcapi.utils.blueprint import Blueprint
 from pcapi.utils.logging import log_elapsed
+from pcapi.utils.transaction_manager import atomic
 
 
 blueprint = Blueprint(__name__, __name__)
@@ -185,30 +186,37 @@ def acquire_lock(name: str) -> None:
         db.session.execute(sa.select(sa.func.pg_advisory_xact_lock(lock_id)))
 
 
+# interruptible
 @blueprint.cli.command("detect_invalid_indexes")
-@cron_decorators.log_cron_with_transaction
+@cron_decorators.log_cron
 def detect_invalid_indexes() -> None:
     """Log an error if there are invalid indexes."""
+
     statement = """
       select relname from pg_class
       join pg_index on pg_index.indexrelid = pg_class.oid
       where pg_index.indisvalid = false
     """
-    res = db.session.execute(sa.text(statement))
-    rows = res.fetchall()
-    if not rows:
-        return
-    names = sorted(row[0] for row in rows)
-    logger.error("Found invalid PostgreSQL indexes: %s", names)
 
-    # Also alert on Slack every time to ensure that we don't miss an invalid index
-    notify_invalid_indexes.send(names)
+    with atomic():
+        res = db.session.execute(sa.text(statement))
+        rows = res.fetchall()
+        if not rows:
+            return
+
+        names = sorted(row[0] for row in rows)
+        logger.error("Found invalid PostgreSQL indexes: %s", names)
+
+        # Also alert on Slack every time to ensure that we don't miss an invalid index
+        notify_invalid_indexes.send(names)
 
 
+# interruptible
 @blueprint.cli.command("detect_not_valid_constraints")
-@cron_decorators.log_cron_with_transaction
+@cron_decorators.log_cron
 def detect_not_valid_constraints() -> None:
     """Log an error if there are constraints that are "NOT VALID"."""
+
     statement = """
       select
         -- `conrelid` is 0 if not a table constraint
@@ -218,18 +226,23 @@ def detect_not_valid_constraints() -> None:
       left outer join pg_class on pg_class.oid = pg_constraint.conrelid
       where not convalidated
     """
-    res = db.session.execute(sa.text(statement))
-    rows = res.fetchall()
-    if not rows:
-        return
-    names = sorted(row[0] for row in rows)
-    logger.error("Found PostgreSQL constraints that are NOT VALID: %s", names)
+
+    with atomic():
+        res = db.session.execute(sa.text(statement))
+        rows = res.fetchall()
+        if not rows:
+            return
+
+        names = sorted(row[0] for row in rows)
+        logger.error("Found PostgreSQL constraints that are NOT VALID: %s", names)
 
 
+# interruptible
 @blueprint.cli.command("export_pg_stat_user_indexes")
-@cron_decorators.log_cron_with_transaction
+@cron_decorators.log_cron
 def export_pg_stat_user_indexes() -> None:
     """Export statistics about indexes usage."""
+
     statement = """
         SELECT
             now() :: date,
@@ -245,18 +258,24 @@ def export_pg_stat_user_indexes() -> None:
             relname,
             indexrelname DESC;
     """
-    res = db.session.execute(sa.text(statement))
-    rows = res.fetchall()
-    _upload_as_csv_to_google_drive(
-        "pg_stat_user_indexes", ("date", "relname", "indexrelname", "idx_scan", "idx_tup_read", "idx_tup_fetch"), rows
-    )
-    logger.info("Exported data from pg_stat_user_indexes")
+
+    with atomic():
+        res = db.session.execute(sa.text(statement))
+        rows = res.fetchall()
+        _upload_as_csv_to_google_drive(
+            "pg_stat_user_indexes",
+            ("date", "relname", "indexrelname", "idx_scan", "idx_tup_read", "idx_tup_fetch"),
+            rows,
+        )
+        logger.info("Exported data from pg_stat_user_indexes")
 
 
+# interruptible
 @blueprint.cli.command("export_pg_stat_user_tables")
-@cron_decorators.log_cron_with_transaction
+@cron_decorators.log_cron
 def export_pg_stat_user_tables() -> None:
     """Export statistics about tables scan."""
+
     statement = """
         SELECT
             now() :: date,
@@ -270,10 +289,12 @@ def export_pg_stat_user_tables() -> None:
         ORDER BY
             relname;
     """
-    res = db.session.execute(sa.text(statement))
-    rows = res.fetchall()
-    _upload_as_csv_to_google_drive("pg_stat_user_tables", ("date", "relname", "seq_scan", "idx_scan"), rows)
-    logger.info("Exported data from pg_stat_user_tables")
+
+    with atomic():
+        res = db.session.execute(sa.text(statement))
+        rows = res.fetchall()
+        _upload_as_csv_to_google_drive("pg_stat_user_tables", ("date", "relname", "seq_scan", "idx_scan"), rows)
+        logger.info("Exported data from pg_stat_user_tables")
 
 
 def _upload_as_csv_to_google_drive(filename_base: str, header: typing.Iterable, rows: typing.Iterable) -> None:
