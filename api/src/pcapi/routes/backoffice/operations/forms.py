@@ -118,7 +118,7 @@ class OperationResponseForm(utils.PCForm):
             title = question.title
             if len(title) > 74:
                 title = f"{title[:74]}…"
-            self.response.form.question.choices.append((question.id, title))
+            self.response.form.question.choices.append(wtforms_fields.SelectChoice(question.id, title))
         if question_id := kwargs.get("formdata", {}).get("response-question"):
             self.response.question.data = int(question_id)
 
