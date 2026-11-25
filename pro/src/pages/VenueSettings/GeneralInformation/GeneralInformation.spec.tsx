@@ -5,8 +5,16 @@ import { Link } from 'react-router'
 import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
-import type { GetVenueResponseModel } from '@/apiClient/v1'
-import { DisplayableActivity, VenueState } from '@/apiClient/v1'
+import {
+  ApiError,
+  type ApiRequestOptions,
+  type ApiResult,
+} from '@/apiClient/compat'
+import {
+  DisplayableActivity,
+  type GetVenueResponseModel,
+  VenueState,
+} from '@/apiClient/v1'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
@@ -365,6 +373,42 @@ describe('GeneralInformation', () => {
       await waitFor(() => {
         expect(api.editVenue).toHaveBeenCalledTimes(1)
       })
+
+      expect(api.editVenue).toHaveBeenCalledWith(
+        expect.objectContaining({
+          path: { venue_id: 1 },
+          body: expect.objectContaining({
+            isOpenToPublic: false,
+            street: '123 Rue Principale',
+          }),
+        })
+      )
+    })
+
+    it('should display field-level errors returned by the API', async () => {
+      vi.mocked(api.editVenue).mockRejectedValueOnce(
+        new ApiError(
+          {} as ApiRequestOptions,
+          {
+            status: 400,
+            body: {
+              comment: ['Le commentaire est invalide'],
+            },
+          } as ApiResult,
+          ''
+        )
+      )
+
+      renderGeneralInformation({ id: 1, isOpenToPublic: false })
+
+      await userEvent.click(await screen.findByRole('radio', { name: /Oui/ }))
+      await userEvent.click(
+        await screen.findByRole('button', { name: /Enregistrer/ })
+      )
+
+      expect(
+        await screen.findByText('Le commentaire est invalide')
+      ).toBeInTheDocument()
     })
     it('should reset the form when clicking Annuler', async () => {
       renderGeneralInformation({ id: 1, isOpenToPublic: false })
