@@ -247,15 +247,3 @@ def clean_feature_flags() -> None:
     for flag in to_remove_flags:
         db.session.execute(text("DELETE FROM feature WHERE name = :name").bindparams(name=flag))
     db.session.commit()
-
-
-def check_feature_flags_completeness() -> None:
-    """Check if all feature flags are present in the database and in the code"""
-    installed_flag_names = {f[0] for f in db.session.query(Feature).with_entities(Feature.name).all()}
-    defined_flag_name = {f.name for f in FeatureToggle}
-    extra_flags = installed_flag_names - defined_flag_name
-    if extra_flags:
-        logger.error(
-            "The following feature flags are present in the database but not present in the code: %s",
-            extra_flags,
-        )

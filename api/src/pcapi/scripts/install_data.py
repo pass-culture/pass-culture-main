@@ -1,6 +1,5 @@
 import logging
 
-import pcapi.utils.cron as cron_decorators
 from pcapi.db_utils import install_database_extensions
 from pcapi.db_utils import sync_enums_with_db
 from pcapi.models import feature as feature_models
@@ -21,13 +20,6 @@ def clean_data() -> None:
     feature_models.clean_feature_flags()
 
     logger.info("Feature flags cleaned")
-
-
-# interruptible
-@blueprint.cli.command("check_feature_flags")
-@cron_decorators.log_cron
-def check_feature_flags() -> None:
-    feature_models.check_feature_flags_completeness()
 
 
 @blueprint.cli.command("install_postgres_extensions")
