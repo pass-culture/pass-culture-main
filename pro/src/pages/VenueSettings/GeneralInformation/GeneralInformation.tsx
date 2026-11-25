@@ -176,7 +176,6 @@ const GeneralInformation = () => {
     register,
     setValue,
     watch,
-    getValues,
     clearErrors,
     formState: { isSubmitting, errors, disabled },
   } = form
@@ -211,17 +210,10 @@ const GeneralInformation = () => {
 
   const toggleOpenToPublic = (e: React.ChangeEvent<HTMLInputElement>) => {
     const isOpenToPublicValue = e.target.value.toString()
-    const currentAddressAutocomplete = getValues('addressAutocomplete')
 
     form.setValue('isOpenToPublic', isOpenToPublicValue, { shouldDirty: true })
 
     if (isOpenToPublicValue === 'false') {
-      if (!currentAddressAutocomplete && initialValues.addressAutocomplete) {
-        resetReactHookFormAddressFields<VenueSettingsFormValues>((name) =>
-          // @ts-expect-error Hard to reconcile types with the current complexity.
-          setValue(name, initialValues[name])
-        )
-      }
       form.setValue('accessibility', initialValues.accessibility)
       form.setValue(
         'isAccessibilityAppliedOnAllOffers',
@@ -276,7 +268,7 @@ const GeneralInformation = () => {
                 />
               </FormLayout.Row>
 
-              <FormLayout.Row>
+              <FormLayout.Row mdSpaceAfter>
                 <TextInput
                   {...register('publicName')}
                   label="Nom public"
@@ -284,6 +276,18 @@ const GeneralInformation = () => {
                   disabled={isClosed}
                 />
               </FormLayout.Row>
+
+              <AddressFields
+                key={addressFieldKey.value}
+                label="Adresse de votre structure"
+                addressRegister={register('addressAutocomplete')}
+                disabled={disabled || isClosed}
+                onAddressChosen={onAddressSelect}
+                error={errors.addressAutocomplete?.message}
+                renderManual={() => <AddressManual />}
+                manual={manuallySetAddress}
+                onManualChange={toggleManuallySetAddress}
+              />
             </FormLayout.Section>
 
             <FormLayout.SubSection title="Accueil du public">
@@ -294,19 +298,6 @@ const GeneralInformation = () => {
                   disabled={isClosed}
                 />
               </FormLayout.Row>
-              {isOpenToPublic === 'true' && (
-                <AddressFields
-                  key={addressFieldKey.value}
-                  description="Indiquez ici l'adresse où vous recevez votre public."
-                  addressRegister={register('addressAutocomplete')}
-                  disabled={disabled || isClosed}
-                  onAddressChosen={onAddressSelect}
-                  error={errors.addressAutocomplete?.message}
-                  renderManual={() => <AddressManual />}
-                  manual={manuallySetAddress}
-                  onManualChange={toggleManuallySetAddress}
-                />
-              )}
             </FormLayout.SubSection>
             <FormLayout.SubSection title="À propos de votre activité">
               <ActivityDetails />
