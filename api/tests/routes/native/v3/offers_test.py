@@ -4,6 +4,7 @@ from datetime import timedelta
 
 import pytest
 import time_machine
+from prometheus_client import REGISTRY
 
 import pcapi.core.artist.factories as artists_factories
 import pcapi.core.chronicles.factories as chronicles_factories
@@ -18,6 +19,7 @@ from pcapi.core.geography.factories import AddressFactory
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers.factories import VenueFactory
 from pcapi.core.offers import constants as offers_constants
+from pcapi.core.offers import metrics
 from pcapi.core.offers.models import ImageType
 from pcapi.core.providers.constants import BookFormat
 from pcapi.core.providers.repository import get_provider_by_local_class
@@ -45,6 +47,7 @@ class OffersV3Test:
 
     @time_machine.travel("2020-01-01", tick=False)
     def test_get_event_offer(self, client):
+        metrics.offer_requests_counter.reset()
         extra_data = {
             "allocineId": 12345,
             "author": "mandibule",
@@ -270,6 +273,14 @@ class OffersV3Test:
         assert response.json["publicationDate"] is None
         assert response.json["bookingAllowedDatetime"] is None
         assert response.json["isEvent"] is True
+
+        assert (
+            REGISTRY.get_sample_value(
+                "offer_requests_total",
+                labels={"api_version": "v3", "endpoint": "get_offer_v3"},
+            )
+            == 1
+        )
 
     def test_get_offer_with_unlimited_stock(self, client):
         product = offers_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.LIVRE_PAPIER.id)
@@ -998,6 +1009,7 @@ class OffersStocksV3Test:
 
     @time_machine.travel("2020-01-01", tick=False)
     def test_return_offers_stocks(self, client):
+        metrics.offer_requests_counter.reset()
         offer = offers_factories.OfferFactory(subcategoryId=subcategories.SEANCE_CINE.id, name="l'offre du siècle")
         offers_factories.MediationFactory(offer=offer)
 
@@ -1146,6 +1158,13 @@ class OffersStocksV3Test:
         }
         assert response_offer["publicationDate"] is None
         assert response_offer["bookingAllowedDatetime"] is None
+        assert (
+            REGISTRY.get_sample_value(
+                "get_offers_and_stocks",
+                labels={"api_version": "v3", "endpoint": "get_offer_v3"},
+            )
+            == 1
+        )
 
     def test_return_screening_features(self, client):
         offer = offers_factories.OfferFactory(subcategoryId=subcategories.SEANCE_CINE.id, name="séance de ciné")

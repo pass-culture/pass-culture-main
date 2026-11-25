@@ -3,6 +3,7 @@ from datetime import timedelta
 
 import pytest
 import time_machine
+from prometheus_client import REGISTRY
 
 import pcapi.core.chronicles.factories as chronicles_factories
 import pcapi.core.chronicles.models as chronicles_models
@@ -14,6 +15,7 @@ from pcapi.core.categories import subcategories
 from pcapi.core.external.batch import testing as notifications_testing
 from pcapi.core.geography.factories import AddressFactory
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offers import metrics
 from pcapi.core.offers.constants import VideoFeatures
 from pcapi.core.providers.etls.cinema_etl_template import ShowFeatures
 from pcapi.core.testing import assert_no_duplicated_queries
@@ -46,6 +48,7 @@ class OffersStocksV2Test:
 
     @time_machine.travel("2020-01-01", tick=False)
     def test_return_offers_stocks(self, client):
+        metrics.offer_requests_counter.reset()
         ean = "1234567899999"
         extra_data = {
             "allocineId": 12345,
@@ -270,6 +273,14 @@ class OffersStocksV2Test:
 
         assert response_offer["publicationDate"] is None
         assert response_offer["bookingAllowedDatetime"] is None
+
+        assert (
+            REGISTRY.get_sample_value(
+                "offer_requests_total",
+                labels={"api_version": "v2", "endpoint": "get_offers_and_stocks"},
+            )
+            == 1
+        )
 
 
 class SendOfferWebAppLinkTest:

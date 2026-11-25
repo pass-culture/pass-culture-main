@@ -9,6 +9,7 @@ from pcapi.core.categories.app_search_tree import NATIVE_CATEGORIES
 from pcapi.core.categories.app_search_tree import SEARCH_GROUPS
 from pcapi.core.categories.models import GenreType
 from pcapi.core.external.batch import transactional_notifications
+from pcapi.core.offers import metrics
 from pcapi.core.offers import repository
 from pcapi.core.offers.models import Offer
 from pcapi.models import db
@@ -29,9 +30,17 @@ from .serialization import subcategories_v2 as subcategories_v2_serializers
 @spectree_serialize(response_model=serializers.OffersStocksResponseV2, api=blueprint.api, deprecated=True)
 def get_offers_and_stocks(body: serializers.OffersStocksRequest) -> serializers.OffersStocksResponseV2:
     offer_ids = body.offer_ids
+    metrics.offer_requests_counter.labels(api_version="v2", endpoint="get_offers_and_stocks").inc(len(offer_ids))
+
     query = repository.get_offers_details(offer_ids)
-    serialized_offers = [serializers.OfferResponseV2.build(offer) for offer in query]
-    offers_response = serializers.OffersStocksResponseV2(offers=serialized_offers)
+    try:
+        serialized_offers = [serializers.OfferResponseV2.build(offer) for offer in query]
+        offers_response = serializers.OffersStocksResponseV2(offers=serialized_offers)
+    except Exception as exp:
+        metrics.offer_requests_error_counter.labels(
+            api_version="v2", endpoint="get_offers_and_stocks", error_type=type(exp).__name__
+        ).inc(len(offer_ids))
+        raise
     return offers_response
 
 
