@@ -121,6 +121,9 @@ class OfferExtraDataV2(offers_models.OfferExtraData):
     pass
 
 
+EXTRA_DATA_FIELDS: typing.Final = OfferExtraDataV2.__annotations__
+
+
 class PatchOfferBodyModel(HttpBodyModel):
     nature: nfd.NatureEnum | None = None
     format: nfd.FormatEnum | None = None
@@ -772,7 +775,11 @@ class GetIndividualOfferResponseModelV2(HttpBodyModel):
 
     @classmethod
     def build(cls, offer: offers_models.Offer) -> Self:
-        extra_data = copy.deepcopy(offer.extraData) if offer.extraData else {}
+        extra_data: OfferExtraDataV2 = {}
+        if offer.extraData:
+            extra_data = OfferExtraDataV2(  # type: ignore[misc]
+                {k: copy.deepcopy(v) for k, v in offer.extraData.items() if k in EXTRA_DATA_FIELDS}
+            )
         ean = offer.product.ean if offer.product else offer.ean
         if ean:
             extra_data["ean"] = ean

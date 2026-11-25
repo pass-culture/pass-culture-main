@@ -134,7 +134,7 @@ class Returns200Test:
             description="Tatort, but slower",
             durationMinutes=60,
             ean=ean,
-            extraData=None,
+            extraData={"complianceScore": 1, "complianceReasons": 2},
             mentalDisabilityCompliant=True,
             externalTicketOfficeUrl="http://example.net",
             withdrawalDetails="Veuillez chercher votre billet au guichet",
