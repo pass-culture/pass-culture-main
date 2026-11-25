@@ -112,6 +112,46 @@ class E2EOfferTest:
 
         assert response.json["id"] == offer.id
 
+    def test_create_several_offers_linked_to_venue_and_provider(self, auth_client):
+        venue = offerers_factories.VenueFactory()
+        public_api_provider = providers_factories.PublicApiProviderFactory()
+        response = auth_client.post(
+            "/e2e/offer",
+            {
+                "name": "Test Offer",
+                "subcategory_id": "SEANCE_CINE",
+                "price": 8.2,
+                "venue_id": venue.id,
+                "provider_id": public_api_provider.id,
+            },
+        )
+        assert response.status_code == 200
+
+        response = auth_client.post(
+            "/e2e/offer",
+            {
+                "name": "Test Offer 2",
+                "subcategory_id": "SEANCE_CINE",
+                "price": 9.3,
+                "venue_id": venue.id,
+                "provider_id": public_api_provider.id,
+            },
+        )
+        assert response.status_code == 200
+
+        offers = db.session.query(offers_models.Offer).all()
+
+        assert len(offers) == 2
+        offer1 = offers[0]
+        assert offer1.lastProviderId == public_api_provider.id
+        assert offer1.venue == venue
+        assert offer1.venue.venueProviders[0].provider == public_api_provider
+
+        offer2 = offers[1]
+        assert offer2.lastProviderId == public_api_provider.id
+        assert offer2.venue == venue
+        assert offer2.venue.venueProviders[0].provider == public_api_provider
+
     @pytest.mark.parametrize(
         "timezone",
         [
