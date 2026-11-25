@@ -775,6 +775,8 @@ class GetIndividualOfferResponseModelV2(HttpBodyModel):
     mentalDisabilityCompliant: bool | None
     motorDisabilityCompliant: bool | None
     visualDisabilityCompliant: bool | None
+    capabilities: list[nfd.FieldEnum]
+    mandatoryFields: list[nfd.FieldEnum]
 
     @classmethod
     def build(cls, offer: offers_models.Offer) -> Self:
@@ -811,6 +813,13 @@ class GetIndividualOfferResponseModelV2(HttpBodyModel):
                 offer.offererAddress, label=location_label, is_venue_location=is_venue_location
             )
 
+        capabilities: list[nfd.FieldEnum] = []
+        mandatory_fields: list[nfd.FieldEnum] = []
+        if offer.nature and offer.format:
+            domain = offer.domain.value if offer.domain else None
+            capabilities = nfd.get_capabilities(offer.nature, offer.format, domain)
+            mandatory_fields = nfd.get_mandatory_fields(offer.nature, offer.format, domain)
+
         return cls(
             activeMediation=GetOfferMediationResponseModelV2.build(offer.activeMediation),
             artistOfferLinks=[
@@ -822,6 +831,7 @@ class GetIndividualOfferResponseModelV2(HttpBodyModel):
             bookingsCount=offer.bookingsCount,
             bookingEmail=offer.bookingEmail,
             canBeEvent=offer.canBeEvent,
+            capabilities=capabilities,
             dateCreated=offer.dateCreated,
             description=offer.description,
             durationMinutes=offer.durationMinutes,
@@ -846,6 +856,7 @@ class GetIndividualOfferResponseModelV2(HttpBodyModel):
             isThing=offer.isThing,
             lastProvider=GetOfferLastProviderResponseModelV2.build(offer.lastProvider),
             location=serialized_location,
+            mandatoryFields=mandatory_fields,
             mentalDisabilityCompliant=offer.mentalDisabilityCompliant,
             motorDisabilityCompliant=offer.motorDisabilityCompliant,
             name=offer.name,
