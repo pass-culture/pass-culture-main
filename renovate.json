@@ -1,0 +1,6 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["github>pass-culture/renovate-config"],
+  "enabledManagers": ["mise"],
+  "automerge": false
+}
