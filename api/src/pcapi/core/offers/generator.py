@@ -130,6 +130,25 @@ def _create_cinema_offer(
     return offer
 
 
+def _get_or_create_venue_provider(
+    venue: offerers_models.Venue,
+    provider: providers_models.Provider,
+) -> providers_models.VenueProvider:
+    venue_provider = (
+        db.session.query(providers_models.VenueProvider)
+        .filter(
+            providers_models.VenueProvider.venueId == venue.id,
+            providers_models.VenueProvider.providerId == provider.id,
+        )
+        .one_or_none()
+    )
+    if not venue_provider:
+        venue_provider = providers_models.VenueProvider(venue=venue, provider=provider)
+        db.session.add(venue_provider)
+
+    return venue_provider
+
+
 def create_offer(
     offer_name: str,
     price: decimal.Decimal,
@@ -146,8 +165,7 @@ def create_offer(
             venue = offerers_generator.create_venue(offerers_models.Activity.CINEMA, timezone)
 
         if provider:
-            venue_provider = providers_models.VenueProvider(venue=venue, provider=provider)
-            db.session.add(venue_provider)
+            _get_or_create_venue_provider(venue=venue, provider=provider)
 
         offer = _create_cinema_offer(venue, offer_name, price, is_duo, timezone, provider=provider)
 
