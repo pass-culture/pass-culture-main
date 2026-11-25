@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react'
+import { act, screen } from '@testing-library/react'
 import { useLocation } from 'react-router'
 
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -45,8 +45,8 @@ describe('redirectedRoutes', () => {
       '/administration/gestion-financiere/?periode=2025#details'
     )
 
-    await waitFor(() => {
-      router.navigate(-1)
+    await act(async () => {
+      await router.navigate(-1)
     })
 
     expect(screen.getByTestId('route-location')).toHaveTextContent(previousUrl)
