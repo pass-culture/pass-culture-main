@@ -155,7 +155,7 @@ export const ComplementaryInfosDrawer = ({
                 externalAccessibilityData={
                   selectedPartnerVenue.externalAccessibilityData
                 }
-              ></AccessibilityForm>
+              />
               <FormLayout.SubSection title="Horaires d’ouverture">
                 <FormLayout.Row className={styles['opening-hours']}>
                   <fieldset>

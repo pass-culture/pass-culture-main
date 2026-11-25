@@ -17,6 +17,7 @@ import { ActivityOpenToPublicMap } from '@/commons/mappings/ActivityOpenToPublic
 import { getMapKeys } from '@/commons/mappings/helpers'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { resetReactHookFormAddressFields } from '@/commons/utils/resetAddressFields'
+import { scrollToTop } from '@/commons/utils/scrollToTop'
 import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { AddressFields } from '@/components/AddressFields/AddressFields'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
@@ -30,7 +31,6 @@ import { TextInput } from '@/design-system/TextInput/TextInput'
 import { AddressManual } from '@/ui-kit/form/AddressManual/AddressManual'
 import { getPanelId, getTabId } from '@/ui-kit/Tabs/Tabs'
 
-import { scrollToTop } from '../../../commons/utils/scrollToTop'
 import { useSaveVenueSettings } from './commons/hooks/useSaveVenueSettings'
 import { venueSettingsValidationSchema } from './commons/schema'
 import type {
@@ -309,7 +309,7 @@ const GeneralInformation = () => {
             proceedWithPendingNavigation()
           }
         }}
-      ></ComplementaryInfosDrawer>
+      />
 
       <ComplementaryInfosDialog
         open={isComplementaryInfosDialogOpen}

@@ -5,11 +5,13 @@ import { Provider } from 'react-redux'
 import * as reactRouter from 'react-router'
 import { describe, expect, it, vi } from 'vitest'
 
+import { api } from '@/apiClient/api'
 import type { ApiRequestOptions, ApiResult } from '@/apiClient/compat'
 import { ApiError } from '@/apiClient/compat'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
+import * as useSyncVenueCacheModule from '@/commons/hooks/useSyncVenueCache'
 import { configureTestStore } from '@/commons/store/testUtils'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 
@@ -17,8 +19,13 @@ import type {
   VenueSettingsFormContext,
   VenueSettingsFormValues,
 } from '../../types'
-import { saveVenueSettings } from '../../utils/saveVenueSettings'
 import { useSaveVenueSettings } from '../useSaveVenueSettings'
+
+vi.mock('@/apiClient/api', () => ({
+  api: {
+    editVenue: vi.fn(),
+  },
+}))
 
 vi.mock('react-router', async () => {
   const actual =
@@ -29,10 +36,6 @@ vi.mock('react-router', async () => {
     useLocation: vi.fn(),
   }
 })
-
-vi.mock('../../utils/saveVenueSettings', () => ({
-  saveVenueSettings: vi.fn(() => Promise.resolve()),
-}))
 
 const defaultFormValues: VenueSettingsFormValues = {
   comment: '',
@@ -113,6 +116,7 @@ describe('useSaveVenueSettings', () => {
 
   const snackBarError = vi.fn()
   const snackBarSuccess = vi.fn()
+  const syncVenueWithData = vi.fn()
 
   beforeEach(async () => {
     const snackBarsImport = (await vi.importActual(
@@ -131,9 +135,14 @@ describe('useSaveVenueSettings', () => {
       ...analyticsImport,
       logEvent: logEvent,
     }))
+
+    vi.spyOn(useSyncVenueCacheModule, 'useSyncVenueCache').mockReturnValue({
+      syncVenue: vi.fn(),
+      syncVenueWithData,
+    })
   })
 
-  it('should early navigate + success when form not dirty', async () => {
+  it('should patch venue settings and notify success', async () => {
     vi.mocked(reactRouter.useLocation).mockReturnValue(
       useLocationMockReturnValue
     )
@@ -143,6 +152,7 @@ describe('useSaveVenueSettings', () => {
     const venue = {
       ...defaultGetVenue,
     }
+    vi.mocked(api.editVenue).mockResolvedValueOnce(venue)
 
     const { result } = renderUseSaveVenueSettings({ venue })
     await act(async () => {
@@ -152,18 +162,46 @@ describe('useSaveVenueSettings', () => {
       )
     })
 
-    expect(saveVenueSettings).toHaveBeenCalled()
-    expect(snackBarSuccess).toHaveBeenCalled()
-    expect(logEvent).toHaveBeenCalled()
+    expect(api.editVenue).toHaveBeenCalledWith({
+      path: { venue_id: Number(venue.id) },
+      body: {
+        activity: undefined,
+        banId: '12345',
+        city: 'Ville Exemple',
+        comment: '',
+        culturalDomains: undefined,
+        description: undefined,
+        inseeCode: '75111',
+        isManualEdition: false,
+        isOpenToPublic: true,
+        latitude: 48.8566,
+        longitude: 2.3522,
+        name: '',
+        postalCode: '75001',
+        publicName: '',
+        siret: '12345678901234',
+        street: '123 Rue Principale',
+        withdrawalDetails:
+          "Les retraits sont autorisés jusqu'à 24 heures avant l'événement.",
+      },
+    })
+    expect(syncVenueWithData).toHaveBeenCalledWith(venue.id, venue)
+    expect(snackBarSuccess).toHaveBeenCalledWith(
+      'Vos modifications ont été sauvegardées'
+    )
+    expect(logEvent).toHaveBeenCalledWith(Events.CLICKED_SAVE_VENUE, {
+      saved: true,
+      isEdition: true,
+    })
   })
 
-  it('should notify error when save functions throw', async () => {
+  it('should notify error when the API request fails', async () => {
     vi.spyOn(reactRouter, 'useLocation').mockReturnValue(
       useLocationMockReturnValue
     )
     const useNavigateMock = vi.fn()
     vi.spyOn(reactRouter, 'useNavigate').mockReturnValue(useNavigateMock)
-    vi.mocked(saveVenueSettings).mockRejectedValueOnce(new Error('boom'))
+    vi.mocked(api.editVenue).mockRejectedValueOnce(new Error('boom'))
 
     const venue = {
       ...defaultGetVenue,
@@ -197,7 +235,7 @@ describe('useSaveVenueSettings', () => {
       useLocationMockReturnValue
     )
 
-    vi.mocked(saveVenueSettings).mockRejectedValueOnce(
+    vi.mocked(api.editVenue).mockRejectedValueOnce(
       new ApiError(
         {} as ApiRequestOptions,
         {

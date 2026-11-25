@@ -1,5 +1,6 @@
 import type { UseFormReturn } from 'react-hook-form'
 
+import { api } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
 import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
@@ -11,7 +12,7 @@ import type {
   VenueSettingsFormContext,
   VenueSettingsFormValues,
 } from '../types'
-import { saveVenueSettings } from '../utils/saveVenueSettings'
+import { toBody } from '../utils/toBody'
 
 export const useSaveVenueSettings = ({
   form,
@@ -29,8 +30,9 @@ export const useSaveVenueSettings = ({
     formContext: VenueSettingsFormContext
   ): Promise<boolean> => {
     try {
-      const updatedVenue = await saveVenueSettings(formValues, formContext, {
-        venue,
+      const updatedVenue = await api.editVenue({
+        path: { venue_id: Number(venue.id) },
+        body: toBody(formValues, formContext),
       })
       await syncVenueWithData(venue.id, updatedVenue)
 
