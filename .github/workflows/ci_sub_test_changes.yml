@@ -80,14 +80,9 @@ jobs:
 
   test-e2e:
     name: E2E
-    needs: [build-backend-image, test-pro]
+    needs: build-backend-image
     uses: ./.github/workflows/ci_sub_test_e2e.yml
-    if: >-
-      ${{ always() && !cancelled() &&
-          needs.build-backend-image.result == 'success' &&
-          (needs.test-pro.result == 'success' ||
-           (needs.test-pro.result == 'skipped' && !inputs.pro-changed && !inputs.github-changed)) &&
-          (inputs.api-changed || inputs.pro-changed || inputs.github-changed) }}
+    if: ${{ always() && !cancelled() && (inputs.api-changed || inputs.pro-changed || inputs.github-changed) }}
     with:
       ENV: "development"
       tag: ${{ github.sha }}

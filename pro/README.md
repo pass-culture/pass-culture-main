@@ -218,7 +218,6 @@ pnpm test:unit
 # Lance "vitest" avec la bonne configuration
 ```
 
-En CI, le build utilisé par les tests E2E attend la réussite des tests front.
 Le build sépare React et React DOM dans un chunk dédié ; les pages restent
 chargées à la demande.
 
