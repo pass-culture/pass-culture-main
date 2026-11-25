@@ -1,6 +1,5 @@
 import type {
   ArtistOfferLinkBodyModelV2,
-  ArtistOfferLinkResponseModelV2,
   FormatEnum,
   NatureEnum,
   PatchOfferBodyModel,
@@ -27,16 +26,15 @@ const serializeExtraData = (formValues: DescriptionFormValues) => {
 }
 
 const sanitizeArtistOfferLinks = (
-  artistOfferLinks: ArtistOfferLinkResponseModelV2[]
-): ArtistOfferLinkBodyModelV2[] => {
-  return artistOfferLinks
-    .filter((artist) => !!artist.artistName?.trim())
+  artistOfferLinks: ArtistOfferLinkBodyModelV2[] | null | undefined
+): ArtistOfferLinkBodyModelV2[] =>
+  (artistOfferLinks ?? [])
+    .filter((artist) => !!artist.artistName.trim())
     .map((link) => ({
       artistId: link.artistId,
       artistName: link.artistName.trim(),
       artistType: link.artistType,
     }))
-}
 
 export function serializeDescriptionPostData(
   formValues: DescriptionFormValues,

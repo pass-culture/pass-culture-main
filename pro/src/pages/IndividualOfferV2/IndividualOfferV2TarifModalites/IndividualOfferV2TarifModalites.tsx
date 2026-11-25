@@ -23,7 +23,7 @@ const IndividualOfferV2TarifModalites = () => {
   const isOnboarding = pathname.includes('onboarding')
 
   const handlePreviousStep = () => {
-    navigate(
+    void navigate(
       getIndividualOfferUrl({
         offerId: offer?.id,
         step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION_V2,
