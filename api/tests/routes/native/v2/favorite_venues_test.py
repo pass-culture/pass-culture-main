@@ -46,10 +46,37 @@ class GetTest:
                             "id": venue.id,
                             "name": venue.name,
                             "image": "https://example.com/banner.jpg",
+                            "isOpenToPublic": venue.isOpenToPublic,
+                            "address": {
+                                "street": venue.offererAddress.address.street,
+                                "postalCode": venue.offererAddress.address.postalCode,
+                                "city": venue.offererAddress.address.city,
+                            },
                         },
                     }
                 ],
             }
+
+        def when_favorite_venue_has_no_address(self, client):
+            user = users_factories.UserFactory()
+            venue = offerers_factories.VenueFactory(offererAddress=None)
+            favorite = favorite_factories.FavoriteVenueFactory(user=user, venue=venue)
+
+            response = client.with_token(user).get(FAVORITES_BASE_URL)
+
+            assert response.status_code == 200
+            assert response.json["favorites"] == [
+                {
+                    "id": favorite.id,
+                    "venue": {
+                        "id": venue.id,
+                        "name": venue.name,
+                        "image": None,
+                        "isOpenToPublic": venue.isOpenToPublic,
+                        "address": None,
+                    },
+                }
+            ]
 
         def test_number_of_queries_does_not_depend_on_the_number_of_favorites(self, client):
             user = users_factories.UserFactory()
@@ -86,7 +113,17 @@ class CreateFavoriteTest:
         assert favorite.venueId == venue.id
         assert response.json == {
             "id": favorite.id,
-            "venue": {"id": venue.id, "name": "Librairie du coin", "image": venue.bannerUrl},
+            "venue": {
+                "id": venue.id,
+                "name": "Librairie du coin",
+                "image": venue.bannerUrl,
+                "isOpenToPublic": venue.isOpenToPublic,
+                "address": {
+                    "street": venue.offererAddress.address.street,
+                    "postalCode": venue.offererAddress.address.postalCode,
+                    "city": venue.offererAddress.address.city,
+                },
+            },
         }
 
     def when_user_creates_a_favorite_twice(self, client):
