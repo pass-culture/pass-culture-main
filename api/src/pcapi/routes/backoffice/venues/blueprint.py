@@ -1498,12 +1498,12 @@ def close_venue(venue_id: int) -> response_utils.BackofficeResponse:
         flash(response_utils.build_form_error_msg(form), "warning")
         return redirect(url_for("backoffice.venue.get", venue_id=venue.id), code=303)
 
-    is_pricing_point = venue.is_pricing_point
+    is_active_pricing_point = venue.is_active_pricing_point
     offerers_api.close_venue(
         venue, author=current_user, comment=form.comment.data, send_mail=not form.dont_send_email.data
     )
     flash(Markup("Le partenaire culturel <b>{name}</b> a été fermé").format(name=venue.name), "success")
-    if is_pricing_point:
+    if is_active_pricing_point:
         flash(
             Markup("N'oubliez pas de déplacer le point de valorisation").format(name=venue.name),
             "warning",

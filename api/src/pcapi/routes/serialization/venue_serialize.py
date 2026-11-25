@@ -201,7 +201,7 @@ class GetVenueResponseModel(HttpBodyModel):
             comment=venue.comment,
             managingOfferer=GetVenueManagingOffererResponseModel.model_validate(venue.managingOfferer),
             pricingPoint=get_current_pricing_point(venue),
-            isPricingPoint=venue.is_pricing_point,
+            isPricingPoint=venue.is_active_pricing_point,
             siret=venue.siret,
             collectiveDescription=venue.collectiveDescription,
             collectiveStudents=venue.collectiveStudents,

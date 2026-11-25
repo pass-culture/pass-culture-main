@@ -774,7 +774,7 @@ class Returns200Test:
 
         assert response.json["hasNonDraftOffers"] is True
 
-    def test_is_pricing_point_only_for_venues_of_the_same_offerer(self, client):
+    def test_is_active_pricing_point_only_for_venues_of_the_same_offerer(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
         pricing_point = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
         linked_venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
@@ -789,6 +789,29 @@ class Returns200Test:
 
         assert response.status_code == 200
         assert response.json["isPricingPoint"] is True
+
+    def test_is_active_pricing_point_only_for_opened_venues(self, client):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
+        pricing_point = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        linked_venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        offerers_factories.VenuePricingPointLinkFactory(venue=linked_venue, pricingPoint=pricing_point)
+
+        other_offerer = offerers_factories.OffererFactory()
+        other_linked_venue = offerers_factories.VenueFactory(managingOfferer=other_offerer)
+        offerers_factories.VenuePricingPointLinkFactory(venue=other_linked_venue, pricingPoint=pricing_point)
+
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
+        response = auth_request.get(f"/venues/{pricing_point.id}")
+
+        assert response.status_code == 200
+        assert response.json["isPricingPoint"] is True
+
+        linked_venue.state = offerers_models.VenueState.CLOSED
+        db.session.flush()
+        response = auth_request.get(f"/venues/{pricing_point.id}")
+
+        assert response.status_code == 200
+        assert response.json["isPricingPoint"] is False
 
     def test_is_not_pricing_point_when_only_linked_to_itself(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")

@@ -813,16 +813,18 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
         return link.pricingPoint if link else None
 
     @property
-    def is_pricing_point(self) -> bool:
+    def is_active_pricing_point(self) -> bool:
+        """Is the current venue a pricing point used by non closed venues ?"""
         now = date_utils.get_naive_utc_now()
         return db.session.query(
             db.session.query(VenuePricingPointLink)
-            .join(Venue, Venue.id == VenuePricingPointLink.venueId)
+            .join(VenuePricingPointLink.venue)
             .filter(
                 VenuePricingPointLink.pricingPointId == self.id,
                 VenuePricingPointLink.venueId != self.id,
                 Venue.managingOffererId == self.managingOffererId,
                 VenuePricingPointLink.timespan.contains(now),
+                Venue.is_open,
             )
             .exists()
         ).scalar()

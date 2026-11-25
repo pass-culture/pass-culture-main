@@ -7,7 +7,6 @@ import secrets
 import time
 import typing
 from collections import defaultdict
-from datetime import UTC
 from datetime import date
 from datetime import datetime
 from datetime import timedelta
@@ -3685,22 +3684,6 @@ def get_user_pending_and_validated_offerers(
     return PendingAndValidatedOfferers(validated=validated, pending=pending)
 
 
-def _is_a_pricing_point_to_an_opened_venue(venue: models.Venue) -> bool:
-    now = datetime.now(UTC).replace(tzinfo=None)
-    return db.session.query(
-        db.session.query(models.VenuePricingPointLink)
-        .join(models.VenuePricingPointLink.venue)
-        .filter(
-            models.VenuePricingPointLink.pricingPointId == venue.id,
-            models.VenuePricingPointLink.venueId != venue.id,
-            models.Venue.managingOffererId == venue.managingOffererId,
-            models.VenuePricingPointLink.timespan.contains(now),
-            models.Venue.is_open,
-        )
-        .exists()
-    ).scalar()
-
-
 def close_venue(
     venue: models.Venue,
     author: users_models.User | None = None,
@@ -3717,7 +3700,7 @@ def close_venue(
         },
     )
     siret_shift_pending_tag = criteria_api.get_siret_shift_pending_tag()
-    if venue.is_closed and siret_shift_pending_tag in venue.criteria and not venue.is_pricing_point:
+    if venue.is_closed and siret_shift_pending_tag in venue.criteria and not venue.is_active_pricing_point:
         criteria_api.unlink_criterion_from_venue(criterion=siret_shift_pending_tag, venue=venue)
         if send_mail:
             transactional_mails.send_venue_closed_email(venue.id)
@@ -3745,7 +3728,7 @@ def close_venue(
     delete_venue_pivots_and_providers(venue.id, author_id)
     db.session.flush()
 
-    if _is_a_pricing_point_to_an_opened_venue(venue):
+    if venue.is_active_pricing_point:
         criteria_api.link_criterion_to_venue(criterion=siret_shift_pending_tag, venue=venue)
         if send_mail:
             transactional_mails.send_venue_closure_request_email(venue.id)
