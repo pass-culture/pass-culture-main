@@ -108,7 +108,7 @@ const IndividualOfferV2Description = (): JSX.Element => {
           <MandatoryInfo />
           <FormLayout>
             <FormLayout.Section title="À propos de votre offre">
-              <HasCapability name={FieldEnum.TITLE}>
+              <HasCapability name={FieldEnum.TITLE_BIEN}>
                 <FormLayout.Row>
                   <TextInput
                     name="title"

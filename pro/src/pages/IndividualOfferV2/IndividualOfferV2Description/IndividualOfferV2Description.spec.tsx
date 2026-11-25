@@ -27,7 +27,7 @@ const renderIndividualOfferV2Description = (
   }
 ) => {
   vi.spyOn(api, 'getCapabilities').mockResolvedValue({
-    capabilities: [FieldEnum.TITLE],
+    capabilities: [FieldEnum.TITLE_BIEN],
     mandatoryFields: [FieldEnum.TITLE],
   })
 

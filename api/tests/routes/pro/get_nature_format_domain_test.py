@@ -69,30 +69,51 @@ def test_get_nature_format_domain_unauthenticated(client):
         (
             "BIEN",
             "CD",
-            ["TITLE", "DESCRIPTION", "IMAGE", "GENRE_MUSIC", "PERFORMER", "EAN"],
-            ["TITLE", "GENRE_MUSIC"],
+            ["GENRE_MUSIC", "PERFORMER"],
+            ["GENRE_MUSIC"],
         ),
         (
             "BIEN",
             "VINYLE",
-            ["TITLE", "DESCRIPTION", "IMAGE", "GENRE_MUSIC", "PERFORMER", "EAN"],
-            ["TITLE", "GENRE_MUSIC"],
+            ["GENRE_MUSIC", "PERFORMER"],
+            ["GENRE_MUSIC"],
         ),
-        ("BIEN", "DVD_BLU_RAY", ["TITLE", "DESCRIPTION", "IMAGE", "EAN"], ["TITLE"]),
-        ("BIEN", "INSTRUMENT_DE_MUSIQUE", ["TITLE", "DESCRIPTION", "IMAGE", "EAN"], ["TITLE"]),
+        ("BIEN", "DVD_BLU_RAY", [], []),
+        ("BIEN", "INSTRUMENT_DE_MUSIQUE", [], []),
         (
             "BIEN",
             "LIVRE_PAPIER",
-            ["TITLE", "DESCRIPTION", "IMAGE", "EAN", "AUTHOR", "ACCESSIBILITY_ATTRIBUTE_LARGE_PRINT"],
-            ["TITLE"],
+            ["AUTHOR", "ACCESSIBILITY_ATTRIBUTE_LARGE_PRINT"],
+            [],
         ),
-        ("BIEN", "MATERIEL_ARTS_CREATIFS", ["TITLE", "DESCRIPTION", "IMAGE", "EAN"], ["TITLE"]),
+        ("BIEN", "MATERIEL_ARTS_CREATIFS", [], []),
         ("CARTE_ABONNEMENT", "LIVRE_PAPIER", [], []),
         ("EVENEMENT", "LIVRE_PAPIER", [], []),
         ("NUMERIQUE", "LIVRE_PAPIER", [], []),
     ],
 )
 def test_get_capabilities(client, nature, format, capabilities, mandatory_fields):
+    if nature == "BIEN":
+        capabilities = [
+            "BOOKING_LIMIT",
+            "BOOKING_OPENING_DATE",
+            "COMPLEMENTARY_INFO",
+            "EMAIL_NOTIFICATION",
+            "IMAGE",
+            "NO_CREDIT_LINK",
+            "PRICE",
+            "PROGRAM_PUBLICATION",
+            "ACCESSIBILITY_VENUE",
+            "COUNTERMARK",
+            "DESCRIPTION",
+            "EAN",
+            "LOCATION",
+            "PICKUP_30_DAYS",
+            "STOCK",
+            "TITLE_BIEN",
+        ] + capabilities
+        mandatory_fields = ["PRICE", "TITLE", "LOCATION", "PICKUP_30_DAYS", "STOCK"] + mandatory_fields
+
     user = users_factories.ProFactory()
     client = client.with_session_auth(user.email)
 
