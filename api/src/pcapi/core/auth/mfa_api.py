@@ -14,6 +14,7 @@ from pcapi.core.users import models as users_models
 from pcapi.core.users import repository as users_repository
 from pcapi.core.users.sessions import create_user_jwt_tokens
 from pcapi.core.users.sessions import disconnect_native_user_sessions
+from pcapi.core.users.sessions import disconnect_user_session
 from pcapi.routes.native.v3.serialization import authentication
 from pcapi.utils.redis import get_redis_client
 
@@ -99,6 +100,7 @@ def block_user_connection(user_id: int) -> None:
     """
     get_redis_client().set(USER_BAN_REDIS_KEY % user_id, 1, ex=settings.NATIVE_APP_AUTHENTICATION_BAN_DURATION)
     disconnect_native_user_sessions(user_id=user_id)
+    disconnect_user_session(user_id=user_id)
 
     user = users_repository.find_user_by_id(user_id)
     if user:
@@ -117,7 +119,7 @@ def block_user_connection(user_id: int) -> None:
             technical_message_id="users.login",
         )
 
-    logger.info(
+    logger.warning(
         "Failed authentication attempt",
         extra={
             "user_id": user_id,
@@ -237,11 +239,12 @@ def get_session_user(session: MfaAuthSession) -> users_models.User:
         # this should not be possible but let's be defensive
         raise users_exceptions.UserDoesNotExist()
 
-    _check_user_can_authenticate(user)
     return user
 
 
 def conclude_authentication(user: users_models.User, device_info: authentication.DeviceInfoV3) -> tuple[str, str]:
+    _check_user_can_authenticate(user)
+
     logger.info(
         "Successful authentication attempt",
         extra={

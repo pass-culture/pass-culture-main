@@ -636,7 +636,7 @@ class SubmitOtpMailTest(OtpMfaHelper):
         response = client.post(self.url, json={"response": "AZERTY", "mfaToken": self.default_token})
 
         assert response.status_code == 403
-        assert response.json == {"general": ["Workflow violation"]}
+        assert response.json == {"general": ["Violation du workflow MFA"]}
         assert clear_redis.keys(SESSION_KEY_PATTERN % "*") == []
         assert clear_redis.exists(USER_BAN_REDIS_KEY % user.id)
 

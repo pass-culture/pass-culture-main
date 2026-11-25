@@ -28,7 +28,7 @@ def _get_violation_errors(exc: mfa_api.MultifactorAuthenticationViolation) -> di
         case mfa_api.MultifactorAuthenticationInvalidSecondFactor():
             return {"token": ["Méthode d'authentification invalide"]}
         case mfa_api.MultifactorAuthenticationWorkflowViolation():
-            return {"general": ["Workflow violation"]}
+            return {"general": ["Violation du workflow MFA"]}
         case mfa_api.MultifactorAuthenticationTooManyAttempts():
             return {"banExpiration": exc.ban_expiration}
     raise ValueError(f"unknown authentication violation {type(exc)}")
@@ -166,10 +166,9 @@ def submit_otp_response(body: authentication.OtpRequestV3) -> flask.Response:
 
     try:
         user = mfa_api.get_session_user(session)
+        access, refresh = mfa_api.conclude_authentication(user, session.device_info)
     except (users_exceptions.InvalidIdentifier, users_exceptions.UserDoesNotExist) as exc:
         raise ApiErrors({"general": ["Identifiant ou Mot de passe incorrect"]}) from exc
-
-    access, refresh = mfa_api.conclude_authentication(user, session.device_info)
 
     return make_json_response(
         authentication.OtpResponseV3(
