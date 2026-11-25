@@ -11,6 +11,10 @@ from pcapi.utils.date import get_naive_utc_now
 logger = logging.getLogger(__name__)
 
 
+def get_user_cultural_survey(user_id: int) -> UserCulturalSurvey | None:
+    return db.session.query(UserCulturalSurvey).filter_by(userId=user_id).one_or_none()
+
+
 def save_cultural_survey_for_user(payload: CulturalSurveyTaskAnswers) -> None:
     answers = [answer.model_dump() for answer in payload.answers]
 

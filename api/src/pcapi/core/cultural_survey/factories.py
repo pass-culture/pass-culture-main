@@ -18,7 +18,7 @@ class UserCulturalSurveyFactory(BaseFactory):
         lambda _: [
             {
                 "question_id": question.id,
-                "answers_id": [FuzzyChoice(answers).fuzz() for _ in range(randrange(len(answers)))],
+                "answer_ids": [FuzzyChoice(answers).fuzz() for _ in range(randrange(len(answers)))],
             }
             for question, answers in SURVEY_QUESTIONS_AND_ANSWERS
         ],

@@ -4,6 +4,7 @@ from flask_login import current_user
 
 import pcapi.connectors.recommendation as recommendation_api
 from pcapi.core.artist.repository import get_artists_by_ids
+from pcapi.core.cultural_survey.api import get_user_cultural_survey
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.native import blueprint
 from pcapi.routes.native.security import authenticated_and_active_user_required
@@ -65,6 +66,9 @@ def playlist(
     body: serializers.PlaylistRequestBody,
 ) -> serializers.PlaylistResponse:
     try:
+        if body.is_qpi is True and current_user is not None:
+            user_cultural_survey = get_user_cultural_survey(current_user.id)
+            body.qpi_answers = user_cultural_survey.answers if user_cultural_survey else []
         raw_response = recommendation_api.get_playlist(
             current_user,
             params=query.model_dump(),
