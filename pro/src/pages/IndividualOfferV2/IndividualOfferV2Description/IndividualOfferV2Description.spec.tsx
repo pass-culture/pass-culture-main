@@ -1,4 +1,5 @@
 import { screen } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
@@ -24,10 +25,11 @@ const renderIndividualOfferV2Description = (
   selection: NFDState = {
     nature: NatureEnum.BIEN,
     format: FormatEnum.LIVRE_PAPIER,
-  }
+  },
+  capabilities: FieldEnum[] = [FieldEnum.TITLE_BIEN]
 ) => {
   vi.spyOn(api, 'getCapabilities').mockResolvedValue({
-    capabilities: [FieldEnum.TITLE_BIEN],
+    capabilities,
     mandatoryFields: [FieldEnum.TITLE],
   })
 
@@ -81,6 +83,17 @@ describe('<IndividualOfferV2Description />', () => {
     }
   )
 
+  it('should display the image upload zone when the offer can have an image', async () => {
+    renderIndividualOfferV2Description(undefined, [
+      FieldEnum.TITLE_BIEN,
+      FieldEnum.IMAGE,
+    ])
+
+    const input = await screen.findByLabelText(/Ajoutez une image/)
+    expect(input).toHaveAttribute('type', 'file')
+    expect(input).not.toHaveAttribute('multiple')
+  })
+
   it('should display the description when nature and format are selected', async () => {
     renderIndividualOfferV2Description()
 
@@ -95,5 +108,24 @@ describe('<IndividualOfferV2Description />', () => {
     await screen.findByLabelText(/Titre du bien/)
 
     expect(await axe(container)).toHaveNoViolations()
+  })
+
+  it('should display an error and not save when a mandatory field is empty', async () => {
+    vi.spyOn(api, 'createOffer')
+    renderIndividualOfferV2Description()
+
+    const titleInput = await screen.findByLabelText(/Titre du bien/)
+    await userEvent.click(titleInput)
+    await userEvent.tab()
+
+    expect(
+      await screen.findByText('Veuillez renseigner un titre')
+    ).toBeInTheDocument()
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Étape suivante' })
+    )
+
+    expect(api.createOffer).not.toHaveBeenCalled()
   })
 })

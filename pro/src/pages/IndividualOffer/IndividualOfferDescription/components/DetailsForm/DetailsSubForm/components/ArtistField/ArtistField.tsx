@@ -11,6 +11,7 @@ import fullMoreIcon from '@/icons/full-more.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'
 import { ApiSelect } from '@/ui-kit/form/ApiSelect/ApiSelect'
 
+import type { DescriptionFormValues } from '../../../../../../../IndividualOfferV2/IndividualOfferV2Description/validationSchemaV2'
 import type { DetailsFormValues } from '../../../validationSchema'
 import styles from './ArtistField.module.scss'
 import avatarPlaceholder from './assets/avatar_placeholder.png'
@@ -53,13 +54,33 @@ type ArtistOption = ArtistResponseModel & { value: string; label: string }
 type ArtistFieldProps = {
   readOnly: boolean
   artistType: ArtistType
-  fieldArray: UseFieldArrayReturn<DetailsFormValues, 'artistOfferLinks', 'id'>
-}
+} & (
+  | {
+      /**
+       * Use fieldArrayV2 for new form (TODO (cmoinier) remove this switch type once NFD is ready)
+       */
+      fieldArray: UseFieldArrayReturn<
+        DetailsFormValues,
+        'artistOfferLinks',
+        'id'
+      >
+      fieldArrayV2?: never
+    }
+  | {
+      fieldArray?: never
+      fieldArrayV2: UseFieldArrayReturn<
+        DescriptionFormValues,
+        'artistOfferLinks',
+        'id'
+      >
+    }
+)
 
 export function ArtistField({
   readOnly,
   artistType,
   fieldArray,
+  fieldArrayV2,
 }: Readonly<ArtistFieldProps>) {
   const {
     setValue,
@@ -68,7 +89,7 @@ export function ArtistField({
     formState: { errors },
   } = useFormContext<DetailsFormValues>()
 
-  const { fields, append, remove } = fieldArray
+  const { fields, append, remove } = fieldArray || fieldArrayV2
 
   const fieldsForType = fields
     .map((field, index) => ({ field, index }))
