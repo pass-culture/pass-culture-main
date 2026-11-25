@@ -7,8 +7,6 @@ import {
 
 import { withUserPermissions } from '@/commons/auth/withUserPermissions'
 import { noop } from '@/commons/utils/noop'
-import { SignupConfirmation } from '@/pages/Signup/SignupConfirmation/SignupConfirmation'
-import { SignupContainer } from '@/pages/Signup/SignupContainer/SignupContainer'
 
 import { validateSignupActivation } from './middlewares/validateSignupActivation'
 import type { CustomRouteGroup } from './types'
@@ -26,7 +24,11 @@ export const routesSignup: CustomRouteGroup['children'] = [
     loader: withUserPermissions(mustBeUnauthenticated),
   },
   {
-    element: <SignupContainer />,
+    lazy: async () => ({
+      Component: (
+        await import('@/pages/Signup/SignupContainer/SignupContainer')
+      ).SignupContainer,
+    }),
     loader: noop,
     path: 'compte/creation',
     handle: {
@@ -34,7 +36,11 @@ export const routesSignup: CustomRouteGroup['children'] = [
     },
   },
   {
-    element: <SignupConfirmation />,
+    lazy: async () => ({
+      Component: (
+        await import('@/pages/Signup/SignupConfirmation/SignupConfirmation')
+      ).SignupConfirmation,
+    }),
     loader: noop,
     path: 'compte/confirmation',
     handle: {

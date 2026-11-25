@@ -18,4 +18,20 @@ describe('routesSignupJourney', () => {
       )
     ).not.toBeNull()
   })
+
+  it.each([
+    ['recherche', 'Offerer'],
+    ['rattachement', 'Offerers'],
+    ['rattachement/confirmation-rattachement', 'ConfirmedAttachment'],
+    ['identification', 'OffererAuthentication'],
+    ['activite', 'Activity'],
+    ['confirmation', 'Validation'],
+  ])('should load the component for %s', async (path, componentName) => {
+    const lazy = routesSignupJourney.find((route) => route.path === path)?.lazy
+    if (typeof lazy !== 'function') {
+      throw new Error(`Missing lazy route for ${path}`)
+    }
+
+    expect((await lazy()).Component).toHaveProperty('name', componentName)
+  })
 })
