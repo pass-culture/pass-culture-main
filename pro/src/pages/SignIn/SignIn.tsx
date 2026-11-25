@@ -17,6 +17,7 @@ import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useInitReCaptcha } from '@/commons/hooks/useInitReCaptcha'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { initializeUser } from '@/commons/store/user/dispatchers/initializeUser'
+import { VENUE_ID_SEARCH_PARAM } from '@/commons/store/user/utils/getInitialPartnerVenueId'
 import { getReCaptchaToken } from '@/commons/utils/recaptcha'
 
 import { SIGNIN_FORM_DEFAULT_VALUES } from './constants'
@@ -79,10 +80,10 @@ export const SignIn = (): JSX.Element => {
 
       await dispatch(initializeUser({ user })).unwrap()
 
-      const venueId = searchParams.get('id-structure')
+      const venueId = searchParams.get(VENUE_ID_SEARCH_PARAM)
       const nextUrl = getInternalRedirectUrl(
         searchParams.get('redirectTo') ?? getUserDefaultPath(),
-        venueId ? `id-structure=${venueId}` : ''
+        venueId ? `${VENUE_ID_SEARCH_PARAM}=${venueId}` : ''
       )
       await navigate(nextUrl)
     } catch (error) {
