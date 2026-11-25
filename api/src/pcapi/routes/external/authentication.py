@@ -2,11 +2,16 @@ import base64
 import functools
 import hashlib
 import hmac
+import logging
+import typing
 from collections.abc import Callable
-from typing import Any
 
 import ecdsa
 import flask
+from cryptography.exceptions import InvalidSignature
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric import ec
 
 from pcapi import settings
 from pcapi.connectors.serialization import ubble_serializers
@@ -14,9 +19,12 @@ from pcapi.models.api_errors import ForbiddenError
 from pcapi.models.api_errors import UnauthorizedError
 
 
-def require_dms_token(route_function: Callable[..., Any]) -> Callable:
+logger = logging.getLogger(__name__)
+
+
+def require_dms_token[**P, T](route_function: Callable[P, T]) -> Callable[P, T]:
     @functools.wraps(route_function)
-    def validate_dms_token(*args: Any, **kwargs: Any) -> flask.Response:
+    def validate_dms_token(*args: typing.Any, **kwargs: typing.Any) -> T:
         token = flask.request.args.get("token")
         if not token:
             raise UnauthorizedError()
@@ -31,9 +39,9 @@ def require_dms_token(route_function: Callable[..., Any]) -> Callable:
     return validate_dms_token
 
 
-def require_ubble_v2_signature(route_function: Callable[..., Any]) -> Callable:
+def require_ubble_v2_signature[**P, T](route_function: Callable[P, T]) -> Callable[P, T]:
     @functools.wraps(route_function)
-    def validate_ubble_signature(*args: Any, **kwargs: Any) -> flask.Response:
+    def validate_ubble_signature(*args: typing.Any, **kwargs: typing.Any) -> T:
         signature = flask.request.headers.get("Cko-Signature", "")
         if not signature:
             raise UnauthorizedError(errors={"signature": ["Missing signature"]})
@@ -58,6 +66,10 @@ def check_v2_signature(timestamp: bytes, data: bytes, signature: str) -> None:
     with open(settings.UBBLE_SIGNATURE_KEY_PATH, encoding="utf-8") as ubble_signature_file:
         raw_public_key = ubble_signature_file.read()
     verifying_key = ecdsa.VerifyingKey.from_pem(raw_public_key)
+    public_key = typing.cast(
+        ec.EllipticCurvePublicKey,
+        serialization.load_pem_public_key(raw_public_key.encode("utf-8")),
+    )
 
     try:
         decoded_signature = base64.b64decode(signature.encode("utf-8"))
@@ -65,6 +77,21 @@ def check_v2_signature(timestamp: bytes, data: bytes, signature: str) -> None:
         raise ForbiddenError(errors={"signature": ["Invalid signature"]})
 
     signed_payload = b":".join((timestamp, data))
+
+    try:
+        # TODO use as only auth method after 01/01/2027 and remove ecdsa dependancie
+        public_key.verify(
+            signature=decoded_signature,
+            data=signed_payload,
+            signature_algorithm=ec.ECDSA(hashes.SHA512()),
+        )
+        new_signature_check = True
+    except InvalidSignature:
+        new_signature_check = False
+    except Exception:
+        logger.exception("An error occured when checking ubble signature with python cryptography")
+        new_signature_check = None
+
     try:
         result = verifying_key.verify(
             decoded_signature,
@@ -74,15 +101,31 @@ def check_v2_signature(timestamp: bytes, data: bytes, signature: str) -> None:
             allow_truncate=True,
         )
     except ecdsa.keys.BadSignatureError:
+        if new_signature_check:
+            logger.error(
+                "Ubble signature verification mismatch, please contact @rpaoloni-pass",
+                extra={"ecdsa": "error", "pyca/cryptography": "ok"},
+            )
         raise ForbiddenError(errors={"signature": ["Invalid signature"]})
 
     if not result:
+        if new_signature_check:
+            logger.error(
+                "Ubble signature verification mismatch, please contact @rpaoloni-pass",
+                extra={"ecdsa": "error", "pyca/cryptography": "ok"},
+            )
         raise ForbiddenError(errors={"signature": ["Invalid signature"]})
 
+    if not new_signature_check:
+        logger.error(
+            "Ubble signature verification mismatch, please contact @rpaoloni-pass",
+            extra={"ecdsa": "ok", "pyca/cryptography": "error"},
+        )
 
-def require_ubble_signature(route_function: Callable[..., Any]) -> Callable:
+
+def require_ubble_signature(route_function: Callable[..., typing.Any]) -> Callable:
     @functools.wraps(route_function)
-    def validate_ubble_signature(*args: Any, **kwargs: Any) -> flask.Response:
+    def validate_ubble_signature(*args: typing.Any, **kwargs: typing.Any) -> flask.Response:
         error = ForbiddenError(errors={"signature": ["Invalid signature"]})
         raw_signature = flask.request.headers.get("Ubble-Signature", "")
         if not raw_signature:
@@ -121,9 +164,9 @@ def compute_signature(ts: bytes, payload: bytes) -> str:
     return signature
 
 
-def require_zendesk_webhook_api_key(route_function: Callable[..., Any]) -> Callable:
+def require_zendesk_webhook_api_key(route_function: Callable[..., typing.Any]) -> Callable:
     @functools.wraps(route_function)
-    def validate_zendesk_webhook_api_key(*args: Any, **kwargs: Any) -> flask.Response:
+    def validate_zendesk_webhook_api_key(*args: typing.Any, **kwargs: typing.Any) -> flask.Response:
         api_key = flask.request.headers.get("X-Api-Key", "")
         if not api_key:
             raise UnauthorizedError()
