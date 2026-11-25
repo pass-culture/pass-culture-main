@@ -2,10 +2,13 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
+import { api } from '@/apiClient/api'
 import { FormatEnum, NatureEnum } from '@/apiClient/v1'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { setFormat, setNature } from '@/commons/store/nfd/reducer'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { IndividualOfferV2 } from './IndividualOfferV2'
@@ -30,8 +33,8 @@ function Selection() {
   )
 }
 
-const renderSelection = () =>
-  renderWithProviders(null, {
+const renderSelection = async () => {
+  const result = renderWithProviders(null, {
     initialRouterEntries: ['/offre/individuelle/v2/creation/description'],
     routes: [
       {
@@ -40,12 +43,28 @@ const renderSelection = () =>
         children: [{ path: 'description', element: <Selection /> }],
       },
     ],
+    storeOverrides: {
+      user: {
+        currentUser: sharedCurrentUserFactory(),
+        selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }),
+      },
+    },
   })
+  await screen.findByRole('heading', { name: 'Créer une offre' })
+  return result
+}
 
 describe('<IndividualOfferV2 />', () => {
+  beforeEach(() => {
+    vi.spyOn(api, 'getCategories').mockResolvedValue({
+      categories: [],
+      subcategories: [],
+    })
+  })
+
   it('should keep nature and format in the store', async () => {
     const user = userEvent.setup()
-    renderSelection()
+    await renderSelection()
 
     await user.click(screen.getByRole('button', { name: 'Choisir un livre' }))
     expect(screen.getByLabelText('Nature')).toHaveTextContent(NatureEnum.BIEN)
@@ -55,20 +74,20 @@ describe('<IndividualOfferV2 />', () => {
   })
 
   it('should have no accessibility violations', async () => {
-    const { container } = renderSelection()
+    const { container } = await renderSelection()
 
     expect(await axe(container)).toHaveNoViolations()
   })
 
-  it('should start with an empty selection', () => {
-    renderSelection()
+  it('should start with an empty selection', async () => {
+    await renderSelection()
 
     expect(screen.getByLabelText('Nature')).toBeEmptyDOMElement()
     expect(screen.getByLabelText('Format')).toBeEmptyDOMElement()
   })
 
-  it('should render its elements', () => {
-    renderSelection()
+  it('should render its elements', async () => {
+    await renderSelection()
 
     expect(
       screen.getByRole('heading', { name: 'Créer une offre' })

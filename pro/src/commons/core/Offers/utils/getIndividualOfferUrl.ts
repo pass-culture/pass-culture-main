@@ -55,6 +55,18 @@ const routes = {
     [OFFER_WIZARD_MODE.CREATION]: '',
     [OFFER_WIZARD_MODE.EDITION]: '/offre/individuelle/:offerId/visibilite',
   },
+  [INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION_V2]: {
+    [OFFER_WIZARD_MODE.CREATION]: `/offre/individuelle/v2/:offerId/creation/description`,
+    [OFFER_WIZARD_MODE.EDITION]: ``,
+  },
+  [INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS_V2]: {
+    [OFFER_WIZARD_MODE.CREATION]: `/offre/individuelle/v2/:offerId/creation/tarifs-modalites`,
+    [OFFER_WIZARD_MODE.EDITION]: ``,
+  },
+  [INDIVIDUAL_OFFER_WIZARD_STEP_IDS.NFD]: {
+    [OFFER_WIZARD_MODE.CREATION]: `/offre/individuelle/v2/creation/nature-format-domaine`,
+    [OFFER_WIZARD_MODE.EDITION]: ``,
+  },
 }
 
 export const getIndividualOfferPath = ({
@@ -63,11 +75,24 @@ export const getIndividualOfferPath = ({
   step,
   isOnboarding = false,
 }: GetIndividualOfferPathArgs): string => {
-  if (isCreation) {
-    return `${isOnboarding ? '/onboarding' : ''}/offre/individuelle/creation/${step}`
+  const baseUrl = isOnboarding ? '/onboarding' : ''
+
+  // For V2 routes, always use the routes table (which includes offerId)
+  const isV2Route = [
+    INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION_V2,
+    INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS_V2,
+    INDIVIDUAL_OFFER_WIZARD_STEP_IDS.NFD,
+  ].includes(step)
+
+  if (isV2Route) {
+    return `${baseUrl}${routes[step][mode]}`
   }
 
-  return `${isOnboarding ? '/onboarding' : ''}${routes[step][mode]}`
+  if (isCreation) {
+    return `${baseUrl}/offre/individuelle/creation/${step}`
+  }
+
+  return `${baseUrl}${routes[step][mode]}`
 }
 
 interface GetIndividualOfferUrlArgs {

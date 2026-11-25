@@ -154,6 +154,8 @@ export const getIndividualOfferFactory = (
     nature: null,
     format: null,
     domain: null,
+    capabilities: [],
+    mandatoryFields: [],
     ...customGetIndividualOffer,
   }
 }

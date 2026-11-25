@@ -214,6 +214,7 @@ export const LateralMenu = ({ isLateralPanelOpen }: SideNavLinksProps) => {
                 id={createOfferPanelId}
                 hidden={!isCreateOfferOpen}
               >
+                {/* Remove me when activating WIP_NFD in prod */}
                 <Link
                   className={styles['create-offer-panel-item']}
                   to={getIndividualOfferUrl({
@@ -231,11 +232,15 @@ export const LateralMenu = ({ isLateralPanelOpen }: SideNavLinksProps) => {
                   />
                   Pour le grand public
                 </Link>
-                {/* Remove me when activating WIP_NFD in prod */}
+                {/* Rename me when activating WIP_NFD in prod */}
                 {isNFDEnabled && (
                   <Link
                     className={styles['create-offer-panel-item']}
-                    to={'/offre/individuelle/v2/creation/nature-format-domaine'}
+                    to={getIndividualOfferUrl({
+                      step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.NFD,
+                      mode: OFFER_WIZARD_MODE.CREATION,
+                      isOnboarding: false,
+                    })}
                     onClick={closeCreateOfferPanel}
                     onKeyDown={handleCreateOfferKeyDown}
                   >
