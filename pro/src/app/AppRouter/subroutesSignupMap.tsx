@@ -24,11 +24,7 @@ export const routesSignup: CustomRouteGroup['children'] = [
     loader: withUserPermissions(mustBeUnauthenticated),
   },
   {
-    lazy: async () => ({
-      Component: (
-        await import('@/pages/Signup/SignupContainer/SignupContainer')
-      ).SignupContainer,
-    }),
+    lazy: () => import('@/pages/Signup/SignupContainer/SignupContainer'),
     loader: noop,
     path: 'compte/creation',
     handle: {
@@ -36,11 +32,7 @@ export const routesSignup: CustomRouteGroup['children'] = [
     },
   },
   {
-    lazy: async () => ({
-      Component: (
-        await import('@/pages/Signup/SignupConfirmation/SignupConfirmation')
-      ).SignupConfirmation,
-    }),
+    lazy: () => import('@/pages/Signup/SignupConfirmation/SignupConfirmation'),
     loader: noop,
     path: 'compte/confirmation',
     handle: {

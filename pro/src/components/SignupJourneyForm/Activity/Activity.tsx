@@ -206,3 +206,7 @@ export const Activity = () => {
     </div>
   )
 }
+
+// Lazy-loaded by react-router
+// ts-unused-exports:disable-next-line
+export const Component = Activity

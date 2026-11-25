@@ -193,3 +193,7 @@ export const Offerer = (): JSX.Element => {
     </div>
   )
 }
+
+// Lazy-loaded by react-router
+// ts-unused-exports:disable-next-line
+export const Component = Offerer

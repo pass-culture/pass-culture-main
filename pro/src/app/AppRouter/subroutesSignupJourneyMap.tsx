@@ -5,11 +5,7 @@ import { mustBeAuthenticated } from './utils'
 
 export const routesSignupJourney: CustomRouteGroupChild[] = [
   {
-    lazy: async () => ({
-      Component: (
-        await import('@/components/SignupJourneyForm/Offerer/Offerer')
-      ).Offerer,
-    }),
+    lazy: () => import('@/components/SignupJourneyForm/Offerer/Offerer'),
     loader: withUserPermissions(mustBeAuthenticated),
     path: 'recherche',
     handle: {
@@ -17,11 +13,7 @@ export const routesSignupJourney: CustomRouteGroupChild[] = [
     },
   },
   {
-    lazy: async () => ({
-      Component: (
-        await import('@/components/SignupJourneyForm/Offerers/Offerers')
-      ).Offerers,
-    }),
+    lazy: () => import('@/components/SignupJourneyForm/Offerers/Offerers'),
     loader: withUserPermissions(mustBeAuthenticated),
     path: 'rattachement',
     handle: {
@@ -29,13 +21,10 @@ export const routesSignupJourney: CustomRouteGroupChild[] = [
     },
   },
   {
-    lazy: async () => ({
-      Component: (
-        await import(
-          '@/components/SignupJourneyForm/ConfirmedAttachment/ConfirmedAttachment'
-        )
-      ).ConfirmedAttachment,
-    }),
+    lazy: () =>
+      import(
+        '@/components/SignupJourneyForm/ConfirmedAttachment/ConfirmedAttachment'
+      ),
     loader: withUserPermissions(mustBeAuthenticated),
     path: 'rattachement/confirmation-rattachement',
     handle: {
@@ -44,13 +33,10 @@ export const routesSignupJourney: CustomRouteGroupChild[] = [
     },
   },
   {
-    lazy: async () => ({
-      Component: (
-        await import(
-          '@/components/SignupJourneyForm/Authentication/OffererAuthentication'
-        )
-      ).OffererAuthentication,
-    }),
+    lazy: () =>
+      import(
+        '@/components/SignupJourneyForm/Authentication/OffererAuthentication'
+      ),
     loader: withUserPermissions(mustBeAuthenticated),
     path: 'identification',
     handle: {
@@ -58,11 +44,7 @@ export const routesSignupJourney: CustomRouteGroupChild[] = [
     },
   },
   {
-    lazy: async () => ({
-      Component: (
-        await import('@/components/SignupJourneyForm/Activity/Activity')
-      ).Activity,
-    }),
+    lazy: () => import('@/components/SignupJourneyForm/Activity/Activity'),
     loader: withUserPermissions(mustBeAuthenticated),
     path: 'activite',
     handle: {
@@ -70,11 +52,7 @@ export const routesSignupJourney: CustomRouteGroupChild[] = [
     },
   },
   {
-    lazy: async () => ({
-      Component: (
-        await import('@/components/SignupJourneyForm/Validation/Validation')
-      ).Validation,
-    }),
+    lazy: () => import('@/components/SignupJourneyForm/Validation/Validation'),
     loader: withUserPermissions(mustBeAuthenticated),
     path: 'confirmation',
     handle: {
