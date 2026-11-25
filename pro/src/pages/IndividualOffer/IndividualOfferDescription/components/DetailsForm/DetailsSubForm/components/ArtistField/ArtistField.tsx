@@ -16,11 +16,33 @@ import styles from './ArtistField.module.scss'
 import avatarPlaceholder from './assets/avatar_placeholder.png'
 
 const ARTIST_TYPE_LABELS: Record<ArtistType, string> = {
+  [ArtistType.ADAPTER]: 'Adaptateur',
+  [ArtistType.AFTERWORD_AUTHOR]: 'Postface',
   [ArtistType.AUTHOR]: 'Auteur',
+  [ArtistType.CARTOGRAPHER]: 'Cartographe',
+  [ArtistType.CO_AUTHOR]: 'Co-auteur',
+  [ArtistType.COLLECTION_DIRECTOR]: 'Directeur de collection',
+  [ArtistType.COMIC_ARTIST]: 'Dessinateur',
+  [ArtistType.CREATOR]: 'Créateur',
+  [ArtistType.EDITORIAL_COORDINATOR]: 'Coordinateur éditorial',
   [ArtistType.FILM_ACTOR]: 'Acteur',
   [ArtistType.FILM_DIRECTOR]: 'Réalisateur',
+  [ArtistType.FOREWORD_AUTHOR]: 'Avant-propos',
+  [ArtistType.ILLUSTRATOR]: 'Illustrateur',
+  [ArtistType.INTRODUCTION_AUTHOR]: 'Introduction',
+  [ArtistType.MAIN_SUBJECT]: 'Sujet principal',
+  [ArtistType.NARRATOR]: 'Narrateur',
+  [ArtistType.ORIGINAL_AUTHOR]: 'Auteur original',
   [ArtistType.PERFORMER]: 'Interprète',
+  [ArtistType.PHOTOGRAPHER]: 'Photographe',
+  [ArtistType.POSTHUMOUS_COMPLETER]: 'Achevé à titre posthume par',
+  [ArtistType.PREFACE_AUTHOR]: 'Préface',
+  [ArtistType.REVISED_TRANSLATOR]: 'Traduction révisée par',
+  [ArtistType.SCRIPTWRITER]: 'Scénariste',
   [ArtistType.STAGE_DIRECTOR]: 'Metteur en scène',
+  [ArtistType.THESIS_DIRECTOR]: 'Directeur de thèse',
+  [ArtistType.TRANSLATOR]: 'Traducteur',
+  [ArtistType.VOLUME_EDITOR]: 'Éditeur du volume',
 }
 
 const ARTIST_THUMB_WIDTH = 44
