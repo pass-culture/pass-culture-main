@@ -29,8 +29,8 @@ describe('RejectedBanner', () => {
 
     vi.spyOn(
       duplicateBookableOffer,
-      'duplicateBookableOffer'
-    ).mockImplementation(mockDuplicateBookableOffer)
+      'useDuplicateBookableOffer'
+    ).mockReturnValue(mockDuplicateBookableOffer)
   })
 
   it('should render without accessibility violations', async () => {

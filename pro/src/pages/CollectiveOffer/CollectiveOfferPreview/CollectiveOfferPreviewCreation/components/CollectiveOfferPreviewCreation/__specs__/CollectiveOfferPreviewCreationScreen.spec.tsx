@@ -28,7 +28,7 @@ import {
 vi.mock(
   '@/commons/core/OfferEducational/utils/createOfferFromTemplate',
   () => ({
-    createOfferFromTemplate: vi.fn(),
+    useCreateOfferFromTemplate: () => vi.fn(),
   })
 )
 

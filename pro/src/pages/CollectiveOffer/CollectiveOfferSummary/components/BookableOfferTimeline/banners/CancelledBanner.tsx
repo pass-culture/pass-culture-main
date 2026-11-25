@@ -7,7 +7,7 @@ import {
 } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
-import { duplicateBookableOffer } from '@/commons/core/OfferEducational/utils/duplicateBookableOffer'
+import { useDuplicateBookableOffer } from '@/commons/core/OfferEducational/utils/duplicateBookableOffer'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
@@ -33,6 +33,7 @@ export const CancelledBanner = ({
   const navigate = useNavigate()
   const snackBar = useSnackBar()
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
+  const duplicateBookableOffer = useDuplicateBookableOffer()
 
   const message = useMemo(() => {
     switch (reason) {
