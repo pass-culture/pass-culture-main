@@ -27,6 +27,7 @@ def _create_pro_with_venue():
 class Returns200Test:
     number_of_queries = testing.AUTHENTICATION_QUERIES
     number_of_queries += 1  # check user access to venue
+    number_of_queries += 1  # select status candidates (stock based status)
     number_of_queries += 1  # count offers
     number_of_queries += 1  # select page offer ids
     number_of_queries += 1  # select offers with product
