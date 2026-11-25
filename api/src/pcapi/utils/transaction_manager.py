@@ -15,6 +15,9 @@ from pcapi.models import db
 
 logger = logging.getLogger(__name__)
 
+P = typing.ParamSpec("P")
+R = typing.TypeVar("R")
+
 
 @dataclass
 class AtomicContext:
@@ -114,9 +117,9 @@ class atomic:
         return False
 
     # decorator part
-    def __call__(self, func: typing.Callable) -> typing.Callable:
+    def __call__(self, func: typing.Callable[P, R]) -> typing.Callable[P, R]:
         @functools.wraps(func)
-        def wrapper(*args, **kwargs):  # type: ignore[no-untyped-def]
+        def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
             with atomic(apply=self.__apply):
                 return func(*args, **kwargs)
 
