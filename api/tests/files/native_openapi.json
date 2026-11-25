@@ -9023,6 +9023,29 @@
                 "title": "SSOAccountRequest",
                 "type": "object"
             },
+            "SSOAttachAccountRequest": {
+                "additionalProperties": false,
+                "properties": {
+                    "authorizationCode": {
+                        "title": "Authorizationcode",
+                        "type": "string"
+                    },
+                    "deviceInfo": {
+                        "$ref": "#/components/schemas/DeviceInfoV2"
+                    },
+                    "oauthStateToken": {
+                        "title": "Oauthstatetoken",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "authorizationCode",
+                    "oauthStateToken",
+                    "deviceInfo"
+                ],
+                "title": "SSOAttachAccountRequest",
+                "type": "object"
+            },
             "SchoolTypesIdEnum": {
                 "enum": [
                     "AGRICULTURAL_HIGH_SCHOOL",
@@ -16673,6 +16696,64 @@
                     }
                 },
                 "summary": "signin <POST>",
+                "tags": []
+            }
+        },
+        "/native/v2/sso/{sso_provider}": {
+            "post": {
+                "description": "",
+                "operationId": "post__native_v2_sso_{sso_provider}",
+                "parameters": [
+                    {
+                        "description": "",
+                        "in": "path",
+                        "name": "sso_provider",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SSOAttachAccountRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        },
+                        "description": "Unprocessable Content"
+                    }
+                },
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "summary": "sso_attach_account <POST>",
                 "tags": []
             }
         },
