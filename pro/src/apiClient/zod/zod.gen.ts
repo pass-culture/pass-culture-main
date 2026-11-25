@@ -74,11 +74,33 @@ export const zArtistResponseModel = z.object({
  * An artist can be an author or a musician for different products
  */
 export const zArtistType = z.enum([
+    'adapter',
+    'afterword_author',
     'author',
+    'cartographer',
+    'co_author',
+    'collection_director',
+    'comic_artist',
+    'creator',
+    'editorial_coordinator',
     'film_actor',
     'film_director',
+    'foreword_author',
+    'illustrator',
+    'introduction_author',
+    'main_subject',
+    'narrator',
+    'original_author',
     'performer',
-    'stage_director'
+    'photographer',
+    'posthumous_completer',
+    'preface_author',
+    'revised_translator',
+    'scriptwriter',
+    'stage_director',
+    'thesis_director',
+    'translator',
+    'volume_editor'
 ]);
 
 /**
