@@ -5,6 +5,8 @@ import {
 } from '@/commons/utils/localStorageManager'
 import { sendSentryCustomError } from '@/commons/utils/sendSentryCustomError'
 
+export const VENUE_ID_SEARCH_PARAM = 'id-structure'
+
 /**
  * Compute the initially Partner Space selected venue ID when possible.
  */
@@ -18,7 +20,9 @@ export const getInitialPartnerVenueId = (
   //    - venue (deprecated) : old param for Back Office connect-as
 
   const urlSearchParams = new URLSearchParams(globalThis.location.search)
-  let selectedVenueIdFromUrl = Number(urlSearchParams.get('id-structure'))
+  let selectedVenueIdFromUrl = Number(
+    urlSearchParams.get(VENUE_ID_SEARCH_PARAM)
+  )
   if (!selectedVenueIdFromUrl) {
     // TODO(mdesquilbet, 12/11/2026): remove access to deprecated 'venue' param
     // if no sentry error has been raise for some time.
