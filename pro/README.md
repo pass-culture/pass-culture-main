@@ -218,9 +218,6 @@ pnpm test:unit
 # Lance "vitest" avec la bonne configuration
 ```
 
-Le build sépare React et React DOM dans un chunk dédié ; les pages restent
-chargées à la demande.
-
 **Aide pour le debug**
 
 Pour avoir le rendu HTML complet d'un test cassé, on peut utiliser la variable `DEBUG_PRINT_LIMIT`:

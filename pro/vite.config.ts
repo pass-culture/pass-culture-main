@@ -15,18 +15,6 @@ export default defineConfig(({ mode }) => {
       sourcemap: process.env.BUILD_SOURCEMAP === 'true',
       reportCompressedSize: process.env.ANALYZE_BUNDLE === 'true',
       assetsInlineLimit: 0,
-      rolldownOptions: {
-        output: {
-          codeSplitting: {
-            groups: [
-              {
-                name: 'react-vendor',
-                test: /[\\/]node_modules[\\/](react|react-dom|scheduler)[\\/]/,
-              },
-            ],
-          },
-        },
-      },
     },
     resolve: {
       alias: {
