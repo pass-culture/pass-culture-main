@@ -253,7 +253,7 @@ def request_email_update_from_admin(user: models.User, email: str, *, author: mo
     db.session.add(email_history)
     db.session.add(user)
 
-    db.session.query(models.UserSession).filter_by(userId=user.id).delete(synchronize_session=False)
+    sessions.disconnect_user_session(user.id)
     sessions.disconnect_native_user_sessions(user.id)
 
     db.session.flush()
@@ -276,7 +276,7 @@ def full_email_update_by_admin(user: models.User, email: str, *, author: models.
     user.isEmailValidated = True
     db.session.add(user)
 
-    db.session.query(models.UserSession).filter_by(userId=user.id).delete(synchronize_session=False)
+    sessions.disconnect_user_session(user.id)
     sessions.disconnect_native_user_sessions(user.id)
 
     revoke_sso_access(user, SingleSignOnProviders.ALL)
@@ -294,7 +294,7 @@ def clear_email_by_admin(user: models.User, *, author: models.User) -> None:
     user.email = email
     db.session.add(user)
 
-    db.session.query(models.UserSession).filter_by(userId=user.id).delete(synchronize_session=False)
+    sessions.disconnect_user_session(user.id)
     sessions.disconnect_native_user_sessions(user.id)
 
     db.session.flush()
