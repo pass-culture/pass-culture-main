@@ -591,7 +591,7 @@ def change_email(
     else:
         db.session.commit()
 
-    db.session.query(models.UserSession).filter_by(userId=current_user.id).delete(synchronize_session=False)
+    sessions.disconnect_user_session(current_user.id)
     sessions.disconnect_native_user_sessions(user_id=current_user.id)
 
     revoke_sso_access(current_user, SingleSignOnProviders.ALL)
