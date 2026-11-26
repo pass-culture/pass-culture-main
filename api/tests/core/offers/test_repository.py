@@ -1836,6 +1836,84 @@ class GetPaginatedEventOfferIdsTest:
 
 
 @pytest.mark.usefixtures("db_session")
+class GetOffersCountsTest:
+    def test_counts_things_and_events_of_the_venue(self):
+        venue = offerers_factories.VenueFactory()
+        factories.ThingOfferFactory.create_batch(2, venue=venue)
+        factories.EventOfferFactory(venue=venue)
+        factories.ThingOfferFactory()
+        venue_id = venue.id
+
+        with assert_num_queries(2):  # thing ids + event ids
+            counts = repository.get_offers_counts(venue_id=venue_id)
+
+        assert counts == repository.OffersCounts(
+            things=repository.OffersCount(total=2, status_counts=None),
+            events=repository.OffersCount(total=1, status_counts=None),
+        )
+
+    def test_applies_the_filters(self):
+        venue = offerers_factories.VenueFactory()
+        factories.ThingOfferFactory(venue=venue, subcategoryId=subcategories.LIVRE_NUMERIQUE.id)
+        factories.ThingOfferFactory(
+            venue=venue,
+            subcategoryId=subcategories.LIVRE_NUMERIQUE.id,
+            lastProvider=providers_factories.PublicApiProviderFactory(),
+        )
+        factories.ThingOfferFactory(venue=venue)
+
+        counts = repository.get_offers_counts(venue_id=venue.id, creation_mode="manual", is_digital=True)
+
+        assert counts.things.total == 1
+
+    def test_period_only_applies_to_events(self):
+        venue = offerers_factories.VenueFactory()
+        factories.ThingOfferFactory(venue=venue)
+        for beginning_datetime in (datetime.datetime(2030, 1, 15, 20), datetime.datetime(2030, 3, 1, 20)):
+            factories.EventStockFactory(
+                offer=factories.EventOfferFactory(venue=venue), beginningDatetime=beginning_datetime
+            )
+
+        counts = repository.get_offers_counts(
+            venue_id=venue.id,
+            period_beginning_date=datetime.date(2030, 1, 1),
+            period_ending_date=datetime.date(2030, 1, 31),
+        )
+
+        assert counts.things.total == 1
+        assert counts.events.total == 1
+
+    def test_counts_statuses_of_a_search(self):
+        venue = offerers_factories.VenueFactory()
+        factories.ThingStockFactory(offer=factories.ThingOfferFactory(venue=venue, name="Harry Potter 1"))
+        factories.ThingOfferFactory(venue=venue, name="Harry Potter 2")  # sold out: no stock
+        factories.ThingOfferFactory(venue=venue, name="Le Hobbit")
+        venue_id = venue.id
+
+        with assert_num_queries(4):  # thing ids + venue state + thing statuses + event ids
+            counts = repository.get_offers_counts(venue_id=venue_id, name_keywords_or_ean="potter")
+
+        assert counts.things.total == 2
+        assert counts.things.status_counts == {
+            **{status: 0 for status in offer_mixin.OfferStatus},
+            offer_mixin.OfferStatus.ACTIVE: 1,
+            offer_mixin.OfferStatus.SOLD_OUT: 1,
+        }
+        assert counts.events == repository.OffersCount(
+            total=0, status_counts={status: 0 for status in offer_mixin.OfferStatus}
+        )
+
+    @patch("pcapi.core.offers.constants.OFFERS_COUNT_MAX", 1)
+    def test_does_not_count_statuses_above_the_limit(self):
+        venue = offerers_factories.VenueFactory()
+        factories.ThingOfferFactory.create_batch(2, venue=venue, name="Harry Potter")
+
+        counts = repository.get_offers_counts(venue_id=venue.id, name_keywords_or_ean="potter")
+
+        assert counts.things == repository.OffersCount(total=2, status_counts=None)
+
+
+@pytest.mark.usefixtures("db_session")
 class ExcludeOffersFromInactiveVenueProviderTest:
     def test_exclude_offers_from_inactive_venue_provider(self):
         stock_api_provider = providers_factories.AllocineProviderFactory(

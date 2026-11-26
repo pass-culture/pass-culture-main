@@ -544,6 +544,41 @@ class ListEventOffersResponseModel(HttpBodyModel):
         )
 
 
+class OffersCountsQueryModel(HttpQueryParamsModel):
+    venue_id: int
+    name_or_ean: str | None = None
+    creation_mode: offers_constants.CreationMode | None = None
+    is_digital: bool | None = None
+    period_beginning_date: datetime.date | None = None
+    period_ending_date: datetime.date | None = None
+
+
+class OffersCountResponseModel(HttpBodyModel):
+    total: int
+    totalIsCapped: bool
+    statusCounts: dict[OfferStatus, int] | None
+
+    @classmethod
+    def build(cls, count: offers_repository.OffersCount) -> typing.Self:
+        return cls(
+            total=min(count.total, offers_constants.OFFERS_COUNT_MAX),
+            totalIsCapped=count.total > offers_constants.OFFERS_COUNT_MAX,
+            statusCounts=count.status_counts,
+        )
+
+
+class OffersCountsResponseModel(HttpBodyModel):
+    things: OffersCountResponseModel
+    events: OffersCountResponseModel
+
+    @classmethod
+    def build(cls, counts: offers_repository.OffersCounts) -> typing.Self:
+        return cls(
+            things=OffersCountResponseModel.build(counts.things),
+            events=OffersCountResponseModel.build(counts.events),
+        )
+
+
 class ListOffersHomeQueryModel(HttpQueryParamsModel):
     venue_id: int
 

@@ -143,6 +143,34 @@ def list_thing_offers(
     return offers_serialize.ListThingOffersResponseModel.build(offers, paginated_offer_ids, headline_offer_id)
 
 
+@pro_blueprint.route("/offers/counts", methods=["GET"])
+@login_required
+@spectree_serialize(
+    response_model=offers_serialize.OffersCountsResponseModel,
+    on_error_statuses=[400, 404],
+    api=blueprint.pro_schema,
+)
+@atomic()
+def get_offers_counts(
+    query: offers_serialize.OffersCountsQueryModel,
+) -> offers_serialize.OffersCountsResponseModel:
+    if not feature.FeatureToggle.WIP_INDIVIDUAL_OFFERS_LIST_V2.is_active():
+        raise api_errors.ResourceNotFoundError()
+
+    rest.check_user_has_access_to_venues(current_user, [query.venue_id])
+
+    counts = offers_repository.get_offers_counts(
+        venue_id=query.venue_id,
+        name_keywords_or_ean=query.name_or_ean,
+        creation_mode=query.creation_mode,
+        is_digital=query.is_digital,
+        period_beginning_date=query.period_beginning_date,
+        period_ending_date=query.period_ending_date,
+    )
+
+    return offers_serialize.OffersCountsResponseModel.build(counts)
+
+
 @pro_blueprint.route("/offers/home", methods=["GET"])
 @atomic()
 @login_required

@@ -1083,23 +1083,128 @@ def _get_offers_filters(
     if name_keywords_or_ean is not None:
         filters.append(_get_name_keywords_or_ean_filter(name_keywords_or_ean))
 
+    if status is not None:
+        filters += _get_status_filters(venue_id, status)
+
+    return filters
+
+
+def _get_status_filters(venue_id: int, status: offer_mixin.OfferStatus) -> list[sa.ColumnElement[bool]]:
     if status == offer_mixin.OfferStatus.INACTIVE:
         # Offer.get_status_filters reads Venue.state for each offer: read it once so that the index can be used
-        filters.append(models.Offer.validation == models.OfferValidationStatus.APPROVED)
+        filters = [models.Offer.validation == models.OfferValidationStatus.APPROVED]
         venue_is_closed = db.session.scalar(
             sa.select(offerers_models.Venue.is_closed).where(offerers_models.Venue.id == venue_id)
         )
         if not venue_is_closed:
             filters.append(models.Offer.publicationDatetime.is_(None))
-    elif status is not None:
-        filters += [offerers_models.Venue.id == models.Offer.venueId, *models.Offer.get_status_filters(status=status)]
+        return filters
 
-    return filters
+    return [offerers_models.Venue.id == models.Offer.venueId, *models.Offer.get_status_filters(status=status)]
 
 
 def _get_capped_total(filters: list[sa.ColumnElement[bool]]) -> int:
     offer_ids = sa.select(models.Offer.id).where(*filters).limit(offers_constants.OFFERS_LIST_TOTAL_MAX + 1).subquery()
     return db.session.execute(sa.select(sa.func.count()).select_from(offer_ids)).scalar_one()
+
+
+@dataclasses.dataclass(frozen=True)
+class OffersCount:
+    # up to OFFERS_COUNT_MAX + 1
+    total: int
+    status_counts: dict[offer_mixin.OfferStatus, int] | None
+
+
+@dataclasses.dataclass(frozen=True)
+class OffersCounts:
+    things: OffersCount
+    events: OffersCount
+
+
+def get_offers_counts(
+    *,
+    venue_id: int,
+    name_keywords_or_ean: str | None = None,
+    creation_mode: str | None = None,
+    is_digital: bool | None = None,
+    period_beginning_date: datetime.date | None = None,
+    period_ending_date: datetime.date | None = None,
+) -> OffersCounts:
+    thing_filters = _get_offers_filters(
+        venue_id=venue_id,
+        subcategory_ids=subcategories.THING_SUBCATEGORIES,
+        is_digital=is_digital,
+        status=None,
+        name_keywords_or_ean=name_keywords_or_ean,
+        creation_mode=creation_mode,
+    )
+    event_filters = _get_offers_filters(
+        venue_id=venue_id,
+        subcategory_ids=subcategories.EVENT_SUBCATEGORIES,
+        is_digital=is_digital,
+        status=None,
+        name_keywords_or_ean=name_keywords_or_ean,
+        creation_mode=creation_mode,
+    )
+
+    if period_beginning_date is not None or period_ending_date is not None:
+        event_filters.append(
+            _get_event_offers_period_filter(
+                venue_id=venue_id,
+                period_beginning_date=period_beginning_date,
+                period_ending_date=period_ending_date,
+            )
+        )
+
+    # statuses are only counted for a search
+    count_statuses = name_keywords_or_ean is not None
+
+    return OffersCounts(
+        things=_get_offers_count(venue_id, thing_filters, count_statuses),
+        events=_get_offers_count(venue_id, event_filters, count_statuses),
+    )
+
+
+def _get_offers_count(venue_id: int, filters: list[sa.ColumnElement[bool]], count_statuses: bool) -> OffersCount:
+    offer_ids = db.session.scalars(
+        sa.select(models.Offer.id).where(*filters).limit(offers_constants.OFFERS_COUNT_MAX + 1)
+    ).all()
+
+    status_counts = None
+
+    if count_statuses and len(offer_ids) <= offers_constants.OFFERS_COUNT_MAX:
+        status_counts = _get_status_counts(venue_id, list(offer_ids))
+
+    return OffersCount(total=len(offer_ids), status_counts=status_counts)
+
+
+def _get_status_counts(venue_id: int, offer_ids: list[int]) -> dict[offer_mixin.OfferStatus, int]:
+    status_counts = {status: 0 for status in offer_mixin.OfferStatus}
+
+    if not offer_ids:
+        return status_counts
+
+    status = sa.case(
+        *[(sa.and_(*_get_status_filters(venue_id, status)), status.name) for status in offer_mixin.OfferStatus],
+    )
+
+    # the status filters read Venue.state
+    offers = (
+        sa.select(status.label("status"))
+        .select_from(models.Offer)
+        .join(models.Offer.venue)
+        .where(models.Offer.id.in_(offer_ids))
+        .subquery()
+    )
+
+    rows = db.session.execute(
+        sa.select(offers.c.status, sa.func.count().label("offers_count")).group_by(offers.c.status)
+    ).all()
+
+    for row in rows:
+        status_counts[offer_mixin.OfferStatus[row.status]] = row.offers_count
+
+    return status_counts
 
 
 def _get_venue_timezones(venue_id: int) -> set[str]:
