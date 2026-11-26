@@ -329,7 +329,7 @@ class RemoveSiretForm(RemovePricingPointForm, PricingPointForm):
 class CloseVenueForm(utils.PCForm):
     comment = fields.PCOptCommentField("Motif de la fermeture (optionnel)")
     dont_send_email = fields.PCSwitchBooleanField(
-        "Ne pas envoyer de mail à l'acteur culturel'",
+        "Ne pas envoyer de mail au partenaire culturel",
         full_row=True,
     )
 
