@@ -231,8 +231,8 @@ importers:
         specifier: 1.19.13
         version: 1.19.13(@algolia/client-search@5.64.0)(algoliasearch@5.64.0)
       '@firebase/analytics':
-        specifier: 0.10.25
-        version: 0.10.25(@firebase/app@0.16.7)
+        specifier: 0.10.26
+        version: 0.10.26(@firebase/app@0.16.7)
       '@firebase/app':
         specifier: 0.16.7
         version: 0.16.7
@@ -906,8 +906,8 @@ packages:
       '@noble/hashes':
         optional: true
 
-  '@firebase/analytics@0.10.25':
-    resolution: {integrity: sha512-oDagV3PHeNXBdxemksZCdj+GmUT19eCnTOcLdQePIIovFXlm3zWy3Gjeaokt9Nqx24kc4ljK8lU0XGcGmmKZ1A==}
+  '@firebase/analytics@0.10.26':
+    resolution: {integrity: sha512-YHAOFUowOicn3LIc1j/xmHQV/a8avT+lZTs1gs0l87CXbiG7JOosKZiYct9nKIlpwZl+9xb9sUiw0oXl2YKTUw==}
     peerDependencies:
       '@firebase/app': 0.x
 
@@ -3968,9 +3968,6 @@ packages:
     resolution: {integrity: sha512-NoZ4roiN7LnbKn9QqE1amc9DJfzvZXxF4xDavcOWt1BPkdx+m+0gJuPM+S0vCe7zTJMYUP0R8pO2XMr+Y8oLIg==}
     engines: {node: '>=6'}
 
-  tslib@2.8.1:
-    resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
-
   tslib@2.9.1:
     resolution: {integrity: sha512-a4Ux9VKuIMHsOS7ENbEq6hK2ZGYIT27Rtl0E4eD9KqwxhKiQeMZE/9xb3IdYwWaSOyIBQLExhQgXDTYoiCxnWA==}
 
@@ -4710,14 +4707,14 @@ snapshots:
 
   '@exodus/bytes@1.16.0': {}
 
-  '@firebase/analytics@0.10.25(@firebase/app@0.16.7)':
+  '@firebase/analytics@0.10.26(@firebase/app@0.16.7)':
     dependencies:
       '@firebase/app': 0.16.7
       '@firebase/component': 0.7.5
       '@firebase/installations': 0.6.24(@firebase/app@0.16.7)
       '@firebase/logger': 0.5.2
       '@firebase/util': 1.15.3
-      tslib: 2.8.1
+      tslib: 2.9.1
 
   '@firebase/app@0.16.7':
     dependencies:
@@ -7490,8 +7487,6 @@ snapshots:
       json5: 2.2.3
       minimist: 1.2.8
       strip-bom: 3.0.0
-
-  tslib@2.8.1: {}
 
   tslib@2.9.1: {}
 
