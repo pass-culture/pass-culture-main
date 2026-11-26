@@ -15,12 +15,12 @@
             <div class="d-flex justify-content-between">
               <div class="p-2">
                 {% if chronicle.firstName %}
-                  <h2 class="card-title mb-3">
+                  <h1 class="title1 mb-3">
                     Chronique de {{ chronicle.firstName }}
                     {%- if chronicle.age %}, {{ chronicle.age }} ans{% endif %}
-                  </h2>
+                  </h1>
                 {% else %}
-                  <h2 class="card-title mb-3">Chronique {{ chronicle.id }}</h2>
+                  <h1 class="title1 mb-3">Chronique {{ chronicle.id }}</h1>
                 {% endif %}
                 <p class="card-subtitle text-muted mb-3 h5">Chronicle ID : {{ chronicle.id }}</p>
               </div>

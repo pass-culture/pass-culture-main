@@ -1,0 +1,23 @@
+{
+  "name": "@pass-culture/design-system",
+  "version": "0.13.0",
+  "repository": "git@github.com:pass-culture/design-system.git",
+  "type": "module",
+  "files": [
+    "lib"
+  ],
+  "scripts": {
+    "preversion": "yarn install && yarn run build && yarn run test-ci",
+    "build": "tsx src/build.ts && yarn run tsc",
+    "test": "vitest",
+    "test-ci": "vitest run"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.33",
+    "style-dictionary": "^5.4.4",
+    "tsx": "^4.22.4",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.8"
+  },
+  "packageManager": "yarn@4.10.3+sha512.c38cafb5c7bb273f3926d04e55e1d8c9dfa7d9c3ea1f36a4868fa028b9e5f72298f0b7f401ad5eb921749eb012eb1c3bb74bf7503df3ee43fd600d14a018266f"
+}
