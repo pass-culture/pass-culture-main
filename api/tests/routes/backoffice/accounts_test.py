@@ -7144,6 +7144,9 @@ class BatchSuspendPublicAccountTest(PostEndpointHelper):
         expected_num_queries += len(users)  # for each user: check email not used as venue booking email (Brevo cleanup)
         expected_num_queries += len(
             users
+        )  # for each user: delete user sessions (a 2nd time via `clear_email_by_admin`)
+        expected_num_queries += len(
+            users
         )  # for each user: delete native user sessions (a 2nd time via `clear_email_by_admin`)
         expected_num_queries += len(users)  # for each user: update email with a dummy one
         expected_num_queries += len(users)  # for each user: insert email history

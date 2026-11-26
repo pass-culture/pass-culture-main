@@ -8,7 +8,9 @@ import pcapi.core.users.exceptions as users_exceptions
 from pcapi.core import token as token_utils
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.models import EmailHistoryEventTypeEnum
+from pcapi.core.users.models import NativeUserSession
 from pcapi.core.users.models import User
+from pcapi.core.users.models import UserSession
 from pcapi.models import db
 from pcapi.utils.jwt import encode_jwt_payload
 
@@ -155,6 +157,17 @@ class RequestEmailUpdateFromAdminTest:
         assert user.email_history[0].eventType == EmailHistoryEventTypeEnum.ADMIN_UPDATE_REQUEST
         assert user.email_history[0].author == admin
 
+    def test_delete_user_sessions(self):
+        user = users_factories.UserFactory(email="old@example.com")
+        admin = users_factories.AdminFactory()
+        users_factories.NativeUserSessionFactory(user=user)
+        users_factories.UserSessionFactory(user=user)
+
+        email_update.request_email_update_from_admin(user, author=admin, email="new@example.com")
+
+        assert db.session.query(NativeUserSession).filter_by(userId=user.id).first() is None
+        assert db.session.query(UserSession).filter_by(userId=user.id).first() is None
+
 
 class FullEmailUpdateByAdminTest:
     def test_history_is_authored_by_the_admin(self):
@@ -168,6 +181,17 @@ class FullEmailUpdateByAdminTest:
         assert user.email_history[0].eventType == EmailHistoryEventTypeEnum.ADMIN_UPDATE
         assert user.email_history[0].author == admin
 
+    def test_delete_user_sessions(self):
+        user = users_factories.UserFactory(email="old@example.com")
+        admin = users_factories.AdminFactory()
+        users_factories.NativeUserSessionFactory(user=user)
+        users_factories.UserSessionFactory(user=user)
+
+        email_update.full_email_update_by_admin(user, author=admin, email="new@example.com")
+
+        assert db.session.query(NativeUserSession).filter_by(userId=user.id).first() is None
+        assert db.session.query(UserSession).filter_by(userId=user.id).first() is None
+
 
 class ClearEmailByAdminTest:
     def test_history_is_authored_by_the_admin(self):
@@ -180,3 +204,14 @@ class ClearEmailByAdminTest:
         assert len(user.email_history) == 1
         assert user.email_history[0].eventType == EmailHistoryEventTypeEnum.ADMIN_UPDATE
         assert user.email_history[0].author == admin
+
+    def test_delete_user_sessions(self):
+        user = users_factories.UserFactory(email="old@example.com")
+        admin = users_factories.AdminFactory()
+        users_factories.NativeUserSessionFactory(user=user)
+        users_factories.UserSessionFactory(user=user)
+
+        email_update.clear_email_by_admin(user, author=admin)
+
+        assert db.session.query(NativeUserSession).filter_by(userId=user.id).first() is None
+        assert db.session.query(UserSession).filter_by(userId=user.id).first() is None
