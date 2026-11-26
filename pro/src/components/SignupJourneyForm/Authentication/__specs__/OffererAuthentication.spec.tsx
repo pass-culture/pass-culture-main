@@ -128,7 +128,7 @@ fetchMock.mockResponse(
   { status: 200 }
 )
 
-const renderOffererAuthenticationScreen = (
+const renderOffererAuthentication = (
   contextValue: SignupJourneyContextValues
 ) => {
   return renderWithProviders(
@@ -204,7 +204,7 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
         city: 'Paris',
       })
 
-      renderOffererAuthenticationScreen(contextValue)
+      renderOffererAuthentication(contextValue)
 
       await waitFor(() => {
         expect(tryRestoreOffererFromStorage).toHaveBeenCalledWith(setOfferer)
@@ -220,7 +220,7 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
         throw new Error('ANY_ERROR')
       })
 
-      renderOffererAuthenticationScreen(contextValue)
+      renderOffererAuthentication(contextValue)
 
       await waitFor(() => {
         expect(cleanSignupJourneyStorage).toHaveBeenCalled()
@@ -248,7 +248,7 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
         throw new Error('ANY_ERROR')
       })
 
-      renderOffererAuthenticationScreen(contextValue)
+      renderOffererAuthentication(contextValue)
 
       await waitFor(() => {
         expect(tryRestoreActivityFromStorage).toHaveBeenCalledWith(setActivity)
@@ -260,7 +260,7 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
   })
 
   it('should render component', async () => {
-    renderOffererAuthenticationScreen(contextValue)
+    renderOffererAuthentication(contextValue)
 
     expect(
       await screen.findByText(/Les champs suivis d’un \* sont obligatoires./)
@@ -284,8 +284,8 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
     expect(screen.getByText('Test name')).toBeInTheDocument()
   })
 
-  it('should render component with empty adresss', async () => {
-    renderOffererAuthenticationScreen({
+  it('should use the offerer address instead of the initial address', async () => {
+    renderOffererAuthentication({
       ...contextValue,
 
       initialAddress: {
@@ -303,8 +303,44 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
     })
   })
 
+  it('should initialize a non-diffusible address without the placeholder street', async () => {
+    renderOffererAuthentication({
+      ...contextValue,
+      offerer: {
+        ...contextValue.offerer!,
+        isDiffusible: false,
+        street: 'Adresse non diffusée',
+      },
+    })
+
+    await waitFor(() => {
+      expect(screen.getByLabelText(/Adresse postale/)).toHaveValue(
+        '75001 Paris'
+      )
+    })
+  })
+
+  it('should display the incomplete address error on submit', async () => {
+    renderOffererAuthentication({
+      ...contextValue,
+      offerer: {
+        ...contextValue.offerer!,
+        isDiffusible: false,
+        publicName: 'Nom public',
+        street: 'Adresse non diffusée',
+      },
+    })
+
+    await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
+
+    expect(
+      await screen.findByText(/veuillez renseigner une adresse précise/)
+    ).toBeInTheDocument()
+    expect(screen.queryByText('Activity screen')).not.toBeInTheDocument()
+  })
+
   it('should display activity screen on submit', async () => {
-    renderOffererAuthenticationScreen(contextValue)
+    renderOffererAuthentication(contextValue)
     expect(
       screen.getByRole('heading', { level: 1, name: 'Votre structure' })
     ).toBeInTheDocument()
@@ -315,7 +351,7 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
   })
 
   it('should display offerer screen on submit', async () => {
-    renderOffererAuthenticationScreen(contextValue)
+    renderOffererAuthentication(contextValue)
     expect(
       screen.getByRole('heading', { level: 1, name: 'Votre structure' })
     ).toBeInTheDocument()
@@ -326,7 +362,7 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
   })
 
   it('should display new heading and hide old subtitle and ActionBar back button', async () => {
-    renderOffererAuthenticationScreen(contextValue)
+    renderOffererAuthentication(contextValue)
 
     expect(
       await screen.findByRole('heading', { name: 'Votre structure' })
@@ -358,7 +394,7 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
   })
 
   it('should log navigation event when clicking "Continuer" button', async () => {
-    renderOffererAuthenticationScreen(contextValue)
+    renderOffererAuthentication(contextValue)
 
     await screen.findByRole('button', { name: 'Continuer' })
 
@@ -390,7 +426,7 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
     }
 
     it('should render the not diffusible callout', async () => {
-      renderOffererAuthenticationScreen(context)
+      renderOffererAuthentication(context)
 
       expect(
         await screen.findByText(
@@ -400,7 +436,7 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
     })
 
     it('should not render the not diffusible callout for diffusible', () => {
-      renderOffererAuthenticationScreen({
+      renderOffererAuthentication({
         ...context,
         offerer: {
           ...context.offerer,

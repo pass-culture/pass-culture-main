@@ -49,11 +49,16 @@ test.describe('Signup journey with not diffusible offerer siret', () => {
         'Certaines informations de votre structure ne sont pas diffusibles.'
       )
     ).toBeVisible()
-    await page.getByLabel(/Nom public/).fill(newVenueName)
     await page.getByLabel('Non').click()
-    await expect(page.getByLabel(/Adresse postale/)).toHaveCount(0)
+    await expect(page.getByLabel(/Adresse postale/)).toBeVisible()
 
     await page.getByText('Continuer').click()
+    await expect(
+      page.getByText('Veuillez renseigner un nom public pour votre structure')
+    ).toBeVisible()
+    await page.getByLabel(/Nom public/).fill(newVenueName)
+    await page.getByText('Continuer').click()
+
     await page.getByText('Retour').click()
     await expect(page.getByLabel('Non')).toBeChecked()
     await page.getByText('Continuer').click()

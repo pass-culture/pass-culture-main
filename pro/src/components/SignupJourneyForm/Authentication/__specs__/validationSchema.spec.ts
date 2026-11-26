@@ -77,6 +77,36 @@ describe('OffererAuthenticationForm validationSchema', () => {
       expectedErrors: ['Veuillez sélectionner une option'],
       notDiffusible: false,
     },
+    {
+      description: 'invalid form without a street',
+      formValues: { ...defaultValues, street: '' },
+      expectedErrors: ['Veuillez renseigner une adresse postale'],
+      notDiffusible: false,
+    },
+    {
+      description:
+        'invalid non-diffusible street for a venue open to the public',
+      formValues: {
+        ...defaultValues,
+        isOpenToPublic: 'true',
+        street: 'Adresse non diffusée',
+      },
+      expectedErrors: [
+        'Pour accueillir du public, veuillez renseigner une adresse précise',
+      ],
+      notDiffusible: true,
+    },
+    {
+      description:
+        'valid non-diffusible street for a venue closed to the public',
+      formValues: {
+        ...defaultValues,
+        isOpenToPublic: 'false',
+        street: 'Adresse non diffusée',
+      },
+      expectedErrors: [],
+      notDiffusible: true,
+    },
   ]
 
   cases.forEach(
