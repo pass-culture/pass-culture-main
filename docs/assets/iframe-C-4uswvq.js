@@ -1,0 +1,1 @@
+import{t as e}from"./iframe-BAPtP-lK.js";e();
