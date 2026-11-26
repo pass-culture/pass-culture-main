@@ -4,6 +4,8 @@ import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import { FormatEnum, NatureEnum } from '@/apiClient/v1'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { IndividualOfferV2 } from '../IndividualOfferV2'
@@ -32,7 +34,13 @@ const renderIndividualOfferV2NatureFormatDomain = (nfd?: {
   format: FormatEnum
 }) =>
   renderWithProviders(null, {
-    storeOverrides: { nfd },
+    storeOverrides: {
+      nfd,
+      user: {
+        currentUser: sharedCurrentUserFactory(),
+        selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }),
+      },
+    },
     initialRouterEntries: [
       '/offre/individuelle/v2/creation/nature-format-domaine',
     ],

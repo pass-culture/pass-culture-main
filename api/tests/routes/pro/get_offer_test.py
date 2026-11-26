@@ -275,7 +275,54 @@ class Returns200Test:
             "withdrawalDetails": "Veuillez chercher votre billet au guichet",
             "withdrawalType": "on_site",
             "withdrawalDelay": 60 * 30,
+            "capabilities": [],
+            "mandatoryFields": [],
         }
+
+    def test_returns_nature_format_domain_and_capabilities(self, client):
+        user_offerer = offerers_factories.UserOffererFactory()
+        offer = offers_factories.ThingOfferFactory(
+            venue__managingOfferer=user_offerer.offerer,
+            nature=nfd.NatureEnum.BIEN,
+            format=nfd.FormatEnum.LIVRE_PAPIER,
+        )
+
+        auth_client = client.with_session_auth(email=user_offerer.user.email)
+        offer_id = offer.id
+        with testing.assert_num_queries(self.num_queries):
+            response = auth_client.get(f"/offers/{offer_id}")
+            assert response.status_code == 200
+
+        assert response.json["nature"] == "BIEN"
+        assert response.json["format"] == "LIVRE_PAPIER"
+        assert response.json["domain"] is None
+        assert response.json["capabilities"] == [
+            "BOOKING_LIMIT",
+            "BOOKING_OPENING_DATE",
+            "COMPLEMENTARY_INFO",
+            "EMAIL_NOTIFICATION",
+            "IMAGE",
+            "NO_CREDIT_LINK",
+            "PRICE",
+            "PROGRAM_PUBLICATION",
+            "ACCESSIBILITY_VENUE",
+            "COUNTERMARK",
+            "DESCRIPTION",
+            "EAN",
+            "LOCATION",
+            "PICKUP_30_DAYS",
+            "STOCK",
+            "TITLE_BIEN",
+            "AUTHOR",
+            "ACCESSIBILITY_ATTRIBUTE_LARGE_PRINT",
+        ]
+        assert response.json["mandatoryFields"] == [
+            "PRICE",
+            "TITLE",
+            "LOCATION",
+            "PICKUP_30_DAYS",
+            "STOCK",
+        ]
 
     @time_machine.travel("2019-10-15 00:00:00")
     def test_returns_a_thing_stock(self, client):

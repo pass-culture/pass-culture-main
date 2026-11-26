@@ -2812,6 +2812,10 @@ export type GetIndividualOfferResponseModelV2 = {
      */
     canBeEvent: boolean;
     /**
+     * Capabilities
+     */
+    capabilities: Array<FieldEnum>;
+    /**
      * Datecreated
      */
     dateCreated: string;
@@ -2892,6 +2896,10 @@ export type GetIndividualOfferResponseModelV2 = {
     isThing: boolean;
     lastProvider: GetOfferLastProviderResponseModelV2 | null;
     location: LocationResponseModelV2 | null;
+    /**
+     * Mandatoryfields
+     */
+    mandatoryFields: Array<FieldEnum>;
     /**
      * Mentaldisabilitycompliant
      */

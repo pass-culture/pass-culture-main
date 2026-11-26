@@ -39,4 +39,26 @@ export const routesIndividualOfferV2: CustomRouteGroup['children'] = [
       mustHaveSelectedNatureAndFormat
     ),
   },
+  {
+    path: ':offerId/creation/description',
+    lazy: () =>
+      import(
+        '@/pages/IndividualOfferV2/IndividualOfferV2Description/IndividualOfferV2Description'
+      ),
+    handle: {
+      title: 'Créer une offre - Description',
+    },
+    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+  },
+  {
+    path: ':offerId/creation/tarifs-modalites',
+    lazy: () =>
+      import(
+        '@/pages/IndividualOfferV2/IndividualOfferV2TarifModalites/IndividualOfferV2TarifModalites'
+      ),
+    handle: {
+      title: 'Créer une offre - Tarifs et modalités',
+    },
+    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+  },
 ]

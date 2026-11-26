@@ -25,6 +25,9 @@ export enum INDIVIDUAL_OFFER_WIZARD_STEP_IDS {
   SUMMARY = 'recapitulatif',
   CONFIRMATION = 'confirmation',
   BOOKINGS = 'reservations',
+  DESCRIPTION_V2 = 'description_v2',
+  TARIFS_V2 = 'tarifs_v2',
+  NFD = 'nfd',
 }
 
 export const OFFER_WITHDRAWAL_TYPE_LABELS = {

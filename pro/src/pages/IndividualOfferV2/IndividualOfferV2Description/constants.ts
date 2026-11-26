@@ -1,0 +1,58 @@
+import { ArtistType } from '@/apiClient/v1'
+
+export const DEFAULT_DESCRIPTION_FORM_VALUES = {
+  name: '',
+  description: '',
+  visualDisabilityCompliant: false,
+  hasCulturalOutreachClaim: false,
+  artistOfferLinks: [
+    {
+      artistId: null,
+      artistName: '',
+      artistType: ArtistType.AUTHOR,
+    },
+    {
+      artistId: null,
+      artistName: '',
+      artistType: ArtistType.PERFORMER,
+    },
+    {
+      artistId: null,
+      artistName: '',
+      artistType: ArtistType.STAGE_DIRECTOR,
+    },
+  ],
+  durationMinutes: 0,
+  extraData: {
+    gtl_id: '',
+    showType: '',
+    showSubType: '',
+    speaker: '',
+    author: '',
+    visa: '',
+    stageDirector: '',
+    performer: '',
+    ean: '',
+  },
+  // Fill in all other fields with null to match schema
+  audioDisabilityCompliant: null,
+  bookingAllowedDatetime: null,
+  bookingContact: null,
+  bookingEmail: null,
+  domain: null,
+  externalTicketOfficeUrl: null,
+  format: null,
+  isDuo: null,
+  isNational: null,
+  location: null,
+  mentalDisabilityCompliant: null,
+  motorDisabilityCompliant: null,
+  nature: null,
+  publicationDatetime: null,
+  shouldSendMail: null,
+  subcategoryId: null,
+  url: null,
+  withdrawalDelay: null,
+  withdrawalDetails: null,
+  withdrawalType: null,
+}
