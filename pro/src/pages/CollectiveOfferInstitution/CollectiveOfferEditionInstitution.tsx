@@ -22,8 +22,10 @@ export const CollectiveOfferEditionInstitution = ({
   offer,
   isTemplate,
 }: MandatoryCollectiveOfferFromParamsProps) => {
+  const isInstitutionEditable = isCollectiveInstitutionEditable(offer)
+
   const educationalInstitutionsQuery = useSWR(
-    [GET_EDUCATIONAL_INSTITUTIONS_QUERY_KEY],
+    isInstitutionEditable ? [GET_EDUCATIONAL_INSTITUTIONS_QUERY_KEY] : null,
     () => getEducationalInstitutions(),
     { fallbackData: [] }
   )
@@ -37,8 +39,6 @@ export const CollectiveOfferEditionInstitution = ({
     return <Spinner />
   }
 
-  const isInstitutionEditable = isCollectiveInstitutionEditable(offer)
-
   return (
     <CollectiveOfferLayout
       offer={offer}
@@ -51,7 +51,13 @@ export const CollectiveOfferEditionInstitution = ({
           offer.institution,
           offer.teacher
         )}
-        institutions={educationalInstitutionsQuery.data}
+        institutions={
+          isInstitutionEditable
+            ? educationalInstitutionsQuery.data
+            : offer.institution
+              ? [offer.institution]
+              : []
+        }
         isLoadingInstitutions={educationalInstitutionsQuery.isLoading}
         offer={offer}
       />

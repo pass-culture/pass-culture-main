@@ -262,7 +262,7 @@ export const CollectiveOfferInstitutionScreen = ({
 
   const { isLoading: isPreloadingRedactors } = useSWR(
     () =>
-      selectedInstitution?.institutionId
+      canEditInstitution && selectedInstitution?.institutionId
         ? [
             GET_AUTOCOMPLETE_EDUCATIONAL_REDACTORS_FOR_UAI_KEY,
             selectedInstitution?.institutionId,
