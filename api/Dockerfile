@@ -22,9 +22,9 @@ FROM base-${network_mode}-network-image AS base-image
 ##   PYTHON BUILDERS   ##
 #########################
 
-######### PRODUCTION BUILDER #########
+######### BUILDER BASE #########
 
-FROM base-image AS builder-prod
+FROM base-image AS builder-base
 
 ARG uid
 
@@ -55,25 +55,48 @@ USER pcapi
 
 WORKDIR /usr/src/app
 
-# Install the project's dependencies
 COPY --chown=pcapi:pcapi pyproject.toml uv.lock /usr/src/app/
-RUN --mount=type=cache,target=/home/pcapi/.cache/uv,uid=${uid},gid=${uid} \
-  uv sync --locked --no-dev --no-install-project 
 
-# Then, add the rest of the project source code and install it
-# Installing separately from its dependencies allows optimal layer caching
+# Dependencies are installed in dedicated stages, before the project source
+# code is copied, so that a source code change does not invalidate them.
+
+######### PRODUCTION DEPENDENCIES #########
+
+FROM builder-base AS deps-prod
+
+ARG uid
+
+RUN --mount=type=cache,target=/home/pcapi/.cache/uv,uid=${uid},gid=${uid} \
+  uv sync --locked --no-dev --no-install-project
+
+######### DEV DEPENDENCIES #########
+
+FROM deps-prod AS deps-dev
+
+ARG uid
+
+RUN --mount=type=cache,target=/home/pcapi/.cache/uv,uid=${uid},gid=${uid} \
+  uv sync --locked --dev --no-install-project
+
+######### PRODUCTION BUILDER #########
+
+FROM deps-prod AS builder-prod
+
+ARG uid
+
+# Add the project source code and install it
 COPY --chown=pcapi:pcapi --exclude=tests/ ./ /usr/src/app/
 RUN --mount=type=cache,target=/home/pcapi/.cache/uv,uid=${uid},gid=${uid} \
   uv sync --locked --no-dev
 
-
 ######### DEV BUILDER #########
 
-FROM builder-prod AS builder-dev
+FROM deps-dev AS builder-dev
 
 ARG uid
 
-# Install the project's dev dependencies
+# Add the project source code and install it
+COPY --chown=pcapi:pcapi --exclude=tests/ ./ /usr/src/app/
 RUN --mount=type=cache,target=/home/pcapi/.cache/uv,uid=${uid},gid=${uid} \
   uv sync --locked --dev
 
