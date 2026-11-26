@@ -5048,6 +5048,61 @@ export enum OffererMemberStatus {
 }
 
 /**
+ * OffersCountResponseModel
+ */
+export type OffersCountResponseModel = {
+    /**
+     * Statuscounts
+     */
+    statusCounts: {
+        [key in OfferStatus]?: number;
+    } | null;
+    /**
+     * Total
+     */
+    total: number;
+    /**
+     * Totaliscapped
+     */
+    totalIsCapped: boolean;
+};
+
+/**
+ * OffersCountsQueryModel
+ */
+export type OffersCountsQueryModel = {
+    creationMode?: CreationMode | null;
+    /**
+     * Isdigital
+     */
+    isDigital?: boolean | null;
+    /**
+     * Nameorean
+     */
+    nameOrEan?: string | null;
+    /**
+     * Periodbeginningdate
+     */
+    periodBeginningDate?: string | null;
+    /**
+     * Periodendingdate
+     */
+    periodEndingDate?: string | null;
+    /**
+     * Venueid
+     */
+    venueId: number;
+};
+
+/**
+ * OffersCountsResponseModel
+ */
+export type OffersCountsResponseModel = {
+    events: OffersCountResponseModel;
+    things: OffersCountResponseModel;
+};
+
+/**
  * PatchAllOffersActiveStatusBodyModel
  */
 export type PatchAllOffersActiveStatusBodyModel = {
@@ -9943,6 +9998,65 @@ export type getOffersCategoriesResponses = {
 };
 
 export type getOffersCategoriesResponse = getOffersCategoriesResponses[keyof getOffersCategoriesResponses];
+
+export type getOffersCountsData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * Venueid
+         */
+        venueId: number;
+        /**
+         * Nameorean
+         */
+        nameOrEan?: string | null;
+        creationMode?: CreationMode | null;
+        /**
+         * Isdigital
+         */
+        isDigital?: boolean | null;
+        /**
+         * Periodbeginningdate
+         */
+        periodBeginningDate?: string | null;
+        /**
+         * Periodendingdate
+         */
+        periodEndingDate?: string | null;
+    };
+    url: '/offers/counts';
+};
+
+export type getOffersCountsErrors = {
+    /**
+     * Bad Request
+     */
+    400: unknown;
+    /**
+     * Forbidden
+     */
+    403: unknown;
+    /**
+     * Not Found
+     */
+    404: unknown;
+    /**
+     * Unprocessable Content
+     */
+    422: ValidationError;
+};
+
+export type getOffersCountsError = getOffersCountsErrors[keyof getOffersCountsErrors];
+
+export type getOffersCountsResponses = {
+    /**
+     * OK
+     */
+    200: OffersCountsResponseModel;
+};
+
+export type getOffersCountsResponse = getOffersCountsResponses[keyof getOffersCountsResponses];
 
 export type postOffersDeleteDraftData = {
     body: DeleteOfferRequestBody;
