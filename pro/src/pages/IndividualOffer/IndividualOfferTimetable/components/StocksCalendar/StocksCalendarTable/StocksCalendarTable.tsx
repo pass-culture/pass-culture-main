@@ -376,6 +376,7 @@ export function StocksCalendarTable({
       >
         {stockOpenedInDialog && (
           <StocksCalendarTableEditStock
+            key={stockOpenedInDialog.id}
             stock={stockOpenedInDialog}
             departmentCode={departmentCode}
             priceCategories={offer.priceCategories}

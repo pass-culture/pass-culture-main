@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { addDays, addSeconds, subDays, subSeconds } from 'date-fns'
+import { useState } from 'react'
 import { axe } from 'vitest-axe'
 
 import { OfferStatus, VenueState } from '@/apiClient/v1'
@@ -26,26 +27,30 @@ vi.mock('@/apiClient/api', () => ({
 
 vi.mock('./StocksCalendarTableEditStock/StocksCalendarTableEditStock', () => ({
   EDIT_STOCK_FORM_ID: 'stocks-calendar-table-edit-stock-form',
-  StocksCalendarTableEditStock: ({ stock, onUpdateStock }: any) => (
-    <div>
-      <button
-        onClick={() => {
-          onUpdateStock({
-            id: stock.id,
-            beginningDatetime: addSeconds(
-              new Date(stock.beginningDatetime),
-              3600
-            ).toISOString(),
-            bookingLimitDatetime: stock.bookingLimitDatetime ?? null,
-            priceCategoryId: stock.priceCategoryId ?? 1,
-            quantity: stock.quantity ?? null,
-          })
-        }}
-      >
-        mock-update-time
-      </button>
-    </div>
-  ),
+  StocksCalendarTableEditStock: ({ stock: stockProp, onUpdateStock }: any) => {
+    // Mimic useForm defaultValues, which are only read on mount
+    const [stock] = useState(stockProp)
+    return (
+      <div>
+        <button
+          onClick={() => {
+            onUpdateStock({
+              id: stock.id,
+              beginningDatetime: addSeconds(
+                new Date(stock.beginningDatetime),
+                3600
+              ).toISOString(),
+              bookingLimitDatetime: stock.bookingLimitDatetime ?? null,
+              priceCategoryId: stock.priceCategoryId ?? 1,
+              quantity: stock.quantity ?? null,
+            })
+          }}
+        >
+          mock-update-time
+        </button>
+      </div>
+    )
+  },
 }))
 
 const defaultSelectedPartnerVenue = makeGetVenueResponseModel({ id: 1 })
@@ -234,6 +239,48 @@ describe('StocksCalendarTable', () => {
     expect(
       screen.getByRole('heading', { name: 'Modifier la date' })
     ).toBeInTheDocument()
+  })
+
+  it('should edit the second stock with its own values after editing a first stock', async () => {
+    const onUpdateStock = vi.fn().mockResolvedValue(undefined)
+    const secondStockDate = addDays(new Date(), 5)
+
+    renderStocksCalendarTable({
+      onUpdateStock,
+      stocks: [
+        getOfferStockFactory({
+          id: 1,
+          beginningDatetime: addDays(new Date(), 2).toISOString(),
+          bookingsQuantity: 0,
+        }),
+        getOfferStockFactory({
+          id: 2,
+          beginningDatetime: secondStockDate.toISOString(),
+          bookingsQuantity: 0,
+        }),
+      ],
+      mode: OFFER_WIZARD_MODE.EDITION,
+    })
+
+    const editButtons = screen.getAllByRole('button', {
+      name: 'Modifier la date',
+    })
+
+    await userEvent.click(editButtons[0])
+    await userEvent.click(screen.getByRole('button', { name: 'Annuler' }))
+
+    await userEvent.click(editButtons[1])
+    await userEvent.click(
+      screen.getByRole('button', { name: 'mock-update-time' })
+    )
+
+    expect(onUpdateStock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: 2,
+        beginningDatetime: addSeconds(secondStockDate, 3600).toISOString(),
+      }),
+      expect.any(Function)
+    )
   })
 
   it('should re-focus the edition action button when closing the dialog', async () => {
