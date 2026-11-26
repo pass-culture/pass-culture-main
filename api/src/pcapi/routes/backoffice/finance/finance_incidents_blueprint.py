@@ -1624,6 +1624,7 @@ def _get_incident(finance_incident_id: int, **args: typing.Any) -> finance_model
                         offers_models.Offer.name,
                         offers_models.Offer.url,
                         offers_models.Offer.subcategoryId,
+                        offers_models.Offer.venueId,
                     ),
                 ),
                 # Batch infos
@@ -1675,6 +1676,7 @@ def _get_incident(finance_incident_id: int, **args: typing.Any) -> finance_model
                         educational_models.CollectiveOffer.id,
                         educational_models.CollectiveOffer.name,
                         educational_models.CollectiveOffer.formats,
+                        educational_models.CollectiveOffer.venueId,
                     ),
                     sa_orm.joinedload(educational_models.CollectiveBooking.pricings).load_only(
                         finance_models.Pricing.amount,

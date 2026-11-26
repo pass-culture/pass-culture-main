@@ -52,8 +52,8 @@ class FirebaseLinksTest:
 
 @pytest.mark.settings(PRO_URL="http://pcpro.com")
 def test_build_pc_pro_offer_link():
-    offer = offers_factories.OfferFactory.build(id=123)
+    offer = offers_factories.OfferFactory.create()
 
     url = urls.build_pc_pro_offer_link(offer)
 
-    assert url == f"http://pcpro.com/offre/individuelle/{offer.id}/visibilite"
+    assert url == f"http://pcpro.com/offre/individuelle/{offer.id}/visibilite?id-structure={offer.venue.id}"
