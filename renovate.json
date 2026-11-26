@@ -1,6 +1,34 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["github>pass-culture/renovate-config"],
+  "extends": [
+    "config:recommended",
+    "docker:pinDigests",
+    ":configMigration",
+    ":pinDevDependencies",
+    "abandonments:recommended",
+    "security:minimumReleaseAgeNpm",
+    "security:minimumReleaseAgePypi",
+    ":maintainLockFilesWeekly"
+  ],
   "enabledManagers": ["mise"],
-  "automerge": false
+  "automerge": false,
+  "schedule": [
+    "* 0-23 * * 4"
+  ],
+  "timezone": "Europe/Paris",
+  "prHourlyLimit": 0,
+  "prConcurrentLimit": 0,
+  "platformAutomerge": false,
+  "rebaseWhen": "auto",
+  "packageRules": [
+    {
+      "matchPackageNames": ["*"],
+      "minimumReleaseAge": "7 days"
+    },
+    {
+      "description": ["passdirector is a private repo: Mend gives public repos a token scoped to each repo, not to the entire org. So Renovate can't reach it. Bumped manually for now."],
+      "matchPackageNames": ["pass-culture/passdirector"],
+      "enabled": false
+    }
+  ]
 }
