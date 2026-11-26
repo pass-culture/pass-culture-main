@@ -46,7 +46,7 @@ describe('validationSchema', () => {
       formValues: {
         ...baseValidForm,
         recurrenceType: RecurrenceType.MONTHLY,
-        startingDate: new Date().toISOString(),
+        startingDate: addDays(new Date(), 1).toISOString(),
         endingDate: new Date(
           new Date().setMonth(new Date().getMonth() + 1)
         ).toISOString(),
@@ -166,5 +166,28 @@ describe('validationSchema', () => {
       )
       expect(errors).toEqual(expectedErrors)
     })
+  })
+
+  it('should show an error when a beginning time is in the past today', async () => {
+    vi.useFakeTimers()
+    try {
+      vi.setSystemTime(new Date(2026, 10, 26, 14, 0))
+
+      const errors = await getYupValidationSchemaErrors(getValidationSchema(), {
+        ...baseValidForm,
+        startingDate: '2026-11-26',
+        beginningTimes: [
+          { beginningTime: '12:00' },
+          { beginningTime: '15:00' },
+        ],
+        bookingLimitDateInterval: null,
+      })
+
+      expect(
+        errors.filter((error) => error === 'L’horaire est dans le passé')
+      ).toHaveLength(1)
+    } finally {
+      vi.useRealTimers()
+    }
   })
 })
