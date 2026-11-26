@@ -400,8 +400,8 @@ importers:
         specifier: 5.1.0
         version: 5.1.0(vitest@5.1.0)
       axe-core:
-        specifier: 4.14.0
-        version: 4.14.0
+        specifier: 4.14.1
+        version: 4.14.1
       check-unused-css:
         specifier: 0.5.6
         version: 0.5.6(typescript@6.0.3)
@@ -2547,8 +2547,8 @@ packages:
     resolution: {integrity: sha512-rOKAGOwbnTUvwTL8rNA0hWnU3uX9tOI20di4KjR5I1ez/RJmnA37W3zz4EMxGC2YnI289yPjRy63CdAZeQFZ4Q==}
     engines: {node: '>= 22'}
 
-  axe-core@4.14.0:
-    resolution: {integrity: sha512-9WTZxEjsZ7b13TH8JPmbV2z8CHbl80/2hm3XPEG4JgNdQLK81IBRXmSxHfMAOkSqQeRxT/0dwNDz2GOm3zzpcQ==}
+  axe-core@4.14.1:
+    resolution: {integrity: sha512-FHfa+lmNjQZfJz1q8wKqIDwC6DExcHt/pkjNQb09a3NPjCKg2rhu5qb2S4r76ASyFNNtuFooJpZe37OgudVGtQ==}
     engines: {node: '>=4'}
 
   balanced-match@4.0.4:
@@ -4421,7 +4421,7 @@ snapshots:
 
   '@axe-core/playwright@4.14.0(playwright-core@1.65.1)':
     dependencies:
-      axe-core: 4.14.0
+      axe-core: 4.14.1
       playwright-core: 1.65.1
 
   '@babel/code-frame@7.29.7':
@@ -5618,7 +5618,7 @@ snapshots:
   '@storybook/addon-a11y@10.6.7(storybook@10.6.7(@types/react@19.3.0)(prettier@3.10.1)(react@19.3.1))':
     dependencies:
       '@storybook/global': 5.0.0
-      axe-core: 4.14.0
+      axe-core: 4.14.1
       storybook: 10.6.7(@types/react@19.3.0)(prettier@3.10.1)(react@19.3.1)
 
   '@storybook/addon-docs@10.6.7(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(storybook@10.6.7(@types/react@19.3.0)(prettier@3.10.1)(react@19.3.1))':
@@ -6046,7 +6046,7 @@ snapshots:
 
   attr-accept@4.0.1: {}
 
-  axe-core@4.14.0: {}
+  axe-core@4.14.1: {}
 
   balanced-match@4.0.4: {}
 
@@ -7586,7 +7586,7 @@ snapshots:
   vitest-axe@0.1.0(vitest@5.1.0):
     dependencies:
       aria-query: 5.3.2
-      axe-core: 4.14.0
+      axe-core: 4.14.1
       chalk: 5.6.2
       dom-accessibility-api: 0.5.16
       lodash-es: 4.18.1
