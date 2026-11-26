@@ -2809,7 +2809,8 @@
                     "BOOK",
                     "ALBUM",
                     "CONCERT",
-                    "SCENE"
+                    "SCENE",
+                    "MUSIC"
                 ],
                 "title": "ChronicleClubType",
                 "type": "string"

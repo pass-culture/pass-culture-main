@@ -44,3 +44,10 @@ def import_concert_club_chronicle() -> None:
 def import_scene_club_chronicle() -> None:
     if FeatureToggle.ENABLE_CHRONICLES_SYNC.is_active():
         api.import_scene_club_chronicles()
+
+
+@blueprint.cli.command("import_music_club_chronicle")
+@cron_decorators.log_cron
+def import_music_club_chronicle() -> None:
+    if FeatureToggle.ENABLE_CHRONICLES_SYNC.is_active():
+        api.import_music_club_chronicles()

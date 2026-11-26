@@ -14,6 +14,12 @@ from pcapi.routes.backoffice.forms import fields
 from pcapi.routes.backoffice.forms import utils as forms_utils
 
 
+LEGACY_MUSIC_CLUB_TYPES = (
+    chronicles_models.ChronicleClubType.ALBUM_CLUB,
+    chronicles_models.ChronicleClubType.CONCERT_CLUB,
+)
+
+
 class SearchType(enum.Enum):
     ALL = "Tout"
     CHRONICLE_CONTENT = "Uniquement le contenu des chroniques"
@@ -82,7 +88,9 @@ class GetChronicleSearchForm(forms_utils.PCForm):
         "Club",
         choices=(
             forms_utils.choices_from_enum(
-                chronicles_models.ChronicleClubType, formatter=filters.format_chronicle_club_type
+                chronicles_models.ChronicleClubType,
+                formatter=filters.format_chronicle_club_type,
+                exclude_opts=LEGACY_MUSIC_CLUB_TYPES,
             )
         ),
     )
@@ -131,7 +139,9 @@ class CreateChronicleForm(forms_utils.PCForm):
         "Club",
         choices=(
             forms_utils.choices_from_enum(
-                chronicles_models.ChronicleClubType, formatter=filters.format_chronicle_club_type
+                chronicles_models.ChronicleClubType,
+                formatter=filters.format_chronicle_club_type,
+                exclude_opts=LEGACY_MUSIC_CLUB_TYPES,
             )
         ),
         default=chronicles_models.ChronicleClubType.CINE_CLUB,
