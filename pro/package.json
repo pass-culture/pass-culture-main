@@ -51,7 +51,7 @@
     "@sentry/browser": "11.14.0",
     "@sentry/react": "11.14.0",
     "@zootools/email-spell-checker": "1.13.0",
-    "algoliasearch": "5.64.0",
+    "algoliasearch": "5.65.0",
     "chart.js": "4.6.1",
     "chartjs-adapter-date-fns": "3.0.0",
     "classnames": "2.5.1",
