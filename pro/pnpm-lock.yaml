@@ -318,8 +318,8 @@ importers:
         specifier: 7.91.0
         version: 7.91.0(@types/react@19.3.0)(react@19.3.1)
       react-instantsearch:
-        specifier: 7.55.0
-        version: 7.55.0(algoliasearch@5.64.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+        specifier: 7.55.1
+        version: 7.55.1(algoliasearch@5.64.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       react-redux:
         specifier: 9.3.1
         version: 9.3.1(@types/react@19.3.0)(react@19.3.1)(redux@5.0.1)
@@ -2489,8 +2489,8 @@ packages:
   ajv@8.20.0:
     resolution: {integrity: sha512-Thbli+OlOj+iMPYFBVBfJ3OmCAnaSyNn4M1vz9T6Gka5Jt9ba/HIR56joy65tY6kx/FCF5VXNB819Y7/GUrBGA==}
 
-  algoliasearch-helper@3.30.2:
-    resolution: {integrity: sha512-Dk8wNq5ZvTBMrjfzXeeKYcWMgdTptGrYbLdjmxL4OuEFayueHbLN3Y9AE9DCoG1epQF6vtGpAM9RgHVpHp2PMw==}
+  algoliasearch-helper@3.30.3:
+    resolution: {integrity: sha512-gMl/BG+1200HGAB40jr0pa29hoc1RgQ3LnPrj2RkxmXDF1XdsYS+xO6pOZwqY0y75FMWSxornuqIq3A106uhug==}
     peerDependencies:
       algoliasearch: '>= 3.1 < 6'
 
@@ -3081,11 +3081,11 @@ packages:
     resolution: {integrity: sha512-EdDDZu4A2OyIK7Lr/2zG+w5jmbuk1DVBnEwREQvBzspBJkCEbRa8GxU1lghYcaGJCnRWibjDXlq779X1/y5xwg==}
     engines: {node: '>=8'}
 
-  instantsearch-ui-components@0.46.0:
-    resolution: {integrity: sha512-5HKjtIwe17usL5NBw1IDwFWByKstiu2uLVcY+ZISHQyqEbykdxPmkZvXW+F3oscWQbfggkflIVFO/X2Tf01ovg==}
+  instantsearch-ui-components@0.46.1:
+    resolution: {integrity: sha512-C2htYrsgz/zTZigJ+SN4FxMXiyBRcNX/NqmoCqQ+58sIPK+Msns6EnJBXBP4a0uwiVjGhMfIQMQCnKVAKUYswg==}
 
-  instantsearch.js@4.123.0:
-    resolution: {integrity: sha512-Xvq1OPJkxEhkbJkggTlpl2/r+DgEYP8jIJf3At8BIN863m4zr1gtmYregGJwzUFpQyiRq3jqRm10m8qr/TuOZQ==}
+  instantsearch.js@4.123.1:
+    resolution: {integrity: sha512-+Bgjd15AmF/EcX8XM2RDZJoOP76jEDfbV3ajcJdT+1B9pEIiUdGTCstFO7jCr5X1xbrivAtYvt8HTnrp5kDOAg==}
     peerDependencies:
       algoliasearch: '>= 3.1 < 6'
 
@@ -3385,8 +3385,8 @@ packages:
     resolution: {integrity: sha512-rJgTQnkUnH1sFw8yT6VSU3zD3sWmu6sZhIseY8VX+GRu3P6F7Fu+JNDoXfklElbLJSnc3FUQHVe4cU5hj+BcUg==}
     engines: {node: '>=0.10.0'}
 
-  object-inspect@1.13.4:
-    resolution: {integrity: sha512-W67iLl4J2EXEGTbfeHCffrjDfitvLANg0UlX3wFUUSTx92KXRFegMHUVgSqE+wvhAbi4WqjGg9czysTV2Epbew==}
+  object-inspect@1.14.0:
+    resolution: {integrity: sha512-IVgHNlp/jwQX271+Xzoq9LZNTWXxZK+cEOrGBOBxXNbn7fapnZ+Ts6TVMgNOuAezwG2wdtnMX97tTPK6VEnuOQ==}
     engines: {node: '>= 0.4'}
 
   obug@3.0.0:
@@ -3602,14 +3602,14 @@ packages:
     peerDependencies:
       react: ^18.0.0 || ^19.0.0
 
-  react-instantsearch-core@7.55.0:
-    resolution: {integrity: sha512-vHByPmnJCXLAadKy44h9VJgX+hO0b83G5jofuDeRNvMUHyCW5sDTbkCMxAxoiveZeQCuRw6biGL+HQqf8357nQ==}
+  react-instantsearch-core@7.55.1:
+    resolution: {integrity: sha512-UTTcCt9qWLd2jrd8bRSnDp4iGLTz4vlQg3lo2uVgbW2ZmFXwAgrEP4E3eQqhrSCR04QOKGFnR9kj2n4mjGdVcg==}
     peerDependencies:
       algoliasearch: '>= 3.1 < 6'
       react: '>= 16.8.0 < 20'
 
-  react-instantsearch@7.55.0:
-    resolution: {integrity: sha512-clyjRocyrqnjHCU8XpwD2EVsrritOX32oIPechngckga3MuMazhirh1oSa7Dn+WuB0JHVHPfAh53bOwwJFI+/A==}
+  react-instantsearch@7.55.1:
+    resolution: {integrity: sha512-ApubQ+4aI+JuZMItWrphkQ80yBxR3OIVoZ+l5K3G9UfKXlMRRCN+N9WGYJtfkQ4zNTGS4R6A5sXidmyvr4Dn6Q==}
     peerDependencies:
       algoliasearch: '>= 3.1 < 6'
       react: '>= 16.8.0 < 20'
@@ -5992,7 +5992,7 @@ snapshots:
       require-from-string: 2.0.2
     optional: true
 
-  algoliasearch-helper@3.30.2(algoliasearch@5.64.0):
+  algoliasearch-helper@3.30.3(algoliasearch@5.64.0):
     dependencies:
       '@algolia/events': 4.0.1
       algoliasearch: 5.64.0
@@ -6557,11 +6557,11 @@ snapshots:
 
   indent-string@4.0.0: {}
 
-  instantsearch-ui-components@0.46.0:
+  instantsearch-ui-components@0.46.1:
     dependencies:
       '@swc/helpers': 0.5.18
 
-  instantsearch.js@4.123.0(algoliasearch@5.64.0):
+  instantsearch.js@4.123.1(algoliasearch@5.64.0):
     dependencies:
       '@algolia/events': 4.0.1
       '@swc/helpers': 0.5.18
@@ -6570,10 +6570,10 @@ snapshots:
       '@types/hogan.js': 3.0.5
       '@types/qs': 6.15.1
       algoliasearch: 5.64.0
-      algoliasearch-helper: 3.30.2(algoliasearch@5.64.0)
+      algoliasearch-helper: 3.30.3(algoliasearch@5.64.0)
       hogan.js: 3.0.2
       htm: 3.1.1
-      instantsearch-ui-components: 0.46.0
+      instantsearch-ui-components: 0.46.1
       preact: 10.29.8
       qs: 6.17.1
       react: 19.3.1
@@ -6845,7 +6845,7 @@ snapshots:
 
   object-assign@4.1.1: {}
 
-  object-inspect@1.13.4: {}
+  object-inspect@1.14.0: {}
 
   obug@3.0.0: {}
 
@@ -7136,26 +7136,26 @@ snapshots:
     dependencies:
       react: 19.3.1
 
-  react-instantsearch-core@7.55.0(algoliasearch@5.64.0)(react@19.3.1):
+  react-instantsearch-core@7.55.1(algoliasearch@5.64.0)(react@19.3.1):
     dependencies:
       '@swc/helpers': 0.5.18
       algoliasearch: 5.64.0
-      algoliasearch-helper: 3.30.2(algoliasearch@5.64.0)
-      instantsearch.js: 4.123.0(algoliasearch@5.64.0)
+      algoliasearch-helper: 3.30.3(algoliasearch@5.64.0)
+      instantsearch.js: 4.123.1(algoliasearch@5.64.0)
       react: 19.3.1
       use-sync-external-store: 1.7.0(react@19.3.1)
     transitivePeerDependencies:
       - preact-render-to-string
 
-  react-instantsearch@7.55.0(algoliasearch@5.64.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1):
+  react-instantsearch@7.55.1(algoliasearch@5.64.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1):
     dependencies:
       '@swc/helpers': 0.5.18
       algoliasearch: 5.64.0
-      instantsearch-ui-components: 0.46.0
-      instantsearch.js: 4.123.0(algoliasearch@5.64.0)
+      instantsearch-ui-components: 0.46.1
+      instantsearch.js: 4.123.1(algoliasearch@5.64.0)
       react: 19.3.1
       react-dom: 19.3.1(react@19.3.1)
-      react-instantsearch-core: 7.55.0(algoliasearch@5.64.0)(react@19.3.1)
+      react-instantsearch-core: 7.55.1(algoliasearch@5.64.0)(react@19.3.1)
     transitivePeerDependencies:
       - preact-render-to-string
 
@@ -7322,27 +7322,27 @@ snapshots:
   side-channel-list@1.0.1:
     dependencies:
       es-errors: 1.3.0
-      object-inspect: 1.13.4
+      object-inspect: 1.14.0
 
   side-channel-map@1.0.1:
     dependencies:
       call-bound: 1.0.4
       es-errors: 1.3.0
       get-intrinsic: 1.3.0
-      object-inspect: 1.13.4
+      object-inspect: 1.14.0
 
   side-channel-weakmap@1.0.2:
     dependencies:
       call-bound: 1.0.4
       es-errors: 1.3.0
       get-intrinsic: 1.3.0
-      object-inspect: 1.13.4
+      object-inspect: 1.14.0
       side-channel-map: 1.0.1
 
   side-channel@1.1.1:
     dependencies:
       es-errors: 1.3.0
-      object-inspect: 1.13.4
+      object-inspect: 1.14.0
       side-channel-list: 1.0.1
       side-channel-map: 1.0.1
       side-channel-weakmap: 1.0.2
