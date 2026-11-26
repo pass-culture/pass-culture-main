@@ -1,29 +1,31 @@
 import { Navigate, type NavigateProps, useLocation } from 'react-router'
 
-import { routesSimulator } from '@/app/AppRouter/subroutesSimulator'
-import { routesWelcomeCarousel } from '@/app/AppRouter/subroutesWelcomeCarousel'
 import { withUserPermissions } from '@/commons/auth/withUserPermissions'
 import { noop } from '@/commons/utils/noop'
 import { parse } from '@/commons/utils/query-string'
+import { AdministrationLayout } from '@/layouts/AdministrationLayout/AdministrationLayout'
+import { VenuePageLayout } from '@/layouts/VenuePageLayout/VenuePageLayout'
+import { VenueSettings } from '@/pages/VenueSettings/VenueSettings'
 
-import { administrationRouteGroup } from './routes/administrationRouteGroup'
-import { partnerRouteGroup } from './routes/partnerRouteGroup'
-import { venuePageRouteSubgroup } from './routes/venuePageRouteSubgroup'
-import { venueSettingsRouteSubgroup } from './routes/venueSettingsRouteSubgroup'
-import { routesEcoDesign } from './subroutesEcoDesignMap'
-import { routesIndividualOfferV2 } from './subroutesIndividualOfferV2'
-import {
-  routesIndividualOfferWizard,
-  routesOnboardingIndividualOfferWizard,
-} from './subroutesIndividualOfferWizardMap'
-import { routesSignupJourney } from './subroutesSignupJourneyMap'
-import { routesSignup } from './subroutesSignupMap'
+import { administrationRoutes } from './routes/administration'
+import { bienvenueRoutes } from './routes/bienvenue'
+import { ecoconceptionRoutes } from './routes/ecoconception'
+import { inscriptionRoutes } from './routes/inscription'
+import { inscriptionPreparationRoutes } from './routes/inscriptionPreparation'
+import { inscriptionStructureRoutes } from './routes/inscriptionStructure'
+import { offreIndividuelleRoutes } from './routes/offreIndividuelle'
+import { offreIndividuelleV2Routes } from './routes/offreIndividuelleV2'
+import { onboardingOffreIndividuelleRoutes } from './routes/onboardingOffreIndividuelle'
+import { parametresRoutes } from './routes/parametres'
+import { partenaireRoutes } from './routes/partenaire'
 import type { CustomRouteTree } from './types'
 import {
   mustBeAuthenticated,
   mustBeOnboardedWithActiveSelectedPartnerVenue,
   mustBeOnboardedWithSelectedPartnerVenue,
   mustBeUnauthenticated,
+  mustHaveSelectedAdminOfferer,
+  mustHaveSelectedPartnerVenue,
   mustNotBeOnboardedWithSelectedPartnerVenue,
 } from './utils'
 
@@ -48,10 +50,68 @@ export const routes: CustomRouteTree = [
       title: 'Espace acteurs culturels',
     },
   },
-  administrationRouteGroup,
-  partnerRouteGroup,
-  venuePageRouteSubgroup,
-  venueSettingsRouteSubgroup,
+  {
+    path: '/administration',
+    loader: withUserPermissions(mustHaveSelectedAdminOfferer),
+    Component: AdministrationLayout,
+    children: administrationRoutes,
+  },
+  {
+    path: '/accueil',
+    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+    lazy: () => import('@/pages/Homepage/Homepage'),
+    handle: {
+      title: 'Espace acteurs culturels',
+    },
+  },
+
+  {
+    lazy: () => import('@/pages/Desk/Desk'),
+    path: '/guichet',
+    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+    handle: {
+      title: 'Guichet',
+    },
+  },
+  {
+    path: '/offres',
+    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+    lazy: () => import('@/pages/IndividualOffers/IndividualOffers'),
+    handle: {
+      title: 'Offres individuelles',
+    },
+  },
+  {
+    path: '/reservations',
+    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+    handle: {
+      title: 'Réservations individuelles',
+    },
+    lazy: () => import('@/pages/IndividualBookings/IndividualBookings'),
+  },
+  {
+    path: '/offres/collectives',
+    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+    handle: {
+      title: 'Offres collectives',
+    },
+    lazy: () => import('@/pages/CollectiveOffers/CollectiveOffers'),
+  },
+  {
+    path: '/partenaire',
+    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+    Component: VenuePageLayout,
+    children: partenaireRoutes,
+  },
+  {
+    path: '/parametres',
+    loader: withUserPermissions(mustHaveSelectedPartnerVenue),
+    handle: {
+      title: 'Paramètres',
+    },
+    Component: VenueSettings,
+    children: parametresRoutes,
+  },
   {
     lazy: () => import('@/pages/Hub/Hub'),
     loader: withUserPermissions(mustBeAuthenticated),
@@ -92,7 +152,7 @@ export const routes: CustomRouteTree = [
     handle: {
       title: 'Créez votre compte',
     },
-    children: routesSignup,
+    children: inscriptionRoutes,
   },
   {
     lazy: () => import('@/pages/Errors/Unavailable/Unavailable'),
@@ -417,7 +477,7 @@ export const routes: CustomRouteTree = [
     handle: {
       title: 'Offre étape par étape',
     },
-    children: routesIndividualOfferWizard,
+    children: offreIndividuelleRoutes,
   },
   {
     lazy: () => import('@/pages/IndividualOfferV2/IndividualOfferV2'),
@@ -426,7 +486,7 @@ export const routes: CustomRouteTree = [
     handle: {
       title: 'Offre étape par étape',
     },
-    children: routesIndividualOfferV2,
+    children: offreIndividuelleV2Routes,
     featureName: 'WIP_NFD',
   },
   {
@@ -436,7 +496,7 @@ export const routes: CustomRouteTree = [
     handle: {
       title: 'Offre étape par étape',
     },
-    children: routesOnboardingIndividualOfferWizard,
+    children: onboardingOffreIndividuelleRoutes,
   },
   {
     lazy: () => import('@/pages/User/UserProfile'),
@@ -453,7 +513,7 @@ export const routes: CustomRouteTree = [
     handle: {
       title: "Parcours d'inscription",
     },
-    children: routesSignupJourney,
+    children: inscriptionStructureRoutes,
   },
   {
     lazy: () => import('@/pages/Sitemap/Sitemap'),
@@ -493,7 +553,7 @@ export const routes: CustomRouteTree = [
     handle: {
       title: 'Déclaration d’écoconception de l’espace partenaire',
     },
-    children: routesEcoDesign,
+    children: ecoconceptionRoutes,
   },
   {
     lazy: () =>
@@ -524,7 +584,7 @@ export const routes: CustomRouteTree = [
     handle: {
       title: 'Bienvenue sur pass Culture Pro',
     },
-    children: routesWelcomeCarousel,
+    children: bienvenueRoutes,
   },
   {
     lazy: () => import('@/pages/Simulator/Simulator'),
@@ -533,7 +593,7 @@ export const routes: CustomRouteTree = [
     handle: {
       title: 'Renseignez votre SIRET',
     },
-    children: routesSimulator,
+    children: inscriptionPreparationRoutes,
   },
   {
     lazy: () => import('@/pages/Errors/NotFound/NotFound'),

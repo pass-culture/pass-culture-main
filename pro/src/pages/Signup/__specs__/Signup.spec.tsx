@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 import { Route, Routes } from 'react-router'
 import { axe } from 'vitest-axe'
 
-import { routesSignup } from '@/app/AppRouter/subroutesSignupMap'
+import { inscriptionRoutes } from '@/app/AppRouter/routes/inscription'
 import {
   type RenderWithProvidersOptions,
   renderWithProviders,
@@ -24,7 +24,7 @@ const renderSignup = (options?: RenderWithProvidersOptions) =>
     <Routes>
       <Route path="/accueil" element="Connecté" />
       <Route path="/inscription" element={<Signup />}>
-        {routesSignup.map((route) => (
+        {inscriptionRoutes.map((route) => (
           <Route key={route.path} path={route.path} element={route.element} />
         ))}
       </Route>

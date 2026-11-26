@@ -3,6 +3,7 @@ import { addDays, isBefore } from 'date-fns'
 import { useId, useState } from 'react'
 
 import { DMSApplicationstatus } from '@/apiClient/v1'
+import { ContentLayout } from '@/app/App/layouts/ContentLayout/ContentLayout'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { getToday } from '@/commons/utils/date'
@@ -129,7 +130,7 @@ export const Homepage = (): JSX.Element => {
   )
 
   return (
-    <>
+    <ContentLayout>
       <h1
         className={styles['title-2']}
       >{`Votre espace ${selectedPartnerVenue.publicName}`}</h1>
@@ -293,7 +294,7 @@ export const Homepage = (): JSX.Element => {
           </div>
         </div>
       )}
-    </>
+    </ContentLayout>
   )
 }
 

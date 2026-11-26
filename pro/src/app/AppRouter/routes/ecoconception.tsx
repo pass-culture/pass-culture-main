@@ -1,8 +1,14 @@
 import { noop } from '@/commons/utils/noop'
 
-import type { CustomRouteGroup } from './types'
+import type { CustomRouteGroup } from '../types'
 
-export const routesEcoDesign: CustomRouteGroup['children'] = [
+export const ECOCONCEPTION_ROUTES = {
+  ECO_MENU: '/ecoconception',
+  ECO_POLICY: '/ecoconception/politique',
+  ECO_DECLARATION: '/ecoconception/declaration',
+} as const
+
+export const ecoconceptionRoutes: CustomRouteGroup['children'] = [
   {
     lazy: () => import('@/pages/EcoDesign/EcoDesignMenu'),
     loader: noop,

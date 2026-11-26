@@ -3,7 +3,7 @@ import { Outlet, useLocation } from 'react-router'
 
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { reimbursementsRouteGroup } from './reimbursementsRouteGroup'
+import { administrationReimbursementsRoutes } from './administrationReimbursements'
 
 const RouteTester = () => {
   const location = useLocation()
@@ -29,7 +29,7 @@ describe('reimbursementsRouteGroup', () => {
           {
             path: '/administration/gestion-financiere',
             element: <Outlet />,
-            children: reimbursementsRouteGroup.map((route) =>
+            children: administrationReimbursementsRoutes.map((route) =>
               'path' in route
                 ? {
                     ...route,

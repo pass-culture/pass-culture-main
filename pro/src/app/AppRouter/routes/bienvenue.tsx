@@ -1,9 +1,18 @@
 import { withUserPermissions } from '@/commons/auth/withUserPermissions'
 
-import type { CustomRouteGroup } from './types'
-import { mustBeUnauthenticated } from './utils'
+import type { CustomRouteGroup } from '../types'
+import { mustBeUnauthenticated } from '../utils'
 
-export const routesWelcomeCarousel: CustomRouteGroup['children'] = [
+export const BIENVENUE_ROUTES = {
+  BIENVENUE: '/bienvenue',
+  BIENVENUE_PUBLICS: '/bienvenue/publics',
+  BIENVENUE_OFFRES_JEUNES: '/bienvenue/offres-jeunes',
+  BIENVENUE_OFFRES_SCOLAIRES: '/bienvenue/offres-scolaires',
+  BIENVENUE_AVANTAGES: '/bienvenue/avantages',
+  BIENVENUE_PROCHAINES_ETAPES: '/bienvenue/prochaines-etapes',
+} as const
+
+export const bienvenueRoutes: CustomRouteGroup['children'] = [
   {
     lazy: () => import('@/pages/WelcomeCarousel/WelcomeStepHub/WelcomeStepHub'),
     loader: withUserPermissions(mustBeUnauthenticated),

@@ -1,8 +1,8 @@
 import { matchRoutes } from 'react-router'
 
-import { routesSignup } from '../subroutesSignupMap'
+import { inscriptionRoutes } from '../routes/inscription'
 
-describe('routesSignup', () => {
+describe('inscriptionRoutes', () => {
   it.each([
     '/inscription',
     '/inscription/compte/creation',
@@ -12,7 +12,7 @@ describe('routesSignup', () => {
     '/inscription/confirmation',
   ])('should have the path %s', (path) => {
     expect(
-      matchRoutes([{ path: '/inscription', children: routesSignup }], path)
+      matchRoutes([{ path: '/inscription', children: inscriptionRoutes }], path)
     ).not.toBeNull()
   })
 })

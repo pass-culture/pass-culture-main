@@ -2,9 +2,22 @@ import { Navigate } from 'react-router'
 
 import { noop } from '@/commons/utils/noop'
 
-import type { CustomRouteGroup } from './types'
+import type { CustomRouteGroup } from '../types'
 
-export const routesSimulator: CustomRouteGroup['children'] = [
+export const INSCRIPTION_PREPARATION_ROUTES = {
+  INSCRIPTION_PREPARATION: '/inscription/preparation',
+  INSCRIPTION_PREPARATION_SIRET: '/inscription/preparation/siret',
+  INSCRIPTION_PREPARATION_ACCUEIL_PUBLIC:
+    '/inscription/preparation/accueil-public',
+  INSCRIPTION_PREPARATION_ACTIVITE: '/inscription/preparation/activite',
+  INSCRIPTION_PREPARATION_PUBLICS: '/inscription/preparation/publics',
+  INSCRIPTION_PREPARATION_RESULTATS: '/inscription/preparation/resultats',
+  INSCRIPTION_PREPARATION_EMAIL: '/inscription/preparation/email',
+  INSCRIPTION_PREPARATION_EMAIL_CONFIRMATION:
+    '/inscription/preparation/email-confirmation',
+} as const
+
+export const inscriptionPreparationRoutes: CustomRouteGroup['children'] = [
   {
     index: true,
     element: <Navigate to="/inscription/preparation/siret" />,

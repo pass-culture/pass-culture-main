@@ -3,7 +3,7 @@ import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import { FieldEnum, FormatEnum, NatureEnum } from '@/apiClient/v1'
-import { routesIndividualOfferV2 } from '@/app/AppRouter/subroutesIndividualOfferV2'
+import { offreIndividuelleV2Routes } from '@/app/AppRouter/routes/offreIndividuelleV2'
 import type { NFDState } from '@/commons/store/nfd/reducer'
 import { createStore, rootStore } from '@/commons/store/store'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
@@ -41,7 +41,7 @@ const renderIndividualOfferV2Description = (
       {
         path: '/offre/individuelle/v2/creation/description',
         hydrateFallbackElement: <div>Chargement</div>,
-        loader: routesIndividualOfferV2.find(
+        loader: offreIndividuelleV2Routes.find(
           (route) => route.path === 'creation/description'
         )?.loader,
         element: <IndividualOfferV2Description />,
