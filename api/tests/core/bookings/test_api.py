@@ -1796,6 +1796,14 @@ class ComputeCancellationDateTest:
             event_date_four_days_from_now, booking_creation_date
         ) == event_date_four_days_from_now - timedelta(days=2)
 
+    def test_handles_event_beginning_on_last_day_of_year_9999(self, booking_creation_date):
+        # PC-44463: some stocks are created with the maximal date as beginning datetime
+        event_beginning = datetime(9999, 12, 31, 21, 59, 59)
+
+        assert api.compute_booking_cancellation_limit_date(
+            event_beginning, booking_creation_date
+        ) == booking_creation_date + timedelta(days=2)
+
 
 @pytest.mark.usefixtures("db_session")
 class UpdateCancellationLimitDatesTest:
