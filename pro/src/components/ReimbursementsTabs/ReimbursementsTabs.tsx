@@ -3,9 +3,9 @@ import { useAnalytics } from '@/app/App/analytics/firebase'
 import { FinanceEvents } from '@/commons/core/FirebaseEvents/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useActiveStep } from '@/commons/hooks/useActiveStep'
+import { ButtonIconColor } from '@/design-system/Button/types'
 import fullErrorIcon from '@/icons/full-error.svg'
-import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
-import type { NavLinkItem } from '@/ui-kit/Tabs/NavLinkItems/NavLinkItems'
+import type { TabItem } from '@/ui-kit/Tabs/Tabs'
 import { Tabs } from '@/ui-kit/Tabs/Tabs'
 
 import {
@@ -15,7 +15,14 @@ import {
   STEP_ID_SETTLEMENTS,
   STEP_NAMES,
 } from './constants'
-import styles from './ReimbursementsTabs.module.scss'
+
+const URL_BY_STEP = {
+  [STEP_ID_INVOICES]: '/administration/gestion-financiere/justificatifs',
+  [STEP_ID_SETTLEMENTS]: '/administration/gestion-financiere/virements',
+  [STEP_ID_BANK_INFORMATIONS]:
+    '/administration/gestion-financiere/informations-bancaires',
+  [STEP_ID_INCOMES]: '/administration/gestion-financiere/chiffre-d-affaires',
+} as const
 
 const EVENT_BY_STEP = {
   [STEP_ID_SETTLEMENTS]: FinanceEvents.CLICKED_SETTLEMENTS_TAB,
@@ -45,38 +52,27 @@ export const ReimbursementsTabs = ({
     false
 
   const getSteps = () => {
-    const steps = [
+    const steps: Array<Omit<TabItem<Step>, 'key'> & { id: Step }> = [
       {
         id: STEP_ID_SETTLEMENTS,
         label: 'Virements',
-        url: '/administration/gestion-financiere/virements',
       },
       {
         id: STEP_ID_INVOICES,
         label: 'Justificatifs',
-        url: '/administration/gestion-financiere/justificatifs',
       },
       {
         id: STEP_ID_BANK_INFORMATIONS,
-        label: (
-          <>
-            Informations bancaires
-            {hasWarning && (
-              <SvgIcon
-                src={fullErrorIcon}
-                alt="Une action est requise dans cet onglet"
-                width="20"
-                className={styles['error-icon']}
-              />
-            )}
-          </>
-        ),
-        url: '/administration/gestion-financiere/informations-bancaires',
+        label: 'Informations bancaires',
+        ...(hasWarning && {
+          icon: fullErrorIcon,
+          iconAlt: 'Une action est requise dans cet onglet',
+          iconColor: ButtonIconColor.ERROR,
+        }),
       },
       {
         id: STEP_ID_INCOMES,
-        label: 'Chiffre d’affaires',
-        url: '/administration/gestion-financiere/chiffre-d-affaires',
+        label: "Chiffre d'affaires",
       },
     ]
 
@@ -85,10 +81,10 @@ export const ReimbursementsTabs = ({
     )
   }
 
-  const tabs: NavLinkItem<string>[] = getSteps().map(({ id, label, url }) => ({
+  const tabs: TabItem<string>[] = getSteps().map(({ id, ...step }) => ({
+    ...step,
     key: id,
-    label,
-    url,
+    url: URL_BY_STEP[id],
   }))
 
   const onTabClick = (selectedTab: string) => {
@@ -98,7 +94,6 @@ export const ReimbursementsTabs = ({
 
   return (
     <Tabs
-      type="links"
       items={tabs}
       selectedKey={activeStep}
       navLabel="Sous menu - Gestion financière"

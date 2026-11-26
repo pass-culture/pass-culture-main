@@ -1,4 +1,4 @@
-import { screen, within } from '@testing-library/dom'
+import { screen } from '@testing-library/dom'
 import { expect } from 'vitest'
 import { axe } from 'vitest-axe'
 
@@ -7,12 +7,26 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { CollectiveOfferEditionNavigation } from './CollectiveOfferEditionNavigation'
 import { CollectiveOfferStep } from './constants'
 
+vi.mock('react-router', async () => {
+  const actual = await vi.importActual('react-router')
+  return {
+    ...actual,
+    useNavigate: () => vi.fn(),
+  }
+})
+
 describe('<CollectiveOfferEditionNavigation />', () => {
   it('should render without accessibility violations', async () => {
     const { container } = renderWithProviders(
-      <CollectiveOfferEditionNavigation
-        activeStep={CollectiveOfferStep.DETAILS}
-      />
+      <div>
+        <CollectiveOfferEditionNavigation
+          activeStep={CollectiveOfferStep.DETAILS}
+        />
+        <div id="panel-DETAILS" role="tabpanel"></div>
+        <div id="panel-STOCKS" role="tabpanel"></div>
+        <div id="panel-INFORMATION" role="tabpanel"></div>
+        <div id="panel-INSTITUTION" role="tabpanel"></div>
+      </div>
     )
 
     expect(await axe(container)).toHaveNoViolations()
@@ -20,28 +34,29 @@ describe('<CollectiveOfferEditionNavigation />', () => {
 
   it('should show navigation tabs', () => {
     renderWithProviders(
-      <CollectiveOfferEditionNavigation
-        activeStep={CollectiveOfferStep.DETAILS}
-        offerId={1}
-      />
+      <div>
+        <CollectiveOfferEditionNavigation
+          activeStep={CollectiveOfferStep.DETAILS}
+          offerId={1}
+        />
+        <div id="panel-DETAILS" role="tabpanel"></div>
+        <div id="panel-STOCKS" role="tabpanel"></div>
+        <div id="panel-INFORMATION" role="tabpanel"></div>
+        <div id="panel-INSTITUTION" role="tabpanel"></div>
+      </div>
     )
 
-    const tabs = screen.getAllByRole('listitem')
-    expect(tabs).toHaveLength(4)
-    expect(tabs[0]).toHaveAttribute('id', 'selected')
     expect(
-      within(tabs[0]).getByRole('link', { name: /Détails de l'offre/ })
+      screen.getByRole('tab', { name: /Détails de l'offre/ })
     ).toBeVisible()
+    expect(screen.getByRole('tab', { name: 'Dates et prix' })).toBeVisible()
     expect(
-      within(tabs[1]).getByRole('link', { name: 'Dates et prix' })
-    ).toBeVisible()
-    expect(
-      within(tabs[2]).getByRole('link', {
+      screen.getByRole('tab', {
         name: 'Informations pratiques',
       })
     ).toBeVisible()
     expect(
-      within(tabs[3]).getByRole('link', {
+      screen.getByRole('tab', {
         name: 'Établissement et enseignant',
       })
     ).toBeVisible()
@@ -50,46 +65,38 @@ describe('<CollectiveOfferEditionNavigation />', () => {
   it('should show the INFORMATIONS step', () => {
     const offerId = 1
     renderWithProviders(
-      <CollectiveOfferEditionNavigation
-        activeStep={CollectiveOfferStep.INFORMATION}
-        offerId={offerId}
-      />
+      <div>
+        <CollectiveOfferEditionNavigation
+          activeStep={CollectiveOfferStep.INFORMATION}
+          offerId={offerId}
+        />
+        <div id="panel-DETAILS" role="tabpanel"></div>
+        <div id="panel-STOCKS" role="tabpanel"></div>
+        <div id="panel-INFORMATION" role="tabpanel"></div>
+        <div id="panel-INSTITUTION" role="tabpanel"></div>
+      </div>
     )
 
-    const tabs = screen.getAllByRole('listitem')
-    expect(tabs).toHaveLength(4)
-
-    const tabDetails = within(tabs[0]).getByRole('link', {
+    const tabDetails = screen.getByRole('tab', {
       name: "Détails de l'offre",
     })
     expect(tabDetails).toBeVisible()
-    expect(tabDetails.getAttribute('href')).toBe(
-      `/offre/${offerId}/collectif/edition`
-    )
+    expect(tabDetails).toHaveAttribute('aria-selected', 'false')
 
-    const tabDates = within(tabs[1]).getByRole('link', {
+    const tabDates = screen.getByRole('tab', {
       name: 'Dates et prix',
     })
     expect(tabDates).toBeVisible()
-    expect(tabDates.getAttribute('href')).toBe(
-      `/offre/${offerId}/collectif/stocks/edition`
-    )
 
-    const tabInformations = within(tabs[2]).getByRole('link', {
+    const tabInformations = screen.getByRole('tab', {
       name: /Informations pratiques/,
     })
-    expect(tabs[2]).toHaveAttribute('id', 'selected')
     expect(tabInformations).toBeVisible()
-    expect(tabInformations.getAttribute('href')).toBe(
-      `/offre/${offerId}/collectif/informations-pratiques/edition`
-    )
+    expect(tabInformations).toHaveAttribute('aria-selected', 'true')
 
-    const tabEtablissement = within(tabs[3]).getByRole('link', {
+    const tabEtablissement = screen.getByRole('tab', {
       name: 'Établissement et enseignant',
     })
     expect(tabEtablissement).toBeVisible()
-    expect(tabEtablissement.getAttribute('href')).toBe(
-      `/offre/${offerId}/collectif/etablissement/edition`
-    )
   })
 })

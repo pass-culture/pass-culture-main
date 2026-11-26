@@ -7,6 +7,14 @@ import {
 
 import { SettingsTabs } from './SettingsTabs'
 
+vi.mock('react-router', async () => {
+  const actual = await vi.importActual('react-router')
+  return {
+    ...actual,
+    useNavigate: () => vi.fn(),
+  }
+})
+
 const renderSettingsTabs = (options?: RenderWithProvidersOptions) => {
   return renderWithProviders(<SettingsTabs />, {
     ...options,
@@ -18,16 +26,16 @@ describe('SettingsTabs', () => {
     renderSettingsTabs({ features: ['WIP_CLOSE_VENUE'] })
 
     expect(
-      screen.getByRole('link', { name: /Informations générales/ })
+      screen.getByRole('tab', { name: /Informations générales/ })
     ).toBeInTheDocument()
     expect(
-      screen.getByRole('link', { name: /Notifications/ })
+      screen.getByRole('tab', { name: /Notifications/ })
     ).toBeInTheDocument()
     expect(
-      screen.getByRole('link', { name: /Synchronisations/ })
+      screen.getByRole('tab', { name: /Synchronisations/ })
     ).toBeInTheDocument()
     expect(
-      screen.getByRole('link', { name: /Gestion de la structure/ })
+      screen.getByRole('tab', { name: /Gestion de la structure/ })
     ).toBeInTheDocument()
   })
 
@@ -35,16 +43,16 @@ describe('SettingsTabs', () => {
     renderSettingsTabs({ features: [] })
 
     expect(
-      screen.getByRole('link', { name: /Informations générales/ })
+      screen.getByRole('tab', { name: /Informations générales/ })
     ).toBeInTheDocument()
     expect(
-      screen.getByRole('link', { name: /Notifications/ })
+      screen.getByRole('tab', { name: /Notifications/ })
     ).toBeInTheDocument()
     expect(
-      screen.getByRole('link', { name: /Synchronisations/ })
+      screen.getByRole('tab', { name: /Synchronisations/ })
     ).toBeInTheDocument()
     expect(
-      screen.queryByRole('link', { name: /Gestion de la structure/ })
+      screen.queryByRole('tab', { name: /Gestion de la structure/ })
     ).not.toBeInTheDocument()
   })
 })

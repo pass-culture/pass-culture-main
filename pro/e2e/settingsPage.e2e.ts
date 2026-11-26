@@ -27,19 +27,19 @@ test.describe('Settings page', () => {
     await expect(page.getByTestId('spinner')).toHaveCount(0)
     await checkAccessibility(page)
 
-    await page.getByRole('link', { name: 'Notifications' }).click()
+    await page.getByRole('tab', { name: 'Notifications' }).click()
     await expect(page).toHaveURL(/\/parametres\/notifications$/)
     await expect(
       page.getByRole('heading', { name: 'Notifications de réservations' })
     ).toBeVisible()
 
-    await page.getByRole('link', { name: 'Synchronisations' }).click()
+    await page.getByRole('tab', { name: 'Synchronisations' }).click()
     await expect(page).toHaveURL(/\/parametres\/synchronisations$/)
     await expect(
       page.getByRole('heading', { name: 'Gestion des synchronisations' })
     ).toBeVisible()
 
-    await page.getByRole('link', { name: 'Informations générales' }).click()
+    await page.getByRole('tab', { name: 'Informations générales' }).click()
     await expect(page).toHaveURL(/\/parametres\/informations-generales$/)
   })
 
@@ -61,7 +61,7 @@ test.describe('Settings page', () => {
     await expect(page.getByTestId('spinner')).toHaveCount(0)
     await checkAccessibility(page)
 
-    await page.getByRole('link', { name: 'Notifications' }).click()
+    await page.getByRole('tab', { name: 'Notifications' }).click()
     await expect(page).toHaveURL(/\/parametres\/notifications$/)
 
     await page.getByLabel('Adresse email').fill('nouveau@email.com')
@@ -89,12 +89,12 @@ test.describe('Settings page', () => {
     await expect(page.getByTestId('spinner')).toHaveCount(0)
     await checkAccessibility(page)
 
-    await page.getByRole('link', { name: 'Notifications' }).click()
+    await page.getByRole('tab', { name: 'Notifications' }).click()
     await expect(page).toHaveURL(/\/parametres\/notifications$/)
 
     await page.getByLabel('Adresse email').fill('unsaved@email.com')
 
-    await page.getByRole('link', { name: 'Informations générales' }).click()
+    await page.getByRole('tab', { name: 'Informations générales' }).click()
 
     const guardDialog = page.getByRole('dialog', {
       name: 'Des modifications ont été apportées à cette page',
@@ -127,12 +127,12 @@ test.describe('Settings page', () => {
     await expect(page.getByTestId('spinner')).toHaveCount(0)
     await checkAccessibility(page)
 
-    await page.getByRole('link', { name: 'Notifications' }).click()
+    await page.getByRole('tab', { name: 'Notifications' }).click()
     await expect(page).toHaveURL(/\/parametres\/notifications$/)
 
     await page.getByLabel('Adresse email').fill('nouveau@email.com')
 
-    await page.getByRole('link', { name: 'Informations générales' }).click()
+    await page.getByRole('tab', { name: 'Informations générales' }).click()
 
     const guardDialog = page.getByRole('dialog', {
       name: 'Des modifications ont été apportées à cette page',
@@ -166,12 +166,12 @@ test.describe('Settings page', () => {
     await expect(page.getByTestId('spinner')).toHaveCount(0)
     await checkAccessibility(page)
 
-    await page.getByRole('link', { name: 'Notifications' }).click()
+    await page.getByRole('tab', { name: 'Notifications' }).click()
     await expect(page).toHaveURL(/\/parametres\/notifications$/)
 
     await page.getByLabel('Adresse email').fill('unsaved@email.com')
 
-    await page.getByRole('link', { name: 'Informations générales' }).click()
+    await page.getByRole('tab', { name: 'Informations générales' }).click()
 
     const guardDialog = page.getByRole('dialog', {
       name: 'Des modifications ont été apportées à cette page',
@@ -202,7 +202,7 @@ test.describe('Settings page', () => {
     const navBar = page.getByRole('navigation', { name: 'Menu principal' })
     await navBar.getByRole('link', { name: 'Paramètres' }).click()
     await expect(page).toHaveURL(/\/parametres\/informations-generales$/)
-    await page.getByRole('link', { name: 'Gestion de la structure' }).click()
+    await page.getByRole('tab', { name: 'Gestion de la structure' }).click()
     await expect(page).toHaveURL(/\/parametres\/gestion-structure$/)
     await checkAccessibility(page)
 
@@ -241,7 +241,7 @@ test.describe('Settings page', () => {
     const navBar = page.getByRole('navigation', { name: 'Menu principal' })
     await navBar.getByRole('link', { name: 'Paramètres' }).click()
     await expect(page).toHaveURL(/\/parametres\/informations-generales$/)
-    await page.getByRole('link', { name: 'Gestion de la structure' }).click()
+    await page.getByRole('tab', { name: 'Gestion de la structure' }).click()
     await expect(page).toHaveURL(/\/parametres\/gestion-structure$/)
     await checkAccessibility(page)
 

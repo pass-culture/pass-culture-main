@@ -8,6 +8,7 @@ import {
   GET_OFFERER_BANK_ACCOUNTS_AND_ATTACHED_VENUES_QUERY_KEY,
   GET_SETTLEMENTS_QUERY_KEY,
 } from '@/commons/config/swrQueryKeys'
+import { useActiveStep } from '@/commons/hooks/useActiveStep'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ensureSelectedAdminOfferer } from '@/commons/store/user/selectors'
@@ -15,7 +16,9 @@ import {
   LOCAL_STORAGE_KEY,
   localStorageManager,
 } from '@/commons/utils/localStorageManager'
+import { STEP_NAMES } from '@/components/ReimbursementsTabs/constants'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
+import { getPanelId, getTabId } from '@/ui-kit/Tabs/Tabs'
 
 import { BannerReimbursementsInfo } from '../ReimbursementsInvoices/BannerReimbursementsInfo'
 import { DEFAULT_INVOICES_FILTERS } from '../ReimbursementsInvoices/constants'
@@ -44,6 +47,7 @@ export const Settlements = (): JSX.Element => {
   const selectedAdminOfferer = useAppSelector(ensureSelectedAdminOfferer)
   const snackBar = useSnackBar()
   const offererId = selectedAdminOfferer?.id
+  const activeStep = useActiveStep(STEP_NAMES)
 
   const [hideBanner, setHideBanner] = useState(
     localStorageManager.getItem(LOCAL_STORAGE_KEY.HIDE_FINANCE_BANNER) === '1'
@@ -108,7 +112,11 @@ export const Settlements = (): JSX.Element => {
   }
 
   return (
-    <>
+    <div
+      id={getPanelId(activeStep)}
+      role="tabpanel"
+      aria-labelledby={getTabId(activeStep)}
+    >
       {!hideBanner && <BannerReimbursementsInfo onClose={onCloseBanner} />}
 
       <SettlementsFilters
@@ -123,7 +131,7 @@ export const Settlements = (): JSX.Element => {
         hasBankAccount={bankAccounts.length > 0}
         onFilterReset={handleResetFilters}
       />
-    </>
+    </div>
   )
 }
 

@@ -88,7 +88,7 @@ test.describe('Financial Management - messages, links to external help page, rei
 
       await login(page, userData.user.email, { isMultiVenue: true })
       await navigateToAdministrationSpace(page)
-      await page.getByRole('link', { name: /Informations bancaires/ }).click()
+      await page.getByRole('tab', { name: /Informations bancaires/ }).click()
       await expect(page).toHaveURL(
         /\/administration\/gestion-financiere\/informations-bancaires$/
       )

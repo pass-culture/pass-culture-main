@@ -1,6 +1,6 @@
 import cn from 'classnames'
 
-import type { NavLinkItem } from '@/ui-kit/Tabs/NavLinkItems/NavLinkItems'
+import type { TabItem } from '@/ui-kit/Tabs/Tabs'
 import { Tabs } from '@/ui-kit/Tabs/Tabs'
 
 import styles from './CollectiveOfferNavigation.module.scss'
@@ -15,7 +15,7 @@ export const CollectiveOfferEditionNavigation = ({
   activeStep,
   offerId = 0,
 }: CollectiveOfferEditionNavigationProps): JSX.Element => {
-  const tabs: NavLinkItem<string>[] = [
+  const tabs: TabItem<string>[] = [
     {
       key: CollectiveOfferStep.DETAILS,
       label: "Détails de l'offre",
@@ -42,7 +42,6 @@ export const CollectiveOfferEditionNavigation = ({
 
   return (
     <Tabs
-      type="links"
       items={tabs}
       selectedKey={activeStep}
       navLabel="Sous menu - offre collective"

@@ -1,10 +1,13 @@
 import { useForm } from 'react-hook-form'
 
+import { useActiveStep } from '@/commons/hooks/useActiveStep'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedAdminOfferer } from '@/commons/store/user/selectors'
 import { noop } from '@/commons/utils/noop'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { STEP_NAMES } from '@/components/ReimbursementsTabs/constants'
 import { MultiSelect } from '@/ui-kit/form/MultiSelect/MultiSelect'
+import { getPanelId, getTabId } from '@/ui-kit/Tabs/Tabs'
 
 import styles from './Income.module.scss'
 import { IncomeData } from './IncomeData/IncomeData'
@@ -22,6 +25,7 @@ type VenueFormValues = {
 const Income = () => {
   const venues = useAppSelector((state) => state.user.venues)
   const selectedAdminOfferer = useAppSelector(ensureSelectedAdminOfferer)
+  const activeStep = useActiveStep(STEP_NAMES)
 
   const venueValues = (venues ?? [])
     .filter((venue) => venue.managingOfferer.id === selectedAdminOfferer?.id)
@@ -68,7 +72,11 @@ const Income = () => {
   }
 
   return (
-    <>
+    <div
+      id={getPanelId(activeStep)}
+      role="tabpanel"
+      aria-labelledby={getTabId(activeStep)}
+    >
       {!hasSingleVenue && (
         <>
           <FormLayout.MandatoryInfo />
@@ -98,7 +106,7 @@ const Income = () => {
         hasSingleVenue={hasSingleVenue}
         selectedAdminOfferer={selectedAdminOfferer}
       />
-    </>
+    </div>
   )
 }
 

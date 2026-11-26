@@ -12,15 +12,18 @@ import {
 import { BankAccountEvents } from '@/commons/core/FirebaseEvents/constants'
 import { SENT_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
+import { useActiveStep } from '@/commons/hooks/useActiveStep'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { useSyncVenueCache } from '@/commons/hooks/useSyncVenueCache'
 import { ensureSelectedAdminOfferer } from '@/commons/store/user/selectors'
 import { ReimbursementBankAccount } from '@/components/ReimbursementBankAccount/ReimbursementBankAccount'
+import { STEP_NAMES } from '@/components/ReimbursementsTabs/constants'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
 import fullMoreIcon from '@/icons/full-more.svg'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
+import { getPanelId, getTabId } from '@/ui-kit/Tabs/Tabs'
 
 import { AddBankInformationsDialog } from './AddBankInformationsDialog/AddBankInformationsDialog'
 import styles from './BankInformations.module.scss'
@@ -35,6 +38,7 @@ const BankInformations = (): JSX.Element => {
   const editLinkId = useId()
   const addLinkId = useId()
   const addBankAccountId = useId()
+  const activeStep = useActiveStep(STEP_NAMES)
 
   const selectedAdminOfferer = useAppSelector(ensureSelectedAdminOfferer)
   const selectedPartnerVenue = useAppSelector(
@@ -165,7 +169,12 @@ const BankInformations = (): JSX.Element => {
   }
 
   return (
-    <div className={styles['bank-information']}>
+    <div
+      id={getPanelId(activeStep)}
+      role="tabpanel"
+      aria-labelledby={getTabId(activeStep)}
+      className={styles['bank-information']}
+    >
       {rejectedBankAccounts.map((bankAccount) => (
         <RejectedBankAccountBanner
           key={bankAccount.id}

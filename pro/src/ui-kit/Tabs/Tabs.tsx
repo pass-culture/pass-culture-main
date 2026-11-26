@@ -12,6 +12,8 @@ import {
 
 import styles from './Tabs.module.scss'
 
+type TabElement = HTMLButtonElement | HTMLAnchorElement
+
 export type TabItem<T extends string> = {
   /**
    * The label of the tab.
@@ -126,12 +128,8 @@ export const Tabs = <T extends string>({
   selectedKey,
   className,
 }: TabsProps<T>): JSX.Element => {
-  const tabRefs = useRef<
-    Record<string, HTMLButtonElement | HTMLAnchorElement | null>
-  >({})
-  const selectedTabRef = useRef<HTMLButtonElement | HTMLAnchorElement | null>(
-    null
-  )
+  const tabRefs = useRef<Record<string, TabElement | null>>({})
+  const selectedTabRef = useRef<TabElement | null>(null)
 
   // Moves focus to the selected tab whenever it (re)appears, e.g. once its
   // data has finished loading, so screen reader users land on it after
@@ -186,7 +184,7 @@ export const Tabs = <T extends string>({
 
             const tabProps = {
               id: getTabId(tabBaseId),
-              ref: (el: HTMLButtonElement | HTMLAnchorElement | null) => {
+              ref: (el: TabElement | null) => {
                 tabRefs.current[key] = el
                 if (isSelected) {
                   selectedTabRef.current = el
