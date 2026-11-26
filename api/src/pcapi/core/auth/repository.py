@@ -1,13 +1,40 @@
-from sqlalchemy import select
+from sqlalchemy import orm as sa_orm
 
 from pcapi.core.users.models import SingleSignOn
+from pcapi.core.users.models import User
 from pcapi.models import db
 
 
-def get_sso_user_by_provider_and_id(provider: str, sso_id: str) -> SingleSignOn | None:
-    query = select(SingleSignOn).where(
-        SingleSignOn.ssoProvider == provider,
-        SingleSignOn.ssoUserId == sso_id,
+def get_single_sign_on_from_provider(sso_provider: str, sso_user_id: str) -> SingleSignOn | None:
+    return (
+        db.session.query(SingleSignOn)
+        .filter(
+            SingleSignOn.ssoProvider == sso_provider,
+            SingleSignOn.ssoUserId == sso_user_id,
+        )
+        .options(sa_orm.joinedload(SingleSignOn.user))
+        .one_or_none()
     )
 
-    return db.session.execute(query).scalar_one_or_none()
+
+def create_single_sign_on(
+    user: User,
+    sso_provider: str,
+    sso_user_id: str,
+    sso_extra_data: dict | None = None,
+) -> SingleSignOn:
+    sso_user = SingleSignOn(
+        user=user,
+        ssoProvider=sso_provider,
+        ssoUserId=sso_user_id,
+        ssoExtraData=sso_extra_data,
+    )
+
+    db.session.add(sso_user)
+    db.session.flush()
+
+    return sso_user
+
+
+def delete_sso_user(sso_id: int) -> None:
+    db.session.query(SingleSignOn).filter_by(id=sso_id).delete(synchronize_session=False)

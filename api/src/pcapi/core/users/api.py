@@ -11,6 +11,7 @@ import sqlalchemy.orm as sa_orm
 from dateutil.relativedelta import relativedelta
 from flask import request
 
+import pcapi.core.auth.api as auth_api
 import pcapi.core.bookings.exceptions as bookings_exceptions
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.bookings.repository as bookings_repository
@@ -30,11 +31,11 @@ import pcapi.utils.date as date_utils
 import pcapi.utils.email as email_utils
 import pcapi.utils.postal_code as postal_code_utils
 from pcapi import settings
-from pcapi.connectors.sso import SSOProviderFactory
-from pcapi.connectors.sso import SSOProviderName
 from pcapi.connectors.sso.models import SSOUser
 from pcapi.core import mails as mails_api
 from pcapi.core import token as token_utils
+from pcapi.core.auth import repository as auth_repository
+from pcapi.core.auth.api import SingleSignOnProviders
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.external.brevo import update_contact_attributes
 from pcapi.core.finance import deposit_api
@@ -73,13 +74,6 @@ class T_UNCHANGED(enum.Enum):
 UNCHANGED = T_UNCHANGED.TOKEN
 
 EMAIL_CONFIRMATION_TEST_EMAIL_PATTERN = "+e2e@"
-
-
-class SingleSignOnProviders(enum.StrEnum):
-    APPLE = "apple"
-    GOOGLE = "google"
-    ALL = "__all__"
-
 
 logger = logging.getLogger(__name__)
 
@@ -177,7 +171,7 @@ def setup_login(
     if not sso_provider or not sso_user_id:
         raise exceptions.MissingLoginMethod()
 
-    users_repository.create_single_sign_on(user, sso_provider, sso_user_id, sso_extra_data)
+    auth_repository.create_single_sign_on(user, sso_provider, sso_user_id, sso_extra_data)
 
 
 def _update_user_information(
@@ -594,7 +588,7 @@ def change_email(
     sessions.disconnect_user_session(current_user.id)
     sessions.disconnect_native_user_sessions(user_id=current_user.id)
 
-    revoke_sso_access(current_user, SingleSignOnProviders.ALL)
+    auth_api.revoke_sso_access(current_user, SingleSignOnProviders.ALL)
 
     if transaction_manager.is_managed_transaction():
         db.session.flush()
@@ -1527,39 +1521,3 @@ def extend_deposit_validity(user: models.User, new_expiration_date: datetime.dat
     db.session.flush()
 
     external_attributes_api.update_external_user(user)
-
-
-def revoke_sso_access(
-    user: models.User,
-    provider: SingleSignOnProviders,
-) -> None:
-    """
-    Revoke any single sign-on connections from a user to an external providers.
-
-    Delete also the linked SSOUser from our database.
-    """
-
-    for sso in user.single_sign_ons:
-        if provider not in [sso.ssoProvider, SingleSignOnProviders.ALL]:
-            continue
-
-        if sso.ssoProvider == SingleSignOnProviders.APPLE:
-            # Trying to revoke Apple SSO from pc-api.
-            # Revocation on Apple could fail, due to bad refresh_token, but user
-            # can do it on their side (follow doc linked in revoke_apple_user function)
-            extra_data: dict[str, str] = sso.ssoExtraData or {}
-
-            for client_type, token in extra_data.items():
-                is_web_client = client_type == "web"
-
-                try:
-                    sso_provider = SSOProviderFactory.create(SSOProviderName.APPLE, is_web_client)
-                    sso_provider.revoke_access(token)
-
-                except Exception as exc:
-                    logger.warning(
-                        "Could not revoke Apple SSO",
-                        extra={"user_id": user.id, "exc": str(exc)},
-                    )
-
-        users_repository.delete_sso_user(sso.id)

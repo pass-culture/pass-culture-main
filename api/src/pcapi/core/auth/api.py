@@ -1,4 +1,7 @@
+import logging
 import re
+import typing
+from enum import StrEnum
 
 import google.auth
 import googleapiclient.discovery
@@ -14,8 +17,10 @@ from pcapi.connectors.sso import SSOProviderName
 from pcapi.connectors.sso import SSOUser
 from pcapi.core.auth import exceptions
 from pcapi.core.auth import repository
-from pcapi.core.users import repository as users_repo
-from pcapi.core.users.models import User
+
+
+if typing.TYPE_CHECKING:
+    from pcapi.core.users.models import User
 
 
 TOKEN_URI = "https://accounts.google.com/o/oauth2/token"
@@ -25,6 +30,14 @@ BACKOFFICE_SERVICE_ACCOUNT_SCOPES = ("https://www.googleapis.com/auth/admin.dire
 BACKOFFICE_ROLE_NAME_RE = re.compile(
     r"^backoffice-((?P<env>(development|testing|staging|production|integration))-)(?P<role>.+)$"
 )
+
+logger = logging.getLogger(__name__)
+
+
+class SingleSignOnProviders(StrEnum):
+    APPLE = "apple"
+    GOOGLE = "google"
+    ALL = "__all__"
 
 
 def delegate_credentials(
@@ -85,7 +98,7 @@ def get_sso_user_from_auth_token(authorization_code: str, provider: SSOProviderN
     return user
 
 
-def attach_sso_to_user(user: User, sso_user: SSOUser, provider: str) -> User:
+def attach_sso_to_user(user: "User", sso_user: SSOUser, provider: str) -> "User":
     try:
         sso_provider = SSOProviderName(provider)
     except ValueError as e:
@@ -100,10 +113,10 @@ def attach_sso_to_user(user: User, sso_user: SSOUser, provider: str) -> User:
     if user.get_sso(sso_provider) is not None:
         raise exceptions.SSOAlreadyAttached
 
-    if repository.get_sso_user_by_provider_and_id(sso_provider, sso_user.sub) is not None:
+    if repository.get_single_sign_on_from_provider(sso_provider, sso_user.sub) is not None:
         raise exceptions.SSOAttachedToAnotherAccount
 
-    users_repo.create_single_sign_on(
+    repository.create_single_sign_on(
         user,
         sso_provider,
         sso_user.sub,
@@ -111,3 +124,39 @@ def attach_sso_to_user(user: User, sso_user: SSOUser, provider: str) -> User:
     )
 
     return user
+
+
+def revoke_sso_access(
+    user: "User",
+    provider: SingleSignOnProviders,
+) -> None:
+    """
+    Revoke any single sign-on connections from a user to an external providers.
+
+    Delete also the linked SSOUser from our database.
+    """
+
+    for sso in user.single_sign_ons:
+        if provider not in [sso.ssoProvider, SingleSignOnProviders.ALL]:
+            continue
+
+        if sso.ssoProvider == SingleSignOnProviders.APPLE:
+            # Trying to revoke Apple SSO from pc-api.
+            # Revocation on Apple could fail, due to bad refresh_token, but user
+            # can do it on their side (follow doc linked in revoke_apple_user function)
+            extra_data: dict[str, str] = sso.ssoExtraData or {}
+
+            for client_type, token in extra_data.items():
+                is_web_client = client_type == "web"
+
+                try:
+                    sso_provider = SSOProviderFactory.create(SSOProviderName.APPLE, is_web_client)
+                    sso_provider.revoke_access(token)
+
+                except Exception as exc:
+                    logger.warning(
+                        "Could not revoke Apple SSO",
+                        extra={"user_id": user.id, "exc": str(exc)},
+                    )
+
+        repository.delete_sso_user(sso.id)
