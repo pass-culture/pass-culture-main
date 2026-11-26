@@ -331,7 +331,7 @@ describe('IndividualOfferMediaScreen', () => {
         await screen.findByText('Le format du fichier n’est pas accepté.')
       ).toBeInTheDocument()
       expect(imageInput).toHaveAccessibleName(
-        'Image Le fichier choisi est non conforme : Le format du fichier n’est pas accepté.'
+        'Image Importez ou déposez le fichier ici Le fichier choisi est non conforme : Le format du fichier n’est pas accepté.'
       )
     })
 

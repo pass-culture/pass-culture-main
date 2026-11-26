@@ -234,10 +234,13 @@ export const UploadZone = ({
     ...errors,
   ].join(' ')
 
+  // The input name is the label followed by the instruction, so that it describes
+  // the action even when the label only names the expected file (e.g. "Image").
   // The files rejected by the zone are announced in the input name, right after
   // the label and before the native value of the input ("Aucun fichier choisi").
   const labelledByIds = [
-    label ? labelId : instructionId,
+    ...(label ? [labelId] : []),
+    instructionId,
     ...(rejectionErrorIds.length > 0
       ? [rejectionPrefixId, ...rejectionErrorIds]
       : []),
