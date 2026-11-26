@@ -1,11 +1,10 @@
 import typing
 from datetime import datetime
 
-from pydantic import Field
-
 from pcapi.core.categories.subcategories import SubcategoryIdEnum
 from pcapi.core.favorites.models import FavoriteOfferData
 from pcapi.core.finance.utils import to_cents
+from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.api import get_expense_domains
 from pcapi.core.users.models import ExpenseDomain
 from pcapi.routes.serialization import HttpBodyModel
@@ -112,10 +111,33 @@ class FavoriteVenueRequest(HttpBodyModel):
     venue_id: int
 
 
+class FavoriteVenueAddress(HttpBodyModel):
+    street: str
+    postal_code: str
+    city: str
+
+
 class FavoriteVenueDataResponse(HttpBodyModel):
     id: int
     name: str
-    bannerUrl: str | None = Field(alias="image")
+    image: str | None
+    isOpenToPublic: bool
+    address: FavoriteVenueAddress | None
+
+    @classmethod
+    def build(cls, data: Venue) -> typing.Self:
+        if data.offererAddress:
+            address = FavoriteVenueAddress.model_validate(data.offererAddress.address)
+        else:
+            address = None
+
+        return cls(
+            id=data.id,
+            name=data.name,
+            image=data.bannerUrl,
+            isOpenToPublic=data.isOpenToPublic,
+            address=address,
+        )
 
 
 class FavoriteVenueResponse(HttpBodyModel):

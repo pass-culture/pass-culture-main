@@ -184,8 +184,12 @@ def get_favorite_venues_for(
     query = (
         sa.select(models.FavoriteVenue)
         .where(models.FavoriteVenue.userId == user.id)
-        # `Venue.bannerUrl` reads `googlePlacesInfo`
-        .options(sa_orm.joinedload(models.FavoriteVenue.venue).joinedload(Venue.googlePlacesInfo))
+        .options(
+            sa_orm.joinedload(models.FavoriteVenue.venue).options(
+                sa_orm.joinedload(Venue.googlePlacesInfo),
+                sa_orm.joinedload(Venue.offererAddress).joinedload(offerers_models.OffererAddress.address),
+            )
+        )
     )
 
     if favorite_id:

@@ -4390,9 +4390,43 @@
                 "title": "FavoriteResponse",
                 "type": "object"
             },
+            "FavoriteVenueAddress": {
+                "additionalProperties": false,
+                "properties": {
+                    "city": {
+                        "title": "City",
+                        "type": "string"
+                    },
+                    "postalCode": {
+                        "title": "Postalcode",
+                        "type": "string"
+                    },
+                    "street": {
+                        "title": "Street",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "street",
+                    "postalCode",
+                    "city"
+                ],
+                "title": "FavoriteVenueAddress",
+                "type": "object"
+            },
             "FavoriteVenueDataResponse": {
                 "additionalProperties": false,
                 "properties": {
+                    "address": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/FavoriteVenueAddress"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
                     "id": {
                         "title": "Id",
                         "type": "integer"
@@ -4408,6 +4442,10 @@
                         ],
                         "title": "Image"
                     },
+                    "isOpenToPublic": {
+                        "title": "Isopentopublic",
+                        "type": "boolean"
+                    },
                     "name": {
                         "title": "Name",
                         "type": "string"
@@ -4416,7 +4454,9 @@
                 "required": [
                     "id",
                     "name",
-                    "image"
+                    "image",
+                    "isOpenToPublic",
+                    "address"
                 ],
                 "title": "FavoriteVenueDataResponse",
                 "type": "object"

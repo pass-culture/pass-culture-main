@@ -150,7 +150,13 @@ def get_favorite_venues() -> serializers.PaginatedResponse[serializers.FavoriteV
     return serializers.PaginatedResponse[serializers.FavoriteVenueResponse](
         page=1,
         nb_favorites=len(favorites),
-        favorites=[serializers.FavoriteVenueResponse.model_validate(favorite_data) for favorite_data in favorites],
+        favorites=[
+            serializers.FavoriteVenueResponse(
+                id=favorite_data.id,
+                venue=serializers.FavoriteVenueDataResponse.build(favorite_data.venue),
+            )
+            for favorite_data in favorites
+        ],
     )
 
 
@@ -177,7 +183,7 @@ def create_favorite_venue(body: serializers.FavoriteVenueRequest) -> serializers
 
     return serializers.FavoriteVenueResponse(
         id=favorite.id,
-        venue=serializers.FavoriteVenueDataResponse.model_validate(favorite.venue),
+        venue=serializers.FavoriteVenueDataResponse.build(favorite.venue),
     )
 
 
