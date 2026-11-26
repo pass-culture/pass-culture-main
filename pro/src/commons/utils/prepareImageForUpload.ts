@@ -1,13 +1,9 @@
-import pica from 'pica'
-
 import {
   MAX_THUMBNAIL_WIDTH,
   MIN_IMAGE_DIMENSIONS,
 } from '@/components/ImageDragAndDrop/constants'
 
 import { getImageBitmap } from './image'
-
-const imageResizer = pica()
 
 export const prepareImageForUpload = async (
   file: File,
@@ -62,6 +58,8 @@ export const prepareImageForUpload = async (
     canvas.width = Math.ceil(width * scale)
     canvas.height = Math.ceil(height * scale)
 
+    // pica is only needed when an image actually has to be resized
+    const imageResizer = (await import('pica')).default()
     await imageResizer.resize(bitmap, canvas)
     const compressed = await imageResizer.toBlob(canvas, file.type, 0.85)
 
