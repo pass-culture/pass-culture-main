@@ -1,3 +1,7 @@
+@import "../../node_modules/@pass-culture/design-system/lib/global/font-faces";
+@import "../../node_modules/@pass-culture/design-system/lib/pro/light";
+
+
 // Utilities
 @import "./_variables";
 @import "./_utilities";
@@ -24,3 +28,130 @@
 @import "./_collapse";
 @import "./_nav";
 @import "./_buttons";
+
+// Elements and components extracted from Bootstrap
+@import "./base/_reset";
+@import "./base/_typography";
+
+@mixin body() {
+  font-family: var(--typography-body-font-family), system-ui, sans-serif;
+  font-size: var(--typography-body-font-size);
+  line-height: var(--typography-body-line-height);
+}
+
+@mixin title1() {
+  font-family: var(--typography-title1-font-family), system-ui, sans-serif;
+  font-size: var(--typography-title1-font-size);
+  line-height: var(--typography-title1-line-height);
+}
+
+@mixin title2() {
+  font-family: var(--typography-title2-font-family), system-ui, sans-serif;
+  font-size: var(--typography-title2-font-size);
+  line-height: var(--typography-title2-line-height);
+}
+
+@mixin title3() {
+  font-family: var(--typography-title3-font-family), system-ui, sans-serif;
+  font-size: var(--typography-title3-font-size);
+  line-height: var(--typography-title3-line-height);
+}
+
+@mixin title4() {
+  font-family: var(--typography-title4-font-family), system-ui, sans-serif;
+  font-size: var(--typography-title4-font-size);
+  line-height: var(--typography-title4-line-height);
+}
+
+@mixin body-accent() {
+  font-family: var(--typography-body-accent-font-family), system-ui, sans-serif;
+  font-size: var(--typography-body-accent-font-size);
+  line-height: var(--typography-body-accent-line-height);
+}
+
+@mixin body-italic() {
+  font-family: var(--typography-body-italic-font-family), system-ui, sans-serif;
+  font-size: var(--typography-body-italic-font-size);
+  line-height: var(--typography-body-italic-line-height);
+}
+
+@mixin body-italic-accent() {
+  font-family:
+    var(--typography-body-italic-accent-font-family), system-ui, sans-serif;
+  font-size: var(--typography-body-italic-accent-font-size);
+  line-height: var(--typography-body-italic-accent-line-height);
+}
+
+@mixin body-s() {
+  font-family: var(--typography-body-s-font-family), system-ui, sans-serif;
+  font-size: var(--typography-body-s-font-size);
+  line-height: var(--typography-body-s-line-height);
+}
+
+@mixin body-accent-s() {
+  font-family:
+    var(--typography-body-accent-s-font-family), system-ui, sans-serif;
+  font-size: var(--typography-body-accent-s-font-size);
+  line-height: var(--typography-body-accent-s-line-height);
+}
+
+@mixin body-xs() {
+  font-family: var(--typography-body-xs-font-family), system-ui, sans-serif;
+  font-size: var(--typography-body-xs-font-size);
+  line-height: var(--typography-body-xs-line-height);
+}
+
+@mixin body-accent-xs() {
+  font-family:
+    var(--typography-body-accent-xs-font-family), system-ui, sans-serif;
+  font-size: var(--typography-body-accent-xs-font-size);
+  line-height: var(--typography-body-accent-xs-line-height);
+}
+
+@mixin button() {
+  font-family: var(--typography-button-font-family), system-ui, sans-serif;
+  font-size: var(--typography-button-font-size);
+  line-height: var(--typography-button-line-height);
+}
+
+@mixin button-s() {
+  font-family: var(--typography-button-s-font-family), system-ui, sans-serif;
+  font-size: var(--typography-button-s-font-size);
+  line-height: var(--typography-button-s-line-height);
+}
+
+@mixin link() {
+  font-family: var(--typography-link-font-family), system-ui, sans-serif;
+  font-size: var(--typography-link-font-size);
+  line-height: var(--typography-link-line-height);
+}
+
+@mixin link-s() {
+  font-family: var(--typography-link-s-font-family), system-ui, sans-serif;
+  font-size: var(--typography-link-s-font-size);
+  line-height: var(--typography-link-s-line-height);
+}
+
+@mixin link-xs() {
+  font-family: var(--typography-link-xs-font-family), system-ui, sans-serif;
+  font-size: var(--typography-link-xs-font-size);
+  line-height: var(--typography-link-xs-line-height);
+}
+
+body {
+  background-color: var(--color-background-default);
+  color: var(--color-text-default);
+  // @include body;
+}
+
+
+.title1 {
+  @include title1;
+
+  .badge {
+      font-family: Inter;
+  }
+}
+.title2 {
+  @include title1;
+}

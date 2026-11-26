@@ -133,3 +133,4 @@ licenses.html
 
 # backoffice
 !**/backoffice/**/dist
+node_modules/
