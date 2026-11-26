@@ -20,7 +20,6 @@ from pcapi.utils import cron as cron_decorators
 from pcapi.utils import date as date_utils
 from pcapi.utils.blueprint import Blueprint
 from pcapi.utils.transaction_manager import atomic
-from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
 
 blueprint = Blueprint(__name__, __name__)
@@ -149,6 +148,7 @@ def check_deposit_csv(path: str) -> None:
     logger.info("CSV is valid, found %s UAIs for a total amount of %s", len(data.keys()), sum(data.values()))
 
 
+# interruptible
 @blueprint.cli.command("synchronize_adage_cultural_partners")
 @click.option("--apply", is_flag=True, help="Apply the changes")
 @cron_decorators.log_cron
@@ -165,13 +165,11 @@ def synchronize_adage_cultural_partners(apply: bool = False) -> None:
         },
     )
 
-    with atomic():
+    with atomic(apply=apply):
         adage_api.synchronize_adage_partners(adage_partners=adage_cultural_partners, apply=apply)
 
-        if not apply:
-            mark_transaction_as_invalid()
 
-
+# interruptible
 @blueprint.cli.command("synchronize_offerers_from_adage_cultural_partners")
 @cron_decorators.log_cron
 def synchronize_offerers_from_adage_cultural_partners() -> None:
@@ -184,34 +182,45 @@ def synchronize_offerers_from_adage_cultural_partners() -> None:
         adage_api.synchronize_adage_ids_on_offerers(adage_cultural_partners)
 
 
+# interruptible
+# warning: some mails may be sent mutliple times if the job is interrupted and restarted
 @blueprint.cli.command("eac_notify_pro_one_day_before")
-@cron_decorators.log_cron_with_transaction
+@cron_decorators.log_cron
 def notify_pro_users_one_day_before() -> None:
     """Notify pro users 1 day before EAC event."""
-    educational_api_booking.notify_pro_users_one_day_before()
+    with atomic():
+        educational_api_booking.notify_pro_users_one_day_before()
 
 
+# interruptible
+# warning: some mails may be sent mutliple times if the job is interrupted and restarted
 @blueprint.cli.command("eac_notify_pro_one_day_after")
-@cron_decorators.log_cron_with_transaction
+@cron_decorators.log_cron
 def notify_pro_users_one_day_after() -> None:
     """Notify pro users 1 day after EAC event."""
-    educational_api_booking.notify_pro_users_one_day_after()
+    with atomic():
+        educational_api_booking.notify_pro_users_one_day_after()
 
 
+# interruptible
+# warning: some mails may be sent mutliple times if the job is interrupted and restarted
 @blueprint.cli.command("eac_handle_pending_collective_booking_j3")
-@cron_decorators.log_cron_with_transaction
+@cron_decorators.log_cron
 def handle_pending_collective_booking_j3() -> None:
     """Triggers email to be sent for events with pending booking and booking limit date in 3 days"""
-    educational_api_booking.notify_pro_pending_booking_confirmation_limit_in_3_days()
+    with atomic():
+        educational_api_booking.notify_pro_pending_booking_confirmation_limit_in_3_days()
 
 
+# non-interruptible
+# import_dms_applications_for_all_eac_procedures uses session.commit / rollback and not atomic
 @blueprint.cli.command("import_eac_dms_application")
 @click.option(
     "--ignore_previous",
     is_flag=True,
     help="Import all application ignoring previous import date",
 )
-@cron_decorators.log_cron_with_transaction
+@cron_decorators.log_cron
 def import_eac_dms_application(ignore_previous: bool = False) -> None:
     """Import procedures from dms."""
     import_dms_applications_for_all_eac_procedures(ignore_previous=ignore_previous)
@@ -233,30 +242,36 @@ def synchronise_institutions_geolocation(adage_year_id: str | None, apply: bool 
         db.session.commit()
 
 
+# interruptible
 @blueprint.cli.command("synchronise_rurality_level")
 @cron_decorators.log_cron
 def synchronise_rurality_level() -> None:
-    institution_api.synchronise_rurality_level()
+    with atomic():
+        institution_api.synchronise_rurality_level()
 
 
+# interruptible
 @blueprint.cli.command("synchronise_collective_classroom_playlist")
 @cron_decorators.log_cron
 def synchronise_collective_playlist() -> None:
     playlists_api.synchronize_collective_playlist(models.PlaylistType.CLASSROOM)
 
 
+# interruptible
 @blueprint.cli.command("synchronise_collective_new_offer_playlist")
 @cron_decorators.log_cron
 def synchronise_collective_new_offer_playlist() -> None:
     playlists_api.synchronize_collective_playlist(models.PlaylistType.NEW_OFFER)
 
 
+# interruptible
 @blueprint.cli.command("synchronise_collective_local_offerers_playlist")
 @cron_decorators.log_cron
 def synchronise_collective_local_offerer_playlist() -> None:
     playlists_api.synchronize_collective_playlist(models.PlaylistType.LOCAL_OFFERER)
 
 
+# interruptible
 @blueprint.cli.command("synchronise_collective_new_offerers_playlist")
 @cron_decorators.log_cron
 def synchronise_collective_new_offerers_playlist() -> None:
