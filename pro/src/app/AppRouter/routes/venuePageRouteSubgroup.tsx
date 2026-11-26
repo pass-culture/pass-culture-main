@@ -1,6 +1,4 @@
 import { withUserPermissions } from '@/commons/auth/withUserPermissions'
-import { CollectiveVenuePageLayout } from '@/layouts/CollectiveVenuePageLayout/CollectiveVenuePageLayout'
-import { VenuePageLayout } from '@/layouts/VenuePageLayout/VenuePageLayout'
 
 import type { CustomRouteGroup } from '../types'
 import { mustBeOnboardedWithSelectedPartnerVenue } from '../utils'
@@ -8,11 +6,12 @@ import { mustBeOnboardedWithSelectedPartnerVenue } from '../utils'
 export const venuePageRouteSubgroup: CustomRouteGroup = {
   path: '/partenaire',
   loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
-  Component: VenuePageLayout,
+  lazy: () => import('@/layouts/VenuePageLayout/VenuePageLayout'),
   children: [
     {
       path: 'page-collective',
-      Component: CollectiveVenuePageLayout,
+      lazy: () =>
+        import('@/layouts/CollectiveVenuePageLayout/CollectiveVenuePageLayout'),
       children: [
         {
           index: true,
