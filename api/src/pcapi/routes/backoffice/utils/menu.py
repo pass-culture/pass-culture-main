@@ -108,6 +108,11 @@ MENU_SECTIONS = [
                 permissions=["READ_PRO_ENTITY"],
             ),
             MenuItem(
+                label="Partenaires culturels à valider",
+                url_name="backoffice.venue_validation.list_venues_to_validate",
+                permissions=["READ_PRO_ENTITY"],
+            ),
+            MenuItem(
                 label="Rattachements à valider",
                 url_name="backoffice.validation.list_offerers_attachments_to_validate",
                 permissions=["READ_PRO_ENTITY"],

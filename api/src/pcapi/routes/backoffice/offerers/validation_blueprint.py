@@ -19,6 +19,7 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import models as finance_models
 from pcapi.core.history import constants as history_constants
 from pcapi.core.offerers import api as offerers_api
+from pcapi.core.offerers import constants as offerers_constants
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
@@ -49,7 +50,9 @@ validation_blueprint = backoffice_blueprint.child_backoffice_blueprint(
 
 
 def _filter_homologation_tags(tags: list[offerers_models.OffererTag]) -> list[offerers_models.OffererTag]:
-    return [tag for tag in tags if "homologation" in [cat.name for cat in tag.categories]]
+    return [
+        tag for tag in tags if offerers_constants.HOMOLOGATION_TAG_CATEGORY_NAME in [cat.name for cat in tag.categories]
+    ]
 
 
 def _redirect_after_offerer_validation_action() -> response_utils.BackofficeResponse:

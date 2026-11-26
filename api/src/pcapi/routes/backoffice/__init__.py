@@ -52,6 +52,7 @@ def install_routes(app: Flask) -> None:
     from .titelive import blueprint as titelive_blueprint
     from .users import blueprint as users_blueprint
     from .venues import blueprint as venues_blueprint
+    from .venues import validation_blueprint as venues_validation_blueprint
 
     if (
         settings.ENABLE_TEST_USER_GENERATION

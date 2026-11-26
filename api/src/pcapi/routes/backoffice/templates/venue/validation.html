@@ -1,0 +1,106 @@
+{% extends "layouts/list.html" %}
+{% from "components/forms.html" import build_filters_form_ng with context %}
+{% from "components/dynamic/modal.html" import build_dynamic_modal with context %}
+{% macro stats_card(value, text_one, text_many) %}
+  <div class="col-3 p-2">
+    <div class="card">
+      <div class="card-body">
+        <div class="fs-2">{{ value }}</div>
+        <div class="text-muted">{{ value | pluralize(text_one, text_many) }}</div>
+      </div>
+    </div>
+  </div>
+{% endmacro %}
+{% set rows_count = rows.total %}
+{% set pagination = True %}
+{% set table_id = "venues-table" %}
+{% set has_validate_permission = has_permission("VALIDATE_OFFERER") %}
+{% set has_read_ae_permission = has_validate_permission or has_permission("READ_PRO_AE_INFO") %}
+{% block title %}Partenaires culturels à valider{% endblock %}
+{% block search_block %}{{ build_filters_form_ng(form, dst) }}{% endblock %}
+{% block before_table %}
+  <div class="row px-1 pt-4">
+    {{ stats_card(stats["NEW"], "nouvelle partenaire culturel", "nouvelles partenaires culturels") }}
+    {{ stats_card(stats["PENDING"], "partenaire culturel en attente", "partenaires culturels en attente") }}
+    {{ stats_card(stats["VALIDATED"], "partenaire culturel validée", "partenaires culturels validées") }}
+    {{ stats_card(stats["REJECTED"], "partenaire culturel rejetée", "partenaires culturels rejetées") }}
+  </div>
+{% endblock %}
+{% block table_header %}
+  {% if has_validate_permission %}
+    <th data-pc-column-name="Checkbox">
+      <input class="form-check-input fs-6 mt-0"
+             type="checkbox"
+             name="pc-table-multi-select-check-all" />
+    </th>
+  {% endif %}
+  <th>Actions</th>
+  <th>ID</th>
+  <th>Nom</th>
+  <th>État</th>
+  <th>Tags</th>
+  <th>
+    <a href="{{ date_created_sort_url }}"
+       class="text-decoration-none"
+       title="Changer pour un tri {{ 'décroissant' if request.args.get('sort') == 'dateCreated' and request.args.get('order') == 'asc' else 'croissant' }}">
+      Date de la demande
+      <i class="bi bi-sort-{{ 'up' if request.args.get('sort') == 'dateCreated' and request.args.get('order') == 'asc' else 'down' }}-alt"></i>
+    </a>
+  </th>
+  <th>Documents reçus</th>
+  <th>Dernier commentaire</th>
+  <th>SIREN</th>
+  <th>Email</th>
+  <th>Responsable</th>
+  <th>Ville</th>
+{% endblock table_header %}
+{% block table_body %}
+  {% with items = rows.items %}
+    {% include "venue/validation_rows.html" %}
+  {% endwith %}
+{% endblock %}
+{% block multi_select_menu %}
+  <div class="counter-container text-nowrap">
+    <span class="counter">0</span> partenaire(s) culturel(s) à valider sélectionnée(s)
+  </div>
+  <div data-toggle="pc-batch-confirm-btn-group"
+       data-toggle-id="table-container-venue-validation-btn-group"
+       data-pc-table-multi-select-id="{{ table_name }}"
+       data-input-ids-name="object_ids"
+       class="d-flex">
+    <button disabled
+            type="button"
+            class="btn border-end rounded-0 border-top-0 border-bottom-0 text-nowrap"
+            data-use-dynamic-modal="true"
+            data-bs-toggle="modal"
+            data-bs-target="#batch-validate-modal">Valider</button>
+    <button disabled
+            type="button"
+            class="btn border-end rounded-0 border-top-0 border-bottom-0 text-nowrap"
+            data-use-dynamic-modal="true"
+            data-bs-toggle="modal"
+            data-bs-target="#batch-pending-modal">Mettre en attente</button>
+    <button disabled
+            type="button"
+            class="btn rounded-0 border-top-0 border-bottom-0 text-nowrap"
+            data-bs-toggle="modal"
+            data-bs-target="#batch-reject-modal"
+            data-use-dynamic-modal="true">Rejeter</button>
+  </div>
+{% endblock %}
+{% block after_table %}
+  {% if has_validate_permission %}
+    {% for item in rows.items %}
+      {% set venue = item.Venue %}
+      {{ build_dynamic_modal(url_for("backoffice.venue_validation.get_validate_venue_form", venue_id=venue.id) ,
+        "validate-modal-" + venue.id|string) }}
+      {{ build_dynamic_modal(url_for("backoffice.venue_validation.get_reject_venue_form", venue_id=venue.id) ,
+        "reject-modal-" + venue.id|string) }}
+      {{ build_dynamic_modal(url_for("backoffice.venue_validation.get_venue_pending_form", venue_id=venue.id) ,
+        "pending-modal-" + venue.id|string) }}
+    {% endfor %}
+    {{ build_dynamic_modal(url_for("backoffice.venue_validation.get_batch_validate_venue_form") , "batch-validate-modal", method="post", form="form-ids-" + table_name) }}
+    {{ build_dynamic_modal(url_for("backoffice.venue_validation.get_batch_reject_venue_form") , "batch-reject-modal", method="post", form="form-ids-" + table_name) }}
+    {{ build_dynamic_modal(url_for("backoffice.venue_validation.get_batch_venue_pending_form") , "batch-pending-modal", method="post", form="form-ids-" + table_name) }}
+  {% endif %}
+{% endblock %}

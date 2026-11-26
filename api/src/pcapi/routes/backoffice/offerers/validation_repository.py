@@ -14,6 +14,7 @@ from pcapi.core.geography import models as geography_models
 from pcapi.core.history import constants as history_constants
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import api as offerers_api
+from pcapi.core.offerers import constants as offerers_constants
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
@@ -168,7 +169,7 @@ def _get_homologation_tags_subquery() -> sa.sql.selectable.ScalarSelect:
         _get_tags_subquery()
         .join(offerers_models.OffererTagCategoryMapping)
         .join(offerers_models.OffererTagCategory)
-        .filter(offerers_models.OffererTagCategory.name == "homologation")
+        .filter(offerers_models.OffererTagCategory.name == offerers_constants.HOMOLOGATION_TAG_CATEGORY_NAME)
     )
 
 

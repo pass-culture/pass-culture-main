@@ -27,6 +27,7 @@ from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
 from pcapi.core.mails import testing as mails_testing
 from pcapi.core.mails.transactional import brevo_template_ids
+from pcapi.core.offerers import constants as offerers_constants
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
@@ -2123,7 +2124,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
         tag = offerers_factories.OffererTagFactory(label="Magic Tag")
         category = (
             db.session.query(offerers_models.OffererTagCategory)
-            .filter(offerers_models.OffererTagCategory.name == "homologation")
+            .filter(offerers_models.OffererTagCategory.name == offerers_constants.HOMOLOGATION_TAG_CATEGORY_NAME)
             .one()
         )
         offerers_factories.OffererTagCategoryMappingFactory(tagId=tag.id, categoryId=category.id)
@@ -4446,7 +4447,9 @@ class ListOffererTagsTest(GetEndpointHelper):
         assert rows[0]["Catégories"] == category.label
 
     def test_list_offerer_tag_categories(self, authenticated_client):
-        offerers_factories.OffererTagCategoryFactory(name="homologation", label="Homologation")
+        offerers_factories.OffererTagCategoryFactory(
+            name=offerers_constants.HOMOLOGATION_TAG_CATEGORY_NAME, label="Homologation"
+        )
         offerers_factories.OffererTagCategoryFactory(name="comptage", label="Comptage partenaires")
 
         with assert_num_queries(self.expected_num_queries):
@@ -4457,7 +4460,7 @@ class ListOffererTagsTest(GetEndpointHelper):
         assert len(rows) == 2
         assert rows[0]["Nom"] == "comptage"
         assert rows[0]["Libellé"] == "Comptage partenaires"
-        assert rows[1]["Nom"] == "homologation"
+        assert rows[1]["Nom"] == offerers_constants.HOMOLOGATION_TAG_CATEGORY_NAME
         assert rows[1]["Libellé"] == "Homologation"
 
 
@@ -4665,7 +4668,7 @@ class CreateOffererTagCategoryTest(PostEndpointHelper):
         assert created_category.label == form_data["label"]
 
     def test_create_with_already_existing_category(self, authenticated_client, offerer_tags):
-        form_data = {"name": "homologation", "label": "Duplicate category"}
+        form_data = {"name": offerers_constants.HOMOLOGATION_TAG_CATEGORY_NAME, "label": "Duplicate category"}
         response = self.post_to_endpoint(authenticated_client, form=form_data)
 
         assert response.status_code == 303

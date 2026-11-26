@@ -54,6 +54,9 @@ class ActionType(enum.Enum):
 
     # Actions related to a venue:
     VENUE_CREATED = "VENUE_CREATED"
+    VENUE_PENDING = "VENUE_PENDING"
+    VENUE_APPROVED = "VENUE_APPROVED"
+    VENUE_REJECTED = "VENUE_REJECTED"
     LINK_VENUE_BANK_ACCOUNT_DEPRECATED = "LINK_VENUE_BANK_ACCOUNT_DEPRECATED"
     LINK_VENUE_BANK_ACCOUNT_CREATED = "LINK_VENUE_BANK_ACCOUNT_CREATED"
     LINK_VENUE_PROVIDER_UPDATED = "LINK_VENUE_PROVIDER_UPDATED"
@@ -131,6 +134,9 @@ ACTION_TYPE_TO_STRING = {
     ActionType.FINANCE_INCIDENT_CHOOSE_DEBIT_NOTE: "Choix note de débit",
     # Actions related to a venue:
     ActionType.VENUE_CREATED: "Partenaire culturel créé",
+    ActionType.VENUE_PENDING: "Partenaire culturel en attente",
+    ActionType.VENUE_APPROVED: "Partenaire culturel validé",
+    ActionType.VENUE_REJECTED: "Partenaire culturel rejeté",
     ActionType.LINK_VENUE_BANK_ACCOUNT_DEPRECATED: "Partenaire culturel dissocié d'un compte bancaire",
     ActionType.LINK_VENUE_BANK_ACCOUNT_CREATED: "Partenaire culturel associé à un compte bancaire",
     ActionType.LINK_VENUE_PROVIDER_UPDATED: "Lien avec le partenaire technique modifié",

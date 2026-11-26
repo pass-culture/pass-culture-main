@@ -272,6 +272,8 @@ CODE_TO_CATEGORY_MAPPING = {
     9970: "Groupement de coopération sanitaire à gestion privée",
 }
 
+HOMOLOGATION_TAG_CATEGORY_NAME = "homologation"
+
 TOP_ACTEUR_TAG_NAME = "top-acteur"
 CLOSED_OFFERER_TAG_NAME = "siren-caduc"
 JE_VEUX_AIDER_GOUV_BASE_URL = "jeveuxaider.gouv.fr"

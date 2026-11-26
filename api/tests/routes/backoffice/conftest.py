@@ -8,6 +8,7 @@ from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.finance import factories as finance_factories
+from pcapi.core.offerers import constants as offerers_constants
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
@@ -708,13 +709,17 @@ def collective_venue_booking_fixture(venue_with_accepted_bank_account, today):
 
 @pytest.fixture(name="adage_tag")
 def adage_tag_fixture():
-    category = offerers_factories.OffererTagCategoryFactory(name="homologation", label="Homologation")
+    category = offerers_factories.OffererTagCategoryFactory(
+        name=offerers_constants.HOMOLOGATION_TAG_CATEGORY_NAME, label="Homologation"
+    )
     return offerers_factories.OffererTagFactory(name="adage", label="ADAGE", categories=[category])
 
 
 @pytest.fixture(name="offerer_tags")
 def offerer_tags_fixture():
-    category = offerers_factories.OffererTagCategoryFactory(name="homologation", label="Homologation")
+    category = offerers_factories.OffererTagCategoryFactory(
+        name=offerers_constants.HOMOLOGATION_TAG_CATEGORY_NAME, label="Homologation"
+    )
     other_category = offerers_factories.OffererTagCategoryFactory(name="comptage", label="Comptage partenaires")
     tags = tuple(
         offerers_factories.OffererTagFactory(label=label, categories=[category])

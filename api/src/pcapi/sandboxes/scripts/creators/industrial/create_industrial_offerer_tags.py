@@ -14,7 +14,9 @@ def create_industrial_offerer_tags() -> None:
     logger.info("create_industrial_offerer_tags")
 
     comptage = offerers_factories.OffererTagCategoryFactory.create(name="comptage", label="Comptage partenaires")
-    homologation = offerers_factories.OffererTagCategoryFactory.create(name="homologation", label="Homologation")
+    homologation = offerers_factories.OffererTagCategoryFactory.create(
+        name=offerers_constants.HOMOLOGATION_TAG_CATEGORY_NAME, label="Homologation"
+    )
 
     offerers_factories.OffererTagFactory.create(
         name="collectivite", label="Collectivité", categories=[comptage, homologation]
