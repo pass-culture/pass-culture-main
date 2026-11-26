@@ -8,6 +8,7 @@ import fullNextIcon from '@/icons/full-next.svg'
 import { Button } from './Button'
 import {
   ButtonColor,
+  ButtonIconColor,
   type ButtonProps,
   ButtonSize,
   ButtonVariant,
@@ -289,6 +290,18 @@ describe('Button', () => {
       expect(screen.getByText('Icon Right')).toBeInTheDocument()
       const icon = container.querySelector('svg.btn-icon')
       expect(icon).toBeInTheDocument()
+    })
+
+    it('should render button with a colored icon', () => {
+      const { container } = renderButton({
+        label: 'Error icon',
+        icon: fullNextIcon,
+        iconColor: ButtonIconColor.ERROR,
+      })
+
+      expect(container.querySelector('svg.btn-icon')).toHaveClass(
+        'btn-icon-error'
+      )
     })
 
     it('should render button with icon only (no label)', () => {

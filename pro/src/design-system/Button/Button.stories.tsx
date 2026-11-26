@@ -5,7 +5,7 @@ import { withRouter } from 'storybook-addon-remix-react-router'
 import fullNextIcon from '@/icons/full-next.svg'
 import { fullIcons } from '@/ui-kit/Icons/iconsList'
 import { Button as ButtonComponent } from './Button'
-import { ButtonColor, ButtonProps, ButtonSize, ButtonVariant, IconPositionEnum } from './types'
+import { ButtonColor, ButtonIconColor, ButtonProps, ButtonSize, ButtonVariant, IconPositionEnum } from './types'
 
 const iconOptions = {
   none: null,
@@ -68,6 +68,10 @@ const meta: Meta<typeof ButtonComponent> = {
     iconPosition: {
       control: 'select',
       options: Object.values(IconPositionEnum),
+    },
+    iconColor: {
+      control: 'select',
+      options: [undefined, ...Object.values(ButtonIconColor)],
     },
     color: {
       control: 'select',

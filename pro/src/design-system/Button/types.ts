@@ -15,6 +15,10 @@ export enum ButtonColor {
   DANGER = 'danger',
 }
 
+export enum ButtonIconColor {
+  ERROR = 'error',
+}
+
 export enum ButtonSize {
   DEFAULT = 'default',
   SMALL = 'small',
@@ -83,6 +87,10 @@ interface ButtonBaseProps {
    * The position of the icon
    */
   iconPosition?: IconPositionEnum
+  /**
+   * The color of the icon, when it must differ from the label color
+   */
+  iconColor?: ButtonIconColor
 }
 
 /**
