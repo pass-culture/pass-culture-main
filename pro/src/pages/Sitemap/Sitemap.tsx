@@ -90,11 +90,6 @@ export const Sitemap = () => {
           title: 'Gestion financière',
           path: null,
           children: [
-            {
-              title: 'Justificatifs',
-              path: '/administration/gestion-financiere/justificatifs',
-              children: [],
-            },
             ...(isNewSettlementsEnabled
               ? [
                   {
@@ -104,6 +99,11 @@ export const Sitemap = () => {
                   },
                 ]
               : []),
+            {
+              title: 'Justificatifs',
+              path: '/administration/gestion-financiere/justificatifs',
+              children: [],
+            },
             {
               title: 'Informations bancaires',
               path: '/administration/gestion-financiere/informations-bancaires',

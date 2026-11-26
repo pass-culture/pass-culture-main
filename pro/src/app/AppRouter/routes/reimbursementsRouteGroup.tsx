@@ -11,7 +11,7 @@ export const reimbursementsRouteGroup: CustomRouteGroup['children'] = [
     },
     Component: () => {
       const location = useLocation()
-      const targetUrl = `/administration/gestion-financiere/justificatifs${location.search}`
+      const targetUrl = `/administration/gestion-financiere/virements${location.search}`
       return <Navigate to={targetUrl} replace />
     },
   },
