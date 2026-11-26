@@ -447,7 +447,7 @@ def synchronise_rurality_level() -> None:
                 models.EducationalInstitution.id.in_(ids_to_update)
             ).update({"ruralLevel": rural_level_enum})
 
-    db.session.commit()
+    db.session.flush()
 
 
 def get_offers_count_for_my_institution(uai: str) -> int:
