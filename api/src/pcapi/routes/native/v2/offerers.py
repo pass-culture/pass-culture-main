@@ -1,5 +1,6 @@
 from flask import abort
 
+from pcapi.core.offerers import metrics
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.routes.native.v2.serialization import offerers as serializers
 from pcapi.serialization.decorator import spectree_serialize
@@ -11,8 +12,14 @@ from .. import blueprint
 @blueprint.native_route("/venue/<int:venue_id>", version="v2", methods=["GET"])
 @spectree_serialize(response_model=serializers.VenueResponse, api=blueprint.api, on_error_statuses=[404])
 def get_venue_v2(venue_id: int) -> serializers.VenueResponse:
-    venue = offerers_repository.get_active_venue_page_data(venue_id)
-    if not venue:
-        abort(404)
+    metrics.venue_requests_counter.inc()
+    try:
+        venue = offerers_repository.get_active_venue_page_data(venue_id)
+        if not venue:
+            abort(404)
 
-    return serializers.VenueResponse.build(venue)
+        serialized_venue = serializers.VenueResponse.build(venue)
+    except Exception as exp:
+        metrics.venue_requests_error_counter.labels(error_type=type(exp).__name__).inc()
+        raise
+    return serialized_venue

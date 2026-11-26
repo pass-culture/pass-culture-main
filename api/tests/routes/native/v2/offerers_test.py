@@ -1,8 +1,10 @@
 import pytest
+from prometheus_client import REGISTRY
 
 from pcapi.connectors.acceslibre import ExpectedFieldsEnum as acceslibre_enum
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offerers import metrics
 from pcapi.core.offerers.schemas import VenueTypeCode
 from pcapi.core.testing import assert_num_queries
 
@@ -16,6 +18,7 @@ class GetVenueTest:
     expected_num_queries += 1  # opening hours (selectinload)
 
     def test_get_venue(self, client):
+        metrics.offer_requests_counter.reset()
         venue = offerers_factories.VenueFactory(
             isPermanent=True,
             bannerMeta={
@@ -119,6 +122,8 @@ class GetVenueTest:
             "volunteeringUrl": "https://volunteering.url",
             "withdrawalDetails": venue.withdrawalDetails,
         }
+
+        assert REGISTRY.get_sample_value("venue_requests_counter") == 1
 
     def test_get_venue_not_open_to_public(self, client):
         venue = offerers_factories.VenueFactory(
