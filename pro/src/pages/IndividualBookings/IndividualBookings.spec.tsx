@@ -28,14 +28,12 @@ import {
 } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
-import { PartnerLayout } from '@/layouts/PartnerLayout/PartnerLayout'
 
 import { IndividualBookings } from './IndividualBookings'
 
 const individualBookingsRoutes = [
   {
     path: '/',
-    Component: PartnerLayout,
     children: [
       {
         path: 'reservations',

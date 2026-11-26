@@ -18,7 +18,6 @@ import { offreIndividuelleV2Routes } from './routes/offreIndividuelleV2'
 import { onboardingOffreIndividuelleRoutes } from './routes/onboardingOffreIndividuelle'
 import { parametresRoutes } from './routes/parametres'
 import { partenaireRoutes } from './routes/partenaire'
-import { partnerRouteGroup } from './routes/partnerRouteGroup'
 import type { CustomRouteTree } from './types'
 import {
   mustBeAuthenticated,
@@ -57,7 +56,47 @@ export const routes: CustomRouteTree = [
     Component: AdministrationLayout,
     children: administrationRoutes,
   },
-  partnerRouteGroup,
+  {
+    path: '/accueil',
+    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+    lazy: () => import('@/pages/Homepage/Homepage'),
+    handle: {
+      title: 'Espace acteurs culturels',
+    },
+  },
+
+  {
+    lazy: () => import('@/pages/Desk/Desk'),
+    path: '/guichet',
+    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+    handle: {
+      title: 'Guichet',
+    },
+  },
+  {
+    path: '/offres',
+    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+    lazy: () => import('@/pages/IndividualOffers/IndividualOffers'),
+    handle: {
+      title: 'Offres individuelles',
+    },
+  },
+  {
+    path: '/reservations',
+    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+    handle: {
+      title: 'Réservations individuelles',
+    },
+    lazy: () => import('@/pages/IndividualBookings/IndividualBookings'),
+  },
+  {
+    path: '/offres/collectives',
+    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+    handle: {
+      title: 'Offres collectives',
+    },
+    lazy: () => import('@/pages/CollectiveOffers/CollectiveOffers'),
+  },
   {
     path: '/partenaire',
     loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),

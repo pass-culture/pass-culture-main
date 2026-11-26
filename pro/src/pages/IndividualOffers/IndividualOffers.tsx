@@ -4,6 +4,7 @@ import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
 import { GetVenueAddressesWithOffersOption } from '@/apiClient/v1'
+import { ContentLayout } from '@/app/App/layouts/ContentLayout/ContentLayout'
 import {
   GET_CATEGORIES_QUERY_KEY,
   GET_OFFERS_QUERY_KEY,
@@ -86,7 +87,7 @@ export const IndividualOffers = () => {
   }, [offersQuery.error, snackbar.error])
 
   return (
-    <>
+    <ContentLayout>
       <h1 className={styles['title']}>Offres individuelles</h1>
 
       <HeadlineOfferContextProvider>
@@ -100,7 +101,7 @@ export const IndividualOffers = () => {
           venueAddresses={venueAddresses}
         />
       </HeadlineOfferContextProvider>
-    </>
+    </ContentLayout>
   )
 }
 
