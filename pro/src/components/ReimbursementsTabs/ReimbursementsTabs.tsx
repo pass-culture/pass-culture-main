@@ -47,14 +47,14 @@ export const ReimbursementsTabs = ({
   const getSteps = () => {
     const steps = [
       {
-        id: STEP_ID_INVOICES,
-        label: 'Justificatifs',
-        url: '/administration/gestion-financiere/justificatifs',
-      },
-      {
         id: STEP_ID_SETTLEMENTS,
         label: 'Virements',
         url: '/administration/gestion-financiere/virements',
+      },
+      {
+        id: STEP_ID_INVOICES,
+        label: 'Justificatifs',
+        url: '/administration/gestion-financiere/justificatifs',
       },
       {
         id: STEP_ID_BANK_INFORMATIONS,

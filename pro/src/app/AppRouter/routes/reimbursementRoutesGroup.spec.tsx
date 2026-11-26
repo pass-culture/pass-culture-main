@@ -46,7 +46,7 @@ describe('reimbursementsRouteGroup', () => {
 
     await waitFor(() => {
       expect(screen.getByTestId('route-location')).toHaveTextContent(
-        '/administration/gestion-financiere/justificatifs?periode=2025'
+        '/administration/gestion-financiere/virements?periode=2025'
       )
     })
 
