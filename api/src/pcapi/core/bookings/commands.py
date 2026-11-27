@@ -66,7 +66,7 @@ def cancel_ems_external_bookings() -> None:
 
 
 @blueprint.cli.command("handle_expired_bookings")
-@cron_decorators.log_cron_with_transaction
+@cron_decorators.log_cron
 def handle_expired_bookings() -> None:
     bookings_api.handle_expired_individual_bookings()
     educational_booking_api.handle_expired_collective_bookings()
