@@ -46,7 +46,7 @@ def cron_require_feature(feature_toggle: FeatureToggle) -> typing.Callable:
     return decorator
 
 
-@warnings.deprecated("Use log_cron and atomic instead")
+@warnings.deprecated("Use log_cron and atomic instead", category=None)
 def log_cron_with_transaction(func: typing.Callable) -> typing.Callable:
     @wraps(func)
     def wrapper(*args: typing.Any, **kwargs: typing.Any) -> typing.Any:
