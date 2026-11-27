@@ -187,6 +187,9 @@
       {% endif %}
     </td>
     <td>{{ links.build_pro_user_name_to_details_link(offer.author.id, offer.author.full_name) }}</td>
+    {% if has_permission("MANAGE_OFFER_INSTRUCTOR") %}
+      <td>{% if offer.instructor %}{{ offer.instructor.full_name }}{% endif %}</td>
+    {% endif %}
     {% if has_permission("MANAGE_OFFERS_AND_VENUES_TAGS") %}<td>{{ offer.rankingWeight | empty_string_if_null }}</td>{% endif %}
     <td>{{ offer.validation | format_offer_validation_status(with_badge=True) }}</td>
     <td data-pc-sort-table-value="{{ offer.dateCreated.timestamp() }}">{{ offer.dateCreated | format_date }}</td>

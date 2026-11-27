@@ -285,6 +285,11 @@ SEARCH_FIELD_TO_PYTHON: dict[str, dict[str, typing.Any]] = {
         "column": cultural_outreach_models.CulturalOutreach.status,
         "inner_join": "cultural_outreach",
     },
+    "INSTRUCTOR": {
+        "field": "instructor",
+        "column": users_models.User.id,
+        "inner_join": "instructor",
+    },
     "PROVIDER": {
         "field": "provider",
         "column": offers_models.Offer.lastProviderId,
@@ -403,6 +408,12 @@ JOIN_DICT: dict[str, list[dict[str, typing.Any]]] = {
             ),
         },
     ],
+    "instructor": [
+        {
+            "name": "instructor",
+            "args": (users_models.User, offers_models.Offer.instructor),
+        },
+    ],
     "offerer": [
         {
             "name": "venue",
@@ -500,7 +511,11 @@ def _get_offer_ids_query(form: forms.GetOfferAdvancedSearchForm) -> sa_orm.Query
 
 
 def _get_offers_by_ids(
-    offer_ids: list[int] | sa_orm.Query, *, sort: str | None = None, order: str | None = None
+    offer_ids: list[int] | None = None,
+    filter_query: sa_orm.Query | None = None,
+    *,
+    sort: str | None = None,
+    order: str | None = None,
 ) -> list[sa.engine.Row]:
     if access_control.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS):
         # Those columns are not shown to fraud pro users
@@ -715,24 +730,33 @@ def _get_offers_by_ids(
         else sa.null()
     )
 
+    query = db.session.query(
+        offers_models.Offer,
+        booked_quantity_subquery.label("booked_quantity"),
+        remaining_quantity_case.label("remaining_quantity"),
+        offer_event_datetimes.label("offer_event_datetimes"),
+        offer_booking_limit_datetimes.label("offer_booking_limit_datetimes"),
+        tags_subquery.label("tags"),
+        rules_subquery.label("rules"),
+        offerer_badges_subquery.label("offerer_badges"),
+        venue_badges_subquery.label("venue_badges"),
+        min_max_prices_subquery.label("prices"),
+        offer_mediation_subquery.label("offer_mediation"),
+        product_mediation_uuid_subquery.label("product_mediation"),
+    )
+
+    if filter_query:
+        # Too many joins (above from_collapse_limit) make the query planner join everything with Seq Scan without filter
+        # and execute the subquery separately. Using a CTE forces filtering first (even if inlined as a subquery), then
+        # joining everything using Index Scans.
+        cte = filter_query.cte()
+        query = query.select_from(cte).join(offers_models.Offer, offers_models.Offer.id == cte.c.id)
+
+    if offer_ids:
+        query = query.filter(offers_models.Offer.id.in_(offer_ids))
+
     query = (
-        db.session.query(
-            offers_models.Offer,
-            booked_quantity_subquery.label("booked_quantity"),
-            remaining_quantity_case.label("remaining_quantity"),
-            offer_event_datetimes.label("offer_event_datetimes"),
-            offer_booking_limit_datetimes.label("offer_booking_limit_datetimes"),
-            tags_subquery.label("tags"),
-            rules_subquery.label("rules"),
-            offerer_badges_subquery.label("offerer_badges"),
-            venue_badges_subquery.label("venue_badges"),
-            min_max_prices_subquery.label("prices"),
-            offer_mediation_subquery.label("offer_mediation"),
-            product_mediation_uuid_subquery.label("product_mediation"),
-        )
-        .filter(offers_models.Offer.id.in_(offer_ids))
-        # 1-1 relationships so join will not increase the number of SQL rows
-        .join(offers_models.Offer.venue)
+        query.join(offers_models.Offer.venue)
         .join(offerers_models.Venue.managingOfferer)
         .options(
             sa_orm.load_only(
@@ -773,6 +797,12 @@ def _get_offers_by_ids(
                 users_models.User.id,
                 users_models.User.firstName,
                 users_models.User.lastName,
+            ),
+            sa_orm.joinedload(offers_models.Offer.instructor).load_only(
+                users_models.User.id,
+                users_models.User.firstName,
+                users_models.User.lastName,
+                users_models.User.email,
             ),
             sa_orm.joinedload(offers_models.Offer.compliance),
             sa_orm.selectinload(offers_models.Offer.lastProvider).load_only(
@@ -874,7 +904,7 @@ def list_offers() -> response_utils.BackofficeResponse:
         return _render_offer_list(advanced_form=form, page="offer", is_form_empty=True)
 
     offers = _get_offers_by_ids(
-        offer_ids=_get_offer_ids_query(form),
+        filter_query=_get_offer_ids_query(form),
         sort=form.sort.data,
         order=form.order.data,
     )

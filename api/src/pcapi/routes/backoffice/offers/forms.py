@@ -63,6 +63,7 @@ class IndividualOffersSearchAttributes(enum.Enum):
     VALIDATED_OFFERER = "Entité juridique validée"
     ALLOCINE_ID = "Identifiant Allociné"
     CULTURAL_OUTREACH = "Action de médiation"
+    INSTRUCTOR = "Responsable"
 
 
 class IndividualOffersAlgoliaSearchAttributes(enum.Enum):
@@ -127,6 +128,7 @@ form_field_configuration = {
     "HIGHLIGHT_REQUEST": {"field": "highlight", "operator": ["IN"]},
     "VALIDATED_OFFERER": {"field": "boolean", "operator": ["EQUALS"]},
     "CULTURAL_OUTREACH": {"field": "cultural_outreach", "operator": ["IN"]},
+    "INSTRUCTOR": {"field": "instructor", "operator": ["IN", "NOT_IN"]},
 }
 
 algolia_form_field_configuration = {
@@ -213,6 +215,7 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
                 "provider",
                 "offerer_tags",
                 "cultural_outreach",
+                "instructor",
             ],
             "sub_rule_type_field_name": "search_field",
             "operator_field_name": "operator",
@@ -228,6 +231,7 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
         autocomplete.prefill_providers_choices(self.provider)
         autocomplete.prefill_highlights_choices(self.highlight)
         autocomplete.prefill_offerer_tag_choices(self.offerer_tags)
+        autocomplete.prefill_bo_users_choices(self.instructor)
 
     search_field = fields.PCSelectWithPlaceholderValueField(
         "Champ de recherche",
@@ -405,6 +409,15 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
             cultural_outreach_models.CulturalOutreachStatus,
             formatter=filters.format_cultural_outreach_status,
         ),
+        search_inline=True,
+        field_list_compatibility=True,
+    )
+    instructor = fields.PCTomSelectField(
+        "Responsable",
+        multiple=False,
+        choices=[],
+        validate_choice=False,
+        endpoint="backoffice.autocomplete_bo_users",
         search_inline=True,
         field_list_compatibility=True,
     )

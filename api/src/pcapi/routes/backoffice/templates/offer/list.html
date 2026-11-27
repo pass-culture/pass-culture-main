@@ -81,6 +81,9 @@
     Date(s) limite(s) de réservation
   {% endcall %}
   <th scope="col">Créateur de l'offre</th>
+  {% if has_permission("MANAGE_OFFER_INSTRUCTOR") %}
+    <th scope="col">Responsable</th>
+  {% endif %}
   {% if has_permission("MANAGE_OFFERS_AND_VENUES_TAGS") %}
     <th data-pc-column-name="Pondération"
         scope="col">Pond.</th>

@@ -134,6 +134,11 @@ SEARCH_FIELD_TO_PYTHON: dict[str, dict[str, typing.Any]] = {
         "field": "string",
         "column": educational_models.CollectiveOffer.name,
     },
+    "INSTRUCTOR": {
+        "field": "instructor",
+        "column": users_models.User.id,
+        "inner_join": "instructor",
+    },
     "OFFERER": {
         "field": "offerer",
         "column": offerers_models.Venue.managingOffererId,
@@ -336,6 +341,12 @@ JOIN_DICT: dict[str, list[dict[str, typing.Any]]] = {
         {
             "name": "address",
             "args": (geography_models.Address, offerers_models.OffererAddress.address),
+        },
+    ],
+    "instructor": [
+        {
+            "name": "instructor",
+            "args": (users_models.User, educational_models.CollectiveOffer.instructor),
         },
     ],
     "venue": [
