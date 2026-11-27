@@ -16820,6 +16820,52 @@
                 "tags": []
             }
         },
+        "/native/v2/sso/{sso_user_id}": {
+            "delete": {
+                "description": "",
+                "operationId": "delete__native_v2_sso_{sso_user_id}",
+                "parameters": [
+                    {
+                        "description": "",
+                        "in": "path",
+                        "name": "sso_user_id",
+                        "required": true,
+                        "schema": {
+                            "format": "int32",
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        },
+                        "description": "Unprocessable Content"
+                    }
+                },
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "summary": "sso_remove_account <DELETE>",
+                "tags": []
+            }
+        },
         "/native/v2/subscription/stepper": {
             "get": {
                 "description": "",
