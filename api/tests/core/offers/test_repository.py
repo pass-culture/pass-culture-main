@@ -1526,8 +1526,7 @@ class GetPaginatedThingOfferIdsTest:
         factories.ThingOfferFactory()
         venue_id = venue.id
 
-        with assert_num_queries(2):  # total + page
-            result = repository.get_paginated_thing_offer_ids(venue_id=venue_id, per_page=10)
+        result = repository.get_paginated_thing_offer_ids(venue_id=venue_id, per_page=10)
 
         assert result.offer_ids == [offer.id]
         assert result.next_cursor is None
@@ -1597,6 +1596,127 @@ class GetPaginatedThingOfferIdsTest:
         result = repository.get_paginated_thing_offer_ids(venue_id=venue.id, per_page=2)
 
         assert result.total == 3
+
+    @pytest.mark.parametrize(
+        "status",
+        [offer_mixin.OfferStatus.ACTIVE, offer_mixin.OfferStatus.SOLD_OUT, offer_mixin.OfferStatus.EXPIRED],
+    )
+    def test_reads_candidates_for_stock_based_statuses(self, status):
+        venue = offerers_factories.VenueFactory()
+        factories.ThingStockFactory(offer=factories.ThingOfferFactory(venue=venue))
+        factories.ThingOfferFactory(venue=venue)
+        factories.ThingStockFactory(
+            offer=factories.ThingOfferFactory(venue=venue),
+            bookingLimitDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
+        )
+        venue_id = venue.id
+
+        with assert_num_queries(3):  # candidates + total + page
+            repository.get_paginated_thing_offer_ids(venue_id=venue_id, per_page=10, status=status)
+
+    @pytest.mark.parametrize(
+        "status",
+        [offer_mixin.OfferStatus.ACTIVE, offer_mixin.OfferStatus.SOLD_OUT, offer_mixin.OfferStatus.EXPIRED],
+    )
+    def test_returns_nothing_without_status_candidate(self, status):
+        venue_id = offerers_factories.VenueFactory().id
+
+        with assert_num_queries(1):  # candidates only
+            result = repository.get_paginated_thing_offer_ids(venue_id=venue_id, per_page=10, status=status)
+
+        assert result == repository.PaginatedOfferIds(offer_ids=[], next_cursor=None, total=0)
+
+    @pytest.mark.parametrize(
+        "status",
+        [
+            offer_mixin.OfferStatus.SCHEDULED,
+            offer_mixin.OfferStatus.PUBLISHED,
+            offer_mixin.OfferStatus.DRAFT,
+            offer_mixin.OfferStatus.PENDING,
+            offer_mixin.OfferStatus.REJECTED,
+        ],
+    )
+    def test_does_not_read_candidates_for_other_statuses(self, status):
+        venue_id = offerers_factories.VenueFactory().id
+
+        with assert_num_queries(2):  # total + page
+            repository.get_paginated_thing_offer_ids(venue_id=venue_id, per_page=10, status=status)
+
+    @patch("pcapi.core.offers.constants.OFFERS_CANDIDATES_MAX", 1)
+    def test_filters_on_status_without_candidates_above_the_max(self):
+        venue = offerers_factories.VenueFactory()
+        active_offers = factories.ThingOfferFactory.create_batch(3, venue=venue)
+        for offer in active_offers:
+            factories.ThingStockFactory(offer=offer)
+        factories.ThingOfferFactory(venue=venue)  # sold out: no stock
+
+        result = repository.get_paginated_thing_offer_ids(
+            venue_id=venue.id, per_page=10, status=offer_mixin.OfferStatus.ACTIVE
+        )
+
+        assert set(result.offer_ids) == {offer.id for offer in active_offers}
+
+
+@pytest.mark.usefixtures("db_session")
+class GetStatusCandidateIdsTest:
+    def test_active_candidates(self):
+        venue = offerers_factories.VenueFactory()
+        active_thing = factories.ThingOfferFactory(venue=venue)
+        factories.ThingStockFactory(offer=active_thing)
+        fully_booked = factories.ThingOfferFactory(venue=venue)
+        factories.ThingStockFactory(offer=fully_booked, quantity=1, dnBookedQuantity=1)
+        past_event = factories.EventOfferFactory(venue=venue)
+        factories.EventStockFactory(
+            offer=past_event, beginningDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
+        )
+
+        candidate_ids = repository._get_status_candidate_ids(venue.id, offer_mixin.OfferStatus.ACTIVE)
+
+        assert set(candidate_ids) == {active_thing.id}
+
+    def test_sold_out_candidates(self):
+        venue = offerers_factories.VenueFactory()
+        fully_booked = factories.ThingOfferFactory(venue=venue)
+        factories.ThingStockFactory(offer=fully_booked, quantity=1, dnBookedQuantity=1)
+        without_stock = factories.ThingOfferFactory(venue=venue)
+        only_soft_deleted_stock = factories.ThingOfferFactory(venue=venue)
+        factories.ThingStockFactory(offer=only_soft_deleted_stock, isSoftDeleted=True)
+        active_thing = factories.ThingOfferFactory(venue=venue)
+        factories.ThingStockFactory(offer=active_thing)
+
+        candidate_ids = repository._get_status_candidate_ids(venue.id, offer_mixin.OfferStatus.SOLD_OUT)
+
+        assert set(candidate_ids) == {
+            fully_booked.id,
+            without_stock.id,
+            only_soft_deleted_stock.id,
+        }
+
+    def test_expired_candidates(self):
+        venue = offerers_factories.VenueFactory()
+        yesterday = date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
+        expired = factories.ThingOfferFactory(venue=venue)
+        factories.ThingStockFactory(offer=expired, bookingLimitDatetime=yesterday)
+        active_thing = factories.ThingOfferFactory(venue=venue)
+        factories.ThingStockFactory(offer=active_thing)
+
+        candidate_ids = repository._get_status_candidate_ids(venue.id, offer_mixin.OfferStatus.EXPIRED)
+
+        assert set(candidate_ids) == {expired.id}
+
+    @patch("pcapi.core.offers.constants.OFFERS_CANDIDATES_MAX", 1)
+    def test_reads_one_candidate_more_than_the_max(self):
+        venue = offerers_factories.VenueFactory()
+        for offer in factories.ThingOfferFactory.create_batch(3, venue=venue):
+            factories.ThingStockFactory(offer=offer)
+
+        candidate_ids = repository._get_status_candidate_ids(venue.id, offer_mixin.OfferStatus.ACTIVE)
+
+        assert len(candidate_ids) == 2
+
+    def test_other_statuses_are_not_supported(self):
+        with pytest.raises(ValueError):
+            repository._get_status_candidate_ids(1, offer_mixin.OfferStatus.INACTIVE)
 
 
 @pytest.mark.usefixtures("db_session")

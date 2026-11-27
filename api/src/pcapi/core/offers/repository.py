@@ -835,6 +835,15 @@ class PaginatedOfferIds[CursorT: (ThingOffersCursor, EventOffersCursor)]:
     total: int
 
 
+STOCK_BASED_STATUSES = frozenset(
+    {
+        offer_mixin.OfferStatus.ACTIVE,
+        offer_mixin.OfferStatus.SOLD_OUT,
+        offer_mixin.OfferStatus.EXPIRED,
+    }
+)
+
+
 def get_paginated_thing_offer_ids(
     *,
     venue_id: int,
@@ -854,6 +863,14 @@ def get_paginated_thing_offer_ids(
         name_keywords_or_ean=name_keywords_or_ean,
         creation_mode=creation_mode,
     )
+
+    if status in STOCK_BASED_STATUSES:
+        candidate_ids = _get_status_candidate_ids(venue_id, status)
+        if not candidate_ids:
+            return PaginatedOfferIds(offer_ids=[], next_cursor=None, total=0)
+        # above the max, the status is frequent enough in the venue to fill a page quickly without candidates
+        if len(candidate_ids) <= offers_constants.OFFERS_CANDIDATES_MAX:
+            filters.append(models.Offer.id.in_(candidate_ids))
 
     total = _get_capped_total(filters)
 
@@ -1095,6 +1112,45 @@ def _get_offers_filters(
         filters += [offerers_models.Venue.id == models.Offer.venueId, *models.Offer.get_status_filters(status=status)]
 
     return filters
+
+
+def _get_status_candidate_ids(venue_id: int, status: offer_mixin.OfferStatus) -> list[int]:
+    available_stock_exists = sa.exists().where(
+        models.Stock.offerId == models.Offer.id,
+        models.Stock.isSoftDeleted.is_not(True),
+        sa.or_(models.Stock.quantity.is_(None), models.Stock.quantity > models.Stock.dnBookedQuantity),
+        sa.or_(models.Stock.beginningDatetime.is_(None), models.Stock.beginningDatetime > sa.func.now()),
+    )
+
+    stock_filter: sa.ColumnElement[bool]
+    match status:
+        case offer_mixin.OfferStatus.ACTIVE:
+            stock_filter = available_stock_exists
+        case offer_mixin.OfferStatus.SOLD_OUT:
+            stock_filter = ~available_stock_exists
+        case offer_mixin.OfferStatus.EXPIRED:
+            # an expired offer has at least one stock past its booking limit
+            stock_filter = sa.exists().where(
+                models.Stock.offerId == models.Offer.id,
+                models.Stock.isSoftDeleted.is_not(True),
+                models.Stock.bookingLimitDatetime.is_not(None),
+                models.Stock.bookingLimitDatetime <= sa.func.now(),
+            )
+        case _:
+            raise ValueError(f"{status} is not a status computed from stocks")
+
+    candidate_ids = db.session.scalars(
+        sa.select(models.Offer.id)
+        .where(
+            models.Offer.venueId == venue_id,
+            models.Offer.validation == offer_mixin.OfferValidationStatus.APPROVED,
+            models.Offer.publicationDatetime <= sa.func.now(),
+            stock_filter,
+        )
+        .limit(offers_constants.OFFERS_CANDIDATES_MAX + 1)
+    ).all()
+
+    return list(candidate_ids)
 
 
 def _get_capped_total(filters: list[sa.ColumnElement[bool]]) -> int:
