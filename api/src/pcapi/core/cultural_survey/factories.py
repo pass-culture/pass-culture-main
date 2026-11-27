@@ -17,8 +17,8 @@ class UserCulturalSurveyFactory(BaseFactory):
     answers = factory.lazy_attribute(
         lambda _: [
             {
-                "question_id": question.id,
-                "answers_id": [FuzzyChoice(answers).fuzz() for _ in range(randrange(len(answers)))],
+                "question_id": question.id.value,
+                "answer_ids": [FuzzyChoice(answers).fuzz().id.value for _ in range(randrange(len(answers)))],
             }
             for question, answers in SURVEY_QUESTIONS_AND_ANSWERS
         ],

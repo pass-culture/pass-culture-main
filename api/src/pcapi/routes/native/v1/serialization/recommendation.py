@@ -58,6 +58,7 @@ class PlaylistRequestBody(HttpBodyModel):
     is_reco_shuffled: bool | None = None
     offer_type_list: list[dict[str, str]] | None = None
     is_qpi: bool | None = Field(default=None, exclude_if=lambda v: v is None)
+    qpi_answers: list[dict[str, str | list[str]]] | None = Field(default=None, exclude_if=lambda v: v is None)
 
 
 class PlaylistResponse(HttpBodyModel):

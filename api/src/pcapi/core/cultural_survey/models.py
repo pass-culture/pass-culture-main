@@ -1,4 +1,5 @@
 import enum
+import typing
 from datetime import datetime
 
 import sqlalchemy as sa
@@ -9,6 +10,10 @@ from sqlalchemy.ext.mutable import MutableList
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
 from pcapi.utils.date import get_naive_utc_now
+
+
+if typing.TYPE_CHECKING:
+    from pcapi.core.users.models import User
 
 
 class CulturalSurveyQuestionEnum(enum.Enum):
@@ -93,15 +98,16 @@ class UserCulturalSurvey(PcObject, Model):
         nullable=False,
         unique=True,
     )
+    user: sa_orm.Mapped["User"] = sa_orm.relationship("User", foreign_keys=[userId], back_populates="culturalSurveys")
 
     answers: sa_orm.Mapped[list[dict]] = sa_orm.mapped_column(
         MutableList.as_mutable(postgresql.JSONB),
         nullable=False,
     )
 
-    createdAt: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
+    createdAt: sa_orm.Mapped[datetime | None] = sa_orm.mapped_column(
         sa.DateTime,
-        nullable=False,
+        nullable=True,
         default=get_naive_utc_now,
-        server_default=sa.func.utcnow(),
+        server_default=sa.func.now(),
     )
