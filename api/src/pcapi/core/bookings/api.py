@@ -58,6 +58,7 @@ from pcapi.utils import queue
 from pcapi.utils.redis import get_redis_client
 from pcapi.utils.repository import transaction
 from pcapi.utils.requests import exceptions as requests_exceptions
+from pcapi.utils.transaction_manager import atomic
 from pcapi.utils.transaction_manager import is_managed_transaction
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 from pcapi.utils.transaction_manager import on_commit
@@ -1414,17 +1415,21 @@ def handle_expired_individual_bookings() -> None:
     logger.info("[handle_expired_individual_bookings] Start")
 
     try:
-        _cancel_expired_individual_bookings()
+        with atomic():
+            _cancel_expired_individual_bookings()
     except Exception as e:
         logger.exception("Error in cancel_expired_individual_bookings : %s", e)
+        return
 
     try:
-        _notify_users_of_expired_individual_bookings()
+        with atomic():
+            _notify_users_of_expired_individual_bookings()
     except Exception as e:
         logger.exception("Error in notify_users_of_expired_individual_bookings : %s", e)
 
     try:
-        _notify_offerers_of_expired_individual_bookings()
+        with atomic():
+            _notify_offerers_of_expired_individual_bookings()
     except Exception as e:
         logger.exception("Error in notify_offerers_of_expired_individual_bookings : %s", e)
 

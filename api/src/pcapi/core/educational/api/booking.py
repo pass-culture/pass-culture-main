@@ -436,12 +436,15 @@ def handle_expired_collective_bookings() -> None:
     logger.info("[handle_expired_collective_bookings] Start")
 
     try:
-        _cancel_expired_collective_bookings()
+        with atomic():
+            _cancel_expired_collective_bookings()
     except Exception as e:
         logger.exception("Error in cancel_expired_collective_bookings : %s", e)
+        return
 
     try:
-        _notify_offerers_of_expired_collective_bookings()
+        with atomic():
+            _notify_offerers_of_expired_collective_bookings()
     except Exception as e:
         logger.exception("Error in notify_offerers_of_expired_collective_bookings : %s", e)
 
