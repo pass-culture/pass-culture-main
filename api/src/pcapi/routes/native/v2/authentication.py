@@ -303,3 +303,19 @@ def sso_attach_account(sso_provider: str, body: authentication.SSOAttachAccountR
         raise ApiErrors({"code": e.code}, status_code=401)
     except auth_exceptions.AuthException as e:
         raise ApiErrors({"code": e.code}, status_code=400)
+
+
+@blueprint.native_route("/sso/<int:sso_user_id>", version="v2", methods=["DELETE"])
+@atomic()
+@authenticated_and_active_user_required
+@spectree_serialize(
+    response_model=None,
+    on_success_status=204,
+    on_error_statuses=[400],
+    api=blueprint.api,
+)
+def sso_remove_account(sso_user_id: int) -> None:
+    try:
+        auth_api.remove_sso_from_user(current_user, sso_user_id)
+    except auth_exceptions.AuthException as e:
+        raise ApiErrors({"code": e.code}, status_code=400)
