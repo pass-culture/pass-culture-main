@@ -1127,6 +1127,27 @@ class Returns200Test:
         updated_offer = db.session.get(Offer, offer.id)
         assert updated_offer.subcategoryId == subcategories.ESCAPE_GAME.id
 
+    def test_patch_offer_nature_and_format_on_draft_offer(self, client, venue, auth_client):
+        offer = offers_factories.DraftOfferFactory(
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+            venue=venue,
+            nature=nfd.NatureEnum.BIEN,
+            format=nfd.FormatEnum.LIVRE_PAPIER,
+        )
+
+        data = {"nature": nfd.NatureEnum.BIEN.value, "format": nfd.FormatEnum.CD.value, "name": "Un CD"}
+        response = auth_client.patch(self.endpoint.format(offer_id=offer.id), json=data)
+
+        assert response.status_code == 200, response.json
+        assert response.json["format"] == nfd.FormatEnum.CD.value
+        assert response.json["subcategoryId"] == subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id
+
+        updated_offer = db.session.get(Offer, offer.id)
+        assert updated_offer.nature == nfd.NatureEnum.BIEN
+        assert updated_offer.format == nfd.FormatEnum.CD
+        assert updated_offer.subcategoryId == subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id
+        assert updated_offer.name == "Un CD"
+
     def test_patch_offer_creates_artist_offer_links(self, client, venue, auth_client):
         artist = artist_factories.ArtistFactory()
         offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONCERT.id, venue=venue)
@@ -1329,13 +1350,7 @@ class Returns200Test:
         updated_offer = db.session.get(Offer, offer.id)
         assert updated_offer.extraData == {"musicType": "501", "gtl_id": "02000000"}
 
-    def test_patch_draft_offer_does_not_derive_gtl_id_when_subcategory_becomes_musical(
-        self, client, venue, auth_client
-    ):
-        # `deserialize_extra_data` is called with the subcategory the offer
-        # currently has, not the one sent in the body: switching to a musical
-        # subcategory and sending a musicType in the same request does not
-        # derive the gtl_id.
+    def test_patch_draft_offer_derives_gtl_id_when_subcategory_becomes_musical(self, client, venue, auth_client):
         offer = offers_factories.DraftOfferFactory(
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             venue=venue,
@@ -1354,7 +1369,7 @@ class Returns200Test:
 
         updated_offer = db.session.get(Offer, offer.id)
         assert updated_offer.subcategoryId == subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id
-        assert updated_offer.extraData == {"musicType": "501"}
+        assert updated_offer.extraData == {"musicType": "501", "gtl_id": "02000000"}
 
     def test_patch_offer_extracts_the_ean_from_extra_data(self, client, venue, auth_client):
         offer = offers_factories.OfferFactory(

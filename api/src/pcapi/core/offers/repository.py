@@ -113,6 +113,8 @@ def get_capped_offers_for_filters(
                 models.Offer.id,
                 models.Offer.name,
                 models.Offer.subcategoryId,
+                models.Offer.nature,
+                models.Offer.format,
                 models.Offer.validation,
                 models.Offer.ean,
                 models.Offer.offererAddressId,

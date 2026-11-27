@@ -31,6 +31,10 @@ export function getIndividualOfferColumns({
       id: 'name',
       label: 'Nom de l’offre',
       render: (offer) => {
+        const isNfdOffer = offer.nature && offer.format
+        const step = isNfdOffer
+          ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION_V2
+          : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION
         const offerLink = getIndividualOfferUrl({
           offerId: offer.id,
           mode:
@@ -39,7 +43,7 @@ export function getIndividualOfferColumns({
               : OFFER_WIZARD_MODE.EDITION,
           step:
             offer.status === OfferStatus.DRAFT
-              ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION
+              ? step
               : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.EXPOSURE,
         })
 

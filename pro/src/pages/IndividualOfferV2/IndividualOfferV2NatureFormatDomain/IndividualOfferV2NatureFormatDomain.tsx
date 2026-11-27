@@ -5,9 +5,10 @@ import useSWR from 'swr'
 import { api } from '@/apiClient/api'
 import { type FormatEnum, NatureEnum } from '@/apiClient/v1'
 import { GET_NFD_QUERY_KEY } from '@/commons/config/swrQueryKeys'
+import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { setFormat, setNature } from '@/commons/store/nfd/reducer'
+import { resetNFD, setFormat, setNature } from '@/commons/store/nfd/reducer'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
@@ -36,8 +37,8 @@ const natureIcon: Record<NatureEnum, string> = {
 }
 
 type NatureFormatFormValues = {
-  nature: NatureEnum
-  format: FormatEnum
+  nature: NatureEnum | null
+  format: FormatEnum | null
 }
 
 const IndividualOfferV2NatureFormatDomain = (): JSX.Element => {
@@ -46,9 +47,13 @@ const IndividualOfferV2NatureFormatDomain = (): JSX.Element => {
   const nfdQuery = useSWR([GET_NFD_QUERY_KEY], () =>
     api.getNatureFormatDomain()
   )
-  const { nature: selectedNature, format: selectedFormat } = useAppSelector(
-    (state) => state.nfd
-  )
+  const { offer } = useIndividualOfferContext()
+
+  const nfd = useAppSelector((state) => state.nfd)
+  const hasPendingNfd = !!nfd.nature && !!nfd.format
+  const { nature: selectedNature, format: selectedFormat } = hasPendingNfd
+    ? nfd
+    : (offer ?? nfd)
 
   const form = useForm<NatureFormatFormValues>({
     defaultValues: { nature: selectedNature, format: selectedFormat },
@@ -57,9 +62,22 @@ const IndividualOfferV2NatureFormatDomain = (): JSX.Element => {
   const format = form.watch('format')
 
   const onSubmit = async (values: NatureFormatFormValues) => {
-    dispatch(setNature(values.nature))
-    dispatch(setFormat(values.format))
-    await navigate('/offre/individuelle/v2/creation/description')
+    if (!values.nature || !values.format) {
+      return
+    }
+
+    if (values.nature === offer?.nature && values.format === offer?.format) {
+      dispatch(resetNFD())
+    } else {
+      dispatch(setNature(values.nature))
+      dispatch(setFormat(values.format))
+    }
+
+    await navigate(
+      offer
+        ? `/offre/individuelle/v2/${offer.id}/creation/description`
+        : '/offre/individuelle/v2/creation/description'
+    )
   }
 
   if (!nfdQuery.data) {

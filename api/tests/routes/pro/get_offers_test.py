@@ -286,6 +286,8 @@ class Returns200Test:
                 "thumbUrl": None,
                 "productIsbn": None,
                 "subcategoryId": "SEANCE_CINE",
+                "nature": None,
+                "format": None,
                 "status": "EXPIRED",
                 "location": {
                     "banId": offerer_address1.address.banId,
@@ -346,6 +348,8 @@ class Returns200Test:
                 "thumbUrl": None,
                 "productIsbn": None,
                 "subcategoryId": "SEANCE_CINE",
+                "nature": None,
+                "format": None,
                 "status": "DRAFT",
                 "location": None,
                 "publicationDatetime": None,
@@ -387,6 +391,8 @@ class Returns200Test:
                 "thumbUrl": None,
                 "productIsbn": None,
                 "subcategoryId": "SEANCE_CINE",
+                "nature": None,
+                "format": None,
                 "status": "SOLD_OUT",
                 "location": {
                     "banId": venue.offererAddress.address.banId,
@@ -521,6 +527,8 @@ class Returns200Test:
                 "status": "SOLD_OUT",
                 "stocks": [],
                 "subcategoryId": "CONCERT",
+                "nature": None,
+                "format": None,
                 "thumbUrl": None,
                 "location": {
                     "id": offerer_address1.address.id,
@@ -550,6 +558,8 @@ class Returns200Test:
                 "status": "SOLD_OUT",
                 "stocks": [],
                 "subcategoryId": "CONCERT",
+                "nature": None,
+                "format": None,
                 "thumbUrl": None,
                 "location": {
                     "id": offerer_address1.address.id,
@@ -608,6 +618,8 @@ class Returns200Test:
                 "thumbUrl": None,
                 "productIsbn": None,
                 "subcategoryId": "CONCERT",
+                "nature": None,
+                "format": None,
                 "status": "SOLD_OUT",
                 "location": {
                     "id": offerer_address1.address.id,
@@ -666,6 +678,8 @@ class Returns200Test:
                 "thumbUrl": None,
                 "productIsbn": None,
                 "subcategoryId": "CONCERT",
+                "nature": None,
+                "format": None,
                 "status": "SOLD_OUT",
                 "location": None,
                 "publicationDatetime": "2022-11-21T13:19:00Z",

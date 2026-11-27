@@ -621,10 +621,22 @@ def patch_offer(
 
     updates = body.model_dump(by_alias=True, exclude_unset=True)
 
+    if updates.get("nature") or updates.get("format"):
+        try:
+            updates["subcategoryId"] = offers_api.get_subcategory_from_nfd(
+                updates.get("nature") or offer.nature,
+                updates.get("format") or offer.format,
+                offer.domain,
+            ).id
+        except ValueError:
+            raise api_errors.ApiErrors({"format": ["Ce format n’est pas compatible avec cette nature"]})
+
+    subcategory_id = updates.get("subcategoryId", offer.subcategoryId)
+
     ean: str | None | offers_api.T_UNCHANGED = offers_api.UNCHANGED
     extra_data: typing.Any = updates.get("extraData", offers_api.UNCHANGED)
 
-    if body_extra_data := offers_api.deserialize_extra_data(body.extraData, offer.subcategoryId):
+    if body_extra_data := offers_api.deserialize_extra_data(body.extraData, subcategory_id):
         if "ean" in body_extra_data:
             ean = body_extra_data.pop("ean")
         extra_data = body_extra_data
@@ -636,7 +648,6 @@ def patch_offer(
             address_body=body.location, venue=offer.venue
         )
 
-    subcategory_id = updates.get("subcategoryId", offer.subcategoryId)
     not_editable_fields = _get_not_editable_fields(offer)
 
     if body.artist_offer_links is not None:
@@ -676,6 +687,8 @@ def patch_offer(
         mental_disability_compliant=updates.get("mentalDisabilityCompliant", offers_api.UNCHANGED),
         motor_disability_compliant=updates.get("motorDisabilityCompliant", offers_api.UNCHANGED),
         name=updates.get("name", offers_api.UNCHANGED),
+        nature=updates.get("nature") or offers_api.UNCHANGED,
+        format=updates.get("format") or offers_api.UNCHANGED,
         offerer_address=offerer_address,
         publication_datetime=updates.get("publicationDatetime", offers_api.UNCHANGED),
         subcategory_id=updates.get("subcategoryId", offers_api.UNCHANGED),

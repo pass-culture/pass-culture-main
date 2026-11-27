@@ -1,15 +1,29 @@
 /* istanbul ignore file */
 
-import { Outlet, useLocation } from 'react-router'
+import { useEffect } from 'react'
+import { Outlet, useLocation, useParams } from 'react-router'
 
 import { FullLayout } from '@/app/App/layouts/FullLayout/FullLayout'
 import { IndividualOfferContextProvider } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
+import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
+import { resetNFD } from '@/commons/store/nfd/reducer'
 import { Stepper } from '@/design-system/Stepper/Stepper'
 
 import styles from './IndividualOfferV2.module.scss'
 
 export const IndividualOfferV2 = () => {
   const { pathname } = useLocation()
+  const { offerId } = useParams<{ offerId: string }>()
+  const dispatch = useAppDispatch()
+  const offerPathPrefix = offerId
+    ? `/offre/individuelle/v2/${offerId}`
+    : '/offre/individuelle/v2'
+
+  useEffect(() => {
+    return () => {
+      dispatch(resetNFD())
+    }
+  }, [dispatch])
 
   return (
     <IndividualOfferContextProvider>
@@ -23,12 +37,12 @@ export const IndividualOfferV2 = () => {
                 {
                   id: 'nature-format-domaine',
                   label: 'Nature et format',
-                  url: '/offre/individuelle/v2/creation/nature-format-domaine',
+                  url: `${offerPathPrefix}/creation/nature-format-domaine`,
                 },
                 {
                   id: 'description',
                   label: 'Description',
-                  url: '/offre/individuelle/v2/creation/description',
+                  url: `${offerPathPrefix}/creation/description`,
                 },
                 {
                   id: 'tarifs-modalites',

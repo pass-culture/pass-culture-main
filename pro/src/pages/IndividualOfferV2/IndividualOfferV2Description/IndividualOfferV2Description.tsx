@@ -27,10 +27,12 @@ import {
 import { isOfferProductBasedButNotSynchronized } from '@/commons/core/Offers/utils/typology'
 import { PATCH_SUCCESS_MESSAGE } from '@/commons/core/shared/constants'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
+import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useFormNavigationGuard } from '@/commons/hooks/useFormNavigationGuard/useFormNavigationGuard'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
+import { resetNFD } from '@/commons/store/nfd/reducer'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
@@ -68,9 +70,11 @@ import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { IndividualOfferV2DescriptionExtraData } from './IndividualOfferV2DescriptionExtraData/IndividualOfferV2DescriptionExtraData'
 import { IndividualOfferV2DescriptionImage } from './IndividualOfferV2DescriptionImage/IndividualOfferV2DescriptionImage'
+import { resetOfferForNewNfd } from './resetOfferForNewNfd'
 import {
   serializeDescriptionPatchData,
   serializeDescriptionPostData,
+  serializeDescriptionResetPatchData,
 } from './serializers'
 
 const IndividualOfferV2Description = (): JSX.Element => {
@@ -79,13 +83,19 @@ const IndividualOfferV2Description = (): JSX.Element => {
   const mode = useOfferWizardMode()
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
   const nfd = useAppSelector((state) => state.nfd)
-  const { nature, format } = offer ?? nfd
+  const hasPendingNfdChange =
+    !!offer &&
+    !!nfd.nature &&
+    !!nfd.format &&
+    (nfd.nature !== offer.nature || nfd.format !== offer.format)
+  const { nature, format } = hasPendingNfdChange ? nfd : (offer ?? nfd)
   const isNewDraftOffer = !offer
   const hasSavedOfferRef = useRef(false)
   const { pathname } = useLocation()
   const isOnboarding = pathname.includes('onboarding')
   const { logEvent } = useAnalytics()
   const navigate = useNavigate()
+  const dispatch = useAppDispatch()
   const { mutate } = useSWRConfig()
   const snackBar = useSnackBar()
 
@@ -98,13 +108,18 @@ const IndividualOfferV2Description = (): JSX.Element => {
     onImageUpload,
     onImageDelete,
     handleImageOnSubmit,
-  } = useIndividualOfferImageUpload(getIndividualOfferImage(offer))
+  } = useIndividualOfferImageUpload(
+    hasPendingNfdChange ? undefined : getIndividualOfferImage(offer)
+  )
   const isImageReadOnly =
     withVenueHelpers(selectedPartnerVenue).isClosed ||
     (!!offer && isOfferProductBasedButNotSynchronized(offer))
 
   const hasOfferCapabilities =
-    !!offer?.nature && !!offer.format && offer.capabilities.length > 0
+    !hasPendingNfdChange &&
+    !!offer?.nature &&
+    !!offer.format &&
+    offer.capabilities.length > 0
 
   const { data, isLoading } = useSWR(
     !hasOfferCapabilities && nature && format
@@ -127,9 +142,10 @@ const IndividualOfferV2Description = (): JSX.Element => {
     unknown,
     DescriptionFormValues
   >({
-    defaultValues: isNewDraftOffer
-      ? DEFAULT_DESCRIPTION_FORM_VALUES
-      : getInitialValuesFromOfferV2(offer),
+    defaultValues:
+      isNewDraftOffer || hasPendingNfdChange
+        ? DEFAULT_DESCRIPTION_FORM_VALUES
+        : getInitialValuesFromOfferV2(offer),
     resolver: zodResolver(getValidationSchema(mandatoryFields)),
     mode: 'onBlur',
   })
@@ -154,7 +170,22 @@ const IndividualOfferV2Description = (): JSX.Element => {
     formValues: DescriptionFormValues
   ): Promise<boolean> => {
     try {
-      if (offerIdRef.current) {
+      if (offerIdRef.current && offer && hasPendingNfdChange) {
+        await resetOfferForNewNfd(offer)
+        await mutate(
+          [GET_OFFER_QUERY_KEY, offerIdRef.current],
+          api.patchOffer({
+            path: { offer_id: offerIdRef.current },
+            body: serializeDescriptionResetPatchData(
+              formValues,
+              nature,
+              format
+            ),
+          }),
+          { revalidate: false }
+        )
+        dispatch(resetNFD())
+      } else if (offerIdRef.current) {
         await mutate(
           [GET_OFFER_QUERY_KEY, offerIdRef.current],
           api.patchOffer({
@@ -270,17 +301,16 @@ const IndividualOfferV2Description = (): JSX.Element => {
       afterSubmitPath,
       afterSubmitState,
       form,
-      isExternallyDirty: hasUpsertedImage,
+      isExternallyDirty: hasUpsertedImage || hasPendingNfdChange,
       onSubmit,
       saveAndLeaveSuccessMessage: PATCH_SUCCESS_MESSAGE,
     })
 
   const handlePreviousStep = () => {
-    void navigate(
-      isOnboarding
-        ? '/onboarding/individuel'
-        : '/offre/individuelle/v2/creation/nature-format-domaine'
-    )
+    const offerUrl = offer
+      ? `/offre/individuelle/v2/${offer.id}/creation/nature-format-domaine`
+      : '/offre/individuelle/v2/creation/nature-format-domaine'
+    void navigate(isOnboarding ? '/onboarding/individuel' : offerUrl)
   }
 
   const { isDirty, isSubmitting } = form.formState

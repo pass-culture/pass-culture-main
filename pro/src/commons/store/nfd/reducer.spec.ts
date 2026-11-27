@@ -17,6 +17,6 @@ describe('NFD store', () => {
 
   it('should start with an empty selection in a new store', () => {
     const { store } = createStore()
-    expect(store.getState().nfd).toEqual({})
+    expect(store.getState().nfd).toEqual({ nature: null, format: null })
   })
 })

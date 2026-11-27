@@ -4,6 +4,7 @@ import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import { FormatEnum, NatureEnum } from '@/apiClient/v1'
+import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -216,6 +217,82 @@ describe('<IndividualOfferV2NatureFormatDomain />', () => {
     expect(store.getState().nfd).toEqual({
       nature: NatureEnum.EVENEMENT,
       format: FormatEnum.DVD_BLU_RAY,
+    })
+  })
+
+  describe('with an existing offer', () => {
+    const renderWithOffer = () =>
+      renderWithProviders(null, {
+        storeOverrides: {
+          user: {
+            currentUser: sharedCurrentUserFactory(),
+            selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }),
+          },
+        },
+        initialRouterEntries: [
+          '/offre/individuelle/v2/12/creation/nature-format-domaine',
+        ],
+        routes: [
+          {
+            path: '/offre/individuelle/v2/:offerId/creation',
+            element: <IndividualOfferV2 />,
+            children: [
+              {
+                path: 'nature-format-domaine',
+                element: <IndividualOfferV2NatureFormatDomain />,
+              },
+              { path: 'description', element: <h2>Description</h2> },
+            ],
+          },
+        ],
+      })
+
+    beforeEach(() => {
+      vi.spyOn(api, 'getOffer').mockResolvedValue(
+        getIndividualOfferFactory({
+          id: 12,
+          nature: NatureEnum.BIEN,
+          format: FormatEnum.CD,
+        })
+      )
+    })
+
+    it('should preselect the nature and format of the offer', async () => {
+      renderWithOffer()
+
+      expect(
+        await screen.findByRole('radio', { name: 'Bien culturel' })
+      ).toBeChecked()
+      expect(screen.getByRole('radio', { name: 'CD' })).toBeChecked()
+    })
+
+    it('should navigate to the offer description step when submitting', async () => {
+      const user = userEvent.setup()
+      const { router } = renderWithOffer()
+
+      await user.click(
+        await screen.findByRole('button', { name: 'Étape suivante' })
+      )
+
+      expect(router.state.location.pathname).toBe(
+        '/offre/individuelle/v2/12/creation/description'
+      )
+    })
+
+    it('should store the new nature and format when they are changed', async () => {
+      const user = userEvent.setup()
+      const { router, store } = renderWithOffer()
+
+      await user.click(await screen.findByRole('radio', { name: 'Livre' }))
+      await user.click(screen.getByRole('button', { name: 'Étape suivante' }))
+
+      expect(router.state.location.pathname).toBe(
+        '/offre/individuelle/v2/12/creation/description'
+      )
+      expect(store.getState().nfd).toEqual({
+        nature: NatureEnum.BIEN,
+        format: FormatEnum.LIVRE_PAPIER,
+      })
     })
   })
 

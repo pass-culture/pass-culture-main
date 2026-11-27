@@ -94,3 +94,36 @@ export function serializeDescriptionPatchData(
     }),
   })
 }
+
+// Applies a new nature/format to an existing offer: every field is explicitly
+// sent so that data entered for the previous nature/format is cleared.
+export function serializeDescriptionResetPatchData(
+  formValues: DescriptionFormValues,
+  nature: NatureEnum,
+  format: FormatEnum
+): PatchOfferBodyModel {
+  return trimStringsInObject({
+    nature,
+    format,
+    name: formValues.name ?? '',
+    description: formValues.description || null,
+    durationMinutes: formValues.durationMinutes ?? null,
+    extraData: serializeExtraData(formValues),
+    hasCulturalOutreachClaim: formValues.hasCulturalOutreachClaim ?? false,
+    // @ts-expect-error - Waiting for pydanticV2 migration
+    artistOfferLinks: sanitizeArtistOfferLinks(formValues.artistOfferLinks),
+    audioDisabilityCompliant: false,
+    mentalDisabilityCompliant: false,
+    motorDisabilityCompliant: false,
+    visualDisabilityCompliant: formValues.visualDisabilityCompliant ?? false,
+    bookingAllowedDatetime: null,
+    bookingContact: null,
+    bookingEmail: null,
+    externalTicketOfficeUrl: null,
+    isDuo: false,
+    url: null,
+    withdrawalDelay: null,
+    withdrawalDetails: null,
+    withdrawalType: null,
+  })
+}

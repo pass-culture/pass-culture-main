@@ -7,10 +7,12 @@ import { FieldEnum, FormatEnum, NatureEnum } from '@/apiClient/v1'
 import { routesIndividualOfferV2 } from '@/app/AppRouter/subroutesIndividualOfferV2'
 import type { NFDState } from '@/commons/store/nfd/reducer'
 import { createStore, rootStore } from '@/commons/store/store'
+import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
+import { IndividualOfferV2 } from '../IndividualOfferV2'
 import { Component as IndividualOfferV2Description } from './IndividualOfferV2Description'
 
 vi.mock('@/commons/auth/withUserPermissions', () => ({
@@ -66,10 +68,10 @@ const renderIndividualOfferV2Description = (
 }
 
 describe('<IndividualOfferV2Description />', () => {
-  it.each([
-    {},
-    { nature: NatureEnum.BIEN },
-    { format: FormatEnum.LIVRE_PAPIER },
+  it.each<NFDState>([
+    { nature: null, format: null },
+    { nature: NatureEnum.BIEN, format: null },
+    { nature: null, format: FormatEnum.LIVRE_PAPIER },
   ])(
     'should redirect when nature or format is missing (%o)',
     async (selection) => {
@@ -127,5 +129,108 @@ describe('<IndividualOfferV2Description />', () => {
     )
 
     expect(api.createOffer).not.toHaveBeenCalled()
+  })
+
+  describe('with an existing offer and a new nature/format', () => {
+    const offer = getIndividualOfferFactory({
+      id: 12,
+      name: 'Ancien livre',
+      nature: NatureEnum.BIEN,
+      format: FormatEnum.LIVRE_PAPIER,
+      capabilities: [FieldEnum.TITLE_BIEN],
+      mandatoryFields: [FieldEnum.TITLE],
+      hasStocks: true,
+    })
+
+    const renderWithOffer = (nfd: NFDState) =>
+      renderWithProviders(null, {
+        initialRouterEntries: [
+          '/offre/individuelle/v2/12/creation/description',
+        ],
+        routes: [
+          {
+            path: '/offre/individuelle/v2/:offerId/creation',
+            element: <IndividualOfferV2 />,
+            children: [
+              {
+                path: 'description',
+                element: <IndividualOfferV2Description />,
+              },
+              { path: 'tarifs-modalites', element: <h2>Tarifs</h2> },
+            ],
+          },
+        ],
+        storeOverrides: {
+          nfd,
+          user: {
+            currentUser: sharedCurrentUserFactory(),
+            selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }),
+          },
+        },
+      })
+
+    beforeEach(() => {
+      vi.spyOn(api, 'getOffer').mockResolvedValue(offer)
+      vi.spyOn(api, 'getCapabilities').mockResolvedValue({
+        capabilities: [FieldEnum.TITLE_BIEN],
+        mandatoryFields: [FieldEnum.TITLE],
+      })
+      vi.spyOn(api, 'getStocks').mockResolvedValue({
+        stocks: [{ id: 1 }, { id: 2 }] as never,
+        totalStockCount: 2,
+        editedStockCount: 0,
+      })
+      vi.spyOn(api, 'deleteStocks').mockResolvedValue(undefined as never)
+      vi.spyOn(api, 'deleteThumbnail').mockResolvedValue(undefined as never)
+      vi.spyOn(api, 'patchOffer').mockResolvedValue({
+        ...offer,
+        format: FormatEnum.CD,
+      })
+    })
+
+    it('should display the offer data when nature/format are unchanged', async () => {
+      renderWithOffer({ nature: null, format: null })
+
+      expect(await screen.findByLabelText(/Titre du bien/)).toHaveValue(
+        'Ancien livre'
+      )
+    })
+
+    it('should display an empty form and reset the offer on save', async () => {
+      const { store } = renderWithOffer({
+        nature: NatureEnum.BIEN,
+        format: FormatEnum.CD,
+      })
+
+      const titleInput = await screen.findByLabelText(/Titre du bien/)
+      expect(titleInput).toHaveValue('')
+      expect(api.getCapabilities).toHaveBeenCalledWith({
+        query: { nature: NatureEnum.BIEN, format: FormatEnum.CD },
+      })
+
+      await userEvent.type(titleInput, 'Nouveau CD')
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Étape suivante' })
+      )
+
+      expect(
+        await screen.findByRole('heading', { name: 'Tarifs' })
+      ).toBeInTheDocument()
+      expect(api.deleteStocks).toHaveBeenCalledWith({
+        path: { offer_id: 12 },
+        body: { ids_to_delete: [1, 2] },
+      })
+      expect(api.patchOffer).toHaveBeenCalledWith({
+        path: { offer_id: 12 },
+        body: expect.objectContaining({
+          nature: NatureEnum.BIEN,
+          format: FormatEnum.CD,
+          name: 'Nouveau CD',
+          description: null,
+          withdrawalType: null,
+        }),
+      })
+      expect(store.getState().nfd).toEqual({ nature: null, format: null })
+    })
   })
 })

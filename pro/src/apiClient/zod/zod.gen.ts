@@ -2788,11 +2788,13 @@ export const zGetActiveEanOfferResponseModel = z.object({
 export const zListOffersOfferResponseModel = z.object({
     bookingAllowedDatetime: z.iso.datetime().optional(),
     bookingsCount: z.int().optional(),
+    format: zFormatEnum.optional(),
     highlightRequests: z.array(zShortHighlightResponseModel),
     id: z.int(),
     isEvent: z.boolean(),
     location: zLocationResponseModel.optional(),
     name: z.string(),
+    nature: zNatureEnum.optional(),
     productId: z.int().optional(),
     productIsbn: z.string().optional(),
     publicationDatetime: z.iso.datetime().optional(),

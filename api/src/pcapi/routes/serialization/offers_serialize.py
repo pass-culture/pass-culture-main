@@ -287,6 +287,8 @@ class ListOffersOfferResponseModel(BaseModel):
     thumbUrl: str | None
     productIsbn: str | None
     subcategoryId: SubcategoryIdEnum
+    nature: nfd.NatureEnum | None
+    format: nfd.FormatEnum | None
     status: OfferStatus
     location: LocationResponseModel | None
     publicationDatetime: datetime.datetime | None
