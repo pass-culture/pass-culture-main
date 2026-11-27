@@ -8273,6 +8273,34 @@
                         "default": null,
                         "title": "Pricemin"
                     },
+                    "qpiAnswers": {
+                        "anyOf": [
+                            {
+                                "items": {
+                                    "additionalProperties": {
+                                        "anyOf": [
+                                            {
+                                                "type": "string"
+                                            },
+                                            {
+                                                "items": {
+                                                    "type": "string"
+                                                },
+                                                "type": "array"
+                                            }
+                                        ]
+                                    },
+                                    "type": "object"
+                                },
+                                "type": "array"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Qpianswers"
+                    },
                     "startDate": {
                         "anyOf": [
                             {
