@@ -1,10 +1,8 @@
-import json
 import logging
 import time
 import typing
 from functools import wraps
 
-from celery import Task
 from celery import shared_task
 from pydantic import BaseModel as BaseModelV2
 
@@ -51,7 +49,6 @@ def celery_async_task(
 
     def decorator(f: typing.Callable) -> typing.Callable:
         @shared_task(
-            bind=True,
             name=name,
             autoretry_for=autoretry_for,
             retry_backoff=retry_backoff,
@@ -59,25 +56,15 @@ def celery_async_task(
             max_retries=max_retries,
             rate_limit=rate_limit,
             pii_fields=frozenset(pii_fields) if pii_fields else None,
+            pydantic=True,
         )
         @wraps(f)
-        def task(self: Task, payload: dict) -> None:
+        def task(payload: BaseModelV2) -> None:
             metrics.tasks_counter.labels(task=name).inc()
             metrics.tasks_in_progress.labels(task=name).inc()
             start_time = time.time()
             try:
-                parsed_payload: BaseModelV2 | None = None
-                if model is not None:
-                    # We want to ensure payload is JSON serializable, we do that by encoding and decoding
-                    # to and from json. This is needed because Celery uses the __repr__ of the task to pass
-                    # it so values like dates and Decimal will be preserved instead of being transformed to their
-                    # JSON representation.
-                    # This is the same behavior that we had on cloud_tasks
-                    parsed_payload = model.model_validate(payload)
-                    parsed_payload = json.loads(parsed_payload.model_dump_json())
-                    parsed_payload = model.model_validate(parsed_payload)
-
-                f(parsed_payload)
+                f(payload)
                 metrics.tasks_succeeded_counter.labels(task=name).inc()
                 elapsedseconds = time.time() - start_time
                 metrics.tasks_execution_time_histogram.labels(task=name).observe(elapsedseconds)
