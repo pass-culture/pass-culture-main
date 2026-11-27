@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { act, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
@@ -40,8 +40,12 @@ const renderSelection = async () => {
       {
         path: '/offre/individuelle/v2/creation',
         element: <IndividualOfferV2 />,
-        children: [{ path: 'description', element: <Selection /> }],
+        children: [
+          { path: 'description', element: <Selection /> },
+          { path: 'nature-format-domaine', element: <Selection /> },
+        ],
       },
+      { path: '/offres', element: <h1>Offres</h1> },
     ],
     storeOverrides: {
       user: {
@@ -71,6 +75,34 @@ describe('<IndividualOfferV2 />', () => {
     expect(screen.getByLabelText('Format')).toHaveTextContent(
       FormatEnum.LIVRE_PAPIER
     )
+  })
+
+  it('should reset the selection when leaving the creation flow', async () => {
+    const user = userEvent.setup()
+    const { router, store } = await renderSelection()
+
+    await user.click(screen.getByRole('button', { name: 'Choisir un livre' }))
+    await act(async () => {
+      await router.navigate(
+        '/offre/individuelle/v2/creation/nature-format-domaine'
+      )
+    })
+
+    expect(store.getState().nfd).toEqual({
+      nature: NatureEnum.BIEN,
+      format: FormatEnum.LIVRE_PAPIER,
+    })
+
+    await act(async () => {
+      await router.navigate('/offres')
+    })
+    expect(store.getState().nfd).toEqual({ nature: null, format: null })
+
+    await act(async () => {
+      await router.navigate('/offre/individuelle/v2/creation/description')
+    })
+    expect(screen.getByLabelText('Nature')).toBeEmptyDOMElement()
+    expect(screen.getByLabelText('Format')).toBeEmptyDOMElement()
   })
 
   it('should have no accessibility violations', async () => {
