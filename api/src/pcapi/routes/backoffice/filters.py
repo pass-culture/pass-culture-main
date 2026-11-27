@@ -1051,9 +1051,9 @@ def format_invoice_status(status: finance_models.InvoiceStatus) -> str:
 def format_settlement_status(status: finance_models.SettlementStatus) -> str:
     match status:
         case finance_models.SettlementStatus.ISSUED:
-            return format_badge("Émis", "info")
+            return format_badge("Créé", "info")
         case finance_models.SettlementStatus.EXECUTED:
-            return format_badge("Exécuté", "success")
+            return format_badge("Émis", "success")
         case finance_models.SettlementStatus.REJECTED:
             return format_badge("Rejeté", "danger")
         case _:
