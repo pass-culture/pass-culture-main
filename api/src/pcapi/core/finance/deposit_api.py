@@ -12,8 +12,8 @@ import pcapi.core.users.constants as users_constants
 import pcapi.core.users.models as users_models
 from pcapi.core.categories.models import ReimbursementRuleChoices
 from pcapi.core.external.batch import trigger_events
+from pcapi.core.subscription.bonus import api as bonus_api
 from pcapi.core.subscription.bonus import constants as bonus_constants
-from pcapi.core.subscription.bonus import fraud_check_api
 from pcapi.core.users import utils as users_utils
 from pcapi.models import db
 from pcapi.utils import date as date_utils
@@ -150,7 +150,7 @@ def _recredit_user_if_no_missing_step(user: users_models.User) -> None:
         user.add_beneficiary_role()
 
     if can_receive_bonus_credit(user):
-        fraud_check_api.create_disability_bonus_credit_fraud_checks(
+        bonus_api.create_and_start_automatic_bonus_credit_applications(
             user, origin=f"{bonus_constants.AUTOMATIC_ORIGIN} through recredit cron"
         )
 
