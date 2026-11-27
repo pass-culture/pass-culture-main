@@ -44,7 +44,10 @@ import {
   OffererAuthenticationForm,
   type OffererAuthenticationFormValues,
 } from './OffererAuthenticationForm'
-import { validationSchema } from './validationSchema'
+import {
+  NON_DISCLOSED_ADDRESS_ALT_TEXT,
+  validationSchema,
+} from './validationSchema'
 
 export const OffererAuthentication = (): JSX.Element => {
   const navigate = useNavigate()
@@ -60,30 +63,16 @@ export const OffererAuthentication = (): JSX.Element => {
 
   const { logEvent } = useAnalytics()
 
+  const offerStreet =
+    offerer?.street !== NON_DISCLOSED_ADDRESS_ALT_TEXT ? offerer?.street : ''
   const addressAutocomplete =
-    `${offerer?.street} ${offerer?.postalCode} ${offerer?.city}`.trim()
-  const hasAllInitialAddressPart =
-    initialAddress?.street && initialAddress?.postalCode && initialAddress?.city
-
-  const isInitialAddress =
-    initialAddress !== null &&
-    initialAddress.addressAutocomplete === addressAutocomplete
+    `${offerStreet} ${offerer?.postalCode} ${offerer?.city}`.trim()
 
   const initialValues: OffererAuthenticationFormValues = {
     ...DEFAULT_OFFERER_FORM_VALUES,
     ...offerer,
-    addressAutocomplete:
-      (offerer?.isDiffusible && hasAllInitialAddressPart) ||
-      !isInitialAddress ||
-      offerer?.isOpenToPublic === 'false'
-        ? addressAutocomplete
-        : '',
-    'search-addressAutocomplete':
-      (offerer?.isDiffusible && hasAllInitialAddressPart) ||
-      !isInitialAddress ||
-      offerer?.isOpenToPublic === 'false'
-        ? addressAutocomplete
-        : '',
+    addressAutocomplete,
+    'search-addressAutocomplete': addressAutocomplete,
     latitude: offerer?.latitude || 0,
     longitude: offerer?.longitude || 0,
     banId: offerer?.banId || '',
@@ -168,7 +157,7 @@ export const OffererAuthentication = (): JSX.Element => {
     { label: 'Numéro de SIRET', value: offerer?.siret ?? '' },
     {
       label: 'Raison sociale',
-      value: offerer?.isDiffusible ? (offerer?.name ?? '') : 'Non-diffusée',
+      value: offerer?.isDiffusible ? (offerer?.name ?? '') : 'Non diffusée',
     },
   ]
 
@@ -202,7 +191,7 @@ export const OffererAuthentication = (): JSX.Element => {
                   title="Certaines informations de votre structure ne sont pas diffusibles."
                   description={
                     <p className={styles['warning-callout-text']}>
-                      Pour créer votre structure au sein du Pass Culture, vous
+                      Pour créer votre structure au sein du pass Culture, vous
                       devez communiquer un nom public. Aucune information
                       protégée ne sera diffusée.
                     </p>

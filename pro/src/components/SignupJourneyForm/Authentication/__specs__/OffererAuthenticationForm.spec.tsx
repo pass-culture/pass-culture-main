@@ -13,10 +13,7 @@ import {
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { noop } from '@/commons/utils/noop'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
-import {
-  DEFAULT_ADDRESS_FORM_VALUES,
-  DEFAULT_OFFERER_FORM_VALUES,
-} from '@/components/SignupJourneyForm/Offerer/constants'
+import { DEFAULT_OFFERER_FORM_VALUES } from '@/components/SignupJourneyForm/Offerer/constants'
 import { Button } from '@/design-system/Button/Button'
 
 import {
@@ -214,55 +211,5 @@ describe('OffererAuthenticationForm', () => {
 
     expect(yesRadio).toBeInTheDocument()
     expect(noRadio).toBeInTheDocument()
-  })
-
-  it('should render form without address when clicked no open to public', async () => {
-    renderOffererAuthenticationForm({
-      initialValues: initialValues,
-      contextValue: {
-        ...contextValue,
-        offerer: {
-          ...offererAuthenticationFormValues,
-          street: '3 Rue de Valois',
-          city: 'Paris',
-          postalCode: '75001',
-        },
-        initialAddress: {
-          ...DEFAULT_ADDRESS_FORM_VALUES,
-          street: '3 Rue de Valois',
-          city: 'Paris',
-          postalCode: '75001',
-        },
-      },
-    })
-
-    await userEvent.click(await screen.findByRole('radio', { name: /Non/ }))
-
-    await waitFor(() => {
-      const addressField = screen.queryByLabelText(/Adresse postale/)
-      expect(addressField).not.toBeInTheDocument()
-    })
-  })
-
-  it('should call reset on open to public change', async () => {
-    renderOffererAuthenticationForm({
-      initialValues: initialValues,
-      contextValue: {
-        ...contextValue,
-        offerer: {
-          ...offererAuthenticationFormValues,
-          isDiffusible: false,
-        },
-      },
-    })
-
-    const yesRadio = await screen.findByRole('radio', { name: /Oui/ })
-    const noRadio = await screen.findByRole('radio', { name: /Non/ })
-
-    expect(noRadio).not.toBeChecked()
-    await userEvent.click(yesRadio)
-    await waitFor(() => {
-      expect(screen.getByLabelText(/Adresse postale/)).toHaveValue('')
-    })
   })
 })

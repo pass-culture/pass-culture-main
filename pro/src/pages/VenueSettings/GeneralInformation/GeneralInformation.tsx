@@ -4,19 +4,26 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { useLocation } from 'react-router'
 
 import type { AdresseData } from '@/apiClient/adresse/types'
+import { api } from '@/apiClient/api'
+import { isErrorAPIError, serializeApiErrors } from '@/apiClient/helpers'
 import type {
   ActivityNotOpenToPublic,
   ActivityOpenToPublic,
 } from '@/apiClient/v1'
+import { useAnalytics } from '@/app/App/analytics/firebase'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useActiveStep } from '@/commons/hooks/useActiveStep'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useFormNavigationGuard } from '@/commons/hooks/useFormNavigationGuard/useFormNavigationGuard'
 import { useKey } from '@/commons/hooks/useKey'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
+import { useSyncVenueCache } from '@/commons/hooks/useSyncVenueCache'
 import { ActivityNotOpenToPublicMap } from '@/commons/mappings/ActivityNotOpenToPublic'
 import { ActivityOpenToPublicMap } from '@/commons/mappings/ActivityOpenToPublic'
 import { getMapKeys } from '@/commons/mappings/helpers'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { resetReactHookFormAddressFields } from '@/commons/utils/resetAddressFields'
+import { scrollToTop } from '@/commons/utils/scrollToTop'
 import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { AddressFields } from '@/components/AddressFields/AddressFields'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
@@ -30,13 +37,12 @@ import { TextInput } from '@/design-system/TextInput/TextInput'
 import { AddressManual } from '@/ui-kit/form/AddressManual/AddressManual'
 import { getPanelId, getTabId } from '@/ui-kit/Tabs/Tabs'
 
-import { scrollToTop } from '../../../commons/utils/scrollToTop'
-import { useSaveVenueSettings } from './commons/hooks/useSaveVenueSettings'
 import { venueSettingsValidationSchema } from './commons/schema'
 import type {
   VenueSettingsFormContext,
   VenueSettingsFormValues,
 } from './commons/types'
+import { toBody } from './commons/utils/toBody'
 import { toFormValues } from './commons/utils/toFormValues'
 import { AddressChangeDialog } from './components/AddressChangeDialog/AddressChangeDialog'
 import { ComplementaryInfosDialog } from './components/ComplementaryInfosDialog/ComplementaryInfosDialog'
@@ -49,6 +55,9 @@ const GeneralInformation = () => {
   const isClosed = withVenueHelpers(venue).isClosed
   const addressFieldKey = useKey()
   const activeStep = useActiveStep(STEP_NAMES)
+  const snackBar = useSnackBar()
+  const { logEvent } = useAnalytics()
+  const { syncVenueWithData } = useSyncVenueCache()
 
   const formContext: VenueSettingsFormContext = {
     isCaledonian: venue.isCaledonian,
@@ -70,7 +79,6 @@ const GeneralInformation = () => {
     mode: 'onBlur',
   })
 
-  const { save: saveAndContinue } = useSaveVenueSettings({ form, venue })
   const [isAddressChangeDialogOpen, setIsAddressChangeDialogOpen] =
     useState(false)
   const [isComplementaryInfosDrawerOpen, setIsComplementaryInfosDrawerOpen] =
@@ -83,11 +91,7 @@ const GeneralInformation = () => {
     scrollToTop()
   }
 
-  const onSubmit = async (
-    formValues: VenueSettingsFormValues
-  ): Promise<boolean> => {
-    const canProceed = await saveAndContinue(formValues, formContext)
-
+  const openFollowUpDialogs = (formValues: VenueSettingsFormValues) => {
     const hasAddressChanged =
       formValues.addressAutocomplete !== initialValues.addressAutocomplete
     const shouldShowAddressChangeWarning =
@@ -105,33 +109,73 @@ const GeneralInformation = () => {
     const shouldOpenModal =
       shouldShowAddressChangeWarning || hasSiretChanged || hasBecomeOpenToPublic
 
-    if (canProceed) {
-      setHasAddressChanged(hasAddressChanged)
-      if (shouldShowAddressChangeWarning && !hasSiretChanged) {
-        setIsAddressChangeDialogOpen(true)
-      }
-      if (hasSiretChanged) {
-        setIsComplementaryInfosDrawerOpen(true)
-      }
-      if (hasBecomeOpenToPublic) {
-        setIsComplementaryInfosDialogOpen(true)
-      }
-
-      // The main form has been successfully saved.
-      // Reset it so the navigation guard does not reopen while handling
-      // follow-up complementary information dialogs.
-      form.reset(formValues)
+    setHasAddressChanged(hasAddressChanged)
+    if (shouldShowAddressChangeWarning && !hasSiretChanged) {
+      setIsAddressChangeDialogOpen(true)
+    }
+    if (hasSiretChanged) {
+      setIsComplementaryInfosDrawerOpen(true)
+    }
+    if (hasBecomeOpenToPublic) {
+      setIsComplementaryInfosDialogOpen(true)
     }
 
+    return shouldOpenModal
+  }
+
+  const handleSaveError = (error: unknown) => {
+    if (isErrorAPIError(error) && error.status < 500) {
+      snackBar.error(
+        [
+          'Une ou plusieurs erreurs sont présentes dans le formulaire',
+          ...('global' in error.body ? error.body.global : []),
+        ].join('\n')
+      )
+      serializeApiErrors(error.body, form.setError)
+    } else {
+      snackBar.error('Erreur lors de la sauvegarde de la structure.')
+    }
+
+    logEvent(Events.CLICKED_SAVE_VENUE, {
+      saved: false,
+      isEdition: true,
+    })
+  }
+
+  const onSubmit = async (
+    formValues: VenueSettingsFormValues
+  ): Promise<boolean> => {
+    try {
+      const updatedVenue = await api.editVenue({
+        path: { venue_id: Number(venue.id) },
+        body: toBody(formValues, formContext),
+      })
+      await syncVenueWithData(venue.id, updatedVenue)
+
+      logEvent(Events.CLICKED_SAVE_VENUE, {
+        saved: true,
+        isEdition: true,
+      })
+      snackBar.success('Vos modifications ont été sauvegardées')
+    } catch (error) {
+      handleSaveError(error)
+      scrollToTop()
+      return false
+    }
+
+    const shouldOpenModal = openFollowUpDialogs(formValues)
+    // The main form has been successfully saved.
+    // Reset it so the navigation guard does not reopen while handling
+    // follow-up complementary information dialogs.
+    form.reset(formValues)
     scrollToTop()
-    return canProceed && !shouldOpenModal
+    return !shouldOpenModal
   }
 
   const {
     register,
     setValue,
     watch,
-    getValues,
     clearErrors,
     formState: { isSubmitting, errors, disabled },
   } = form
@@ -166,17 +210,10 @@ const GeneralInformation = () => {
 
   const toggleOpenToPublic = (e: React.ChangeEvent<HTMLInputElement>) => {
     const isOpenToPublicValue = e.target.value.toString()
-    const currentAddressAutocomplete = getValues('addressAutocomplete')
 
     form.setValue('isOpenToPublic', isOpenToPublicValue, { shouldDirty: true })
 
     if (isOpenToPublicValue === 'false') {
-      if (!currentAddressAutocomplete && initialValues.addressAutocomplete) {
-        resetReactHookFormAddressFields<VenueSettingsFormValues>((name) =>
-          // @ts-expect-error Hard to reconcile types with the current complexity.
-          setValue(name, initialValues[name])
-        )
-      }
       form.setValue('accessibility', initialValues.accessibility)
       form.setValue(
         'isAccessibilityAppliedOnAllOffers',
@@ -231,7 +268,7 @@ const GeneralInformation = () => {
                 />
               </FormLayout.Row>
 
-              <FormLayout.Row>
+              <FormLayout.Row mdSpaceAfter>
                 <TextInput
                   {...register('publicName')}
                   label="Nom public"
@@ -239,6 +276,18 @@ const GeneralInformation = () => {
                   disabled={isClosed}
                 />
               </FormLayout.Row>
+
+              <AddressFields
+                key={addressFieldKey.value}
+                label="Adresse de votre structure"
+                addressRegister={register('addressAutocomplete')}
+                disabled={disabled || isClosed}
+                onAddressChosen={onAddressSelect}
+                error={errors.addressAutocomplete?.message}
+                renderManual={() => <AddressManual />}
+                manual={manuallySetAddress}
+                onManualChange={toggleManuallySetAddress}
+              />
             </FormLayout.Section>
 
             <FormLayout.SubSection title="Accueil du public">
@@ -249,19 +298,6 @@ const GeneralInformation = () => {
                   disabled={isClosed}
                 />
               </FormLayout.Row>
-              {isOpenToPublic === 'true' && (
-                <AddressFields
-                  key={addressFieldKey.value}
-                  description="Indiquez ici l'adresse où vous recevez votre public."
-                  addressRegister={register('addressAutocomplete')}
-                  disabled={disabled || isClosed}
-                  onAddressChosen={onAddressSelect}
-                  error={errors.addressAutocomplete?.message}
-                  renderManual={() => <AddressManual />}
-                  manual={manuallySetAddress}
-                  onManualChange={toggleManuallySetAddress}
-                />
-              )}
             </FormLayout.SubSection>
             <FormLayout.SubSection title="À propos de votre activité">
               <ActivityDetails />
@@ -309,7 +345,7 @@ const GeneralInformation = () => {
             proceedWithPendingNavigation()
           }
         }}
-      ></ComplementaryInfosDrawer>
+      />
 
       <ComplementaryInfosDialog
         open={isComplementaryInfosDialogOpen}

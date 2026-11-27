@@ -4,10 +4,27 @@ import * as yup from 'yup'
 import { checkCoords } from '@/commons/utils/coords'
 import { validationSchema as addressValidationSchema } from '@/ui-kit/form/AddressSelect/validationSchema'
 
+// The backend sets this text on `street` for non diffusible offerers
+// Tis constant should always be sync with the NON_DISCLOSED_ADDRESS constant in the backend.
+export const NON_DISCLOSED_ADDRESS_ALT_TEXT = 'Adresse non diffusée'
+
 export const validationSchema = (shouldHandleNotDiffusibleOfferer: boolean) => {
-  // For the signup journey, we need to specifically extend the "coords" field because it ALSO depends on "isOpenToPublic"
   const extendedAddressValidationSchema = {
     ...addressValidationSchema,
+    street: yup
+      .string()
+      .trim()
+      .when(['isOpenToPublic'], {
+        is: (isOpenToPublic: 'true' | 'false') => isOpenToPublic === 'true',
+        then: (schema) =>
+          schema.test(
+            'street',
+            'Pour accueillir du public, veuillez renseigner une adresse précise',
+            (value) => value !== NON_DISCLOSED_ADDRESS_ALT_TEXT
+          ),
+      })
+      .required('Veuillez renseigner une adresse postale'),
+    // For the signup journey, we need to specifically extend the "coords" field because it ALSO depends on "isOpenToPublic"
     coords: yup
       .string()
       .trim()

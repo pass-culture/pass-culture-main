@@ -27,11 +27,6 @@ export const OffererAuthenticationForm = (): JSX.Element => {
   const hasAllInitialAddressPart =
     initialAddress?.street && initialAddress?.postalCode && initialAddress?.city
 
-  const isInitialAddress =
-    initialAddress !== null &&
-    initialAddress.addressAutocomplete ===
-      `${offerer?.street} ${offerer?.postalCode} ${offerer?.city}`.trim()
-
   const {
     watch,
     setValue,
@@ -49,11 +44,6 @@ export const OffererAuthenticationForm = (): JSX.Element => {
       (name, defaultValue) => setValue(name, defaultValue)
     )
   }
-
-  const shouldDisplayAddress =
-    watch('isOpenToPublic') === undefined ||
-    watch('isOpenToPublic') === 'true' ||
-    !hasAllInitialAddressPart
 
   const notOpenToPublicLabel = hasAllInitialAddressPart
     ? 'Cette adresse postale ne sera pas visible.'
@@ -82,64 +72,37 @@ export const OffererAuthenticationForm = (): JSX.Element => {
             onChange={(e) => {
               clearErrors('isOpenToPublic')
 
-              if (e.target.value === 'true') {
-                // The user is diffusible and had isOpenToPublic set to false. We reset it to the initial one
-                if (offerer?.isDiffusible && !isInitialAddress) {
-                  resetReactHookFormAddressFields((name, _) => {
-                    // @ts-expect-error Type is right since it's gotten from the defaultValues
-                    setValue(name, initialAddress[name])
-                  })
-                }
-
-                // The user is not diffusible, we reset the fields to blank
-                if (!offerer?.isDiffusible && hasAllInitialAddressPart) {
-                  resetReactHookFormAddressFields<OffererAuthenticationFormValues>(
-                    (name, defaultValue) => setValue(name, defaultValue)
-                  )
-                }
-              } else if (
-                (!isInitialAddress || !offerer?.isDiffusible) &&
-                initialAddress &&
-                hasAllInitialAddressPart
-              ) {
-                // We init the address fields as the default ones when the user untoggle the open to public toggle
-                resetReactHookFormAddressFields((name, _) => {
-                  // @ts-expect-error Type is right since it's gotten from the defaultValues
-                  setValue(name, initialAddress[name])
-                })
-              }
-
               setValue('isOpenToPublic', e.target.value)
             }}
             isOpenToPublic={watch('isOpenToPublic')}
             overrideDescription="Sélectionnez une des options."
           />
         </FormLayout.Row>
-        {shouldDisplayAddress && (
-          <AddressFields
-            addressRegister={register('addressAutocomplete')}
-            disabled={disabled}
-            onAddressChosen={(addressData) => {
-              setValue('street', addressData.address)
-              setValue('postalCode', addressData.postalCode)
-              setValue('city', addressData.city)
-              setValue('latitude', addressData.latitude)
-              setValue('longitude', addressData.longitude)
-              setValue('banId', addressData.id)
-              setValue('inseeCode', addressData.inseeCode)
-            }}
-            onManualChange={toggleManuallySetAddress}
-            renderManual={() => <AddressManual />}
-            description={
-              watch('isOpenToPublic') === 'false'
-                ? notOpenToPublicLabel
-                : 'Cette adresse postale sera affichée sur le pass Culture.'
-            }
-            error={errors.addressAutocomplete?.message}
-            manual={manuallySetAddress}
-            requiredIndicator="explicit"
-          />
-        )}
+        <AddressFields
+          addressRegister={register('addressAutocomplete')}
+          disabled={disabled}
+          onAddressChosen={(addressData) => {
+            setValue('street', addressData.address)
+            setValue('postalCode', addressData.postalCode)
+            setValue('city', addressData.city)
+            setValue('latitude', addressData.latitude)
+            setValue('longitude', addressData.longitude)
+            setValue('banId', addressData.id)
+            setValue('inseeCode', addressData.inseeCode)
+          }}
+          onManualChange={toggleManuallySetAddress}
+          renderManual={() => <AddressManual />}
+          description={
+            watch('isOpenToPublic') === 'true'
+              ? 'Cette adresse postale sera affichée sur le pass Culture.'
+              : notOpenToPublicLabel
+          }
+          error={[errors.addressAutocomplete?.message, errors.street?.message]
+            .join('\n')
+            .trim()}
+          manual={manuallySetAddress}
+          requiredIndicator="explicit"
+        />
       </FormLayout.Section>
     </>
   )

@@ -5,8 +5,16 @@ import { Link } from 'react-router'
 import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
-import type { GetVenueResponseModel } from '@/apiClient/v1'
-import { DisplayableActivity, VenueState } from '@/apiClient/v1'
+import {
+  ApiError,
+  type ApiRequestOptions,
+  type ApiResult,
+} from '@/apiClient/compat'
+import {
+  DisplayableActivity,
+  type GetVenueResponseModel,
+  VenueState,
+} from '@/apiClient/v1'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
@@ -34,11 +42,13 @@ vi.mock('@/components/AddressFields/AddressFields', () => ({
   AddressFields: ({
     addressRegister,
     disabled,
+    error,
     onManualChange,
     onAddressChosen,
   }: {
     addressRegister: UseFormRegisterReturn
     disabled?: boolean
+    error?: string
     onManualChange: () => void
     onAddressChosen: (
       data: import('@/apiClient/adresse/types').AdresseData
@@ -51,6 +61,7 @@ vi.mock('@/components/AddressFields/AddressFields', () => ({
         {...addressRegister}
         disabled={disabled}
       />
+      {error && <span>{error}</span>}
       <button type="button" onClick={onManualChange} disabled={disabled}>
         Entrer l'adresse manuellement
       </button>
@@ -255,6 +266,78 @@ describe('GeneralInformation', () => {
       })
     })
   })
+
+  describe('address', () => {
+    it('should display the address fields', async () => {
+      renderGeneralInformation({ id: 1 })
+
+      expect(await screen.findByTestId('address-fields')).toBeInTheDocument()
+    })
+
+    it('should save the selected address', async () => {
+      const user = userEvent.setup()
+
+      renderGeneralInformation({
+        id: 1,
+        activity: DisplayableActivity.FESTIVAL,
+        collectiveDomains: [{ id: 1, name: 'Danse' }],
+        location: {
+          ...defaultGetVenue.location,
+          street: '123 Rue Principale',
+          postalCode: '75001',
+          city: 'Paris',
+          latitude: 48.8566,
+          longitude: 2.3522,
+          inseeCode: '75056',
+          banId: 'ban-123',
+          isManualEdition: false,
+        },
+      })
+
+      await user.click(await screen.findByText('Sélectionner une adresse'))
+      await user.click(
+        await screen.findByRole('button', { name: /Enregistrer/ })
+      )
+
+      await waitFor(() => {
+        expect(api.editVenue).toHaveBeenCalledTimes(1)
+      })
+
+      expect(api.editVenue).toHaveBeenCalledWith(
+        expect.objectContaining({
+          path: { venue_id: 1 },
+          body: expect.objectContaining({
+            street: '1 Rue de la Paix',
+            postalCode: '75001',
+            city: 'Paris',
+            banId: 'ban-123',
+          }),
+        })
+      )
+    })
+
+    it('should require an address', async () => {
+      const user = userEvent.setup()
+
+      renderGeneralInformation({
+        id: 1,
+        activity: DisplayableActivity.FESTIVAL,
+        collectiveDomains: [{ id: 1, name: 'Danse' }],
+      })
+
+      await user.clear(await screen.findByLabelText('Adresse postale'))
+      await user.click(screen.getByRole('button', { name: /Enregistrer/ }))
+
+      expect(
+        await screen.findByText(
+          'Veuillez sélectionner une adresse parmi les suggestions'
+        )
+      ).toBeInTheDocument()
+      expect(screen.getByLabelText('Adresse postale')).toHaveValue('')
+      expect(api.editVenue).not.toHaveBeenCalled()
+    })
+  })
+
   describe('open to public toggle', () => {
     it('should display a mandatory toggle to define isOpenToPublic', async () => {
       renderGeneralInformation({ id: 1, isOpenToPublic: false })
@@ -268,21 +351,7 @@ describe('GeneralInformation', () => {
       })
     })
 
-    it('closed to public - should not show address section', async () => {
-      renderGeneralInformation({ id: 1, isOpenToPublic: false })
-
-      await waitFor(() => {
-        expect(screen.queryByTestId('address-fields')).not.toBeInTheDocument()
-      })
-    })
-
-    it('open to public - should show address section', async () => {
-      renderGeneralInformation({ id: 1, isOpenToPublic: true })
-
-      expect(await screen.findByTestId('address-fields')).toBeInTheDocument()
-    })
-
-    it('switching to "Non" should show address section when activity is valid for NOT_OPEN_TO_PUBLIC', async () => {
+    it('switching to "Non" should not reset activity when activity is valid for NOT_OPEN_TO_PUBLIC', async () => {
       renderGeneralInformation({
         id: 1,
         isOpenToPublic: true,
@@ -291,7 +360,6 @@ describe('GeneralInformation', () => {
 
       await userEvent.click(await screen.findByRole('radio', { name: /Non/ }))
 
-      expect(screen.queryByTestId('address-fields')).not.toBeInTheDocument()
       const activitySelect = screen.getByRole('combobox', {
         name: /Activité principale/,
       })
@@ -328,50 +396,41 @@ describe('GeneralInformation', () => {
       expect(activitySelect).toHaveValue('')
     })
 
-    it('switching to "Oui" should show address section', async () => {
+    it('should display field-level errors returned by the API', async () => {
+      const user = userEvent.setup()
+
+      vi.mocked(api.editVenue).mockRejectedValueOnce(
+        new ApiError(
+          {} as ApiRequestOptions,
+          {
+            status: 400,
+            body: {
+              comment: ['Le commentaire est invalide'],
+            },
+          } as ApiResult,
+          ''
+        )
+      )
+
       renderGeneralInformation({ id: 1, isOpenToPublic: false })
 
-      await userEvent.click(await screen.findByRole('radio', { name: /Oui/ }))
-
-      expect(screen.getByTestId('address-fields')).toBeInTheDocument()
-    })
-
-    it('should restore previous addressAutocomplete on save when venue is closed to public with an empty address field', async () => {
-      renderGeneralInformation({
-        id: 1,
-        isOpenToPublic: true,
-        activity: DisplayableActivity.FESTIVAL,
-        collectiveDomains: [{ id: 1, name: 'Danse' }],
-        location: {
-          ...defaultGetVenue.location,
-          street: '123 Rue Principale',
-          postalCode: '75001',
-          city: 'Paris',
-          latitude: 48.8566,
-          longitude: 2.3522,
-          inseeCode: '75056',
-          banId: 'ban-123',
-          isManualEdition: false,
-        },
-      })
-
-      await userEvent.clear(await screen.findByLabelText('Adresse postale'))
-
-      await userEvent.click(await screen.findByRole('radio', { name: /Non/ }))
-      await userEvent.click(
+      await user.click(await screen.findByRole('radio', { name: /Oui/ }))
+      await user.click(
         await screen.findByRole('button', { name: /Enregistrer/ })
       )
 
-      await waitFor(() => {
-        expect(api.editVenue).toHaveBeenCalledTimes(1)
-      })
+      expect(
+        await screen.findByText('Le commentaire est invalide')
+      ).toBeInTheDocument()
     })
     it('should reset the form when clicking Annuler', async () => {
+      const user = userEvent.setup()
+
       renderGeneralInformation({ id: 1, isOpenToPublic: false })
 
-      await userEvent.click(await screen.findByRole('radio', { name: /Oui/ }))
+      await user.click(await screen.findByRole('radio', { name: /Oui/ }))
 
-      await userEvent.click(screen.getByRole('button', { name: 'Annuler' }))
+      await user.click(screen.getByRole('button', { name: 'Annuler' }))
 
       const toggle = screen.getByRole('group', {
         name: "Disposez-vous d'un lieu ouvert au public ?",
@@ -381,10 +440,12 @@ describe('GeneralInformation', () => {
   })
   describe('complementary infos dialog', () => {
     it('should open the complementary infos dialog when switching isOpenToPublic from false to true and saving', async () => {
+      const user = userEvent.setup()
+
       renderGeneralInformation({ id: 1, isOpenToPublic: false })
 
-      await userEvent.click(await screen.findByRole('radio', { name: /Oui/ }))
-      await userEvent.click(
+      await user.click(await screen.findByRole('radio', { name: /Oui/ }))
+      await user.click(
         await screen.findByRole('button', { name: /Enregistrer/ })
       )
 
@@ -397,10 +458,12 @@ describe('GeneralInformation', () => {
   })
   describe('address change dialog', () => {
     it('should open the address change dialog when changing the address and saving', async () => {
+      const user = userEvent.setup()
+
       renderGeneralInformation({ id: 1, isOpenToPublic: true })
 
-      await userEvent.click(await screen.findByText('Sélectionner une adresse'))
-      await userEvent.click(
+      await user.click(await screen.findByText('Sélectionner une adresse'))
+      await user.click(
         await screen.findByRole('button', { name: /Enregistrer/ })
       )
 
