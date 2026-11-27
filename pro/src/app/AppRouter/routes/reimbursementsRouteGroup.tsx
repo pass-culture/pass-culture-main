@@ -33,7 +33,6 @@ export const reimbursementsRouteGroup: CustomRouteGroup['children'] = [
       title: 'Gestion financière - virements',
       mainTitle: 'Gestion financière',
     },
-    featureName: 'WIP_ENABLE_FINANCE_SETTLEMENTS',
   },
   {
     path: 'informations-bancaires',

@@ -137,7 +137,6 @@ class FeatureToggle(enum.Enum):
         "Utiliser les Universal Links au lieu des Firebase dynamic links (déprécié à partir du 25/08/2025)"
     )
     # For features under construction, a temporary feature flag must be named with the `WIP_` prefix
-    WIP_ENABLE_FINANCE_SETTLEMENTS = "Active le workflow finance des règlements"
     WIP_ENABLE_NEW_BREVO_RECOMMENDATION_WEBHOOK = "Active la nouvelle version du webhook de recommandation Brevo"
     WIP_ENABLE_CULTURAL_OUTREACH = "Active la déclaration des actions de médiation culturelle"
     WIP_CLOSE_VENUE = "Active la fermeture d'une venue depuis l'espace partenaire"

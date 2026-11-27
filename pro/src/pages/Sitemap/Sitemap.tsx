@@ -1,7 +1,6 @@
 import { Link, useNavigate } from 'react-router'
 
 import { FullLayout } from '@/app/App/layouts/FullLayout/FullLayout'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { Button } from '@/design-system/Button/Button'
 import {
@@ -25,10 +24,6 @@ export const Sitemap = () => {
   const selectedPartnerVenue = useAppSelector(
     (state) => state.user.selectedPartnerVenue
   )
-  const isNewSettlementsEnabled = useActiveFeature(
-    'WIP_ENABLE_FINANCE_SETTLEMENTS'
-  )
-
   const sitemapLinks: SitemapLink[] = [
     {
       title: 'Hub',
@@ -90,15 +85,11 @@ export const Sitemap = () => {
           title: 'Gestion financière',
           path: null,
           children: [
-            ...(isNewSettlementsEnabled
-              ? [
-                  {
-                    title: 'Virements',
-                    path: '/administration/gestion-financiere/virements',
-                    children: [],
-                  },
-                ]
-              : []),
+            {
+              title: 'Virements',
+              path: '/administration/gestion-financiere/virements',
+              children: [],
+            },
             {
               title: 'Justificatifs',
               path: '/administration/gestion-financiere/justificatifs',

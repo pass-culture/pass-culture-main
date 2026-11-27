@@ -18,7 +18,7 @@ import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { useSyncVenueCache } from '@/commons/hooks/useSyncVenueCache'
 import { ensureSelectedAdminOfferer } from '@/commons/store/user/selectors'
 import { ReimbursementBankAccount } from '@/components/ReimbursementBankAccount/ReimbursementBankAccount'
-import { STEP_NAMES } from '@/components/ReimbursementsTabs/constants'
+import { TAB_NAMES } from '@/components/ReimbursementsTabs/constants'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
 import fullMoreIcon from '@/icons/full-more.svg'
@@ -38,7 +38,7 @@ const BankInformations = (): JSX.Element => {
   const editLinkId = useId()
   const addLinkId = useId()
   const addBankAccountId = useId()
-  const activeStep = useActiveStep(STEP_NAMES)
+  const activeStep = useActiveStep(TAB_NAMES)
 
   const selectedAdminOfferer = useAppSelector(ensureSelectedAdminOfferer)
   const selectedPartnerVenue = useAppSelector(
