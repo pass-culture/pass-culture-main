@@ -6,6 +6,7 @@ import urllib.parse
 import sqlalchemy.orm as sa_orm
 import wtforms
 from flask_wtf import FlaskForm
+from wtforms import fields as wtforms_fields
 
 from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import models as offerers_models
@@ -107,7 +108,7 @@ class CreateVenueWithoutSIRETForm(FlaskForm):
     def __init__(self, offerer: offerers_models.Offerer, *args: typing.Any, **kwargs: typing.Any) -> None:
         super().__init__(*args, **kwargs)
         self.attachement_venue.choices = [
-            (offerer_venue.id, f"{offerer_venue.siret} ({offerer_venue.publicName})")
+            wtforms_fields.SelectChoice(offerer_venue.id, f"{offerer_venue.siret} ({offerer_venue.publicName})")
             for offerer_venue in offerer.managedVenues
             if offerer_venue.siret
         ]
