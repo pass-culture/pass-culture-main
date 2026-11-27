@@ -5,6 +5,10 @@ class AuthException(CoreException):
     code = "AUTH_EXCEPTION"
 
 
+class SSOUserNotFound(AuthException):
+    code = "SSO_USER_NOT_FOUND"
+
+
 class SSOUnsupportedProvider(AuthException):
     code = "SSO_UNSUPPORTED_PROVIDER"
 

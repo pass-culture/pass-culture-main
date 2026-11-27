@@ -119,6 +119,24 @@ def attach_sso_to_user(user: "User", sso_user: SSOUser, provider: str) -> "User"
     return user
 
 
+def remove_sso_from_user(user: "User", sso_user_id: int) -> None:
+    if not (sso := repository.get_single_sign_on_from_id(sso_user_id)):
+        raise exceptions.SSOUserNotFound
+
+    if not (attached_sso := user.get_sso(sso.ssoProvider)):
+        raise exceptions.SSOAttachedToAnotherAccount
+
+    if sso.id != attached_sso.id:
+        raise exceptions.SSOAttachedToAnotherAccount
+
+    try:
+        provider = SSOProviderName(sso.ssoProvider)
+    except ValueError as e:
+        raise exceptions.SSOUnsupportedProvider from e
+
+    revoke_sso_access(user, provider)
+
+
 def revoke_sso_access(
     user: "User",
     provider: SSOProviderName | None = None,
