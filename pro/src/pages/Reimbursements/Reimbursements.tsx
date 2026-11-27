@@ -2,7 +2,7 @@ import { Outlet } from 'react-router'
 
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedAdminOfferer } from '@/commons/store/user/selectors'
-import { ReimbursementsTabs } from '@/components/ReimbursementsTabs/ReimbursementsTabs'
+import { ReimbursementsTabs } from '@/pages/Reimbursements/components/ReimbursementsTabs/ReimbursementsTabs'
 
 export const Reimbursements = () => {
   const selectedAdminOfferer = useAppSelector(ensureSelectedAdminOfferer)
