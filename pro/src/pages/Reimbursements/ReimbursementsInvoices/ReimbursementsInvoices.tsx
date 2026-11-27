@@ -19,7 +19,7 @@ import {
   LOCAL_STORAGE_KEY,
   localStorageManager,
 } from '@/commons/utils/localStorageManager'
-import { STEP_NAMES } from '@/components/ReimbursementsTabs/constants'
+import { TAB_NAMES } from '@/components/ReimbursementsTabs/constants'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 import { getPanelId, getTabId } from '@/ui-kit/Tabs/Tabs'
 
@@ -68,7 +68,7 @@ const ReimbursementsInvoices = (): JSX.Element => {
   const selectedAdminOfferer = useAppSelector(ensureSelectedAdminOfferer)
   const isCaledonian = selectedAdminOfferer.isCaledonian
   const snackBar = useSnackBar()
-  const activeStep = useActiveStep(STEP_NAMES)
+  const activeStep = useActiveStep(TAB_NAMES)
 
   const [hideBanner, setHideBanner] = useState(
     localStorageManager.getItem(LOCAL_STORAGE_KEY.HIDE_FINANCE_BANNER) === '1'

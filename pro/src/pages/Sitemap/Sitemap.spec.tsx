@@ -3,20 +3,12 @@ import userEvent from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
-import {
-  type RenderWithProvidersOptions,
-  renderWithProviders,
-} from '@/commons/utils/renderWithProviders'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { Sitemap } from './Sitemap'
 
-const renderSitemap = (
-  isSettlementEnable = false,
-  options: RenderWithProvidersOptions = {}
-) => {
+const renderSitemap = () => {
   return renderWithProviders(<Sitemap />, {
-    ...options,
-    features: isSettlementEnable ? ['WIP_ENABLE_FINANCE_SETTLEMENTS'] : [],
     user: sharedCurrentUserFactory(),
     storeOverrides: {
       user: {
@@ -57,84 +49,76 @@ describe('Sitemap', () => {
     ).toBeInTheDocument()
   })
 
-  it.each([true, false])(
-    'should render all main links in the sitemap when settlements are %s',
-    (isSettlementEnable) => {
-      renderSitemap(isSettlementEnable)
+  it('should render all main links in the sitemap when settlements are %s', () => {
+    renderSitemap()
 
-      const mainLinks = [
-        { name: 'Hub', href: '/hub' },
-        {
-          name: 'Créer une offre',
-          href: '/offre/individuelle/creation/description',
-        },
-        { name: 'Accueil', href: '/accueil' },
-        { name: 'Offres', href: '/offres' },
-        { name: 'Réservations', href: '/reservations' },
-        { name: 'Guichet', href: '/guichet' },
-        {
-          name: `Page sur l'application (si offre individuelle créée)`,
-          href: `/partenaire/page-partenaire`,
-        },
-        { name: 'Offres vitrines', href: '/offres/vitrines' },
-        { name: 'Offres réservables', href: '/offres/collectives' },
-        {
-          name: `Page sur ADAGE (si validé ADAGE)`,
-          href: `/partenaire/page-collective`,
-        },
-        {
-          name: 'Espace administration',
-          href: '/administration/gestion-financiere',
-        },
-        {
-          name: 'Justificatifs',
-          href: '/administration/gestion-financiere/justificatifs',
-        },
-        ...(isSettlementEnable
-          ? [
-              {
-                name: 'Virements',
-                href: '/administration/gestion-financiere/virements',
-              },
-            ]
-          : []),
-        {
-          name: 'Informations bancaires',
-          href: '/administration/gestion-financiere/informations-bancaires',
-        },
-        {
-          name: 'Chiffre d’affaires',
-          href: '/administration/gestion-financiere/chiffre-d-affaires',
-        },
-        {
-          name: 'Individuel',
-          href: '/administration/donnees-activite/individuel',
-        },
-        {
-          name: 'Collectif',
-          href: '/administration/donnees-activite/collectif',
-        },
-        { name: 'Collaborateurs', href: '/administration/collaborateurs' },
-        {
-          name: 'Paramètres',
-          href: `/parametres`,
-        },
-        { name: 'Profil', href: '/profil' },
-      ]
+    const mainLinks = [
+      { name: 'Hub', href: '/hub' },
+      {
+        name: 'Créer une offre',
+        href: '/offre/individuelle/creation/description',
+      },
+      { name: 'Accueil', href: '/accueil' },
+      { name: 'Offres', href: '/offres' },
+      { name: 'Réservations', href: '/reservations' },
+      { name: 'Guichet', href: '/guichet' },
+      {
+        name: `Page sur l'application (si offre individuelle créée)`,
+        href: `/partenaire/page-partenaire`,
+      },
+      { name: 'Offres vitrines', href: '/offres/vitrines' },
+      { name: 'Offres réservables', href: '/offres/collectives' },
+      {
+        name: `Page sur ADAGE (si validé ADAGE)`,
+        href: `/partenaire/page-collective`,
+      },
+      {
+        name: 'Espace administration',
+        href: '/administration/gestion-financiere',
+      },
+      {
+        name: 'Justificatifs',
+        href: '/administration/gestion-financiere/justificatifs',
+      },
+      {
+        name: 'Virements',
+        href: '/administration/gestion-financiere/virements',
+      },
 
-      const elements = within(screen.getByTestId('sitemap')).getAllByRole(
-        'link'
+      {
+        name: 'Informations bancaires',
+        href: '/administration/gestion-financiere/informations-bancaires',
+      },
+      {
+        name: 'Chiffre d’affaires',
+        href: '/administration/gestion-financiere/chiffre-d-affaires',
+      },
+      {
+        name: 'Individuel',
+        href: '/administration/donnees-activite/individuel',
+      },
+      {
+        name: 'Collectif',
+        href: '/administration/donnees-activite/collectif',
+      },
+      { name: 'Collaborateurs', href: '/administration/collaborateurs' },
+      {
+        name: 'Paramètres',
+        href: `/parametres`,
+      },
+      { name: 'Profil', href: '/profil' },
+    ]
+
+    const elements = within(screen.getByTestId('sitemap')).getAllByRole('link')
+    mainLinks.forEach((link) => {
+      const element = elements.find(
+        (el) => el.getAttribute('href') === link.href
       )
-      mainLinks.forEach((link) => {
-        const element = elements.find(
-          (el) => el.getAttribute('href') === link.href
-        )
 
-        expect(element).toBeInTheDocument()
-        expect(element).toHaveAttribute('href', link.href)
-      })
-    }
-  )
+      expect(element).toBeInTheDocument()
+      expect(element).toHaveAttribute('href', link.href)
+    })
+  })
 
   it('should display the back button and return to previous page on click', async () => {
     renderSitemap()

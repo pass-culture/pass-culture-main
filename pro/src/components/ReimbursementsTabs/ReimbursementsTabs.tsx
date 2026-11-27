@@ -1,7 +1,5 @@
 import type { GetOffererResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
-import { FinanceEvents } from '@/commons/core/FirebaseEvents/constants'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useActiveStep } from '@/commons/hooks/useActiveStep'
 import { ButtonIconColor } from '@/design-system/Button/types'
 import fullErrorIcon from '@/icons/full-error.svg'
@@ -9,29 +7,13 @@ import type { TabItem } from '@/ui-kit/Tabs/Tabs'
 import { Tabs } from '@/ui-kit/Tabs/Tabs'
 
 import {
-  STEP_ID_BANK_INFORMATIONS,
-  STEP_ID_INCOMES,
-  STEP_ID_INVOICES,
-  STEP_ID_SETTLEMENTS,
-  STEP_NAMES,
+  EVENT_BY_TAB,
+  TAB_ID_BANK_INFORMATIONS,
+  TAB_ID_INCOMES,
+  TAB_ID_INVOICES,
+  TAB_ID_SETTLEMENTS,
+  TAB_NAMES,
 } from './constants'
-
-const URL_BY_STEP = {
-  [STEP_ID_INVOICES]: '/administration/gestion-financiere/justificatifs',
-  [STEP_ID_SETTLEMENTS]: '/administration/gestion-financiere/virements',
-  [STEP_ID_BANK_INFORMATIONS]:
-    '/administration/gestion-financiere/informations-bancaires',
-  [STEP_ID_INCOMES]: '/administration/gestion-financiere/chiffre-d-affaires',
-} as const
-
-const EVENT_BY_STEP = {
-  [STEP_ID_SETTLEMENTS]: FinanceEvents.CLICKED_SETTLEMENTS_TAB,
-  [STEP_ID_INVOICES]: FinanceEvents.CLICKED_INVOICES_TAB,
-  [STEP_ID_BANK_INFORMATIONS]: FinanceEvents.CLICKED_BANK_INFO_TAB,
-  [STEP_ID_INCOMES]: FinanceEvents.CLICKED_REVENUE_TAB,
-} as const
-
-type Step = (typeof STEP_NAMES)[number]
 
 type ReimbursementsTabsProps = {
   selectedOfferer: GetOffererResponseModel | null
@@ -41,61 +23,51 @@ export const ReimbursementsTabs = ({
   selectedOfferer,
 }: ReimbursementsTabsProps) => {
   const { logEvent } = useAnalytics()
-  const isNewSettlementsActivated = useActiveFeature(
-    'WIP_ENABLE_FINANCE_SETTLEMENTS'
-  )
-  const activeStep = useActiveStep([...STEP_NAMES])
+
+  const activeTab = useActiveStep([...TAB_NAMES])
   const hasWarning =
     (selectedOfferer &&
       (selectedOfferer.venuesWithNonFreeOffersWithoutBankAccounts.length > 0 ||
         selectedOfferer.hasBankAccountWithPendingCorrections)) ??
     false
 
-  const getSteps = () => {
-    const steps: Array<Omit<TabItem<Step>, 'key'> & { id: Step }> = [
-      {
-        id: STEP_ID_SETTLEMENTS,
-        label: 'Virements',
-      },
-      {
-        id: STEP_ID_INVOICES,
-        label: 'Justificatifs',
-      },
-      {
-        id: STEP_ID_BANK_INFORMATIONS,
-        label: 'Informations bancaires',
-        ...(hasWarning && {
-          icon: fullErrorIcon,
-          iconAlt: 'Une action est requise dans cet onglet',
-          iconColor: ButtonIconColor.ERROR,
-        }),
-      },
-      {
-        id: STEP_ID_INCOMES,
-        label: "Chiffre d'affaires",
-      },
-    ]
-
-    return steps.filter(
-      (s) => isNewSettlementsActivated || s.id !== STEP_ID_SETTLEMENTS
-    )
-  }
-
-  const tabs: TabItem<string>[] = getSteps().map(({ id, ...step }) => ({
-    ...step,
-    key: id,
-    url: URL_BY_STEP[id],
-  }))
+  const tabs: TabItem<string>[] = [
+    {
+      key: TAB_ID_SETTLEMENTS,
+      label: 'Virements',
+      url: '/administration/gestion-financiere/virements',
+    },
+    {
+      key: TAB_ID_INVOICES,
+      label: 'Justificatifs',
+      url: '/administration/gestion-financiere/justificatifs',
+    },
+    {
+      key: TAB_ID_BANK_INFORMATIONS,
+      label: 'Informations bancaires',
+      url: '/administration/gestion-financiere/informations-bancaires',
+      ...(hasWarning && {
+        icon: fullErrorIcon,
+        iconAlt: 'Une action est requise dans cet onglet',
+        iconColor: ButtonIconColor.ERROR,
+      }),
+    },
+    {
+      key: TAB_ID_INCOMES,
+      label: "Chiffre d'affaires",
+      url: '/administration/gestion-financiere/chiffre-d-affaires',
+    },
+  ]
 
   const onTabClick = (selectedTab: string) => {
-    const event = EVENT_BY_STEP[selectedTab as Step]
+    const event = EVENT_BY_TAB[selectedTab as TAB_NAMES]
     logEvent(event)
   }
 
   return (
     <Tabs
       items={tabs}
-      selectedKey={activeStep}
+      selectedKey={activeTab}
       navLabel="Sous menu - Gestion financière"
       onClick={onTabClick}
     />
