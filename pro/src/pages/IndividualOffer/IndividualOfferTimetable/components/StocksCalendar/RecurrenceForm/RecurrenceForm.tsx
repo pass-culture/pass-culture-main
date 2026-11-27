@@ -1,4 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup'
+import { format } from 'date-fns'
 import {
   FormProvider,
   useFieldArray,
@@ -11,7 +12,11 @@ import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import type { SelectOption } from '@/commons/custom_types/form'
 import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
-import { isDateValid, mapDayToFrench } from '@/commons/utils/date'
+import {
+  FORMAT_ISO_DATE_ONLY,
+  isDateValid,
+  mapDayToFrench,
+} from '@/commons/utils/date'
 import { formatLocalTimeDateString } from '@/commons/utils/timezone'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
@@ -108,6 +113,14 @@ const getMonthlyOptions = (values: RecurrenceFormValues) => {
 
 const BeginningTimesForm = (): JSX.Element => {
   const { register, watch, formState } = useFormContext<RecurrenceFormValues>()
+  const startingDate = watch('startingDate')
+  const now = new Date()
+  const suggestedTimeList =
+    startingDate?.split('T')[0] === format(now, FORMAT_ISO_DATE_ONLY)
+      ? {
+          min: `${format(now, 'HH')}:${String(now.getMinutes() + 1).padStart(2, '0')}`,
+        }
+      : undefined
 
   const { fields, append, remove } = useFieldArray({
     name: 'beginningTimes',
@@ -130,6 +143,7 @@ const BeginningTimesForm = (): JSX.Element => {
                 <TimePicker
                   label={`Horaire ${index + 1}`}
                   className={styles['time-slot-picker']}
+                  suggestedTimeList={suggestedTimeList}
                   error={
                     formState.errors.beginningTimes?.[index]?.beginningTime
                       ?.message
@@ -223,6 +237,17 @@ export const RecurrenceForm = ({
     methods.setValue('startingDate', '')
     methods.setValue('endingDate', '')
   }
+  const startingDateRegistration = methods.register('startingDate', {
+    onChange: () => {
+      methods
+        .getValues('beginningTimes')
+        .forEach(({ beginningTime }, index) => {
+          if (beginningTime) {
+            void methods.trigger(`beginningTimes.${index}.beginningTime`)
+          }
+        })
+    },
+  })
   const startingDate = methods.watch('startingDate')
   const recurrenceType = methods.watch('recurrenceType')
   const minDateForEndingDate = isDateValid(startingDate)
@@ -316,7 +341,7 @@ export const RecurrenceForm = ({
                     minDate={new Date()}
                     error={methods.formState.errors.startingDate?.message}
                     required
-                    {...methods.register('startingDate')}
+                    {...startingDateRegistration}
                   />
 
                   {recurrenceType !== RecurrenceType.UNIQUE && (
@@ -340,7 +365,7 @@ export const RecurrenceForm = ({
                     minDate={new Date()}
                     error={methods.formState.errors.startingDate?.message}
                     required
-                    {...methods.register('startingDate')}
+                    {...startingDateRegistration}
                   />
 
                   <Select

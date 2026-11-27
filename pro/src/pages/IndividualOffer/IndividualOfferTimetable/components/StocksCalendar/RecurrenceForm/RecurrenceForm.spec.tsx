@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { fireEvent, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { addDays, format } from 'date-fns'
 import { axe } from 'vitest-axe'
@@ -91,6 +91,82 @@ describe('RecurrenceForm', () => {
       screen.queryByRole('button', { name: /Supprimer/ })
     ).not.toBeInTheDocument()
   })
+
+  it('should suggest only future times for today and all times for another date', () => {
+    vi.useFakeTimers()
+    try {
+      vi.setSystemTime(new Date(2026, 10, 26, 11, 15))
+      renderRecurrenceForm()
+
+      const dateInput = screen.getByLabelText('Date de l’évènement *')
+      fireEvent.change(dateInput, { target: { value: '2026-11-26' } })
+
+      const suggestions = screen.getByTestId('timepicker-datalist')
+      expect(
+        suggestions.querySelector('option[value="11:15"]')
+      ).not.toBeInTheDocument()
+      expect(
+        suggestions.querySelector('option[value="11:30"]')
+      ).toBeInTheDocument()
+
+      fireEvent.change(dateInput, { target: { value: '2026-11-27' } })
+      expect(
+        suggestions.querySelector('option[value="00:00"]')
+      ).toBeInTheDocument()
+
+      vi.setSystemTime(new Date(2026, 10, 26, 23, 59))
+      fireEvent.change(dateInput, { target: { value: '2026-11-26' } })
+      expect(
+        screen.queryByTestId('timepicker-datalist')
+      ).not.toBeInTheDocument()
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it.each([
+    { recurrence: undefined, dateLabel: 'Date de l’évènement *' },
+    { recurrence: 'Tous les mois', dateLabel: /premier évènement le/i },
+  ])(
+    'should show an error under past times when changing the date to today: $dateLabel',
+    async ({ recurrence, dateLabel }) => {
+      vi.useFakeTimers({ shouldAdvanceTime: true })
+      try {
+        vi.setSystemTime(new Date(2026, 10, 26, 11, 18))
+        renderRecurrenceForm()
+
+        if (recurrence) {
+          fireEvent.click(screen.getByLabelText(recurrence))
+        }
+        const dateInput = screen.getByLabelText(dateLabel)
+        fireEvent.change(dateInput, { target: { value: '2026-11-27' } })
+        fireEvent.change(screen.getByLabelText(/Horaire 1/), {
+          target: { value: '10:00' },
+        })
+        fireEvent.click(screen.getByText('Ajouter un créneau'))
+        fireEvent.change(screen.getByLabelText(/Horaire 2/), {
+          target: { value: '15:00' },
+        })
+
+        fireEvent.change(dateInput, { target: { value: '2026-11-28' } })
+        expect(
+          screen.queryByText('L’horaire est dans le passé')
+        ).not.toBeInTheDocument()
+
+        fireEvent.change(dateInput, { target: { value: '2026-11-26' } })
+        expect(
+          await screen.findByText('L’horaire est dans le passé')
+        ).toBeInTheDocument()
+        expect(screen.getAllByText('L’horaire est dans le passé')).toHaveLength(
+          1
+        )
+        expect(screen.getByLabelText(/Horaire 1/)).toHaveValue('10:00')
+        expect(screen.getByLabelText(/Horaire 2/)).toHaveValue('15:00')
+      } finally {
+        vi.useRealTimers()
+      }
+    }
+  )
 
   it('should show an add button until we have less or an equal number of fields than different price_categories', async () => {
     const priceCategories = [

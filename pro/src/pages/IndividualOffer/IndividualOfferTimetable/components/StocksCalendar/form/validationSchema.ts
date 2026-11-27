@@ -1,4 +1,11 @@
-import { getToday, isDateValid, removeTime } from '@/commons/utils/date'
+import { format } from 'date-fns'
+
+import {
+  FORMAT_ISO_DATE_ONLY,
+  getToday,
+  isDateValid,
+  removeTime,
+} from '@/commons/utils/date'
 import { yup } from '@/commons/utils/yup'
 
 import { MAX_STOCKS_QUANTITY } from '../StocksCalendarTable/StocksCalendarTableEditStock/validationSchema'
@@ -88,7 +95,25 @@ export const getValidationSchema = () =>
         yup.object({
           beginningTime: yup
             .string()
-            .required('Veuillez renseigner un horaire'),
+            .required('Veuillez renseigner un horaire')
+            .test(
+              'isBeginningTimeValid',
+              'L’horaire est dans le passé',
+              function (value) {
+                const startingDate: string | null | undefined =
+                  this.from?.[1]?.value.startingDate
+                const startingDay = startingDate?.split('T')[0]
+                const now = new Date()
+                if (
+                  !value ||
+                  startingDay !== format(now, FORMAT_ISO_DATE_ONLY)
+                ) {
+                  return true
+                }
+
+                return new Date(`${startingDay}T${value}`) > now
+              }
+            ),
         })
       )
       .uniqueBy('beginningTime', 'Veuillez renseigner des horaires différents'),
