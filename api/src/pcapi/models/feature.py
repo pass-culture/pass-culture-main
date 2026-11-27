@@ -139,6 +139,9 @@ class FeatureToggle(enum.Enum):
     # For features under construction, a temporary feature flag must be named with the `WIP_` prefix
     WIP_ENABLE_FINANCE_SETTLEMENTS = "Active le workflow finance des règlements"
     WIP_ENABLE_NEW_BREVO_RECOMMENDATION_WEBHOOK = "Active la nouvelle version du webhook de recommandation Brevo"
+    WIP_IMGPROXY_NATIVE = (
+        "Activer l'utilisation du nouveau format de requête pour le resizing d'image sur l'application native"
+    )
     WIP_ENABLE_CULTURAL_OUTREACH = "Active la déclaration des actions de médiation culturelle"
     WIP_CLOSE_VENUE = "Active la fermeture d'une venue depuis l'espace partenaire"
     WIP_HOME_STATS_V2 = "Active la V2 des statistiques de réservations de la page d'accueil"
@@ -203,8 +206,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_CULTURAL_OUTREACH,
     FeatureToggle.WIP_ENABLE_NEW_BREVO_RECOMMENDATION_WEBHOOK,
     FeatureToggle.WIP_HOME_STATS_V2,
-    FeatureToggle.WIP_INDIVIDUAL_OFFERS_LIST_V2,
-    FeatureToggle.WIP_NFD,
+    FeatureToggle.WIP_IMGPROXY_NATIVE,
     # Please keep alphabetic order
 )
 

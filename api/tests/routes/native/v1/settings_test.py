@@ -37,6 +37,7 @@ class SettingsTest:
             "rates": {"pacificFrancToEuro": 0.00838},
             "wipEnableCreditV3": True,
             "imageResizingUrl": "https://image-resizing.passculture.app",
+            "useImgProxyFormat": False,
             "ineligiblePostalCodes": INELIGIBLE_POSTAL_CODES,
         }
 
@@ -68,5 +69,6 @@ class SettingsTest:
             "rates": {"pacificFrancToEuro": 0.00838},
             "wipEnableCreditV3": True,
             "imageResizingUrl": "https://image-resizing.passculture.app",
+            "useImgProxyFormat": False,
             "ineligiblePostalCodes": INELIGIBLE_POSTAL_CODES,
         }

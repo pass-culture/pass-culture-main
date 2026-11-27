@@ -30,6 +30,7 @@ def get_settings() -> serializers.SettingsResponse:
     features = _get_features(
         FeatureToggle.DISPLAY_DMS_REDIRECTION,
         FeatureToggle.ENABLE_FRONT_IMAGE_RESIZING,
+        FeatureToggle.WIP_IMGPROXY_NATIVE,
         FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA,
         FeatureToggle.ENABLE_NATIVE_CULTURAL_SURVEY,
         FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION,
@@ -48,6 +49,7 @@ def get_settings() -> serializers.SettingsResponse:
         display_dms_redirection=features[FeatureToggle.DISPLAY_DMS_REDIRECTION],
         enable_front_image_resizing=features[FeatureToggle.ENABLE_FRONT_IMAGE_RESIZING],
         image_resizing_url=IMAGE_RESIZING_URL,
+        use_img_proxy_format=features[FeatureToggle.WIP_IMGPROXY_NATIVE],
         enable_native_cultural_survey=features[FeatureToggle.ENABLE_NATIVE_CULTURAL_SURVEY],
         id_check_address_autocompletion=features[FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION],
         ineligible_postal_codes=postal_code.INELIGIBLE_POSTAL_CODES,
