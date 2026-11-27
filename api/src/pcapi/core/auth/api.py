@@ -1,7 +1,6 @@
 import logging
 import re
 import typing
-from enum import StrEnum
 
 import google.auth
 import googleapiclient.discovery
@@ -32,12 +31,6 @@ BACKOFFICE_ROLE_NAME_RE = re.compile(
 )
 
 logger = logging.getLogger(__name__)
-
-
-class SingleSignOnProviders(StrEnum):
-    APPLE = "apple"
-    GOOGLE = "google"
-    ALL = "__all__"
 
 
 def delegate_credentials(
@@ -128,19 +121,19 @@ def attach_sso_to_user(user: "User", sso_user: SSOUser, provider: str) -> "User"
 
 def revoke_sso_access(
     user: "User",
-    provider: SingleSignOnProviders,
+    provider: SSOProviderName | None = None,
 ) -> None:
     """
-    Revoke any single sign-on connections from a user to an external providers.
+    Revoke the single sign-on connections from a user to an external provider (all providers if `provider` is None).
 
     Delete also the linked SSOUser from our database.
     """
 
     for sso in user.single_sign_ons:
-        if provider not in [sso.ssoProvider, SingleSignOnProviders.ALL]:
+        if provider is not None and sso.ssoProvider != provider:
             continue
 
-        if sso.ssoProvider == SingleSignOnProviders.APPLE:
+        if sso.ssoProvider == SSOProviderName.APPLE:
             # Trying to revoke Apple SSO from pc-api.
             # Revocation on Apple could fail, due to bad refresh_token, but user
             # can do it on their side (follow doc linked in revoke_apple_user function)

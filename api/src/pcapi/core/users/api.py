@@ -35,7 +35,6 @@ from pcapi.connectors.sso.models import SSOUser
 from pcapi.core import mails as mails_api
 from pcapi.core import token as token_utils
 from pcapi.core.auth import repository as auth_repository
-from pcapi.core.auth.api import SingleSignOnProviders
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.external.brevo import update_contact_attributes
 from pcapi.core.finance import deposit_api
@@ -588,7 +587,7 @@ def change_email(
     sessions.disconnect_user_session(current_user.id)
     sessions.disconnect_native_user_sessions(user_id=current_user.id)
 
-    auth_api.revoke_sso_access(current_user, SingleSignOnProviders.ALL)
+    auth_api.revoke_sso_access(current_user)
 
     if transaction_manager.is_managed_transaction():
         db.session.flush()

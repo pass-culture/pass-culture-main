@@ -38,8 +38,7 @@ Adding a new provider (e.g. "acme"):
      already turns any `SSOException` into a 401; handle `extra_data` if the provider returns some (see Apple).
      The deprecated v1 route still uses the old `apple_oauth` / `google_oauth` connectors: do not add providers
      there;
-   - `core/users/api.py`: add the provider to `SingleSignOnProviders` and handle its revocation in
-     `revoke_sso_access`.
+   - `core/auth/api.py`: handle its revocation in `revoke_sso_access` if the provider requires it.
    The provider name is the one used in the URL and stored in `SingleSignOn.ssoProvider`: never rename it.
 6. Test the provider in `tests/connectors/sso/`, mocking the provider HTTP endpoints (sockets are disabled in
    tests), and the route in `tests/routes/native/v2/authentication_test.py`.
