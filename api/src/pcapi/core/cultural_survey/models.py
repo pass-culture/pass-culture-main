@@ -109,5 +109,5 @@ class UserCulturalSurvey(PcObject, Model):
         sa.DateTime,
         nullable=False,
         default=get_naive_utc_now,
-        server_default=sa.func.utcnow(),
+        server_default=sa.func.now(),
     )
