@@ -94,9 +94,22 @@ describe('UploadZone', () => {
   it('should be named by its instruction when there is no label', () => {
     renderUploadZone({ label: undefined })
 
-    expect(
-      screen.getByLabelText('Importez ou déposez le fichier ici')
-    ).toBeInTheDocument()
+    const input = screen.getByLabelText('Importez ou déposez le fichier ici')
+    expect(input).toHaveAccessibleName('Importez ou déposez le fichier ici')
+    expect(input).toHaveAttribute(
+      'aria-label',
+      'Importez ou déposez le fichier ici'
+    )
+  })
+
+  it('should be named by its label followed by its instruction when there is a label', () => {
+    renderUploadZone()
+
+    const input = screen.getByLabelText('Justificatifs')
+    expect(input).toHaveAccessibleName(
+      'Justificatifs Importez ou déposez le fichier ici'
+    )
+    expect(input).not.toHaveAttribute('aria-label')
   })
 
   it('should only accept a single file, without files counter, when used alone with maxFiles 1', () => {
@@ -200,9 +213,9 @@ describe('UploadZone', () => {
       `Le fichier choisi est non conforme : ${message}`
     )
     expect(isInaccessible(screen.getByRole('alert'))).toBe(false)
-    // Announced right after the label, before the native value of the input.
+    // Announced right after the label and the instruction, before the native value of the input.
     expect(input).toHaveAccessibleName(
-      `Justificatifs Le fichier choisi est non conforme : ${message}`
+      `Justificatifs Importez ou déposez le fichier ici Le fichier choisi est non conforme : ${message}`
     )
     expect(input).toHaveAccessibleDescription(
       'Formats acceptés : PDF. Poids maximum : 5 Mo.'
@@ -251,7 +264,7 @@ describe('UploadZone', () => {
       'Le fichier choisi est non conforme : Le format du fichier n’est pas accepté. Le fichier est trop lourd.'
     )
     expect(screen.getByLabelText('Justificatifs')).toHaveAccessibleName(
-      'Justificatifs Le fichier choisi est non conforme : Le format du fichier n’est pas accepté. Le fichier est trop lourd.'
+      'Justificatifs Importez ou déposez le fichier ici Le fichier choisi est non conforme : Le format du fichier n’est pas accepté. Le fichier est trop lourd.'
     )
   })
 
@@ -312,7 +325,9 @@ describe('UploadZone', () => {
     const input = screen.getByLabelText('Justificatifs')
     expect(input).toBeInvalid()
     // Not a rejection of the zone: kept in the description.
-    expect(input).toHaveAccessibleName('Justificatifs')
+    expect(input).toHaveAccessibleName(
+      'Justificatifs Importez ou déposez le fichier ici'
+    )
     expect(input).toHaveAccessibleDescription(
       'Formats acceptés : PDF. Poids maximum : 5 Mo. Veuillez ajouter un fichier'
     )

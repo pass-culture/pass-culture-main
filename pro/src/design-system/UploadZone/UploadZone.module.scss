@@ -6,6 +6,9 @@
   display: flex;
   flex-direction: column;
   width: 100%;
+  // Opt-in: set `--upload-zone-height` on a parent (e.g. `100%`) to give the zone a fixed height,
+  // like the one of an image preview. The zone then fills the remaining height.
+  height: var(--upload-zone-height, auto);
 }
 
 .header {
@@ -17,6 +20,8 @@
   position: relative;
   display: flex;
   flex-direction: column;
+  flex-grow: 1;
+  justify-content: center;
   align-items: center;
   gap: var(--size-spacing-m);
   padding: var(--size-spacing-xl);

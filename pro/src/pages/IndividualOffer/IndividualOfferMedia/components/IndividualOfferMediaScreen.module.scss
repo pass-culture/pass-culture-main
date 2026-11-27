@@ -23,7 +23,7 @@
 }
 
 .media-title {
-  @include fonts.title3;
+  @include fonts.body;
 
   margin-bottom: var(--size-spacing-s);
 }

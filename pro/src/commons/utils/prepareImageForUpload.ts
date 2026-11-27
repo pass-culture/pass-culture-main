@@ -1,7 +1,7 @@
 import {
   MAX_THUMBNAIL_WIDTH,
   MIN_IMAGE_DIMENSIONS,
-} from '@/components/ImageDragAndDrop/constants'
+} from '@/commons/utils/imageUpload/constants'
 
 import { getImageBitmap } from './image'
 

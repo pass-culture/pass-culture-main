@@ -1,4 +1,46 @@
 @use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_size.scss" as size;
+
+// The preview and the upload zone share the same frame,
+// so that adding an image doesn't resize the card.
+@mixin image-frame {
+  width: 100%;
+  aspect-ratio: 3 / 2;
+
+  @media (min-width: size.$tablet) {
+    width: rem.torem(305px);
+    max-width: 100%;
+  }
+}
+
+.image-uploader {
+  display: flex;
+  flex-direction: column;
+
+  @media screen and (min-width: size.$tablet) {
+    flex-direction: row;
+  }
+}
+
+.image-preview {
+  @include image-frame;
+
+  object-fit: cover;
+  border: rem.torem(1px) solid var(--color-border-subtle);
+  border-radius: var(--size-border-radius-s);
+  box-shadow: var(--shadow-overlay);
+}
+
+.image-placeholder {
+  @include image-frame;
+}
+
+.upload-zone {
+  @include image-frame;
+
+  --upload-zone-height: 100%;
+}
 
 .venue-name {
   @include fonts.title4;

@@ -26,6 +26,7 @@ import styles from './UploadZone.module.scss'
 import { getConditionsText } from './utils'
 
 const FILE_CORRUPTED_ERROR_CODE = 'file-corrupted'
+const INSTRUCTION = 'Importez ou déposez le fichier ici'
 const REJECTION_ERROR_PREFIX = 'Le fichier choisi est non conforme :'
 
 export type UploadZoneLabelProps =
@@ -233,10 +234,13 @@ export const UploadZone = ({
     ...errors,
   ].join(' ')
 
+  // The input name is the label followed by the instruction, so that it describes
+  // the action even when the label only names the expected file (e.g. "Image").
   // The files rejected by the zone are announced in the input name, right after
   // the label and before the native value of the input ("Aucun fichier choisi").
   const labelledByIds = [
-    label ? labelId : instructionId,
+    ...(label ? [labelId] : []),
+    instructionId,
     ...(rejectionErrorIds.length > 0
       ? [rejectionPrefixId, ...rejectionErrorIds]
       : []),
@@ -284,9 +288,7 @@ export const UploadZone = ({
             className={styles['zone-instruction']}
             aria-hidden="true"
           >
-            {isDragActive
-              ? 'Déposez votre fichier ici'
-              : 'Importez ou déposez le fichier ici'}
+            {isDragActive ? 'Déposez votre fichier ici' : INSTRUCTION}
           </p>
           {conditionsText && (
             // Only read through the description of the file input, which comes after it.
@@ -309,6 +311,11 @@ export const UploadZone = ({
           className={styles['zone-input']}
           disabled={disabled}
           aria-labelledby={labelledByIds}
+          // Without a label, axe ignores the instruction referenced by `aria-labelledby`
+          // when it is out of the screen (e.g. below the fold in a scrolling container),
+          // and reports the input as unlabelled. `aria-labelledby` still takes precedence
+          // over this fallback to compute the accessible name.
+          aria-label={label ? undefined : INSTRUCTION}
           aria-describedby={describedByIds || undefined}
           aria-invalid={hasError}
           aria-required={required}

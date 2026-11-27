@@ -34,7 +34,7 @@ import * as imageUploadModule from '@/pages/IndividualOffer/commons/useIndividua
 import { VideoUploaderContextProvider } from '../commons/context/VideoUploaderContext/VideoUploaderContext'
 import { IndividualOfferMediaScreen } from './IndividualOfferMediaScreen'
 
-vi.mock('@/components/ImageDragAndDrop/getImageDimensions', () => ({
+vi.mock('@/commons/utils/imageUpload/getImageDimensions', () => ({
   getImageDimensions: vi.fn((file) => {
     return Promise.resolve({
       width: (file as any).width || 0,
@@ -137,9 +137,9 @@ const MOCK_DATA = {
 
 const LABELS = {
   mainSection: 'Illustrez votre offre',
-  imageInput: 'Ajoutez une image',
+  imageInput: 'Image',
   imageUpsertOrEditModalButton: 'Importer',
-  videoSubSection: 'Ajoutez une vidéo',
+  videoSubSection: 'Vidéo Youtube',
   videoInput: 'Lien URL Youtube',
   videoError:
     'Veuillez renseigner une URL provenant de la plateforme Youtube. Les chaînes ne sont pas acceptées.',
@@ -331,7 +331,7 @@ describe('IndividualOfferMediaScreen', () => {
         await screen.findByText('Le format du fichier n’est pas accepté.')
       ).toBeInTheDocument()
       expect(imageInput).toHaveAccessibleName(
-        'Ajoutez une image Le fichier choisi est non conforme : Le format du fichier n’est pas accepté.'
+        'Image Importez ou déposez le fichier ici Le fichier choisi est non conforme : Le format du fichier n’est pas accepté.'
       )
     })
 

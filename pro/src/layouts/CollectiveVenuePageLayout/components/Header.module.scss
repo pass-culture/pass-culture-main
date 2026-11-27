@@ -14,18 +14,37 @@
 }
 
 .image-uploader {
+  display: flex;
+  flex-direction: column;
   align-self: center;
   margin-bottom: 0;
   width: 100%;
 
   @media (min-width: size.$tablet) {
+    flex-direction: row;
     align-self: flex-start;
     width: rem.torem(345px);
-
-    &-drag-and-drop {
-      height: rem.torem(230px);
-    }
+    --upload-zone-height: #{rem.torem(230px)};
   }
+}
+
+.image-preview {
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  border: rem.torem(1px) solid var(--color-border-subtle);
+  border-radius: var(--size-border-radius-s);
+  box-shadow: var(--shadow-overlay);
+
+  @media (min-width: size.$tablet) {
+    width: auto;
+    height: rem.torem(230px);
+  }
+}
+
+.image-placeholder {
+  height: rem.torem(230px);
+  width: rem.torem(345px);
 }
 
 .venue-details {
