@@ -9,8 +9,6 @@ from pcapi.connectors.apple_oauth import get_apple_user
 from pcapi.utils import requests
 
 
-pytestmark = pytest.mark.filterwarnings("ignore:Use SSOProviderFactory instead:DeprecationWarning")
-
 valid_json_response = {
     "access_token": "my.access.token",
     "refresh_token": "my.access.token",

@@ -35,13 +35,16 @@ class AppleRevokeException(Exception):
     pass
 
 
-@deprecated("""Use SSOProviderFactory instead.
+@deprecated(
+    """Use SSOProviderFactory instead.
 
 >>> from pcapi.connectors.sso import SSOProviderFactory
 >>> from pcapi.connectors.sso import SSOProviderName
 >>> provider = SSOProviderFactory.create(SSOProviderName.APPLE, is_web=False)
 >>> user = provider.validate_token(authorization_code)
-""")
+""",
+    category=None,
+)
 def get_apple_user(authorization_code: str, is_web: bool) -> users_schemas.SSOUser:
     client_id, client_secret = _generate_client_secret(is_web)
 
@@ -69,13 +72,16 @@ def get_apple_user(authorization_code: str, is_web: bool) -> users_schemas.SSOUs
     return _parse_identity_token(token_payload, auth_response, is_web)
 
 
-@deprecated("""Use SSOProviderFactory instead.
+@deprecated(
+    """Use SSOProviderFactory instead.
 
 >>> from pcapi.connectors.sso import SSOProviderFactory
 >>> from pcapi.connectors.sso import SSOProviderName
 >>> provider = SSOProviderFactory.create(SSOProviderName.APPLE, is_web=False)
 >>> user = provider.revoke_access(refresh_token)
-""")
+""",
+    category=None,
+)
 def revoke_apple_user(refresh_token: str, is_web: bool) -> None:
     """
     Revoke Apple SignIn User on Apple-side, with the user's Apple refresh token.
