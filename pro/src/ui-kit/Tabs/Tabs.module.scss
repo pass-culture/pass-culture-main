@@ -1,0 +1,39 @@
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_size.scss" as size;
+
+.menu-list {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: var(--size-spacing-xl);
+  gap: var(--size-spacing-l);
+
+  // The DS Button does not accept a className, so the tab underline is
+  // drawn from the tablist on each tab.
+  > [role="tab"] {
+    position: relative;
+
+    &::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: calc(-1 * var(--size-spacing-s));
+      height: rem.torem(2px);
+    }
+
+    &:hover::after {
+      background-color: var(--color-border-default);
+    }
+
+    &[aria-selected="true"]::after {
+      background-color: var(--color-border-brand-primary);
+    }
+  }
+}
+
+@media (min-width: size.$tablet) {
+  .menu-list {
+    flex-direction: row;
+    gap: var(--size-spacing-2xl);
+  }
+}

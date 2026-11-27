@@ -8,6 +8,7 @@ import type {
   ActivityNotOpenToPublic,
   ActivityOpenToPublic,
 } from '@/apiClient/v1'
+import { useActiveStep } from '@/commons/hooks/useActiveStep'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useFormNavigationGuard } from '@/commons/hooks/useFormNavigationGuard/useFormNavigationGuard'
 import { useKey } from '@/commons/hooks/useKey'
@@ -22,10 +23,12 @@ import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
 import { OpenToPublicToggle } from '@/components/OpenToPublicToggle/OpenToPublicToggle'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
+import { STEP_NAMES } from '@/components/SettingsTabs/constants'
 import { ActivityDetails } from '@/components/VenueEdition/ActivityDetails/ActivityDetails'
 import { VenueFormActionBar } from '@/components/VenueEdition/VenueFormActionBar/VenueFormActionBar'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import { AddressManual } from '@/ui-kit/form/AddressManual/AddressManual'
+import { getPanelId, getTabId } from '@/ui-kit/Tabs/Tabs'
 
 import { scrollToTop } from '../../../commons/utils/scrollToTop'
 import { useSaveVenueSettings } from './commons/hooks/useSaveVenueSettings'
@@ -45,6 +48,7 @@ const GeneralInformation = () => {
   const venue = useAppSelector(ensureSelectedPartnerVenue)
   const isClosed = withVenueHelpers(venue).isClosed
   const addressFieldKey = useKey()
+  const activeStep = useActiveStep(STEP_NAMES)
 
   const formContext: VenueSettingsFormContext = {
     isCaledonian: venue.isCaledonian,
@@ -199,7 +203,11 @@ const GeneralInformation = () => {
   }
 
   return (
-    <>
+    <div
+      id={getPanelId(activeStep)}
+      role="tabpanel"
+      aria-labelledby={getTabId(activeStep)}
+    >
       <MandatoryInfo />
       <FormProvider {...form}>
         <form onSubmit={navigationGuardedSubmitHandler} noValidate>
@@ -314,7 +322,7 @@ const GeneralInformation = () => {
         }}
       />
       {navigationGuardDialog}
-    </>
+    </div>
   )
 }
 

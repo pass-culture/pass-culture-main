@@ -38,25 +38,18 @@ test.describe('Edit digital individual offers', () => {
       await checkAccessibility(page)
 
       await expect(
-        page.getByRole('link', { name: 'Lien actif Visibilité' })
+        page.getByRole('tab', { name: 'Visibilité', selected: true })
       ).toBeVisible()
-      await expect(
-        page.getByRole('link', { name: 'Description' })
-      ).toBeVisible()
-      await expect(
-        page.getByRole('link', { name: 'Localisation' })
-      ).toBeVisible()
-      await expect(
-        page.getByRole('link', { name: 'Image et vidéo' })
-      ).toBeVisible()
-      await expect(page.getByRole('link', { name: 'Tarifs' })).toBeVisible()
-      await expect(
-        page.getByRole('link', { name: 'Informations pratiques' })
-      ).toBeVisible()
-      await page.getByRole('button', { name: 'Individuel' }).click() // Open section
-      await expect(
-        page.getByRole('link', { name: 'Réservations' }).nth(1)
-      ).toBeVisible()
+      for (const name of [
+        'Description',
+        'Localisation',
+        'Image et vidéo',
+        'Tarifs',
+        'Informations pratiques',
+        'Réservations',
+      ]) {
+        await expect(page.getByRole('tab', { name })).toBeVisible()
+      }
     })
 
     test('I should be able to modify the url of a digital offer', async ({
@@ -77,15 +70,17 @@ test.describe('Edit digital individual offers', () => {
       await expect(page).toHaveURL(/\/visibilite/)
 
       // DESCRIPTION EDITION
-      await page.getByRole('link', { name: 'Description' }).click()
+      await page.getByRole('tab', { name: 'Description' }).click()
       await expect(page).toHaveURL(/\/edition\/description/)
-      await page.getByLabel(/Description/).fill('Une description modifiée')
+      await page
+        .getByRole('textbox', { name: /Description/ })
+        .fill('Une description modifiée')
       await page.getByText('Enregistrer les modifications').click()
       await expectSuccessSnackbar(page, 'Votre offre a bien été modifiée.')
       await checkAccessibility(page)
 
       // LOCATION EDITION
-      await page.getByRole('link', { name: 'Localisation' }).click()
+      await page.getByRole('tab', { name: 'Localisation' }).click()
       await expect(page).toHaveURL(/\/edition\/localisation/)
 
       const randomUrl = 'http://myrandomurl.fr/'

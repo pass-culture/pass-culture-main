@@ -11,12 +11,7 @@ import { CollectiveDmsTimeline } from '@/components/CollectiveDmsTimeline/Collec
 import { CollectiveDmsTimelineVariant } from '@/components/CollectiveDmsTimeline/types'
 import { OnboardingOffersChoice } from '@/components/OnboardingOffersChoice/OnboardingOffersChoice'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
-import {
-  getPanelId,
-  getTabId,
-  type TabItem,
-} from '@/ui-kit/Tabs/TabItems/TabItems'
-import { Tabs } from '@/ui-kit/Tabs/Tabs'
+import { getPanelId, getTabId, type TabItem, Tabs } from '@/ui-kit/Tabs/Tabs'
 
 import {
   getInitialTab,
@@ -158,7 +153,6 @@ export const Homepage = (): JSX.Element => {
       )}
       {hasIndividualTab && hasCollectiveTab && (
         <Tabs
-          type="tabs"
           navLabel="Sous menu - page d'accueil"
           items={tabs}
           selectedKey={selectedTab}

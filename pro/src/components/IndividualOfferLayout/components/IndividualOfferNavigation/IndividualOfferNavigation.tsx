@@ -57,12 +57,11 @@ export const IndividualOfferNavigation = () => {
       ) : (
         <div className={styles.tabs}>
           <Tabs
-            type="links"
             navLabel="Sous menu - offre individuelle"
             items={stepList.map(({ id, label, url }) => ({
               key: id,
               label,
-              url: url || '#',
+              url,
             }))}
             selectedKey={activeStep}
           />

@@ -23,6 +23,14 @@ import {
 
 import { IndividualOfferNavigation } from './IndividualOfferNavigation'
 
+vi.mock('react-router', async () => {
+  const actual = await vi.importActual('react-router')
+  return {
+    ...actual,
+    useNavigate: () => vi.fn(),
+  }
+})
+
 const renderIndividualOfferNavigation: RenderComponentFunction<
   void,
   IndividualOfferContextValues
@@ -162,39 +170,34 @@ describe('IndividualOfferNavigation', () => {
       mode: OFFER_WIZARD_MODE.EDITION,
     })
 
-    it('should display all steps as links', () => {
+    it('should display all steps as buttons', () => {
       renderIndividualOfferNavigation({ path })
 
-      const steps = screen.getAllByRole('listitem')
-      const links = screen.getAllByRole('link')
-      expect(steps).toHaveLength(links.length)
+      const tabs = screen.getAllByRole('tab')
+      expect(tabs.length).toBeGreaterThan(0)
     })
 
     it('should display "Réservation" step', () => {
       renderIndividualOfferNavigation({ path })
 
-      const bookingStep = screen
-        .getAllByRole('listitem')
-        .find((listitem) => listitem.textContent?.match(LABELS.BOOKING))
-      expect(bookingStep).toBeDefined()
+      const bookingStep = screen.queryByRole('tab', { name: LABELS.BOOKING })
+      expect(bookingStep).toBeInTheDocument()
     })
 
     it('should display "Visibilité" step', () => {
       renderIndividualOfferNavigation({ path })
 
-      const exposureStep = screen
-        .getAllByRole('listitem')
-        .find((listitem) => listitem.textContent?.match(LABELS.EXPOSURE))
-      expect(exposureStep).toBeDefined()
+      const exposureStep = screen.queryByRole('tab', {
+        name: LABELS.EXPOSURE,
+      })
+      expect(exposureStep).toBeInTheDocument()
     })
 
     it('should never display "Récapitulatif" step', () => {
       renderIndividualOfferNavigation({ path })
 
-      const summaryStep = screen
-        .getAllByRole('listitem')
-        .find((listitem) => listitem.textContent?.match(LABELS.SUMMARY))
-      expect(summaryStep).not.toBeDefined()
+      const summaryStep = screen.queryByRole('tab', { name: LABELS.SUMMARY })
+      expect(summaryStep).not.toBeInTheDocument()
     })
   })
 

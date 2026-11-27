@@ -34,6 +34,10 @@
   .btn-icon {
     flex-shrink: 0;
     width: rem.torem(22px);
+
+    &.btn-icon-error {
+      color: var(--color-icon-error);
+    }
   }
 
   &:focus-visible {
