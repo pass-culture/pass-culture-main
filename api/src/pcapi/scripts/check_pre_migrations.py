@@ -51,12 +51,15 @@ def check_pre_migrations(alembic_config_path: str) -> None:
 
 
 def _get_database_pre_head(
-    heads: tuple[str, ...],
+    heads: tuple[str, ...] | None,
     directory: alembic.script.ScriptDirectory,
 ) -> str:
+    if heads is None:
+        raise click.ClickException("ERR: Could not determine current database migration heads")
+
     for head in heads:
         script = directory.get_revision(head)
         assert script  # helps mypy
         if "pre" in script.branch_labels:
             return head
-    raise ValueError(f"Could not find any of {heads} in migrations directory")
+    raise click.ClickException(f"ERR: Could not find any of {heads} in migrations directory")
