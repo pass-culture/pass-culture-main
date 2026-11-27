@@ -105,9 +105,9 @@ class UserCulturalSurvey(PcObject, Model):
         nullable=False,
     )
 
-    createdAt: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
+    createdAt: sa_orm.Mapped[datetime | None] = sa_orm.mapped_column(
         sa.DateTime,
-        nullable=False,
+        nullable=True,
         default=get_naive_utc_now,
         server_default=sa.func.now(),
     )
