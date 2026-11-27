@@ -4,13 +4,16 @@ from pcapi.core.users import schemas as users_schemas
 from pcapi.flask_app import native_app_oauth
 
 
-@deprecated("""Use SSOProviderFactory instead.
+@deprecated(
+    """Use SSOProviderFactory instead.
 
 >>> from pcapi.connectors.sso import SSOProviderFactory
 >>> from pcapi.connectors.sso import SSOProviderName
 >>> provider = SSOProviderFactory.create(SSOProviderName.GOOGLE, is_web=False)
 >>> user = provider.validate_token(authorization_code)
-""")
+""",
+    category=None,
+)
 def get_google_user(authorization_code: str, is_web: bool) -> users_schemas.SSOUser:
     # postmessage is needed when the app uses a popup to fetch the authorization code
     # see https://stackoverflow.com/questions/71968377
