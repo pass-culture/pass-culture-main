@@ -1992,14 +1992,14 @@ class GetOffererSettlementsTest(GetEndpointHelper):
         assert rows[0]["N° de lot de virement"] == "Réglé par le partenaire culturel"
         assert rows[0]["Date d'émission"] == "03/04/2023"
         assert rows[0]["Intitulé du compte bancaire"] == bank_account.label
-        assert rows[0]["État"] == "Exécuté"
+        assert rows[0]["État"] == "Émis"
         assert rows[0]["Montant"] == expected_refund_settlement_amount
         assert rows[0]["Justificatifs"] == invoice4.reference
 
         assert rows[1]["N° de lot de virement"] == new_batch.name
         assert rows[1]["Date d'émission"] == "19/04/2023"
         assert rows[1]["Intitulé du compte bancaire"] == new_bank_account.label
-        assert rows[1]["État"] == "Exécuté"
+        assert rows[1]["État"] == "Émis"
         assert rows[1]["Montant"] == expected_new_settlement_amount
         assert rows[1]["Justificatifs"] == invoice3.reference
 
@@ -2013,7 +2013,7 @@ class GetOffererSettlementsTest(GetEndpointHelper):
         assert rows[3]["N° de lot de virement"] == batch.name
         assert rows[3]["Date d'émission"] == "04/04/2023"
         assert rows[3]["Intitulé du compte bancaire"] == bank_account.label
-        assert rows[3]["État"] == "Exécuté"
+        assert rows[3]["État"] == "Émis"
         assert rows[3]["Montant"] == expected_settlement_amount
         assert set(rows[3]["Justificatifs"].split(", ")) == {invoice2.reference, invoice1.reference}
 
