@@ -13,11 +13,11 @@ import {
 import { SimpleModal } from '@/design-system/SimpleModal/SimpleModal'
 import fullEditIcon from '@/icons/full-edit.svg'
 import fullStarIcon from '@/icons/full-star.svg'
+import headlineImg from '@/icons/headline-img.svg'
 import strokeStarIcon from '@/icons/stroke-star.svg'
 import { HeadlineOfferImageDialogs } from '@/pages/IndividualOffers/IndividualOffersContainer/components/IndividualOfferColumns/components/HeadlineOfferImageDialogs'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
-import headlineImg from './assets/headline-img.svg'
 import styles from './OfferHeadlineCard.module.scss'
 
 interface OfferHeadlineCardProps {
