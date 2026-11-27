@@ -32,6 +32,7 @@ else
       --max-requests-jitter ${GUNICORN_MAX_REQUESTS_JITTER:-0} \
       --workers ${GUNICORN_WORKERS:-2} \
       --threads ${GUNICORN_THREADS:-5} \
+      --worker-connections ${GUNICORN_WORKER_CONNECTIONS:-1000} \
       --timeout ${GUNICORN_TIMEOUT:-90} \
       --log-level ${GUNICORN_LOG_LEVEL:-info} \
       --config gunicorn.conf.py \
