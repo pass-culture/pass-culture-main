@@ -4187,6 +4187,7 @@ export type ListOffersOfferResponseModel = {
      * Bookingscount
      */
     bookingsCount?: number;
+    format?: FormatEnum;
     /**
      * Highlightrequests
      */
@@ -4207,6 +4208,7 @@ export type ListOffersOfferResponseModel = {
      * Name
      */
     name: string;
+    nature?: NatureEnum;
     /**
      * Productid
      */
