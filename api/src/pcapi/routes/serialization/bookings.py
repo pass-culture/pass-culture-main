@@ -36,6 +36,7 @@ class GetBookingResponse(HttpBodyModel):
 
 def get_booking_response(booking: Booking) -> GetBookingResponse:
     birth_date = booking.user.birth_date.isoformat() if booking.user.birth_date else None
+    offerer_address = booking.stock.offer.offererAddress or booking.venue.offererAddress
     return GetBookingResponse(
         booking_id=humanize(booking.id),  # type: ignore [arg-type]
         date_of_birth=birth_date,
@@ -54,10 +55,7 @@ def get_booking_response(booking: Booking) -> GetBookingResponse:
         user_name=booking.userName,
         first_name=booking.user.firstName,
         last_name=booking.user.lastName,
-        # TODO bdalbianco 02/06/2025: CLEAN_OA remove check when no virtual venue
-        offer_address=booking.stock.offer.offererAddress.address.street if booking.stock.offer.offererAddress else None,
-        offer_department_code=booking.stock.offer.offererAddress.address.departmentCode
-        if booking.stock.offer.offererAddress
-        else None,
+        offer_address=offerer_address.address.street,
+        offer_department_code=offerer_address.address.departmentCode,
         venue_name=booking.venue.name,
     )
