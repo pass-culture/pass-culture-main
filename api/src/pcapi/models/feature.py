@@ -79,6 +79,7 @@ class FeatureToggle(enum.Enum):
     )
     ENABLE_MARSEILLE = "Activer Marseille en grand dans le front"
     ENABLE_NATIVE_APP_RECAPTCHA = "Active le reCaptacha sur l'API native"
+    ENABLE_NATIVE_CACHE_GET_OFFER_V3 = "Servir le détail d'offre v3 de l'app native depuis le cache dédié"
     ENABLE_NATIVE_CULTURAL_SURVEY = (
         "Active le Questionnaire des pratiques initiales natif (non TypeForm) sur l'app native et décli web"
     )
@@ -190,6 +191,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.ENABLE_EXPERIMENTAL_ASYNC_OFFER_INDEXING,
     FeatureToggle.ENABLE_IOS_OFFERS_LINK_WITH_REDIRECTION,
     FeatureToggle.ENABLE_MOVIE_FESTIVAL_RATE,
+    FeatureToggle.ENABLE_NATIVE_CACHE_GET_OFFER_V3,
     FeatureToggle.ENABLE_OFFERS_AUTO_CLEANUP,
     FeatureToggle.ENABLE_UBBLE_ID_CHECK_ON_DN_APPLICATION,
     FeatureToggle.ENABLE_UBBLE_SUBSCRIPTION_LIMITATION,
