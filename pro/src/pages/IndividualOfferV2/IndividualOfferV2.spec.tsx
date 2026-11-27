@@ -7,6 +7,7 @@ import { FormatEnum, NatureEnum } from '@/apiClient/v1'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { setFormat, setNature } from '@/commons/store/nfd/reducer'
+import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -33,17 +34,25 @@ function Selection() {
   )
 }
 
-const renderSelection = async () => {
+const renderSelection = async (
+  initialPath = '/offre/individuelle/v2/creation/description'
+) => {
+  const children = [
+    { path: 'description', element: <Selection /> },
+    { path: 'nature-format-domaine', element: <Selection /> },
+  ]
   const result = renderWithProviders(null, {
-    initialRouterEntries: ['/offre/individuelle/v2/creation/description'],
+    initialRouterEntries: [initialPath],
     routes: [
       {
         path: '/offre/individuelle/v2/creation',
         element: <IndividualOfferV2 />,
-        children: [
-          { path: 'description', element: <Selection /> },
-          { path: 'nature-format-domaine', element: <Selection /> },
-        ],
+        children,
+      },
+      {
+        path: '/offre/individuelle/v2/:offerId/creation',
+        element: <IndividualOfferV2 />,
+        children,
       },
       { path: '/offres', element: <h1>Offres</h1> },
     ],
@@ -103,6 +112,31 @@ describe('<IndividualOfferV2 />', () => {
     })
     expect(screen.getByLabelText('Nature')).toBeEmptyDOMElement()
     expect(screen.getByLabelText('Format')).toBeEmptyDOMElement()
+  })
+
+  it('should link back to nature-format-domaine without offer id in the url when the offer is not created yet', async () => {
+    await renderSelection()
+
+    expect(
+      screen.getByRole('link', { name: /Nature et format/ })
+    ).toHaveAttribute(
+      'href',
+      '/offre/individuelle/v2/creation/nature-format-domaine'
+    )
+  })
+
+  it('should link back to nature-format-domaine with the offer id in the url when editing a draft offer', async () => {
+    vi.spyOn(api, 'getOffer').mockResolvedValue(
+      getIndividualOfferFactory({ id: 42 })
+    )
+    await renderSelection('/offre/individuelle/v2/42/creation/description')
+
+    expect(
+      screen.getByRole('link', { name: /Nature et format/ })
+    ).toHaveAttribute(
+      'href',
+      '/offre/individuelle/v2/42/creation/nature-format-domaine'
+    )
   })
 
   it('should have no accessibility violations', async () => {

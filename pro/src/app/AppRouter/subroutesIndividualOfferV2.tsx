@@ -26,6 +26,17 @@ export const routesIndividualOfferV2: CustomRouteGroup['children'] = [
     loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
   },
   {
+    lazy: () =>
+      import(
+        '@/pages/IndividualOfferV2/IndividualOfferV2NatureFormatDomain/IndividualOfferV2NatureFormatDomain'
+      ),
+    path: ':offerId/creation/nature-format-domaine',
+    handle: {
+      title: 'Créer une offre - Choix du format, de la nature et du domaine',
+    },
+    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+  },
+  {
     path: 'creation/description',
     lazy: () =>
       import(
