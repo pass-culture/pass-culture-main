@@ -3,6 +3,7 @@ import { addDays, isBefore } from 'date-fns'
 import { useId, useState } from 'react'
 
 import { DMSApplicationstatus } from '@/apiClient/v1'
+import { ContentLayout } from '@/app/App/layouts/ContentLayout/ContentLayout'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { getToday } from '@/commons/utils/date'
@@ -55,30 +56,35 @@ export const Homepage = (): JSX.Element => {
 
   if (!hasIndividualTab && !hasCollectiveTab) {
     return (
-      <div className={styles['onboarding-container']}>
-        <h1 className={styles['title']}>
-          Diffusez votre première offre et pilotez ici votre activité !
-        </h1>
-        {isVenueClosureDetected && (
-          <div className={styles['venue-banner']}>
-            <BannerVenueClosureDetected />
-          </div>
-        )}
-        {withVenueHelpers(selectedPartnerVenue).isClosed &&
-          (selectedPartnerVenue.isPricingPoint ? (
+      <ContentLayout>
+        <div className={styles['onboarding-container']}>
+          <h1 className={styles['title']}>
+            Diffusez votre première offre et pilotez ici votre activité !
+          </h1>
+          {isVenueClosureDetected && (
             <div className={styles['venue-banner']}>
-              <Banner
-                variant={BannerVariants.WARNING}
-                title="Demande de fermeture de structure en cours"
-              />
+              <BannerVenueClosureDetected />
             </div>
-          ) : (
-            <div className={styles['venue-banner']}>
-              <Banner variant={BannerVariants.ERROR} title="Structure fermée" />
-            </div>
-          ))}
-        <OnboardingOffersChoice hideSkipOnboardingLink titleTag="h2" />
-      </div>
+          )}
+          {withVenueHelpers(selectedPartnerVenue).isClosed &&
+            (selectedPartnerVenue.isPricingPoint ? (
+              <div className={styles['venue-banner']}>
+                <Banner
+                  variant={BannerVariants.WARNING}
+                  title="Demande de fermeture de structure en cours"
+                />
+              </div>
+            ) : (
+              <div className={styles['venue-banner']}>
+                <Banner
+                  variant={BannerVariants.ERROR}
+                  title="Structure fermée"
+                />
+              </div>
+            ))}
+          <OnboardingOffersChoice hideSkipOnboardingLink titleTag="h2" />
+        </div>
+      </ContentLayout>
     )
   }
 
@@ -124,7 +130,7 @@ export const Homepage = (): JSX.Element => {
   )
 
   return (
-    <>
+    <ContentLayout>
       <h1
         className={styles['title-2']}
       >{`Votre espace ${selectedPartnerVenue.publicName}`}</h1>
@@ -287,7 +293,7 @@ export const Homepage = (): JSX.Element => {
           </div>
         </div>
       )}
-    </>
+    </ContentLayout>
   )
 }
 

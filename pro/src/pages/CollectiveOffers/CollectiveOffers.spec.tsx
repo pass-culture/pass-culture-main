@@ -25,7 +25,6 @@ import {
   venueAddressFactory,
 } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
-import { PartnerLayout } from '@/layouts/PartnerLayout/PartnerLayout'
 
 import { CollectiveOffers } from './CollectiveOffers'
 
@@ -47,7 +46,6 @@ const makeQuery = (
 const collectiveOffersRoutes = [
   {
     path: '/',
-    Component: PartnerLayout,
     children: [
       {
         path: 'offres/collectives',

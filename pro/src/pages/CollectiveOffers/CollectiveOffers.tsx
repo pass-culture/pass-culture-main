@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
+import { ContentLayout } from '@/app/App/layouts/ContentLayout/ContentLayout'
 import {
   DEFAULT_COLLECTIVE_SEARCH_FILTERS,
   DEFAULT_PAGE,
@@ -53,7 +54,7 @@ export const CollectiveOffers = () => {
   )
 
   return (
-    <>
+    <ContentLayout>
       <h1 className={styles['title']}>Offres réservables</h1>
 
       <CollectiveOffersScreen
@@ -64,7 +65,7 @@ export const CollectiveOffers = () => {
         redirectWithUrlFilters={redirectWithUrlFilters}
         urlSearchFilters={urlSearchFilters}
       />
-    </>
+    </ContentLayout>
   )
 }
 
