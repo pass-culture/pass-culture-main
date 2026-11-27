@@ -130,6 +130,14 @@ jobs:
             --database-ssl-mode "${DATABASE_SSL_MODE}" \
             "${DATABASE_SSL}"
 
+      - name: Ensure version ${{ inputs.app_version }} is ready
+        shell: bash
+        env:
+          APP_VERSION: ${{ inputs.app_version }}
+          PCAPI_ENVIRONMENT_SHORT_NAME: ${{ inputs.environment_short_name }}
+        run: |
+          passdirector pcapi is-version-deployed --environment "${PCAPI_ENVIRONMENT_SHORT_NAME}" --version "${APP_VERSION}" --retries 120 --retry-interval 30 --timeout 60
+
   deploy-api-doc-on-firebase:
     name: "Deploy api doc on firebase"
     uses: ./.github/workflows/cd_sub_deploy_api_doc.yml
