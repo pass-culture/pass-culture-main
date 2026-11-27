@@ -13,9 +13,9 @@ import {
 } from '@/design-system/Button/types'
 import { Tag, TagVariant } from '@/design-system/Tag/Tag'
 import fullEditIcon from '@/icons/full-edit.svg'
+import highlightImg from '@/icons/highlight-img.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
-import highlightImg from './assets/highlight-img.svg'
 import styles from './OfferHighlightCard.module.scss'
 import { OfferHighlightModal } from './OfferHighlightModal'
 

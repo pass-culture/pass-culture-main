@@ -31,11 +31,11 @@ import {
   GET_VENUES_STATS_QUERY_KEY,
 } from '@/commons/config/swrQueryKeys'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import headlineImg from '@/icons/headline-img.svg'
+import highlightImg from '@/icons/highlight-img.svg'
 import strokeShowIcon from '@/icons/stroke-show.svg'
 import { Card } from '@/ui-kit/Card/Card'
 
-import headlineImg from './assets/headlineImg.svg'
-import highlightImg from './assets/highlightImg.svg'
 import { MostViewedOffers } from './components/MostViewedOffers'
 import { OldCumulatedViews } from './components/OldCumulatedViews'
 import styles from './StatsCard.module.scss'
