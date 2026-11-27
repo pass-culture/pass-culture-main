@@ -1,13 +1,16 @@
 from flask import Response
 from flask import current_app
 from flask import redirect
+from flask import render_template
 from flask import request
 from flask import url_for
+from flask_wtf.csrf import CSRFError
 
 from pcapi.routes.backoffice.home import REDIRECT_AFTER_LOGIN_COOKIE_NAME
 from pcapi.routes.backoffice.utils import access_control
 from pcapi.routes.backoffice.utils import request as request_utils
 from pcapi.routes.backoffice.utils import response as response_utils
+from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
 
 @current_app.errorhandler(access_control.UnauthenticatedUserError)
@@ -33,3 +36,9 @@ def unauthenticated_user_handler(error: access_control.UnauthenticatedUserError)
         secure=True,
     )
     return response
+
+
+@current_app.errorhandler(CSRFError)
+def handle_csrf_error(error: CSRFError) -> tuple[str, int]:
+    mark_transaction_as_invalid()
+    return render_template("errors/csrf.html"), 400

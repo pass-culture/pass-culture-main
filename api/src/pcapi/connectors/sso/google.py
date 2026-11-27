@@ -39,7 +39,7 @@ class GoogleSSOProvider(SSOProvider):
         :raise GoogleSignInException: on OAuth errors (e.g. expired or already used code), network errors or
             invalid identity tokens.
         """
-        from pcapi.flask_app import native_app_oauth  # avoid circular import
+        from pcapi.connectors.google_oauth import native_app_oauth  # avoid circular import
 
         try:
             token = native_app_oauth.google.fetch_access_token(

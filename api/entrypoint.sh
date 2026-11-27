@@ -35,5 +35,5 @@ else
       --timeout ${GUNICORN_TIMEOUT:-90} \
       --log-level ${GUNICORN_LOG_LEVEL:-info} \
       --config gunicorn.conf.py \
-      ${GUNICORN_FLASK_APP:-pcapi.app:app}
+      ${GUNICORN_FLASK_APP:-pcapi.app:create_app()}
 fi
