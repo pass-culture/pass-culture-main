@@ -650,6 +650,12 @@ def get_settlements_query(
     date_until: datetime.date | None = None,
     name_search: str | None = None,
 ) -> sa_orm.Query[models.Settlement]:
+    # the date of a settlement corresponds to the batch date when there is one, otherwise to settlementDate
+    date_column = sa.case(
+        (models.Settlement.batchId.is_not(None), models.SettlementBatch.dateValidated),
+        else_=models.Settlement.settlementDate,
+    )
+
     settlements_query = (
         db.session.query(models.Settlement)
         .join(models.Settlement.bankAccount)
@@ -680,17 +686,11 @@ def get_settlements_query(
             .joinedload(models.Settlement.batch)
             .load_only(models.SettlementBatch.name),
         )
-        .order_by(models.SettlementBatch.dateValidated.desc())
+        .order_by(date_column.desc())
     )
 
     if bank_account_id is not None:
         settlements_query = settlements_query.filter(models.BankAccount.id == bank_account_id)
-
-    # the date of a settlement corresponds to the batch date when there is one, otherwise to settlementDate
-    date_column = sa.case(
-        (models.Settlement.batchId.is_not(None), models.SettlementBatch.dateValidated),
-        else_=models.Settlement.settlementDate,
-    )
 
     if date_from is not None:
         datetime_from = convert_to_datetime(date_from)
