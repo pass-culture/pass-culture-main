@@ -7,7 +7,6 @@ import { noop } from '@/commons/utils/noop'
 import { parse } from '@/commons/utils/query-string'
 
 import { administrationRouteGroup } from './routes/administrationRouteGroup'
-import { partnerRouteGroup } from './routes/partnerRouteGroup'
 import { venuePageRouteSubgroup } from './routes/venuePageRouteSubgroup'
 import { venueSettingsRouteSubgroup } from './routes/venueSettingsRouteSubgroup'
 import { routesEcoDesign } from './subroutesEcoDesignMap'
@@ -49,9 +48,24 @@ export const routes: CustomRouteTree = [
     },
   },
   administrationRouteGroup,
-  partnerRouteGroup,
   venuePageRouteSubgroup,
   venueSettingsRouteSubgroup,
+  {
+    path: '/accueil',
+    lazy: () => import('@/pages/Homepage/Homepage'),
+    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+    handle: {
+      title: 'Espace acteurs culturels',
+    },
+  },
+  {
+    path: '/guichet',
+    lazy: () => import('@/pages/Desk/Desk'),
+    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+    handle: {
+      title: 'Guichet',
+    },
+  },
   {
     lazy: () => import('@/pages/Hub/Hub'),
     loader: withUserPermissions(mustBeAuthenticated),
@@ -125,6 +139,30 @@ export const routes: CustomRouteTree = [
     path: '/structures/lieux/creation',
     handle: {
       title: 'Créer un lieu',
+    },
+  },
+  {
+    path: '/offres',
+    lazy: () => import('@/pages/IndividualOffers/IndividualOffers'),
+    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+    handle: {
+      title: 'Offres individuelles',
+    },
+  },
+  {
+    path: '/reservations',
+    lazy: () => import('@/pages/IndividualBookings/IndividualBookings'),
+    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+    handle: {
+      title: 'Réservations individuelles',
+    },
+  },
+  {
+    path: '/offres/collectives',
+    lazy: () => import('@/pages/CollectiveOffers/CollectiveOffers'),
+    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+    handle: {
+      title: 'Offres collectives',
     },
   },
   {

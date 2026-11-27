@@ -15,7 +15,6 @@ import {
   type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
-import { PartnerLayout } from '@/layouts/PartnerLayout/PartnerLayout'
 
 import * as utils from './commons/utils'
 import { HomepageVariant, OffersCardVariant } from './components/types'
@@ -86,7 +85,6 @@ vi.mock('./components/EditoCard/EditoCard', () => ({
 const homepageRoutes = [
   {
     path: '/',
-    Component: PartnerLayout,
     children: [
       {
         path: 'accueil',

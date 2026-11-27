@@ -51,7 +51,6 @@ export const ContentLayout = ({
           [styles['page-layout-connect-as']]: userIsConnectedAs,
         })}
       >
-        {/* TODO (igabriele, 2026-04-29): Move lateral panels into `<AdministrationLayout>` and `<PartnerLayout>`. */}
         <LateralPanel
           isOpen={isLateralPanelOpen}
           onToggle={setIsLateralPanelOpen}

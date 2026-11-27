@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form'
 import { api } from '@/apiClient/api'
 import type { ApiError } from '@/apiClient/compat'
 import type { GetBookingResponse } from '@/apiClient/v1'
+import { ContentLayout } from '@/app/App/layouts/ContentLayout/ContentLayout'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
@@ -144,7 +145,7 @@ export const Desk = () => {
   }
 
   return (
-    <>
+    <ContentLayout>
       <h1 className={styles['title']}>Guichet</h1>
       <p className={styles['desk-advice']}>
         Saisissez les contremarques présentées par les bénéficiaires afin de les
@@ -202,7 +203,7 @@ export const Desk = () => {
           />
         </div>
       </Panel>
-    </>
+    </ContentLayout>
   )
 }
 
