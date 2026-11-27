@@ -129,6 +129,11 @@ def remove_sso_from_user(user: "User", sso_user_id: int) -> None:
     if sso.id != attached_sso.id:
         raise exceptions.SSOAttachedToAnotherAccount
 
+    has_no_password = user.password is None
+    has_only_one_sso = len(user.single_sign_ons) == 1
+    if has_no_password and has_only_one_sso:
+        raise exceptions.SSOUnauthorizedRemove
+
     try:
         provider = SSOProviderName(sso.ssoProvider)
     except ValueError as e:
