@@ -16,10 +16,10 @@ import {
   LOCAL_STORAGE_KEY,
   localStorageManager,
 } from '@/commons/utils/localStorageManager'
-import { TAB_NAMES } from '@/components/ReimbursementsTabs/constants'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 import { getPanelId, getTabId } from '@/ui-kit/Tabs/Tabs'
 
+import { TAB_NAMES } from '../components/ReimbursementsTabs/constants'
 import { BannerReimbursementsInfo } from '../ReimbursementsInvoices/BannerReimbursementsInfo'
 import { DEFAULT_INVOICES_FILTERS } from '../ReimbursementsInvoices/constants'
 import { SettlementsFilters } from './components/SettlementsFilters/SettlementsFilters'
