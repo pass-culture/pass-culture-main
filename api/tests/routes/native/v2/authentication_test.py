@@ -1341,3 +1341,140 @@ class SSOAttachAccountTest:
         assert self._get_ssos(user) == []
         [sso] = self._get_ssos(previous_account)
         assert sso.ssoUserId == self.google_sso_user.sub
+
+
+class SSORemoveAccountTest:
+    google_sso_user = SSOUser(
+        sub="100428144463745704968",
+        email="docteur.cuesta@passkoultour.app",
+        email_verified=True,
+    )
+    device_info = {
+        "os": "iOS",
+        "deviceId": "ID",
+        "source": "app",
+    }
+
+    def _remove(self, client, sso_id):
+        return client.delete(f"/native/v2/sso/{sso_id}")
+
+    def _get_ssos(self, user):
+        return db.session.query(SingleSignOn).filter(SingleSignOn.userId == user.id).all()
+
+    def test_remove_google_sso(self, client):
+        user = users_factories.UserFactory(isEmailValidated=True)
+        sso = users_factories.SingleSignOnFactory(user=user, ssoProvider="google")
+
+        response = self._remove(client.with_token(user), sso.id)
+
+        assert response.status_code == 204, response.json
+        assert self._get_ssos(user) == []
+
+    @patch("pcapi.connectors.sso.apple.AppleSSOProvider.revoke_access")
+    def test_remove_apple_sso_revokes_apple_token(self, mocked_revoke_access, client):
+        user = users_factories.UserFactory(isEmailValidated=True)
+        sso = users_factories.SingleSignOnFactory(
+            user=user, ssoProvider="apple", ssoExtraData={"mobile": "apple-refresh-token"}
+        )
+
+        response = self._remove(client.with_token(user), sso.id)
+
+        assert response.status_code == 204, response.json
+        mocked_revoke_access.assert_called_once_with("apple-refresh-token")
+        assert self._get_ssos(user) == []
+
+    @pytest.mark.usefixtures("clean_database")
+    def test_removed_sso_is_committed(self, client):
+        # the other tests read the SSOs in the request session: this one checks that the deletion is really committed
+        user = users_factories.UserFactory(isEmailValidated=True)
+        user_id = user.id
+        sso = users_factories.SingleSignOnFactory(user=user, ssoProvider="google")
+
+        response = self._remove(client.with_token(user), sso.id)
+
+        assert response.status_code == 204, response.json
+        db.session.close()  # drop everything that was not committed
+        assert db.session.query(SingleSignOn).filter(SingleSignOn.userId == user_id).count() == 0
+
+    def test_remove_sso_without_password_when_another_sso_remains(self, client):
+        user = users_factories.UserFactory(isEmailValidated=True)
+        user.password = None
+        users_factories.SingleSignOnFactory(user=user, ssoProvider="apple")
+        google_sso = users_factories.SingleSignOnFactory(user=user, ssoProvider="google")
+
+        response = self._remove(client.with_token(user), google_sso.id)
+
+        assert response.status_code == 204, response.json
+        [sso] = self._get_ssos(user)
+        assert sso.ssoProvider == "apple"
+
+    def test_remove_last_sso_without_password(self, client):
+        user = users_factories.UserFactory(isEmailValidated=True)
+        user.password = None
+        sso = users_factories.SingleSignOnFactory(user=user, ssoProvider="google")
+
+        response = self._remove(client.with_token(user), sso.id)
+
+        assert response.status_code == 400
+        assert response.json["code"] == "SSO_UNAUTHORIZED_REMOVE"
+        assert self._get_ssos(user) == [sso]
+        assert user.password is None
+
+    def test_unknown_sso(self, client):
+        user = users_factories.UserFactory(isEmailValidated=True)
+
+        response = self._remove(client.with_token(user), 0)
+
+        assert response.status_code == 400
+        assert response.json["code"] == "SSO_USER_NOT_FOUND"
+
+    def test_sso_of_another_account(self, client):
+        user = users_factories.UserFactory(isEmailValidated=True)
+        users_factories.SingleSignOnFactory(user=user, ssoProvider="google")
+        other_sso = users_factories.SingleSignOnFactory(ssoProvider="google")
+
+        response = self._remove(client.with_token(user), other_sso.id)
+
+        assert response.status_code == 400
+        assert response.json["code"] == "SSO_ATTACHED_TO_ANOTHER_ACCOUNT"
+        assert db.session.query(SingleSignOn).filter(SingleSignOn.id == other_sso.id).count() == 1
+
+    def test_unauthenticated(self, client):
+        sso = users_factories.SingleSignOnFactory(ssoProvider="google")
+
+        response = self._remove(client, sso.id)
+
+        assert response.status_code == 401
+        assert db.session.query(SingleSignOn).filter(SingleSignOn.id == sso.id).count() == 1
+
+    @patch("pcapi.connectors.sso.google.GoogleSSOProvider.validate_token")
+    def test_removed_sso_no_longer_logs_in(self, mocked_google_oauth, client):
+        user = users_factories.UserFactory(email="jeune@example.com", isEmailValidated=True)
+        sso = users_factories.SingleSignOnFactory(user=user, ssoProvider="google", ssoUserId=self.google_sso_user.sub)
+        response = self._remove(client.with_token(user), sso.id)
+        assert response.status_code == 204, response.json
+
+        mocked_google_oauth.return_value = self.google_sso_user
+        oauth_state_token = token_utils.UUIDToken.create(
+            token_utils.TokenType.OAUTH_STATE, users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME
+        )
+        response = client.post(
+            "/native/v2/oauth/google/authorize",
+            json={
+                "authorizationCode": "4/google_code",
+                "oauthStateToken": oauth_state_token.encoded_token,
+                "device_info": self.device_info,
+            },
+        )
+
+        assert response.status_code == 401
+        assert response.json["code"] == "SSO_EMAIL_NOT_FOUND"
+        assert self._get_ssos(user) == []
+
+    def test_invalid_sso_id(self, client):
+        user = users_factories.UserFactory(isEmailValidated=True)
+
+        response = self._remove(client.with_token(user), "not-an-id")
+
+        # only matches the `POST /sso/<sso_provider>` route
+        assert response.status_code == 405

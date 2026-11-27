@@ -5,6 +5,10 @@ class AuthException(CoreException):
     code = "AUTH_EXCEPTION"
 
 
+class SSOUserNotFound(AuthException):
+    code = "SSO_USER_NOT_FOUND"
+
+
 class SSOUnsupportedProvider(AuthException):
     code = "SSO_UNSUPPORTED_PROVIDER"
 
@@ -23,3 +27,7 @@ class SSOUnverifiedEmail(AuthException):
 
 class SSOAccountNotActive(AuthException):
     code = "SSO_ACCOUNT_NOT_ACTIVE"
+
+
+class SSOUnauthorizedRemove(AuthException):
+    code = "SSO_UNAUTHORIZED_REMOVE"

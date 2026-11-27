@@ -5,6 +5,7 @@ from datetime import datetime
 import pcapi.core.external.brevo as external_contacts
 from pcapi import settings
 from pcapi.core import token as token_utils
+from pcapi.core.auth.api import revoke_sso_access
 from pcapi.core.mails import transactional as transactional_mails
 from pcapi.core.users import api
 from pcapi.core.users import constants
@@ -12,8 +13,6 @@ from pcapi.core.users import exceptions
 from pcapi.core.users import models
 from pcapi.core.users import repository as users_repository
 from pcapi.core.users import sessions
-from pcapi.core.users.api import SingleSignOnProviders
-from pcapi.core.users.api import revoke_sso_access
 from pcapi.core.users.email.send import send_pro_user_emails_for_email_change
 from pcapi.models import db
 from pcapi.utils import date as date_utils
@@ -279,7 +278,7 @@ def full_email_update_by_admin(user: models.User, email: str, *, author: models.
     sessions.disconnect_user_session(user.id)
     sessions.disconnect_native_user_sessions(user.id)
 
-    revoke_sso_access(user, SingleSignOnProviders.ALL)
+    revoke_sso_access(user)
 
     if commit:
         db.session.commit()

@@ -9,6 +9,7 @@ import pcapi.core.token as token_utils
 from pcapi.connectors import api_recaptcha
 from pcapi.connectors import apple_oauth
 from pcapi.connectors import google_oauth
+from pcapi.core.auth import repository as auth_repo
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.subscription.dms import api as dms_subscription_api
 from pcapi.core.users import api as users_api
@@ -257,7 +258,7 @@ def sso_authorize(sso_provider: str, body: authentication.OAuthSigninRequest) ->
     sso_user_id = sso_user.sub
     sso_extra_data = sso_user.extra_data
 
-    single_sign_on = users_repo.get_single_sign_on(sso_provider, sso_user_id)
+    single_sign_on = auth_repo.get_single_sign_on_from_provider(sso_provider, sso_user_id)
     if not single_sign_on:
         user = users_repo.find_user_by_email(email)
     else:
@@ -317,7 +318,7 @@ def sso_authorize(sso_provider: str, body: authentication.OAuthSigninRequest) ->
 
                 current_provider_sso.ssoExtraData = extra_data or None
         else:
-            users_repo.create_single_sign_on(
+            auth_repo.create_single_sign_on(
                 user,
                 sso_provider,
                 sso_user_id,

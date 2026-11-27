@@ -195,37 +195,6 @@ def get_and_lock_user(userId: int) -> models.User | None:
     return user
 
 
-def get_single_sign_on(sso_provider: str, sso_user_id: str) -> models.SingleSignOn | None:
-    return (
-        db.session.query(models.SingleSignOn)
-        .filter(
-            models.SingleSignOn.ssoProvider == sso_provider,
-            models.SingleSignOn.ssoUserId == sso_user_id,
-        )
-        .options(sa_orm.joinedload(models.SingleSignOn.user))
-        .one_or_none()
-    )
-
-
-def create_single_sign_on(
-    user: models.User,
-    sso_provider: str,
-    sso_user_id: str,
-    sso_extra_data: dict | None = None,
-) -> models.SingleSignOn:
-    sso_user = models.SingleSignOn(
-        user=user,
-        ssoProvider=sso_provider,
-        ssoUserId=sso_user_id,
-        ssoExtraData=sso_extra_data,
-    )
-
-    db.session.add(sso_user)
-    db.session.flush()
-
-    return sso_user
-
-
 def fill_phone_number_on_all_users_offerer_without_any(offerer_id: int, phone_number: str) -> None:
     users_without_phone_number = (
         sa.select(models.User.id)
@@ -243,7 +212,3 @@ def fill_phone_number_on_all_users_offerer_without_any(offerer_id: int, phone_nu
         {"phoneNumber": phone_number}, synchronize_session=False
     )
     db.session.flush()
-
-
-def delete_sso_user(sso_id: int) -> None:
-    db.session.query(models.SingleSignOn).filter_by(id=sso_id).delete(synchronize_session=False)
