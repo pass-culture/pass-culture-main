@@ -2061,6 +2061,35 @@ export const zGetOffererMembersResponseModel = z.object({
 });
 
 /**
+ * OffersCountResponseModel
+ */
+export const zOffersCountResponseModel = z.object({
+    statusCounts: z.record(z.string(), z.int()).nullable(),
+    total: z.int(),
+    totalIsCapped: z.boolean()
+});
+
+/**
+ * OffersCountsQueryModel
+ */
+export const zOffersCountsQueryModel = z.object({
+    creationMode: zCreationMode.nullish().default(null),
+    isDigital: z.boolean().nullish().default(null),
+    nameOrEan: z.string().nullish().default(null),
+    periodBeginningDate: z.iso.date().nullish().default(null),
+    periodEndingDate: z.iso.date().nullish().default(null),
+    venueId: z.int()
+});
+
+/**
+ * OffersCountsResponseModel
+ */
+export const zOffersCountsResponseModel = z.object({
+    events: zOffersCountResponseModel,
+    things: zOffersCountResponseModel
+});
+
+/**
  * PatchAllOffersActiveStatusBodyModel
  */
 export const zPatchAllOffersActiveStatusBodyModel = z.object({
@@ -4363,6 +4392,20 @@ export const zPatchAllOffersActiveStatusBody = zPatchAllOffersActiveStatusBodyMo
  * OK
  */
 export const zGetCategoriesResponse = zCategoriesResponseModel;
+
+export const zGetOffersCountsQuery = z.object({
+    venueId: z.int(),
+    nameOrEan: z.string().nullish().default(null),
+    creationMode: zCreationMode.nullish().default(null),
+    isDigital: z.boolean().nullish().default(null),
+    periodBeginningDate: z.iso.date().nullish().default(null),
+    periodEndingDate: z.iso.date().nullish().default(null)
+});
+
+/**
+ * OK
+ */
+export const zGetOffersCountsResponse = zOffersCountsResponseModel;
 
 export const zDeleteDraftOffersBody = zDeleteOfferRequestBody;
 

@@ -11,6 +11,7 @@ MAX_OFFER_VIDEO_DESCRIPTION_LENGTH: typing.Final = 150
 OFFERS_RECAP_LIMIT: typing.Final = 101
 OFFERS_PER_PAGE: typing.Final = 10
 OFFERS_LIST_TOTAL_MAX: typing.Final = 99
+OFFERS_COUNT_MAX: typing.Final = 999
 OFFERS_HOMEPAGE_LIMIT: typing.Final = 3
 
 
