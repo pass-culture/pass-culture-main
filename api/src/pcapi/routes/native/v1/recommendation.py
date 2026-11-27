@@ -66,7 +66,7 @@ def playlist(
     body: serializers.PlaylistRequestBody,
 ) -> serializers.PlaylistResponse:
     try:
-        if body.is_qpi is True and current_user is not None:
+        if body.is_qpi:
             user_cultural_survey = get_user_cultural_survey(current_user.id)
             body.qpi_answers = user_cultural_survey.answers if user_cultural_survey else []
         raw_response = recommendation_api.get_playlist(

@@ -48,6 +48,7 @@ if typing.TYPE_CHECKING:
     from pcapi.core.achievements.models import Achievement
     from pcapi.core.bookings.models import Booking
     from pcapi.core.chronicles.models import Chronicle
+    from pcapi.core.cultural_survey.models import UserCulturalSurvey
     from pcapi.core.educational.models import CollectiveOffer
     from pcapi.core.favorites.models import FavoriteArtist
     from pcapi.core.favorites.models import FavoriteOffer
@@ -214,6 +215,9 @@ class User(PcObject, Model, DeactivableMixin):
     culturalSurveyFilledDate: sa_orm.Mapped[datetime | None] = sa_orm.mapped_column(sa.DateTime, nullable=True)
     # culturalSurveyId is obsolete. the column is kept for backward compatibility with the existing data
     culturalSurveyId: sa_orm.Mapped[UUID | None] = sa_orm.mapped_column(postgresql.UUID(as_uuid=True), nullable=True)
+    culturalSurveys: sa_orm.Mapped[UserCulturalSurvey | None] = sa_orm.relationship(
+        "UserCulturalSurvey", uselist=False, back_populates="user"
+    )
     dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
         sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now
     )

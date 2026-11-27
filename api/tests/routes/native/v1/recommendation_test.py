@@ -4,6 +4,7 @@ import urllib.parse
 import pytest
 
 import pcapi.core.artist.factories as artist_factories
+import pcapi.core.cultural_survey.factories as cultural_survey_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.core import testing
@@ -245,12 +246,82 @@ class PlaylistTest:
 
         client = client.with_token(user)
 
-        # User authentication
-        with testing.assert_num_queries(1):
+        # User authentication, plus one extra query to fetch the cultural survey when is_qpi is True
+        expected_queries = 2 if is_qpi else 1
+        with testing.assert_num_queries(expected_queries):
             response = client.post("/native/v1/recommendation/playlist", json={"isQpi": is_qpi})
             assert response.status_code == 200
         body = json.loads(mocked.last_request.body)
         assert body["is_qpi"] is is_qpi
+
+    @pytest.mark.settings(
+        RECOMMENDATION_BACKEND="pcapi.connectors.recommendation.HttpBackend",
+        RECOMMENDATION_API_URL="https://example.com/recommendation/",
+    )
+    def test_qpi_true_forwards_existing_cultural_survey_answers(self, requests_mock, client, db_session):
+        user = users_factories.UserFactory(id=3)
+        survey = cultural_survey_factories.UserCulturalSurveyFactory(user=user)
+        mocked = requests_mock.post("https://example.com/recommendation/playlist_recommendation/3")
+
+        client = client.with_token(user)
+
+        # User authentication + fetch the user's cultural survey
+        with testing.assert_num_queries(2):
+            response = client.post("/native/v1/recommendation/playlist", json={"isQpi": True})
+            assert response.status_code == 200
+        body = json.loads(mocked.last_request.body)
+        assert body["qpi_answers"] == survey.answers
+
+    @pytest.mark.settings(
+        RECOMMENDATION_BACKEND="pcapi.connectors.recommendation.HttpBackend",
+        RECOMMENDATION_API_URL="https://example.com/recommendation/",
+    )
+    def test_qpi_true_without_cultural_survey_sends_empty_answers(self, requests_mock, client, db_session):
+        user = users_factories.UserFactory(id=3)
+        mocked = requests_mock.post("https://example.com/recommendation/playlist_recommendation/3")
+
+        client = client.with_token(user)
+
+        # User authentication + fetch the (non-existent) cultural survey
+        with testing.assert_num_queries(2):
+            response = client.post("/native/v1/recommendation/playlist", json={"isQpi": True})
+            assert response.status_code == 200
+        body = json.loads(mocked.last_request.body)
+        assert body["qpi_answers"] == []
+
+    @pytest.mark.settings(
+        RECOMMENDATION_BACKEND="pcapi.connectors.recommendation.HttpBackend",
+        RECOMMENDATION_API_URL="https://example.com/recommendation/",
+    )
+    @pytest.mark.parametrize("payload", [{}, {"isQpi": False}])
+    def test_qpi_false_or_absent_does_not_fetch_cultural_survey(self, requests_mock, client, db_session, payload):
+        user = users_factories.UserFactory(id=3)
+        # The user does have a cultural survey, but it must not be fetched nor forwarded.
+        cultural_survey_factories.UserCulturalSurveyFactory(user=user)
+        mocked = requests_mock.post("https://example.com/recommendation/playlist_recommendation/3")
+
+        client = client.with_token(user)
+
+        # User authentication only: no extra query to fetch the cultural survey
+        with testing.assert_num_queries(1):
+            response = client.post("/native/v1/recommendation/playlist", json=payload)
+            assert response.status_code == 200
+        body = json.loads(mocked.last_request.body)
+        assert "qpi_answers" not in body
+
+    @pytest.mark.settings(
+        RECOMMENDATION_BACKEND="pcapi.connectors.recommendation.HttpBackend",
+        RECOMMENDATION_API_URL="https://example.com/recommendation/",
+    )
+    def test_qpi_true_anonymous_does_not_fetch_cultural_survey(self, requests_mock, client, db_session):
+        # Anonymous requests are rejected by @authenticated_and_active_user_required before
+        # reaching the is_qpi branch, so no cultural survey lookup should ever happen.
+        mocked = requests_mock.post("https://example.com/recommendation/playlist_recommendation/3")
+
+        with testing.assert_num_queries(0):
+            response = client.post("/native/v1/recommendation/playlist", json={"isQpi": True})
+            assert response.status_code == 401
+        assert not mocked.called
 
     @pytest.mark.settings(
         RECOMMENDATION_BACKEND="pcapi.connectors.recommendation.HttpBackend",

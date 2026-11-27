@@ -22,6 +22,7 @@ def install_models() -> None:
     import pcapi.core.bookings.models
     import pcapi.core.criteria.models
     import pcapi.core.cultural_outreach.models
+    import pcapi.core.cultural_survey.models
     import pcapi.core.educational.models
     import pcapi.core.favorites.models
     import pcapi.core.finance.models
