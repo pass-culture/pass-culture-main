@@ -95,6 +95,9 @@ from pcapi.utils import image_conversion
 from pcapi.utils import regions as utils_regions
 from pcapi.utils import siren as siren_utils
 from pcapi.utils.clean_accents import clean_accents
+from pcapi.utils.date import get_date_formatted_for_email
+from pcapi.utils.date import get_time_formatted_for_email
+from pcapi.utils.date import utc_datetime_to_department_timezone
 from pcapi.utils.repository import transaction
 from pcapi.utils.transaction_manager import atomic
 from pcapi.utils.transaction_manager import is_managed_transaction
@@ -3920,12 +3923,16 @@ def notify_tagged_venues_still_closed(days_count: int) -> None:
         if not event.venue.bookingEmail:
             continue
 
+        event_date = utc_datetime_to_department_timezone(
+            event.actionDate, event.venue.offererAddress.address.departmentCode
+        )
+
         send(
             recipients=[event.venue.bookingEmail],
             data=mails_models.TransactionalEmailData(
                 template=TransactionalEmail.VENUE_STILL_NOT_CLOSED_REMINDER.value,
                 params={
-                    "VENUE_DETECTED_AS_CLOSED_DATE": event.actionDate,
+                    "VENUE_DETECTED_AS_CLOSED_DATE": f"{get_date_formatted_for_email(event_date)} {get_time_formatted_for_email(event_date)}",
                     "SIRET": event.venue.siret,
                     "VENUE_PUBLIC_NAME": event.venue.publicName,
                 },
