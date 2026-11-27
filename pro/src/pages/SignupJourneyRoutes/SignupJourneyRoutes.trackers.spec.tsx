@@ -1,6 +1,5 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { Route, Routes } from 'react-router'
 import { axe } from 'vitest-axe'
 
 import * as useAnalytics from '@/app/App/analytics/firebase'
@@ -13,20 +12,22 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { SignupJourneyRoutes } from './SignupJourneyRoutes'
 
 const renderSignupJourneyRoutes = () => {
-  return renderWithProviders(
-    <Routes>
-      <Route path="/inscription/structure" element={<SignupJourneyRoutes />}>
-        {routesSignupJourney.map((route) => (
-          <Route key={route.path} path={route.path} element={route.element} />
-        ))}
-      </Route>
-      <Route path="/connexion" element={<div>Connexion</div>} />
-    </Routes>,
-    {
-      user: sharedCurrentUserFactory(),
-      initialRouterEntries: ['/inscription/structure/recherche'],
-    }
-  )
+  return renderWithProviders(null, {
+    user: sharedCurrentUserFactory(),
+    initialRouterEntries: ['/inscription/structure/recherche'],
+    routes: [
+      {
+        path: '/inscription/structure',
+        element: <SignupJourneyRoutes />,
+        hydrateFallbackElement: <></>,
+        children: routesSignupJourney.map((route) => ({
+          ...route,
+          loader: undefined,
+        })),
+      },
+      { path: '/connexion', element: <div>Connexion</div> },
+    ],
+  })
 }
 const mockLogEvent = vi.fn()
 
@@ -34,6 +35,7 @@ describe('SignupJourneyRoutes::trackers', () => {
   it('should render without accessibility violations', async () => {
     const { container } = renderSignupJourneyRoutes()
 
+    await screen.findByTestId('profile-button')
     expect(await axe(container)).toHaveNoViolations()
   })
 
@@ -47,7 +49,7 @@ describe('SignupJourneyRoutes::trackers', () => {
 
     renderSignupJourneyRoutes()
 
-    await userEvent.click(screen.getByTestId('profile-button'))
+    await userEvent.click(await screen.findByTestId('profile-button'))
     await userEvent.click(screen.getByText('Se déconnecter'))
 
     expect(logoutSpy).toHaveBeenCalledTimes(1)

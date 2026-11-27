@@ -1,5 +1,4 @@
 import { screen } from '@testing-library/react'
-import { Route, Routes } from 'react-router'
 import { axe } from 'vitest-axe'
 
 import { routesSignup } from '@/app/AppRouter/subroutesSignupMap'
@@ -20,17 +19,21 @@ vi.mock('@/apiClient/api', () => ({
 }))
 
 const renderSignup = (options?: RenderWithProvidersOptions) =>
-  renderWithProviders(
-    <Routes>
-      <Route path="/accueil" element="Connecté" />
-      <Route path="/inscription" element={<Signup />}>
-        {routesSignup.map((route) => (
-          <Route key={route.path} path={route.path} element={route.element} />
-        ))}
-      </Route>
-    </Routes>,
-    options
-  )
+  renderWithProviders(null, {
+    ...options,
+    routes: [
+      { path: '/accueil', element: 'Connecté' },
+      {
+        path: '/inscription',
+        element: <Signup />,
+        hydrateFallbackElement: <></>,
+        children: routesSignup.map((route) => ({
+          ...route,
+          loader: undefined,
+        })),
+      },
+    ],
+  })
 
 describe('src | components | pages | Signup', () => {
   it('should render without accessibility violations', async () => {
@@ -38,14 +41,15 @@ describe('src | components | pages | Signup', () => {
       initialRouterEntries: ['/inscription/compte/creation'],
     })
 
+    await screen.findByRole('heading', { name: /Créez votre compte/ })
     expect(await axe(container)).toHaveNoViolations()
   })
 
-  it('should render logo and sign-up form', () => {
+  it('should render logo and sign-up form', async () => {
     renderSignup({ initialRouterEntries: ['/inscription/compte/creation'] })
 
     expect(
-      screen.getByRole('heading', { name: /Créez votre compte/ })
+      await screen.findByRole('heading', { name: /Créez votre compte/ })
     ).toBeInTheDocument()
 
     expect(screen.getByLabelText(/Nom/)).toBeInTheDocument()
@@ -69,10 +73,12 @@ describe('src | components | pages | Signup', () => {
     ).toHaveAttribute('href', 'https://pass.culture.fr/donnees-personnelles/')
   })
 
-  it('should render logo and confirmation page', () => {
+  it('should render logo and confirmation page', async () => {
     renderSignup({ initialRouterEntries: ['/inscription/compte/confirmation'] })
 
-    expect(screen.getByText(/Validez votre adresse email/)).toBeInTheDocument()
+    expect(
+      await screen.findByText(/Validez votre adresse email/)
+    ).toBeInTheDocument()
 
     expect(
       screen.getByText('Cliquez sur le lien envoyé par email')

@@ -309,3 +309,7 @@ export const Validation = (): JSX.Element | undefined => {
     </div>
   )
 }
+
+// Lazy-loaded by react-router
+// ts-unused-exports:disable-next-line
+export const Component = Validation

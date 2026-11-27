@@ -1,17 +1,11 @@
 import { withUserPermissions } from '@/commons/auth/withUserPermissions'
-import { Activity } from '@/components/SignupJourneyForm/Activity/Activity'
-import { OffererAuthentication } from '@/components/SignupJourneyForm/Authentication/OffererAuthentication'
-import { ConfirmedAttachment } from '@/components/SignupJourneyForm/ConfirmedAttachment/ConfirmedAttachment'
-import { Offerer } from '@/components/SignupJourneyForm/Offerer/Offerer'
-import { Offerers as SignupJourneyOfferers } from '@/components/SignupJourneyForm/Offerers/Offerers'
-import { Validation } from '@/components/SignupJourneyForm/Validation/Validation'
 
 import type { CustomRouteGroupChild } from './types'
 import { mustBeAuthenticated } from './utils'
 
 export const routesSignupJourney: CustomRouteGroupChild[] = [
   {
-    element: <Offerer />,
+    lazy: () => import('@/components/SignupJourneyForm/Offerer/Offerer'),
     loader: withUserPermissions(mustBeAuthenticated),
     path: 'recherche',
     handle: {
@@ -19,7 +13,7 @@ export const routesSignupJourney: CustomRouteGroupChild[] = [
     },
   },
   {
-    element: <SignupJourneyOfferers />,
+    lazy: () => import('@/components/SignupJourneyForm/Offerers/Offerers'),
     loader: withUserPermissions(mustBeAuthenticated),
     path: 'rattachement',
     handle: {
@@ -27,7 +21,10 @@ export const routesSignupJourney: CustomRouteGroupChild[] = [
     },
   },
   {
-    element: <ConfirmedAttachment />,
+    lazy: () =>
+      import(
+        '@/components/SignupJourneyForm/ConfirmedAttachment/ConfirmedAttachment'
+      ),
     loader: withUserPermissions(mustBeAuthenticated),
     path: 'rattachement/confirmation-rattachement',
     handle: {
@@ -36,7 +33,10 @@ export const routesSignupJourney: CustomRouteGroupChild[] = [
     },
   },
   {
-    element: <OffererAuthentication />,
+    lazy: () =>
+      import(
+        '@/components/SignupJourneyForm/Authentication/OffererAuthentication'
+      ),
     loader: withUserPermissions(mustBeAuthenticated),
     path: 'identification',
     handle: {
@@ -44,7 +44,7 @@ export const routesSignupJourney: CustomRouteGroupChild[] = [
     },
   },
   {
-    element: <Activity />,
+    lazy: () => import('@/components/SignupJourneyForm/Activity/Activity'),
     loader: withUserPermissions(mustBeAuthenticated),
     path: 'activite',
     handle: {
@@ -52,7 +52,7 @@ export const routesSignupJourney: CustomRouteGroupChild[] = [
     },
   },
   {
-    element: <Validation />,
+    lazy: () => import('@/components/SignupJourneyForm/Validation/Validation'),
     loader: withUserPermissions(mustBeAuthenticated),
     path: 'confirmation',
     handle: {
